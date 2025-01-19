@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class HelloTime {
+class HelloTime {
     public static void main(String[] args) {
         System.out.println("Hello! from 64070501092!");
 
