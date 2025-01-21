@@ -32,6 +32,18 @@ class Bird extends Animal {
 	}
 }
 
+//Flyable //65070503457 Paratthakon Suksukhon
+interface Flyable{
+	void fly();
+}
+
+
+//Chicken //65070503457 Paratthakon Suksukhon
+class Chicken extends Bird {
+	public Chicken(int age, String gender, int weightInLbs) {
+		super(age, gender, weightInLbs);
+	}
+}
 
 //Sparrow 65070503409 Chayaphon Chaisangkha
 class Sparrow extends Bird implements Flyable{
