@@ -21,10 +21,25 @@ abstract class Animal { ///Warapol Pratumta 65070503466
     public abstract void move();
 }
 
+//Fish //65070503469 Sawitt Ngamvilaisiriwong
+class Fish extends Animal{
+	public Fish(int age, String gender, double weightInLbs){
+		super(age ,gender, weightInLbs);
+	}
+
+	public void swim(){
+		System.out.println("The creature is swimming.");
+	}
+
+	public void move(){
+		System.out.println("The creature is moving.");
+	}
+}
+
 //Bird //65070503445 Chanawat Limpanatewin
 class Bird extends Animal {
-	public Bird(int age, String gender, double weight){
-		super(age ,gender, weight);
+	public Bird(int age, String gender, double weightInLbs){
+		super(age ,gender, weightInLbs);
 	}
 
 	public void move(){
