@@ -1,3 +1,26 @@
+abstract class Animal { ///Warapol Pratumta 65070503466
+    protected int age;
+    protected String gender;
+    protected double weightInLbs;
+
+    public Animal(int age, String gender, double weightInLbs) {
+        this.age = age;
+        this.gender = gender;
+        this.weightInLbs = weightInLbs;
+    }
+
+    public void eat() {
+        System.out.println("This animal is eating...");
+    }
+
+    public void sleep() {
+        System.out.println("This animal is sleeping...");
+    }
+
+    // Abstract method to be implemented by subclasses
+    public abstract void move();
+}
+
 
 public class Zoo {
 
