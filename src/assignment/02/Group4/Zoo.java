@@ -69,6 +69,28 @@ interface Flyable {
 }
 //65070501069
 
+class Chicken extends Animal {
+	public Chicken(int age, String gender, double weightInLbs) {
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat() {
+		System.out.println("Chicken is eating");
+	}
+
+	@Override
+	public void sleep() {
+		System.out.println("Chicken is sleeping");
+	}
+
+	@Override
+	public void move() {
+		System.out.println("Chicken is moving");
+	}
+}
+//by 65070501081
+
 public class Zoo {
 
 	public static void main(String[] args) {
