@@ -54,6 +54,17 @@ class Bird extends Animal {
 interface Flyable {
     void fly();
 }
+// Chicken class by Nutchanon 65070501075
+class Chicken extends Bird {
+    public Chicken(int age, String gender, double weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    @Override
+    public void move() {
+        System.out.println("jae jae jae! The chicken is walking around.");
+    }
+}
 
 // Sparrow class by Rattipong 65070501048
 class Sparrow extends Bird implements Flyable {
