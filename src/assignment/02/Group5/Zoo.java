@@ -37,6 +37,24 @@ class Fish extends Animal {
     }
 }
 
+// Bird class by Chatchanan 65070501014
+class Bird extends Animal {
+    public Bird(int age, String gender, double weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    @Override
+    public void move() {
+        System.out.println("the brid is walking into a food");
+    }
+
+}
+
+// Flyable (interface class)
+interface Flyable {
+    void fly();
+}
+
 public class Zoo {
     public static void main(String[] args) {
         Animal fish1 = new Fish(1, "M", 2);
