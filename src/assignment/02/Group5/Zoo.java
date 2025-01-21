@@ -21,6 +21,22 @@ abstract class Animal {
     public abstract void move();
 }
 
+// Fish class by Napat 65070501074
+class Fish extends Animal {
+    public Fish(int age, String gender, double weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    public void swim() {
+        System.out.println("The fish is swimming very fast.");
+    }
+
+    @Override
+    public void move() {
+        swim();
+    }
+}
+
 public class Zoo {
     public static void main(String[] args) {
         Animal fish1 = new Fish(1, "M", 2);
