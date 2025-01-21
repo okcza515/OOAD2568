@@ -21,6 +21,16 @@ abstract class Animal { ///Warapol Pratumta 65070503466
     public abstract void move();
 }
 
+//Bird
+class Bird extends Animal {
+	public Bird(int age, String gender, double weight){
+		super(age ,gender, weight);
+	}
+
+	public void move(){
+		System.out.println("move");
+	}
+}
 
 public class Zoo {
 
