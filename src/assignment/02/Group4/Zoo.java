@@ -91,6 +91,33 @@ class Chicken extends Animal {
 }
 //by 65070501081
 
+class Sparrow extends Animal implements Flyable {
+	public Sparrow(int age, String gender, double weightInLbs) {
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat() {
+		System.out.println("Sparrow is eating");
+	}
+
+	@Override
+	public void sleep() {
+		System.out.println("Sparrow is sleeping");
+	}
+
+	@Override
+	public void move() {
+		System.out.println("Sparrow is moving");
+	}
+	
+	@Override
+	public void fly() {
+		System.out.println("Sparrow is moving");
+	}
+}
+//by 65070501073
+
 public class Zoo {
 
 	public static void main(String[] args) {
