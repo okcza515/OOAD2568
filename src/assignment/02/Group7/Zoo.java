@@ -1,3 +1,25 @@
+abstract class Animal { //65070501053
+    private int age;
+    private String gender;
+    private int weightInLbs;
+
+    public Animal(int age, String gender, int weightInLbs) {
+        this.age = age;
+        this.gender = gender;
+        this.weightInLbs = weightInLbs;
+    }
+
+    public void eat() {
+        System.out.println("This " + this.getClass().getName() + " is eating.");
+    }
+
+    public void sleep() {
+        System.out.println("This " + this.getClass().getName() + " is sleeping.");
+    }
+
+    public abstract void move();
+}
+
 public class Zoo {
     public static void main(String[] args) {
         Animal fish1 = new Fish(1, "M", 2);
