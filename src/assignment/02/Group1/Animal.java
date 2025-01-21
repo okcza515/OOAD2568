@@ -3,15 +3,19 @@ abstract class Animal {
     int weightInLbs;
     String gender;
 
-    public Animal(int age, String gender, int weightInLbs) {
+    Animal(int age, String gender, int weightInLbs) {
         this.age = age;
         this.weightInLbs = weightInLbs;
         this.gender = gender;
     }
 
-    abstract void eat();
+    void eat() {
+        System.out.println("Munch munch...");
+    }
 
-    abstract void sleep();
+    void sleep() {
+        System.out.println("Zzzz...");
+    }
 
     abstract void move();
 }
