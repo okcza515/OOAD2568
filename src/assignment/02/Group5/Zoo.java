@@ -55,6 +55,18 @@ interface Flyable {
     void fly();
 }
 
+// Sparrow class by Rattipong 65070501048
+class Sparrow extends Bird implements Flyable {
+    public Sparrow(int age, String gender, double weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    @Override
+    public void fly() {
+        System.out.println("pub pub pub... The sparrow is flying in to the moonnnn.");
+    }
+}
+
 public class Zoo {
     public static void main(String[] args) {
         Animal fish1 = new Fish(1, "M", 2);
