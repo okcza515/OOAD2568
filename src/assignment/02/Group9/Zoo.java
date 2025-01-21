@@ -32,6 +32,17 @@ class Bird extends Animal {
 	}
 }
 
+
+//Sparrow 65070503409 Chayaphon Chaisangkha
+class Sparrow extends Bird implements Flyable{
+	public Sparrow(int age, String gender, int weightInLbs) {
+		super(age, gender, weightInLbs);
+	}
+	public void fly() {
+		System.out.println("The creature is flying");
+	}
+}
+
 public class Zoo {
 
 	public static void main(String[] args) {
