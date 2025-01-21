@@ -64,6 +64,10 @@ class Bird extends Animal {
 	}
 }
 // by 65070501083
+interface Flyable {
+	public void fly();
+}
+//65070501069
 
 public class Zoo {
 
