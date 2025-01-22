@@ -6,7 +6,7 @@ abstract class Animal {
     protected String gender;
     protected double weightInLbs;
 
-    public void Animal(int _age, String _gender, double _weight) {
+    public Animal(int _age, String _gender, double _weight) {
         this.age = _age;
         this.gender = _gender;
         this.weightInLbs = _weight;
