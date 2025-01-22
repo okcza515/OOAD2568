@@ -19,6 +19,26 @@ abstract class Animal {
     abstract void sleep();
 }
 
+//65070501088 Sopida Keawjongkool
+class Chicken extends Animal{
+    public Chicken(int age,String gender,double weightInLbs ){
+        super( age, gender, weightInLbs);
+
+    }
+    @Override
+	public void eat() {
+		System.out.println("Chicken is eating");
+	}
+    @Override
+	public void move() {
+		System.out.println("Chicken is moving");
+	}
+
+    @Override
+	public void sleep() {
+		System.out.println("Chicken is sleeping");
+	}
+}
 
 // 65070501039 Pongpon Butseemart
 interface Flyable {
