@@ -18,12 +18,39 @@ abstract class Animal {
 
     abstract void sleep();
 }
+// 65070501065 Kamolpop Poonsawat
 
-// Fish Cake
+class Fish extends Animal {
+
+    public Fish(int age, String gender, double weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Fishy is eatting ngum ngum");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Fishy is moving");
+    }
+
+    @Override
+    public void sleep() {
+        System.out.println("Fishy is Sleepping");
+    }
+
+    public void swim() {
+        System.out.println("Fishy is swimming");
+    }
+
+}
 // Chicken Tonhom
 // Wavie Flyable
 // Kanasorn Sparrow
 // Q Bird
+
 public class Zoo {
 
     public static void main(String[] args) {
