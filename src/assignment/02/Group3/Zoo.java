@@ -53,7 +53,30 @@ class Fish extends Animal {
 // Chicken Tonhom
 // Wavie Flyable
 // Kanasorn Sparrow
-// Q Bird
+
+// 65070501023 Thanaphol Thangthaweesuk
+class Bird extends Animal {
+
+    public Bird(int _age, String _gender, double _weight) {
+        super(_age, _gender, _weight);
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Bird is eatting");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Bird is moving");
+    }
+
+    @Override
+    public void sleep() {
+        System.out.println("Bird is Sleepping");
+    }
+
+}
 
 public class Zoo {
 
