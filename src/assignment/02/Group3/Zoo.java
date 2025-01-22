@@ -1,5 +1,5 @@
 
-// 65070501001 Kantapong
+// 65070501001 Kantapong Vongpanich
 abstract class Animal {
 
     protected int age;
@@ -17,6 +17,10 @@ abstract class Animal {
     abstract void move();
 
     abstract void sleep();
+}
+
+interface Flyable {
+    public void fly();
 }
 // 65070501065 Kamolpop Poonsawat
 
