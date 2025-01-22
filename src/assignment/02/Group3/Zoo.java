@@ -2,15 +2,21 @@
 // 65070501001 Kantapong
 abstract class Animal {
 
-    private int age;
-    private String gender;
-    private double weightInLbs;
+    protected int age;
+    protected String gender;
+    protected double weightInLbs;
 
-    abstract void Eat();
+    public void Animal(int _age, String _gender, double _weight) {
+        this.age = _age;
+        this.gender = _gender;
+        this.weightInLbs = _weight;
+    }
 
-    abstract void Move();
+    abstract void eat();
 
-    abstract void Sleep();
+    abstract void move();
+
+    abstract void sleep();
 }
 
 // Fish Cake
