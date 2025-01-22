@@ -46,6 +46,33 @@ class Fish extends Animal {
     }
 
 }
+
+// 65070501067 Kanasorn
+class Sparrow extends Animal implements Flyable{
+
+  public Sparrow(int _age, String _gender, double _weight) {
+    super(_age, _gender, _weight);
+  }
+
+  @Override
+  public void eat() {
+    System.out.println("Sparrow is eatting ngum ngum");
+  }
+
+  @Override
+  public void move() {
+    System.out.println("Sparrow is moving");
+  }
+
+  @Override
+  public void sleep() {
+    System.out.println("Sparrow is Sleepping");
+  }
+
+  public void fly(){
+    System.out.println("Sparrow is flying");
+  }
+}
 // Chicken Tonhom
 // Wavie Flyable
 // Kanasorn Sparrow
