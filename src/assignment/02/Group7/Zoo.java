@@ -20,6 +20,22 @@ abstract class Animal { //65070501053
     public abstract void move();
 }
 
+//by 65070501042
+class Fish extends Animal {
+    public Fish(int age, String gender, int weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    public void swim() {
+        System.out.println("The fish is swimming.");
+    }
+
+    @Override
+    public void move() {
+        swim();
+    }
+}
+
 //by 65070501085
 interface Flyable {
     void fly();
