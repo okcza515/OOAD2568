@@ -73,7 +73,7 @@ class Fish extends Animal {
 
 }
 
-// 65070501067 Kanasorn
+// 65070501067 Kanasorn Sudyodbunphot
 class Sparrow extends Animal implements Flyable{
 
   public Sparrow(int _age, String _gender, double _weight) {
@@ -95,13 +95,11 @@ class Sparrow extends Animal implements Flyable{
     System.out.println("Sparrow is Sleepping");
   }
 
+  @Override
   public void fly(){
     System.out.println("Sparrow is flying");
   }
 }
-// Chicken Tonhom
-// Wavie Flyable
-// Kanasorn Sparrow
 
 // 65070501023 Thanaphol Thangthaweesuk
 class Bird extends Animal {
