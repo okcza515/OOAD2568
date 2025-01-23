@@ -37,4 +37,19 @@ public class Zoo {
 		animal.move();
 	}
 
+	abstract class Animal{
+		private int age;
+		private boolean gender;
+		private double weightInLbs;
+
+		public Animal(int age, boolean gender, double weightInLbs) {
+			this.age = age;
+			this.gender = gender;
+			this.weightInLbs = weightInLbs;
+		}
+
+		abstract void eat();
+		abstract void sleep();
+		abstract void move();
+	}
 }
