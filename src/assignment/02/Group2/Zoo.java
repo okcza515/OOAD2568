@@ -1,4 +1,43 @@
+abstract class Animal{
+	private int age;
+	private boolean gender;
+	private double weightInLbs;
 
+	public Animal(int age, boolean gender, double weightInLbs) {
+		this.age = age;
+		this.gender = gender;
+		this.weightInLbs = weightInLbs;
+	}
+
+	abstract void eat();
+	abstract void sleep();
+	abstract void move();
+}
+
+class Fish extends Animal{
+	public Fish(int age, boolean gender, double weightInLbs){
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat(){
+		System.out.println("Eating");
+	}
+
+	@Override
+	public void sleep(){
+		System.out.println("Sleeping");
+	}
+
+	@Override
+	public void move(){
+		System.out.println("Moving");
+	}
+
+	public void swim(){
+		System.out.println("Swimming");
+	}
+}
 public class Zoo {
 
 	public static void main(String[] args) {
@@ -36,41 +75,5 @@ public class Zoo {
 	public static void moveAnimals(Animal animal) {
 		animal.move();
 	}
-
-	abstract class Animal{
-		private int age;
-		private boolean gender;
-		private double weightInLbs;
-
-		public Animal(int age, boolean gender, double weightInLbs) {
-			this.age = age;
-			this.gender = gender;
-			this.weightInLbs = weightInLbs;
-		}
-
-		abstract void eat();
-		abstract void sleep();
-		abstract void move();
-	}
-
-	class Fish extends Animal{
-		public Fish(int age, boolean gender, double weightInLbs){
-			super(age, gender, weightInLbs);
-		}
-
-		@Override
-		public void eat(){
-			System.out.println("Eating");
-		}
-
-		@Override
-		public void sleep(){
-			System.out.println("Sleeping");
-		}
-
-		@Override
-		public void move(){
-			System.out.println("Moving");
-		}
-	}
 }
+
