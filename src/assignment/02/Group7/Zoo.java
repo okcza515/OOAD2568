@@ -53,6 +53,17 @@ class Bird extends Animal {
     }
 }
 
+//by 65070501051
+class Chicken extends Bird {
+    public Chicken(int age, String gender, int weightInLbs) {
+        super(age, gender, weightInLbs);
+    }
+
+    @Override
+    public void move() {
+        System.out.println("This chicken is walking.");
+    }
+}
 
 public class Zoo {
     public static void main(String[] args) {
