@@ -42,6 +42,7 @@ interface Flyable {
 }
 
 //by 65070501085
+//by 65070501016
 class Bird extends Animal {
     public Bird(int age, String gender, int weightInLbs) {
         super(age, gender, weightInLbs);
@@ -51,6 +52,12 @@ class Bird extends Animal {
     public void move() {
         System.out.println("This bird is flying.");
     }
+
+    // 65070501016 make bird flyable
+    public void fly(){
+        System.out.println("Bird is flying");
+    }
+
 }
 
 //by 65070501051
