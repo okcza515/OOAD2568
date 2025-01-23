@@ -52,4 +52,25 @@ public class Zoo {
 		abstract void sleep();
 		abstract void move();
 	}
+
+	class Fish extends Animal{
+		public Fish(int age, boolean gender, double weightInLbs){
+			super(age, gender, weightInLbs);
+		}
+
+		@Override
+		public void eat(){
+			System.out.println("Eating");
+		}
+
+		@Override
+		public void sleep(){
+			System.out.println("Sleeping");
+		}
+
+		@Override
+		public void move(){
+			System.out.println("Moving");
+		}
+	}
 }
