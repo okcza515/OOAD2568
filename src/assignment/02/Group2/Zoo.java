@@ -1,9 +1,9 @@
 abstract class Animal{
 	private int age;
-	private boolean gender;
+	private String gender;
 	private double weightInLbs;
 
-	public Animal(int age, boolean gender, double weightInLbs) {
+	public Animal(int age, String gender, double weightInLbs) {
 		this.age = age;
 		this.gender = gender;
 		this.weightInLbs = weightInLbs;
@@ -15,7 +15,7 @@ abstract class Animal{
 }
 
 class Fish extends Animal{
-	public Fish(int age, boolean gender, double weightInLbs){
+	public Fish(int age, String gender, double weightInLbs){
 		super(age, gender, weightInLbs);
 	}
 
@@ -38,8 +38,54 @@ class Fish extends Animal{
 		System.out.println("Swimming");
 	}
 }
-public class Zoo {
 
+class Bird extends Animal{
+	public Bird(int age, String gender, double weightInLbs){
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat(){
+		System.out.println("Eating");
+	}
+
+	@Override
+	public void sleep(){
+		System.out.println("Sleeping");
+	}
+
+	@Override
+	public void move(){
+		System.out.println("Moving");
+	}
+}
+
+interface Flyable {
+	void fly();
+}
+
+class Chicken extends Animal{
+	public Chicken(int age, String gender, double weightInLbs){
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat(){
+		System.out.println("Eating");
+	}
+
+	@Override
+	public void sleep(){
+		System.out.println("Sleeping");
+	}
+
+	@Override
+	public void move(){
+		System.out.println("Moving");
+	}
+}
+
+public class Zoo {
 	public static void main(String[] args) {
 		
 		Animal fish1 = new Fish(1, "M", 2);
@@ -76,4 +122,3 @@ public class Zoo {
 		animal.move();
 	}
 }
-
