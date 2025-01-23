@@ -1,4 +1,4 @@
-
+//By 65070503427 Pontakorn Wichaporn
 abstract class Animal{
 	private int age;
 	private String gender;
