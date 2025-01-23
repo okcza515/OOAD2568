@@ -1,4 +1,18 @@
+abstract class Animal{
+	private int age;
+	private boolean gender;
+	private double weightInLbs;
 
+	public Animal(int age, boolean gender, double weightInLbs) {
+		this.age = age;
+		this.gender = gender;
+		this.weightInLbs = weightInLbs;
+	}
+
+	abstract void eat();
+	abstract void sleep();
+	abstract void move();
+}
 public class Zoo {
 
 	public static void main(String[] args) {
@@ -35,21 +49,5 @@ public class Zoo {
 	
 	public static void moveAnimals(Animal animal) {
 		animal.move();
-	}
-
-	abstract class Animal{
-		private int age;
-		private boolean gender;
-		private double weightInLbs;
-
-		public Animal(int age, boolean gender, double weightInLbs) {
-			this.age = age;
-			this.gender = gender;
-			this.weightInLbs = weightInLbs;
-		}
-
-		abstract void eat();
-		abstract void sleep();
-		abstract void move();
 	}
 }
