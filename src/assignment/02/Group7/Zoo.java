@@ -50,7 +50,7 @@ class Bird extends Animal {
 
     @Override
     public void move() {
-        System.out.println("This bird is flying.");
+        System.out.println("This bird is walking.");
     }
 
     // 65070501016 make bird flyable
