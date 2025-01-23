@@ -14,6 +14,10 @@ abstract class Animal{
 	abstract void move();
 }
 
+interface Flyable {
+    public void fly();
+}
+
 public class Zoo {
 	public static void main(String[] args) {
 		
