@@ -1,6 +1,20 @@
 
-public class Zoo {
+abstract class Animal{
+	private int age;
+	private String gender;
+	private int weightInLbs;
 
+	public Animal(int age, String gender, int weightInLbs){
+		this.age = age;
+		this.gender = gender;
+		this.weightInLbs = weightInLbs;
+	}
+	abstract void eat();
+	abstract void sleep();
+	abstract void move();
+}
+
+public class Zoo {
 	public static void main(String[] args) {
 		
 		Animal fish1 = new Fish(1, "M", 2);
