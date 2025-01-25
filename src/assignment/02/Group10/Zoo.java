@@ -15,6 +15,27 @@ abstract class Animal{
 	abstract void move();
 }
 
+class Fish extends Animal {
+	public Fish(int age, String gender, int weightInLbs){
+		super(age, gender, weightInLbs);
+	}
+	  public void swim() {
+	  System.out.println("Fish is swimming Bung Bung");
+	}
+	@Override
+	public void move() {
+		  this.swim();
+	}
+	@Override
+	public void eat() {
+	  System.out.println("Fish is eating Bub bung");
+	}
+	@Override
+	public void sleep() {
+	  System.out.println("Fish is sleeping zzZ");
+	}
+  }
+
 public class Zoo {
 
 	public static void main(String[] args) {
