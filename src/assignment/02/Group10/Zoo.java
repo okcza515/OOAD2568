@@ -17,7 +17,7 @@ abstract class Animal{
 
 // Chayapol Wongpuwarak 65070501011
 class Fish extends Animal {
-	public Fish(int age, String gender, int weightInLbs){
+	public Fish(int age, String gender, double weightInLbs){
 		super(age, gender, weightInLbs);
 	}
 	  public void swim() {
@@ -39,7 +39,7 @@ class Fish extends Animal {
 
 // Danai Saengbuamad 65070501076
 class Bird extends Animal {
-	public Bird(int age, String gender, int weightInLbs){
+	public Bird(int age, String gender, double weightInLbs){
 		super(age, gender, weightInLbs);
 	}
 	@Override
@@ -58,15 +58,15 @@ class Bird extends Animal {
 
 // Nawaphon Promnan 65070501078
 class Chicken extends Bird {
-	public Chicken(int age, String gender, weightInLbs){
-		  super(age, gender, weightInLbs);
+	public Chicken(int age, String gender, double weightInLbs){
+		super(age, gender, weightInLbs);
 	}
 	
 	@Override
 	public void move(){
-	  System.out.println("Chicken Moving CooCaDooDleDoo");
+		System.out.println("Chicken Moving CooCaDooDleDoo");
 	}
-  }
+}
 
 public class Zoo {
 
