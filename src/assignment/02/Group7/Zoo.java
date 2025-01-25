@@ -27,7 +27,7 @@ class Fish extends Animal {
     }
 
     public void swim() {
-        System.out.println("The fish is swimming.");
+        System.out.println("The Fish is swimming.");
     }
 
     @Override
@@ -50,7 +50,7 @@ class Bird extends Animal {
 
     @Override
     public void move() {
-        System.out.println("This bird is walking.");
+        System.out.println("This Bird is walking.");
     }
 
 }
@@ -63,7 +63,7 @@ class Chicken extends Bird {
 
     @Override
     public void move() {
-        System.out.println("This chicken is walking.");
+        System.out.println("This Chicken is walking.");
     }
 }
 
@@ -75,7 +75,7 @@ class Sparrow extends Bird implements Flyable{
 
     @Override
     public void fly() {
-        System.out.println("This sparrow is flying");
+        System.out.println("This Sparrow is flying");
     }
 }
 
