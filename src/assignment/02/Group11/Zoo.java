@@ -8,7 +8,7 @@ public class Zoo {
     public static void main(String[] args) {
         Animal fish1 = new Fish(1, "M", 2);
         Animal bird1 = new Bird(1,"F",1);
-        //Animal chicken1 = new Chicken(1,"F",2);
+        Animal chicken1 = new Chicken(1,"F",2);
         Animal sparrow1 = new Sparrow(1, "M", 4);
         Flyable sparrow2 = new Sparrow(1,"M",4);
 
@@ -20,9 +20,9 @@ public class Zoo {
         bird1.sleep();
         bird1.move();
 
-        //chicken1.eat();
-        //chicken1.sleep();
-        //chicken1.move();
+        chicken1.eat();
+        chicken1.sleep();
+        chicken1.move();
 
         sparrow1.eat();
         sparrow1.sleep();
@@ -30,7 +30,7 @@ public class Zoo {
 
         moveAnimals(fish1);
         moveAnimals(bird1);
-        //moveAnimals(chicken1);
+        moveAnimals(chicken1);
         moveAnimals(sparrow1);
 
         sparrow2.fly();
