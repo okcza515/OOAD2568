@@ -14,6 +14,10 @@ abstract class Animal{
 	abstract void sleep();
 	abstract void move();
 }
+// Natlada Simasathien 65070501019
+interface Flyable {
+  public void fly();
+}
 
 // Chayapol Wongpuwarak 65070501011
 class Fish extends Animal {
