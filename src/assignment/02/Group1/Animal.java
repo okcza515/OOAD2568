@@ -10,11 +10,11 @@ abstract class Animal {
     }
 
     void eat() {
-        System.out.println("Munch munch...");
+        System.out.println("The animal is eating...");
     }
 
     void sleep() {
-        System.out.println("Zzzz...");
+        System.out.println("The animal is sleeping...");
     }
 
     abstract void move();
