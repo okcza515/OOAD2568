@@ -7,18 +7,10 @@ public class Chicken extends Animal{
     }
 
     @Override
-    public void eat(){
-        System.out.println("The chicken is eating");
-    }
-    @Override
-    public void sleep(){
-        System.out.println("The chicken is sleeping");
-    }
-    @Override
     public void move(){
         System.out.println("The chicken is moving");
     }
-
+    
 }
 
 
