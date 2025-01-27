@@ -1,3 +1,4 @@
+// group 2
 abstract class Animal{
 	private int age;
 	private String gender;
@@ -83,6 +84,28 @@ class Chicken extends Animal{
 	public void move(){
 		System.out.println("Moving");
 	}
+}
+
+class Sparrow extends Animal implements Flyable{
+	public Sparrow(int age, String gender, double weightInLbs){
+		super(age, gender, weightInLbs);
+	}
+
+	@Override
+	public void eat(){
+		System.out.println("Eating");
+	}
+
+	@Override
+	public void sleep(){
+		System.out.println("Sleeping");
+	}
+
+	@Override
+	public void fly(){
+		System.out.println("Flying");
+	}
+
 }
 
 public class Zoo {
