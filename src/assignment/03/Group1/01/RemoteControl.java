@@ -8,11 +8,11 @@ public class RemoteControl {
         return remote;
     };
     
-    public void turnoff() {
+    public void turnOff() {
         device.turnOff();
     }
 
-    public void turnon() {
+    public void turnOn() {
         device.turnOn();
     }
 }
