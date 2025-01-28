@@ -1,4 +1,4 @@
 interface IDevice {
-    String turnOff();
-    String turnOn();
+    void turnOff();
+    void turnOn();
 }
