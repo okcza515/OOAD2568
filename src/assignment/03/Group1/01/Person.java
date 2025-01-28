@@ -1,8 +1,8 @@
 public class Person {
     public static void main(String[] args) {
-        Device projector = new Projector();
-        Device tv = new TV();
-        Device surroundSoundSystem = new SurroundSoundSystem();
+        IDevice projector = new Projector();
+        IDevice tv = new TV();
+        IDevice surroundSoundSystem = new SurroundSoundSystem();
 
         RemoteControl.chooseDevice(projector);
         RemoteControl remote = new RemoteControl();
