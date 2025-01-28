@@ -4,16 +4,16 @@ public class Person {
         IDevice tv = new TV();
         IDevice surroundSoundSystem = new SurroundSoundSystem();
 
-        RemoteControl.chooseDevice(projector);
+        RemoteControl.connectDevice(projector);
         RemoteControl remote = new RemoteControl();
         remote.turnOn();
         remote.turnOff();
 
-        RemoteControl.chooseDevice(tv);
+        RemoteControl.connectDevice(tv);
         remote.turnOn();
         remote.turnOff();
 
-        RemoteControl.chooseDevice(surroundSoundSystem);
+        RemoteControl.connectDevice(surroundSoundSystem);
         remote.turnOn();
         remote.turnOff();
     }
