@@ -1,4 +1,4 @@
-public class Projector implements Device {
+public class Projector implements IDevice {
     @Override
     public void turnOn() {
         System.out.println("Projector is now ON.");
