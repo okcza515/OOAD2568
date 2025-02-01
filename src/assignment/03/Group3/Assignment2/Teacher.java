@@ -1,6 +1,5 @@
 
 public abstract class Teacher {
-	public abstract void teach();
 
 	private void makeAnnouncements() {
 		System.out.println("made announcements..");
@@ -26,3 +25,5 @@ public abstract class Teacher {
 		performOtherResponsibilities();
 	}
 }
+
+//65070501065 Kamolpop Poonsawat
