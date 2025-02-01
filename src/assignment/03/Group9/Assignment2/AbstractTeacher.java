@@ -1,3 +1,4 @@
+// Sawitt Ngamvilaisiriwong 65070503469
 // Abstract base class for all school staff
 abstract class AbstractTeacher implements SchoolStaffMember {
     private String name;
