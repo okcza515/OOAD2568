@@ -1,3 +1,4 @@
+// Sawitt Ngamvilaisiriwong 65070503469
 // Single Responsibility Principle: Each interface has one responsibility
 interface PowerControl {
     void turnOn();
