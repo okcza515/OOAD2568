@@ -1,5 +1,5 @@
 
-public class MathTeacher extends Teacher{
+public class MathTeacher extends Teacher implements ITeacherThatActuallyTeach{
 
 	@Override
 	public void teach() {
@@ -7,3 +7,4 @@ public class MathTeacher extends Teacher{
 	}
 
 }
+// 65070501067 Kanasorn Sudyodbunphot 
