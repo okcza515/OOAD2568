@@ -1,6 +1,6 @@
 
 public abstract class Teacher {
-
+	// delete void teach
 	private void makeAnnouncements() {
 		System.out.println("made announcements..");
 	}
@@ -17,7 +17,7 @@ public abstract class Teacher {
 		System.out.println("conducted hallway duties..");
 	}
 
-	public void performOtherResponsibilities() {
+	public void performOtherResponsibilities() {// why recursive this brooooooo
 		makeAnnouncements();
 		takeAttendence();
 		collectPaperWork();
@@ -26,4 +26,4 @@ public abstract class Teacher {
 	}
 }
 
-//65070501065 Kamolpop Poonsawat
+// 65070501065 Kamolpop Poonsawat
