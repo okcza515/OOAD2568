@@ -1,7 +1,3 @@
-public interface Iteach {
-    void teach();
-}
-
 public abstract class Teacher {
     private String name;
     
@@ -20,27 +16,5 @@ public abstract class Teacher {
     public void performOtherResponsibilities(){
         System.out.println("Performing other responsibilities");
     }
-}
-
-public class MathTeacher extends Teacher implements Iteach {
-    public void teach(){
-        System.out.println("Teaching Math");
-    }
-}
-
-public class EnglishTeacher extends Teacher implements Iteach {
-    public void teach(){
-        System.out.println("Teaching English");
-    }
-}
-
-public class ScienceTeacher extends Teacher implements Iteach {
-    public void teach(){
-        System.out.println("Teaching Science");
-    }
-}
-
-public class SubstituteTeacher extends Teacher {
-    
 }
 //65070501069
