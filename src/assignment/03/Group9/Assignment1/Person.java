@@ -20,27 +20,3 @@ interface BasicDevice extends PowerControl {
 interface AudioDevice extends BasicDevice, VolumeControl {
     int getVolume();
 }
-// Paratthakon Suksukhon 65070503457
-// Abstract class to reduce code duplication
-abstract class AbstractDevice implements BasicDevice {
-    private boolean isOn = false;
-    private final String name;
-
-    protected AbstractDevice(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getDeviceName() {
-        return name;
-    }
-
-    @Override
-    public boolean isOn() {
-        return isOn;
-    }
-
-    protected void setOn(boolean on) {
-        this.isOn = on;
-    }
-}
