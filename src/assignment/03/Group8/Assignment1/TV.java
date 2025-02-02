@@ -10,6 +10,10 @@ public class TV implements Control {
     public void playMovie(){
         System.out.println("A movie is played on the TV");
     }
+    @Override
+    public void special(){
+        playMovie();
+    }
 }
 
 //Kittipob Borisut 65070503407
