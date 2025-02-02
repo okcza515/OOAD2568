@@ -18,7 +18,11 @@ public class Teacher{
     }
 
     public void performOtherResponsibilities(){
-        System.out.println("OtherResponsibilities has been Responded");
+        makeAnnouncements();
+        takeAttendance();
+        collectPaperWork();
+        conductHallwayDuties();
+        // System.out.println("OtherResponsibilities has been Responded");
     }
 }
 //Pontkorn Wichaporn 65070503427
