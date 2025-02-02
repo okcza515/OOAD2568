@@ -48,3 +48,17 @@ class RegularTeacher extends AbstractTeacher implements TeachingCapable {
         System.out.println("Teaching " + subject);
     }
 }
+
+//Warapol Pratumta 65070503466
+interface SchoolStaffMember {
+    void makeAnnouncements();
+    void takeAttendence();
+    void collectPaperWork();
+    void conductHallwayDuties();
+    void performOtherResponsibilities();
+}
+
+// Interface for teaching capability
+interface TeachingCapable {
+    void teach();
+}
