@@ -14,4 +14,7 @@ public class RemoteControl {
         choosedDevice.turnOff();
     }
 
+    public void special(){
+        choosedDevice.special();
+    }
 }
