@@ -1,0 +1,3 @@
+interface Teach {
+    void teach();
+}
