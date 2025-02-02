@@ -1,3 +1,3 @@
-public class Teach {
-    
+interface teach{
+    public void teach();
 }
