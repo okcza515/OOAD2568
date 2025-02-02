@@ -1,3 +1,3 @@
-public class Projector {
+public class Projector implements Control {
     
 }

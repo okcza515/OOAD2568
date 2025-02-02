@@ -1,3 +1,3 @@
-public class SurroundSoundSystem {
+public class SurroundSoundSystem implements Control{
     
 }
