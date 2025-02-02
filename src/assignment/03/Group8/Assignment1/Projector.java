@@ -8,8 +8,11 @@ public class Projector implements Control {
     public void turnOff(){
         System.out.println("Projector is turned off");
     }
+    public void adjustScreen(){
+        System.out.println("Performing auto screen adjustment");
+    }
     @Override
     public void special(){
-        System.out.println("Performing auto screen adjustment");
+        adjustScreen();
     }
 }
