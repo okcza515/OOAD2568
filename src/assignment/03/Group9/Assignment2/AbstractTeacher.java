@@ -62,3 +62,23 @@ interface SchoolStaffMember {
 interface TeachingCapable {
     void teach();
 }
+
+// Chayaphon Chaisangkha 65070503409
+// Specific subject teachers
+class MathTeacher extends RegularTeacher {
+    public MathTeacher(String name) {
+        super(name, "Mathematics");
+    }
+}
+
+class EnglishTeacher extends RegularTeacher {
+    public EnglishTeacher(String name) {
+        super(name, "English");
+    }
+}
+
+class ScienceTeacher extends RegularTeacher {
+    public ScienceTeacher(String name) {
+        super(name, "Science");
+    }
+}
