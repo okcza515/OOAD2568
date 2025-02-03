@@ -1,4 +1,4 @@
-public class MathTeacher extends Teacher{
+public class MathTeacher extends Teacher implements Teachable{
 
 	@Override
 	public void teach() {
