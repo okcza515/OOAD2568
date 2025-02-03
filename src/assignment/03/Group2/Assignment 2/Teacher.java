@@ -17,6 +17,10 @@ public class Teacher {
     }
 
     public void performOtherResponsibilities() {
+        makeAnnoucements();
+		takeAttendance();
+		collectPaperWork();
+		conductHallWayDuties();
         System.out.println("The teacher is performing other responsibilities");
     }
 
