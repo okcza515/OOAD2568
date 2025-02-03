@@ -161,3 +161,90 @@ class SurroundSoundSystem extends AbstractDevice implements AudioDevice {
         return volume;
     }
 }
+
+//Chanawat Limpanatewin 65070503445
+// Open/Closed Principle: RemoteControl is open for extension but closed for modification
+class RemoteControl {
+    private BasicDevice currentDevice;
+
+    // Dependency Inversion Principle: RemoteControl depends on abstractions
+    public void connectTo(BasicDevice device) {
+        this.currentDevice = device;
+        System.out.println("Remote Control connected to: " + device.getDeviceName());
+    }
+
+    public void powerOn() {
+        if (currentDevice != null) {
+            currentDevice.turnOn();
+        } else {
+            System.out.println("No device connected");
+        }
+    }
+
+    public void powerOff() {
+        if (currentDevice != null) {
+            currentDevice.turnOff();
+        } else {
+            System.out.println("No device connected");
+        }
+    }
+
+    public void volumeUp() {
+        if (currentDevice instanceof AudioDevice) {
+            ((AudioDevice) currentDevice).volumeUp();
+        } else {
+            System.out.println("Current device does not support volume control");
+        }
+    }
+
+    public void volumeDown() {
+        if (currentDevice instanceof AudioDevice) {
+            ((AudioDevice) currentDevice).volumeDown();
+        } else {
+            System.out.println("Current device does not support volume control");
+        }
+    }
+
+    public BasicDevice getCurrentDevice() {
+        return currentDevice;
+    }
+}
+
+//Chanawat Limpanatewin 65070503445
+// Person class to test the system
+class Person {
+    public static void main(String[] args) {
+        // Initialize devices
+        TV tv = new TV();
+        Projector projector = new Projector();
+        SurroundSoundSystem soundSystem = new SurroundSoundSystem();
+
+        // Create remote control
+        RemoteControl remote = new RemoteControl();
+
+        // Test TV (supports both power and volume)
+        System.out.println("\nTesting TV:");
+        remote.connectTo(tv);
+        remote.powerOn();
+        remote.volumeUp();
+        remote.volumeUp();
+        remote.volumeDown();
+        remote.powerOff();
+
+        // Test Projector (supports only power)
+        System.out.println("\nTesting Projector:");
+        remote.connectTo(projector);
+        remote.powerOn();
+        remote.volumeUp(); // Should show error message
+        remote.powerOff();
+
+        // Test Sound System (supports both power and volume)
+        System.out.println("\nTesting Sound System:");
+        remote.connectTo(soundSystem);
+        remote.powerOn();
+        remote.volumeUp();
+        remote.volumeUp();
+        remote.volumeDown();
+        remote.powerOff();
+    }
+}
