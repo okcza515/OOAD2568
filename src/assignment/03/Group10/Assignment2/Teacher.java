@@ -1,4 +1,3 @@
-
 public abstract class Teacher {
 
 	// Delete void Teach
