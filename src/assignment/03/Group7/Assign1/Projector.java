@@ -1,11 +1,11 @@
 public class Projector implements Device {
     @Override
 	public void turnOff(){
-	System.out.println("Projector is tunrned off".)
+	System.out.println("Projector is tunrned off.");
 }
     @Override
     public void turnOn(){
-    System.out.println("Projector is tunrned on.")
+    System.out.println("Projector is tunrned on.");
 }
 
 }
