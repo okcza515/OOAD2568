@@ -1,4 +1,4 @@
-public class Person{
+public class Person {
     public static void main(String[] args) {
         Device tv = new TV();
         Device projector = new Projectors();
