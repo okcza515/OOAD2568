@@ -82,3 +82,15 @@ class ScienceTeacher extends RegularTeacher {
         super(name, "Science");
     }
 }
+//Paratthakon Suksukhon
+// Substitute teacher that doesn't implement TeachingCapable
+class SubstituteTeacher extends AbstractTeacher {
+    public SubstituteTeacher(String name) {
+        super(name);
+    }
+
+    // Substitute specific methods
+    public void followLessonPlan() {
+        System.out.println("Following the lesson plan left by the regular teacher");
+    }
+}
