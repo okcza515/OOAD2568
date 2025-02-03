@@ -1,5 +1,5 @@
 public interface Device {
-    void turnOn();
-    void turnOff();  
+    public void turnOn();
+    public void turnOff();  
 }
 //Ratchanon Tarawan 65070503464

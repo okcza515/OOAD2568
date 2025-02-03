@@ -1,22 +1,22 @@
-public class Person{
+public class Person {
     public static void main(String[] args) {
         Device tv = new TV();
-        Device projector = new Projector();
-        Device soundsystem = new SurroundSoundSystem();
+        Device projector = new Projectors();
+        Device soundsystem = new SurroundSoundSystems();
 
-        RemoteControl remote = new RemoteControl();
+        RemoteControls remote = new RemoteControls();
 
-        RemoteControl.pairingDevice(tv);
+        RemoteControls.pairingDevice(tv);
         remote.turnOn();
         remote.turnOff();
         System.out.println("Connected to TV");
 
-        RemoteControl.pairingDevice(soundsystem);
+        RemoteControls.pairingDevice(soundsystem);
         remote.turnOn();
         remote.turnOff();
         System.out.println("Connected to Soundsystem");
 
-        RemoteControl.pairingDevice(projector);
+        RemoteControls.pairingDevice(projector);
         remote.turnOn();
         remote.turnOff();
         System.out.println("Connected to Projector");

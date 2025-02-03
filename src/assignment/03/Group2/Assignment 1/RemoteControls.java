@@ -1,4 +1,4 @@
-public class RemoteControl {
+public class RemoteControls {
 
     private static Device pairedDevice;
 
