@@ -1,4 +1,4 @@
-interface Device {
+public interface Device {
     void turnOff();
     void turnOn();
     String getDeviceName();
