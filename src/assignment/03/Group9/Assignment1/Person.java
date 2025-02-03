@@ -69,3 +69,95 @@ class Projector extends AbstractDevice {
         }
     }
 }
+
+//Chayaphon Chaisangkha 65070503409
+// TV implements both power and volume control
+class TV extends AbstractDevice implements AudioDevice {
+    private int volume = 0;
+
+    public TV() {
+        super("TV");
+    }
+
+    @Override
+    public void turnOn() {
+        if (!isOn()) {
+            setOn(true);
+            System.out.println(getDeviceName() + " is now ON");
+        }
+    }
+
+    @Override
+    public void turnOff() {
+        if (isOn()) {
+            setOn(false);
+            System.out.println(getDeviceName() + " is now OFF");
+        }
+    }
+
+    @Override
+    public void volumeUp() {
+        if (isOn() && volume < 100) {
+            volume += 5;
+            System.out.println(getDeviceName() + " volume: " + volume);
+        }
+    }
+
+    @Override
+    public void volumeDown() {
+        if (isOn() && volume > 0) {
+            volume -= 5;
+            System.out.println(getDeviceName() + " volume: " + volume);
+        }
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
+    }
+}
+
+class SurroundSoundSystem extends AbstractDevice implements AudioDevice {
+    private int volume = 0;
+
+    public SurroundSoundSystem() {
+        super("Surround Sound System");
+    }
+
+    @Override
+    public void turnOn() {
+        if (!isOn()) {
+            setOn(true);
+            System.out.println(getDeviceName() + " is now ON");
+        }
+    }
+
+    @Override
+    public void turnOff() {
+        if (isOn()) {
+            setOn(false);
+            System.out.println(getDeviceName() + " is now OFF");
+        }
+    }
+
+    @Override
+    public void volumeUp() {
+        if (isOn() && volume < 100) {
+            volume += 5;
+            System.out.println(getDeviceName() + " volume: " + volume);
+        }
+    }
+
+    @Override
+    public void volumeDown() {
+        if (isOn() && volume > 0) {
+            volume -= 5;
+            System.out.println(getDeviceName() + " volume: " + volume);
+        }
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
+    }
+}
