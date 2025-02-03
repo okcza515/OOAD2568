@@ -1,3 +1,17 @@
+//Warapol Pratumta 65070503466
+interface SchoolStaffMember {
+    void makeAnnouncements();
+    void takeAttendence();
+    void collectPaperWork();
+    void conductHallwayDuties();
+    void performOtherResponsibilities();
+}
+
+// Interface for teaching capability
+interface TeachingCapable {
+    void teach();
+}
+
 // Sawitt Ngamvilaisiriwong 65070503469
 // Abstract base class for all school staff
 abstract class AbstractTeacher implements SchoolStaffMember {
@@ -47,20 +61,6 @@ class RegularTeacher extends AbstractTeacher implements TeachingCapable {
     public void teach() {
         System.out.println("Teaching " + subject);
     }
-}
-
-//Warapol Pratumta 65070503466
-interface SchoolStaffMember {
-    void makeAnnouncements();
-    void takeAttendence();
-    void collectPaperWork();
-    void conductHallwayDuties();
-    void performOtherResponsibilities();
-}
-
-// Interface for teaching capability
-interface TeachingCapable {
-    void teach();
 }
 
 // Chayaphon Chaisangkha 65070503409
