@@ -25,3 +25,7 @@ replay_pid*
 
 # for macOS user
 .DS_Store
+
+# for IntelliJ IDEA user
+.idea/
+*.iml
