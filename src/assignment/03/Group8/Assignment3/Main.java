@@ -10,7 +10,7 @@ public class Main {
         products.add(new Product(102, "Mouse"));
         
         ReportTransaction Report = new ReportTransaction(customer,products);
-        AccountProcess Account = new AccountProcess(customer,products);
+        AccountProcess Account = new AccountProcess();
         
         System.out.println("Customer Name: " + Report.getName());
         System.out.println("Transaction Date: " + Report.getDate());
