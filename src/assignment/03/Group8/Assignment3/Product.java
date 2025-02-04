@@ -1,22 +1,25 @@
-
 public class Product {
-	
-	private int productId;
-	private String productName;
+    private int productId;
+    private String productName;
 
-	public int getProductId() {
-		return productId;
+    public Product(int productId, String productName) {
+        this.productId = productId;
+        this.productName = productName;
+    }
+
+    public int getProductId() {
+        return productId;
 	}
 
 	public void setProductId(int productId) {
-		this.productId = productId;
-	}
+        this.productId = productId;
+    }
 
 	public String getProductName() {
-		return productName;
+        return productName;
 	}
 
 	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+        this.productName = productName;
+    }
 }

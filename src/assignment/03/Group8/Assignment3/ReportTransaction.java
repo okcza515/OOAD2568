@@ -12,7 +12,7 @@ public class ReportTransaction {
 	}
 
 	public String getName() {
-		return "name";
+		return customer.getName();
 	}
 
 	public Date getDate() {
@@ -20,8 +20,12 @@ public class ReportTransaction {
 	}
 
 	public String productBreakDown() {
-		return "list of products for reporting";
+        StringBuilder breakdown = new StringBuilder("Product Breakdown:\n");
+        for (Product product : products) {
+            breakdown.append("ID: ").append(product.getProductId())
+                     .append(", Name: ").append(product.getProductName())
+                     .append("\n");
+        }
+        return breakdown.toString();
 	}
-
-	
 }
