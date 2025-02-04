@@ -1,22 +1,22 @@
+
 public class Person {
+
     public static void main(String[] args) {
         Device projector = new Projector();
         Device tv = new TV();
         Device surround_sound_system = new SurroundSoundSystem();
 
-        RemoteControl remote = new RemoteControl();
+        RemoteControl.getInstance().chooseDevice(projector);
+        RemoteControl.getInstance().turnOn();
+        RemoteControl.getInstance().turnOff();
 
-        RemoteControl.chooseDevice(projector);
-        remote.turnOn();
-        remote.turnOff();
-    
-        RemoteControl.chooseDevice(tv);
-        remote.turnOn();
-        remote.turnOff();
-        
-        RemoteControl.chooseDevice(surround_sound_system);
-        remote.turnOn();
-        remote.turnOff();
+        RemoteControl.getInstance().chooseDevice(tv);
+        RemoteControl.getInstance().turnOn();
+        RemoteControl.getInstance().turnOff();
+
+        RemoteControl.getInstance().chooseDevice(surround_sound_system);
+        RemoteControl.getInstance().turnOn();
+        RemoteControl.getInstance().turnOff();
     }
 }
 

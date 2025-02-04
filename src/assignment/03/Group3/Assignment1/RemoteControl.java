@@ -3,8 +3,13 @@
 public class RemoteControl {
 
     private static Device selectedDevice;
+    private static final RemoteControl instance = new RemoteControl();
 
-    public static void chooseDevice(Device device) {
+    public static RemoteControl getInstance() {
+        return instance;
+    }
+
+    public void chooseDevice(Device device) {
         selectedDevice = device;
     }
 
