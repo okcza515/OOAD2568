@@ -13,4 +13,5 @@ public class RemoteControl {
     public void turnDeviceOff() {
         this.connectedDevice.turnDeviceOff();
     }
+
 }

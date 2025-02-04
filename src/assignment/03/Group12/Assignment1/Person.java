@@ -6,5 +6,10 @@ public class Person {
         remote.pairedDevice(tv);
         remote.turnDeviceOn();
         remote.turnDeviceOff();
+
+        Projector projector = new Projector();
+        remote.pairedDevice(projector);
+        remote.turnDeviceOn();
+        remote.turnDeviceOff();
     }
 }
