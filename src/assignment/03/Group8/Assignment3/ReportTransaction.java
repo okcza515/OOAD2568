@@ -12,7 +12,7 @@ public class ReportTransaction {
 	}
 
 	public String getName() {
-		return "name";
+		return customer.getName();
 	}
 
 	public Date getDate() {
