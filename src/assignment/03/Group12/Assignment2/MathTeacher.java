@@ -1,5 +1,5 @@
 
-public class MathTeacher extends Teacher{
+public class MathTeacher extends Teacher implements Teach{
 
 	@Override
 	public void teach() {

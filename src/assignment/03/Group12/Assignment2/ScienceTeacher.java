@@ -1,9 +1,9 @@
 
-public class ScienceTeacher extends Teacher {
+public class ScienceTeacher extends Teacher implements Teach{
 
 	@Override
 	public void teach() {
-		System.out.println("taught science");
+		System.out.println("Taught science");
 	}
 
 }
