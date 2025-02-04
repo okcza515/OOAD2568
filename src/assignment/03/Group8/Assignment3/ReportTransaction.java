@@ -1,12 +1,12 @@
 import java.util.Date;
 import java.util.List;
 
-public class CustomerTransaction {
+public class ReportTransaction {
 
 	private List<Product> products;
 	private Customer customer;
 
-	public CustomerTransaction(Customer customer, List<Product> products) {
+	public ReportTransaction(Customer customer, List<Product> products) {
 		this.products = products;
 		this.customer = customer;
 	}

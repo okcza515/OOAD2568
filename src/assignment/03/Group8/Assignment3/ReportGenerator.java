@@ -1,14 +1,14 @@
 
 public class ReportGenerator {
 	
-	private CustomerTransaction transactionObject;
+	private ReportTransaction reportObject;
 	
 	public void generateReport(){
-		System.out.println(transactionObject.getName()
+		System.out.println(reportObject.getName()
 		+" "
-		+transactionObject.productBreakDown()
+		+reportObject.productBreakDown()
 		+" "
-		+transactionObject.getDate());
+		+reportObject.getDate());
 	}
 
 }
