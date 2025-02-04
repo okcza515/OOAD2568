@@ -1,3 +1,4 @@
+
 public abstract class Teacher {
 
 	private void makeAnnouncements() {
@@ -21,6 +22,7 @@ public abstract class Teacher {
 		takeAttendence();
 		collectPaperWork();
 		conductHallwayDuties();
-		//performOtherResponsibilities(); //infinite recursive, so I comment it
+		performOtherResponsibilities();
 	}
 }
+//65070501038 Puntharee Roongprasert

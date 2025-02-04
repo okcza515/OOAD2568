@@ -1,3 +1,4 @@
+
 public class ScienceTeacher extends Teacher implements Teachable{
 
 	@Override
@@ -6,3 +7,4 @@ public class ScienceTeacher extends Teacher implements Teachable{
 	}
 
 }
+//Chitsanucha 65070501016
