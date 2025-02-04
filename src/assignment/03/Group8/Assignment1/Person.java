@@ -2,7 +2,7 @@
 public class Person {
     
     public static void main(String[] args) {
-        Control Projector = new Projector();
+        Projector Projector = new Projector();
         Control TV = new TV();
         Control SurroundSoundSystem = new SurroundSoundSystem();
 
@@ -10,8 +10,9 @@ public class Person {
 
         RemoteControl.pairingDevice(Projector);
         remote.turnOn();
+        Projector.adjustScreen();
         remote.turnOff();
-        remote.special();
+        // remote.special();
 
         RemoteControl.pairingDevice(TV);
         remote.turnOn();
