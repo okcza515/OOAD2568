@@ -1,17 +1,17 @@
 
 public class AccountsReceivable {
-	private CustomerTransaction transactionObject;
+	private AccountProcess AccountObject;
 	
-	public AccountsReceivable(CustomerTransaction aTransaction){
-		transactionObject = aTransaction;
+	public AccountsReceivable(AccountProcess aTransaction){
+		AccountObject = aTransaction;
 	}
 	
 	public void postPayment(){
-		transactionObject.chargeCustomer();
+		AccountObject.chargeCustomer();
 	}
-
+	
 	public void sendInvoice(){
-		transactionObject.prepareInvoice();
+		AccountObject.prepareInvoice();
 		// sends the invoice
 	}
 }

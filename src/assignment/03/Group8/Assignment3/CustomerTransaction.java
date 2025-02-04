@@ -23,11 +23,5 @@ public class CustomerTransaction {
 		return "list of products for reporting";
 	}
 
-	public void prepareInvoice() {
-		System.out.println("invoice prepared...");
-	}
-
-	public void chargeCustomer() {
-		System.out.println("charged the customer");
-	}
+	
 }
