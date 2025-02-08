@@ -4,15 +4,12 @@ public class DeviceFactory {
     }
 
     public static void main(String[] args) {
-        /*TODO //this is what should be in the main
-
+        // Done
         GeneralManufacturingProcess smartphone = new SmartphoneManufacturingProcess();
         GeneralManufacturingProcess laptop = new LaptopManufacturingProcess();
 
         initializeManufacturing(smartphone);
         initializeManufacturing(laptop);
-
-        */
     }
 }
 
