@@ -7,11 +7,12 @@ public class AccountsReceivable {
 	}
 	
 	public void postPayment(){
-		transactionObject.chargeCustomer();
+        System.out.println(String.format("Payment received from %s", transactionObject.getName()));
 	}
 
 	public void sendInvoice(){
-		transactionObject.prepareInvoice();
-		// sends the invoice
+        System.out.println(String.format("Invoice sent to %s", transactionObject.getName()));
 	}
 }
+
+// 65070501023 Thanaphol Thangthaweesuk
