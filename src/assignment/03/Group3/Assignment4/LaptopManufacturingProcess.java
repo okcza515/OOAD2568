@@ -1,13 +1,13 @@
 class LaptopManufacturingProcess extends GeneralManufacturingProcess {
   
     @Override
-    void assembly() {
+    protected void assembly() {
         System.out.println("Laptop assembly");
     }
 
     @Override
-    void testing() {
-        System.out.println("Smartphone testing");
+    protected void testing() {
+        System.out.println("Laptop testing");
     }
 
     @Override
