@@ -21,3 +21,13 @@ class LaptopManufacturingProcess extends GeneralManufacturingProcess {
         System.out.println("Storing laptop in secure warehouse section...");
     }
 }
+
+public class DeviceFactory {
+    public static void main(String[] args) {
+        // Manufacturing a smartphone
+        //Bew
+        System.out.println("Starting Smartphone Manufacturing Process...");
+        GeneralManufacturingProcess smartphoneProcess = new SmartphoneManufacturingProcess();
+        smartphoneProcess.startManufacturing();
+    }
+}

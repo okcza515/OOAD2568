@@ -1,3 +1,38 @@
+// 2. Product related interfaces and classes
+//Bew
+interface Product {
+    String getId();
+    String getName();
+    String getBreakdown();
+    BigDecimal getPrice();
+}
+
+class ProductImpl implements Product {
+    private String id;
+    private String name;
+    private String breakdown;
+    private BigDecimal price;
+
+    public ProductImpl(String id, String name, String breakdown, BigDecimal price) {
+        this.id = id;
+        this.name = name;
+        this.breakdown = breakdown;
+        this.price = price;
+    }
+
+    @Override
+    public String getId() { return id; }
+
+    @Override
+    public String getName() { return name; }
+
+    @Override
+    public String getBreakdown() { return breakdown; }
+
+    @Override
+    public BigDecimal getPrice() { return price; }
+}
+
 // 4. Transaction Generator interface and implementation
 // Sawitt Ngamvilaisiriwong 65070503469
 interface TransactionGenerator {
