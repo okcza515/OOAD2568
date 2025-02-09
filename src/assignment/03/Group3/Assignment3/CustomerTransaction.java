@@ -6,29 +6,28 @@ public class CustomerTransaction {
 
     private List<Product> products;
     private Customer customer;
+    private Date date;
 
     public CustomerTransaction(Customer customer, List<Product> products) {
         this.products = products;
         this.customer = customer;
+        this.date = new Date();
     }
 
     public String getName() {
-        return "name";
+        return this.customer.getName();
     }
 
     public Date getDate() {
-        return new Date();
+        return this.date;
     }
 
     public String productBreakDown() {
-        return "list of products for reporting";
-    }
-
-    public void prepareInvoice() {
-        System.out.println("invoice prepared...");
-    }
-
-    public void chargeCustomer() {
-        System.out.println("charged the customer");
+      String str = "";
+      for (int i = 0; i < this.products.size(); i++) {
+          Product product = this.products.get(i);
+          str += String.format("* ID:%d - %s\n", product.getProductId(), product.getProductName());
+      }
+      return str;
     }
 }
