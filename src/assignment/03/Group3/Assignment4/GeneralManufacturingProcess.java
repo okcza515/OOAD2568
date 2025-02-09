@@ -1,15 +1,15 @@
 
 public abstract class GeneralManufacturingProcess {
 
-    abstract void assembly();
+    protected abstract void assembly();
 
-    abstract void testing();
+    protected abstract void testing();
 
-    abstract void packaging();
+    protected abstract void packaging();
 
-    abstract void storage();
+    protected abstract void storage();
 
-    public void manufacture() {
+    public final void manufacture() {
         System.out.println("Start building...");
         assembly();
         testing();
