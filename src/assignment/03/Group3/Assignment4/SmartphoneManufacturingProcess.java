@@ -20,3 +20,4 @@ class SmartphoneManufacturingProcess extends GeneralManufacturingProcess {
         System.out.println("Smartphone storage");
     }
 }
+//Kamolpop Poonsawat 65070501065
