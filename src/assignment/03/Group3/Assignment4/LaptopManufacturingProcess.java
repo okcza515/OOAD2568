@@ -10,10 +10,12 @@ class LaptopManufacturingProcess extends GeneralManufacturingProcess {
         System.out.println("Smartphone testing");
     }
 
+    @Override
     protected void packaging() {
         System.out.println("Laptop packaging");
     }
 
+    @Override
     protected void storage() {
         System.out.println("Laptop storage");
     }
