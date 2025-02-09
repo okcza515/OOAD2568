@@ -13,8 +13,9 @@ public class CustomerTransaction {
 	}
 
 	public String getName() {
-		return "name";
+		return customer.getName();
 	}
+	//Korawit Sritotum 65070503402
 
 	public Date getDate() {
 		return new Date();
