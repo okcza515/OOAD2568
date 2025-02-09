@@ -1,3 +1,27 @@
+// Concrete implementation for smartphone manufacturing
+//Top
+class SmartphoneManufacturingProcess extends GeneralManufacturingProcess {
+    @Override
+    protected void assembly() {
+        System.out.println("Assembling smartphone components: display, motherboard, battery...");
+    }
+    
+    @Override
+    protected void testing() {
+        System.out.println("Testing smartphone: touch response, camera, battery life...");
+    }
+    
+    @Override
+    protected void packaging() {
+        System.out.println("Packaging smartphone: box, charger, manual...");
+    }
+    
+    @Override
+    protected void storage() {
+        System.out.println("Storing smartphone in temperature-controlled warehouse...");
+    }
+}
+
 // Concrete implementation for laptop manufacturing
 // Sawitt Ngamvilaisiriwong 65070503469
 class LaptopManufacturingProcess extends GeneralManufacturingProcess {
