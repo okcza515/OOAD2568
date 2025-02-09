@@ -27,6 +27,7 @@ public class CustomerTransaction {
 		}
 		return productNames;
 	}
+	//Ratchanon Tarawan 65070503464
 
 	public void prepareInvoice() {
 		System.out.println("invoice prepared...");
