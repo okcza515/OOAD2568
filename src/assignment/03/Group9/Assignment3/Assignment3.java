@@ -118,3 +118,50 @@ class AccountingException extends Exception {
         super(message);
     }
 }
+
+// 3. Transaction related interfaces and classes
+// 65070503466 Warapol Pratumta
+interface Transaction {
+    String getTransactionId();
+    Customer getCustomer();
+    Product getProduct();
+    BigDecimal getAmount();
+    LocalDateTime getTransactionDate();
+    void execute() throws TransactionException;
+}
+
+class CustomerTransaction implements Transaction {
+    private String transactionId;
+    private Customer customer;
+    private Product product;
+    private BigDecimal amount;
+    private LocalDateTime transactionDate;
+
+    public CustomerTransaction(String transactionId, Customer customer, Product product) {
+        this.transactionId = transactionId;
+        this.customer = customer;
+        this.product = product;
+        this.amount = product.getPrice();
+        this.transactionDate = LocalDateTime.now();
+    }
+
+    @Override
+    public String getTransactionId() { return transactionId; }
+
+    @Override
+    public Customer getCustomer() { return customer; }
+
+    @Override
+    public Product getProduct() { return product; }
+
+    @Override
+    public BigDecimal getAmount() { return amount; }
+
+    @Override
+    public LocalDateTime getTransactionDate() { return transactionDate; }
+
+    @Override
+    public void execute() throws TransactionException {
+        // Implementation of transaction execution
+    }
+}
