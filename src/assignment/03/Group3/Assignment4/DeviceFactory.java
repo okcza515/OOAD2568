@@ -7,7 +7,7 @@ public class DeviceFactory {
 
         smartphoneFactory.manufacture();
         System.out.println();
-        laptopFactory.manufacturingProcess();
+        laptopFactory.manufacture();
     }
 }
 
