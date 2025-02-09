@@ -1,8 +1,12 @@
-
 public class Product {
 	
 	private int productId;
 	private String productName;
+
+	public Product(int productId, String productName) {
+        this.productId = productId;
+        this.productName = productName;
+    }
 
 	public int getProductId() {
 		return productId;
@@ -20,3 +24,5 @@ public class Product {
 		this.productName = productName;
 	}
 }
+
+//Sikares Nuntipatsakul 65070503439
