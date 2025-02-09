@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +20,12 @@ public class CustomerTransaction {
 		return new Date();
 	}
 
-	public String productBreakDown() {
-		return "list of products for reporting";
+	public List<String> productBreakDown() {
+		List<String> productNames = new ArrayList<>();
+		for (Product product : products) {
+			productNames.add(product.getProductName());
+		}
+		return productNames;
 	}
 
 	public void prepareInvoice() {
