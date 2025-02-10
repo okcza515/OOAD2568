@@ -1,3 +1,21 @@
+// Abstract class defining the template for manufacturing process
+//Chayaphon Chaisangkha 65070503409
+abstract class GeneralManufacturingProcess {
+    // Template method - final so it cannot be overridden
+    public final void startManufacturing() {
+        assembly();
+        testing();
+        packaging();
+        storage();
+    }
+    
+    // Abstract methods to be implemented by specific processes
+    protected abstract void assembly();
+    protected abstract void testing();
+    protected abstract void packaging();
+    protected abstract void storage();
+}
+
 // Concrete implementation for smartphone manufacturing
 //Top
 class SmartphoneManufacturingProcess extends GeneralManufacturingProcess {

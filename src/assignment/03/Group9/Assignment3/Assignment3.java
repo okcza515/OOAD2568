@@ -1,3 +1,30 @@
+// 1. Customer related interfaces and classes\
+//Chayaphon Chaisangkha 65070503409
+interface Customer {
+    String getId();
+    String getName();
+}
+
+class CustomerImpl implements Customer {
+    private String id;
+    private String name;
+
+    public CustomerImpl(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+}
+
 // 2. Product related interfaces and classes
 //Bew
 interface Product {
