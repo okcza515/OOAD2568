@@ -11,4 +11,15 @@ class SmartphoneManufacturingProcess extends GeneralManufacturingProcess{
         System.out.println("Testing -> Smartphone");
     }
 
+    // 65070501019 Natlada Simasathien
+    @Override
+    public void packaging(){
+        System.out.println("Packaging -> Smartphone");
+    }
+
+    @Override
+    public void storage(){
+        System.out.println("Storage -> Smartphone");
+    }
+
 }
