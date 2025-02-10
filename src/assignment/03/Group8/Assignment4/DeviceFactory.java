@@ -4,10 +4,10 @@ public class DeviceFactory {
 
         System.out.println("Manufacturing Smartphone:");
         GeneralManufacturingProcess smartphoneProcess = new SmartphoneManufacturingProcess();
-        smartphoneProcess.startProcess();startProcess();
+        smartphoneProcess.startProcess();
 
         System.out.println("\nManufacturing Laptop:");
         GeneralManufacturingProcess laptopProcess = new LaptopManufacturingProcess();
-        laptopProcess.startProcess();startProcess();
+        laptopProcess.startProcess();
     }
 }
