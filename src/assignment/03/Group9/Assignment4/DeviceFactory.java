@@ -71,5 +71,14 @@ public class DeviceFactory {
         System.out.println("Starting Smartphone Manufacturing Process...");
         GeneralManufacturingProcess smartphoneProcess = new SmartphoneManufacturingProcess();
         smartphoneProcess.startManufacturing();
+
+        //Chanawat Limpanatewin 65070503445
+
+        System.out.println("\n------------------------\n");
+        
+        // Manufacturing a laptop
+        System.out.println("Starting Laptop Manufacturing Process...");
+        GeneralManufacturingProcess laptopProcess = new LaptopManufacturingProcess();
+        laptopProcess.startManufacturing();
     }
 }
