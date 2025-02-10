@@ -1,11 +1,28 @@
+//65070501008
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        // สร้างข้อมูลธุรกรรม
-        TransactionDetails transaction = new TransactionDetails("John Doe", "2025-02-03", "Laptop, Mouse"); //test
-        System.out.println("Transaction Details: " + transaction.getName() + ", " + transaction.getDate() + ", " + transaction.getProductBreakdown());
-        // เรียกใช้งาน CustomerTransaction
+        // Create a customer
+        Customer customer = new Customer("Ethan");
 
-        // CustomerTransaction customerTransaction = new CustomerTransaction(transaction);
-        // customerTransaction.processTransaction();
+        // Create a list of products
+        List<Product> products = new ArrayList<>();
+        products.add(new Product(101, "Laptop"));
+        products.add(new Product(102, "Mouse"));
+        products.add(new Product(103, "Keyboard"));
+
+        // Create a transaction
+        CustomerTransaction transaction = new CustomerTransaction(customer, products);
+
+        // Process accounts receivable
+        AccountsReceivable accountsReceivable = new AccountsReceivable(transaction);
+        accountsReceivable.postPayment();
+        accountsReceivable.sendInvoice();
+
+        // Generate a transaction report
+        ReportGenerator reportGenerator = new ReportGenerator(transaction);
+        reportGenerator.generateReport();
     }
 }
