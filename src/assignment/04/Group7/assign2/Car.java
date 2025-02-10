@@ -1,23 +1,23 @@
 
 public class Car {
-    private final Type type;
-    private final int seats;
-    private final Engine engine;
-    private final Transmission transmission;
-    private final TripComputer tripComputer;
-    private final GPSNavigator gpsNavigator;
-    private double fuel = 0;
+    public Type type;
+    public int seats;
+    public Engine engine;
+    public Transmission transmission;
+    public TripComputer tripComputer;
+    public GPSNavigator gpsNavigator;
+    public double fuel = 0;
 
-    public Car(Type type, int seats, Engine engine, Transmission transmission,
-               TripComputer tripComputer, GPSNavigator gpsNavigator) {
-        this.type = type;
-        this.seats = seats;
-        this.engine = engine;
-        this.transmission = transmission;
-        this.tripComputer = tripComputer;
-        this.tripComputer.setCar(this);
-        this.gpsNavigator = gpsNavigator;
-    }
+    // public Car(Type type, int seats, Engine engine, Transmission transmission,
+    //            TripComputer tripComputer, GPSNavigator gpsNavigator) {
+    //     this.type = type;
+    //     this.seats = seats;
+    //     this.engine = engine;
+    //     this.transmission = transmission;
+    //     this.tripComputer = tripComputer;
+    //     this.tripComputer.setCar(this);
+    //     this.gpsNavigator = gpsNavigator;
+    // }
 
     public Type getType() {
         return type;
@@ -51,3 +51,5 @@ public class Car {
         return gpsNavigator;
     }
 }
+
+//Jaatupoj 65070501070
