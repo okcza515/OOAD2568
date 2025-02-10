@@ -52,12 +52,24 @@ public class Car {
         return transmission;
     }
 
+    public void setTransmission(Transmission transmission) {
+        this.transmission = transmission;
+    }
+
     public TripComputer getTripComputer() {
         return tripComputer;
     }
 
+    public void setTripComputer(TripComputer tripComputer) {
+        this.tripComputer = tripComputer;
+    }
+
     public GPSNavigator getGpsNavigator() {
         return gpsNavigator;
+    }
+
+    public void setGpsNavigator(GPSNavigator gpsNavigator) {
+        this.gpsNavigator = gpsNavigator;
     }
 }
 
