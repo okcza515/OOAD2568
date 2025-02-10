@@ -8,4 +8,14 @@ public class LaptopManufacturingProcess implements GeneralManufacturingProcess {
     public void testing() {
         System.out.println("Laptop testing");
     }
+
+    @Override
+    public void packaging() {
+        System.out.println("Laptop packaging");
+    }
+
+    @Override
+    public void storage() {
+        System.out.println("Laptop storing");
+    }
 }
