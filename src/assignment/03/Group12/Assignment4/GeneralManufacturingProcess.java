@@ -5,10 +5,10 @@ abstract class GeneralManufacturingProcess {
         this.deviceName = deviceName;
     }
 
-    public abstract void assembly();
-    public abstract void testing();
-    public abstract void packaging();
-    public abstract void storage();
+    protected abstract void assembly();
+    protected abstract void testing();
+    protected abstract void packaging();
+    protected abstract void storage();
 
     public void process() {
         System.out.println("Process of " + this.deviceName + " is starting ...");

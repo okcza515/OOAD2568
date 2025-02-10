@@ -4,22 +4,22 @@ class SmartphoneManufacturingProcess extends GeneralManufacturingProcess {
     }
 
     @Override
-    public void assembly() {
-        System.out.println("Now, Smartphone is assemblying.");
+    protected void assembly() {
+        System.out.println("Now, Smartphone is assembling.");
     }
 
     @Override
-    public void testing() {
+    protected void testing() {
         System.out.println("Now, Smartphone is testing.");
     }
 
     @Override
-    public void packaging () {
+    protected void packaging () {
         System.out.println("Now, Smartphone is packaging.");
     }
 
     @Override
-    public void storage() {
+    protected void storage() {
         System.out.println("Now, Smartphone is storing.");
     }
 }
