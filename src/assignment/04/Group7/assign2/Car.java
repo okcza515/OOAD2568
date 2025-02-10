@@ -23,6 +23,11 @@ public class Car {
         return type;
     }
 
+    public void setType(Type type) {
+        this.type = type;
+    }
+    
+
     public double getFuel() {
         return fuel;
     }
@@ -31,12 +36,16 @@ public class Car {
         this.fuel = fuel;
     }
 
-    public int getSeats() {
-        return seats;
+    public void getSeats(int seats) {
+        this.seats = seats;
     }
 
     public Engine getEngine() {
         return engine;
+    }
+
+    public void setEngine(Engine engine) {
+        this.engine = engine;
     }
 
     public Transmission getTransmission() {
