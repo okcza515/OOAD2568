@@ -18,4 +18,11 @@ public class LaptopManufacturingProcess implements GeneralManufacturingProcess {
     public void storage() {
         System.out.println("Laptop storing");
     }
+
+    public void launchProcess() {
+        assembly();
+        testing();
+        packaging();
+        storage();
+    }
 }
