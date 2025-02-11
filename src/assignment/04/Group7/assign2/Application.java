@@ -8,7 +8,7 @@ public class Application {
 		// System.out.println("\nCar manual built:\n" + carManual.print());
 
 		
-		Car SUV = Manufacturer.CreateSUVcar();
+		Car SUV = Manufacturer.SUVcar();
 		System.out.println(SUV);
 	}
 }
