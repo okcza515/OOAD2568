@@ -1,19 +1,37 @@
-
+//65070501018 Natchanon Phattamanuruk
 public class Manual {
-	private final Type type;
-    private final int seats;
-    private final Engine engine;
-    private final Transmission transmission;
-    private final TripComputer tripComputer;
-    private final GPSNavigator gpsNavigator;
+    public Type type;
+    public int seats;
+    public Engine engine;
+    public Transmission transmission;
+    public TripComputer tripComputer;
+    public GPSNavigator gpsNavigator;
+    public double fuel = 0;
 
-    public Manual(Type type, int seats, Engine engine, Transmission transmission,
-                  TripComputer tripComputer, GPSNavigator gpsNavigator) {
+    public void setType(Type type) {
         this.type = type;
+    }
+    public void setFuel(double fuel) {
+        this.fuel = fuel;
+    }
+
+    public void setSeats(int seats) {
         this.seats = seats;
+    }
+
+    public void setEngine(Engine engine) {
         this.engine = engine;
+    }
+
+    public void setTransmission(Transmission transmission) {
         this.transmission = transmission;
+    }
+
+    public void setTripComputer(TripComputer tripComputer) {
         this.tripComputer = tripComputer;
+    }
+
+    public void setGpsNavigator(GPSNavigator gpsNavigator) {
         this.gpsNavigator = gpsNavigator;
     }
 
