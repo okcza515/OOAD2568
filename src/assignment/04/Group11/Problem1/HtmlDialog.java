@@ -1,12 +1,6 @@
+public class HtmlDialog extends Dialog {
 
-public class HtmlDialog {
-
-	public void renderWindow() {
-		HtmlButton okButton = createButton();
-		okButton.render();
-	}
-
-	public HtmlButton createButton() {
-		return new HtmlButton();
-	}
+    public Button createButton() {
+        return new HtmlButton();
+    }
 }
