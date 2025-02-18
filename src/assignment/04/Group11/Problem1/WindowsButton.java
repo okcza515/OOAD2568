@@ -15,7 +15,7 @@ public class WindowsButton implements Button {  // Add "implements Button" here
     // @Override  // Add @Override annotations
     public void render() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel label = new JLabel("Hello World!");
+        JLabel label = new JLabel("Hello Wit03!");
         label.setOpaque(true);
         label.setBackground(new Color(235, 233, 126));
         label.setFont(new Font("Dialog", Font.BOLD, 44));
