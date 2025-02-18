@@ -1,11 +1,7 @@
 
-public class WindowsDialog {
-	public void renderWindow() {
-		WindowsButton okButton = createButton();
-		okButton.render();
-	}
-
-	public WindowsButton createButton() {
+public class WindowsDialog extends Dialog {
+	@Override
+	public Button createButton() {
 		return new WindowsButton();
 	}
 }
