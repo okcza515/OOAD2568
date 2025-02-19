@@ -1,5 +1,5 @@
 
-public class HtmlDialog {
+public class HtmlDialog extends Dialog {
 
 	public void renderWindow() {
 		HtmlButton okButton = createButton();
@@ -10,3 +10,4 @@ public class HtmlDialog {
 		return new HtmlButton();
 	}
 }
+// Ratchanon Tarawan 65070503464
