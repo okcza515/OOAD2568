@@ -1,7 +1,6 @@
-
 public class Application {
 
-	private static HtmlDialog dialog;
+	private static DialogFactory dialog;
 
 	public static void main(String[] args) {
 		configure();
@@ -9,17 +8,18 @@ public class Application {
 	}
 
 	static void configure() {
-		dialog = new HtmlDialog();
-		/* New code after implement Windows dialog
+		// New code after implement Windows dialog
 		if (System.getProperty("os.name").equals("Mac OS X")) {
-			dialog = new WindowsDialog();
+			dialog = new WindowDialogFactory();
 		} else {
-			dialog = new HtmlDialog();
-		}*/
+			dialog = new HtmlDialogFactory();
+		}
 	}
 
 	static void runBusinessLogic() {
-		dialog.renderWindow();
+		Dialog dialog_ = dialog.CreateDialog();
+		dialog_.renderWindow();
 	}
 
 }
+//Korawit Sritotum 65070503402
