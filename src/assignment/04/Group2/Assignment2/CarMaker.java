@@ -8,6 +8,3 @@ public interface CarMaker {
     Car getCar();
     
 }
-
-//Korawit Sritotum 65070503402
-
