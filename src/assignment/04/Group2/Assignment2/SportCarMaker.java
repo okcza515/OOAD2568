@@ -13,37 +13,37 @@ public class SportCarMaker implements CarMaker {
     }
 
     @Override
-    public CarMaker setSeats(int seats){
+    public CarMaker setSeats(int seats) {
         this.seats = seats;
         return this;
     }
 
     @Override
-    public CarMaker setEngine(Engine engine){
+    public CarMaker setEngine(Engine engine) {
         this.engine = engine;
         return this;
     }
 
     @Override
-    public CarMaker setTransmission(Transmission transmission){
+    public CarMaker setTransmission(Transmission transmission) {
         this.transmission = transmission;
         return this;
     }
 
     @Override
-    public CarMaker setTripComputer(TripComputer tripComputer){
+    public CarMaker setTripComputer(TripComputer tripComputer) {
         this.tripComputer = tripComputer;
         return this;
     }
 
     @Override
-    public CarMaker setGPSNavigator(GPSNavigator gpsNavigator){
+    public CarMaker setGPSNavigator(GPSNavigator gpsNavigator) {
         this.gpsNavigator = gpsNavigator;
         return this;
     }
 
     @Override
-    public Car getCar(){
+    public Car getCar() {
         return new Car(type, seats, engine, transmission, tripComputer, gpsNavigator);
     }
 
@@ -78,4 +78,4 @@ public class SportCarMaker implements CarMaker {
     }
 }
 
-//Supanut Wongtanom 65070503437
+// Supanut Wongtanom 65070503437
