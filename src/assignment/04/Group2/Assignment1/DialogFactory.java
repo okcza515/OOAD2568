@@ -5,3 +5,5 @@ public abstract class DialogFactory {
 
     protected abstract Dialog BuildDialog();
 }
+
+//Korawit Sritotum 65070503402
