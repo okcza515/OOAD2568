@@ -6,5 +6,14 @@ public interface CarMaker {
     CarMaker setTripComputer(TripComputer tripComputer);
     CarMaker setGPSNavigator(GPSNavigator gpsNavigator);
     Car getCar();
+
+    Type getCarType();
+    int getSeats();
+    Engine getEngine();
+    Transmission getTransmission();
+    TripComputer getTripComputer();
+    GPSNavigator getGPSNavigator();
     
 }
+
+//Korawit Sritotum 65070503402

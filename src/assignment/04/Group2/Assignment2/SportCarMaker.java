@@ -46,6 +46,36 @@ public class SportCarMaker implements CarMaker {
     public Car getCar(){
         return new Car(type, seats, engine, transmission, tripComputer, gpsNavigator);
     }
+
+    @Override
+    public Type getCarType(){
+        return this.type;
+    }
+
+    @Override
+    public int getSeats(){
+        return this.seats;
+    }
+
+    @Override
+    public Engine getEngine(){
+        return this.engine;
+    }
+
+    @Override
+    public Transmission getTransmission(){
+        return this.transmission;
+    }
+
+    @Override
+    public TripComputer getTripComputer(){
+        return this.tripComputer;
+    }
+
+    @Override
+    public GPSNavigator getGPSNavigator(){
+        return this.gpsNavigator;
+    }
 }
 
 //Supanut Wongtanom 65070503437
