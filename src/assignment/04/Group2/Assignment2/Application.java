@@ -22,10 +22,19 @@ public class Application {
 		suvCar.setTransmission(Transmission.MANUAL);
 		System.out.println("SUV Car built:\n" + suvCar.getCar().getType());
 
-		// Manual sportCarManual = new Manual(Type.SPORTS_CAR, 2, new Engine(2.0, 0),
-		// Transmission.SEMI_AUTOMATIC,
-		// new TripComputer(), new GPSNavigator());
+		Manual sportCarManual = new Manual(sportCar.getCar().getType(), sportCar.getCar().getSeats(),
+				sportCar.getCar().getEngine(), sportCar.getCar().getTransmission(), new TripComputer(),
+				new GPSNavigator());
+		System.out.println("\nSport Car Manual built:\n" + sportCarManual);
 
-		// System.out.println("\nCar manual built:\n" + carManual.print());
+		Manual cityCarManual = new Manual(cityCar.getCar().getType(), cityCar.getCar().getSeats(),
+				cityCar.getCar().getEngine(), cityCar.getCar().getTransmission(), new TripComputer(),
+				new GPSNavigator());
+		System.out.println("\nCity Car Manual built:\n" + cityCarManual);
+
+		Manual suvCarManual = new Manual(suvCar.getCar().getType(), suvCar.getCar().getSeats(),
+				suvCar.getCar().getEngine(), suvCar.getCar().getTransmission(), new TripComputer(), new GPSNavigator());
+		System.out.println("\nSUV Car Manual built:\n" + suvCarManual);
 	}
 }
+// Ratchanon Tarawan 65070503464
