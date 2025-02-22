@@ -1,3 +1,4 @@
+
 public class HtmlDialogFactory implements DialogFactory {
 	@Override
 	public Dialog createDialog() {
