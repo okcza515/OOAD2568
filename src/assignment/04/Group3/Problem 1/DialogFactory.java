@@ -2,6 +2,8 @@
 public interface DialogFactory {
 
     public Dialog createDialog();
+
+    public void renderWindow();
 }
 
 //  ░▒▓███████▓▒░ ░▒▓████████▓▒░ ░▒▓████████▓▒░ ░▒▓████████▓▒░ ░▒▓████████▓▒░ ░▒▓████████▓▒░ ░▒▓████████▓▒░    ░▒▓█▓▒░ ░▒▓████████▓▒░  ░▒▓███████▓▒░ ░▒▓████████▓▒░ 
