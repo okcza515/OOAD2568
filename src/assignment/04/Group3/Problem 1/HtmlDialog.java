@@ -1,5 +1,5 @@
 
-public class HtmlDialog {
+public class HtmlDialog implements Dialog {
 
 	public void renderWindow() {
 		HtmlButton okButton = createButton();
@@ -10,3 +10,5 @@ public class HtmlDialog {
 		return new HtmlButton();
 	}
 }
+
+// 65070501023 Thanaphol Thangthaweesuk

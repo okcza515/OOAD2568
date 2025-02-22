@@ -1,5 +1,5 @@
 
-public class WindowsDialog {
+public class WindowsDialog implements Dialog{
 	public void renderWindow() {
 		WindowsButton okButton = createButton();
 		okButton.render();
@@ -9,3 +9,5 @@ public class WindowsDialog {
 		return new WindowsButton();
 	}
 }
+
+// 65070501023 Thanaphol Thangthaweesuk
