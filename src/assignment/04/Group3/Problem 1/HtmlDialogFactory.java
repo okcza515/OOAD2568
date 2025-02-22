@@ -1,4 +1,5 @@
-public class HtmlDialogFactory extends DialogFactory {
+
+public class HtmlDialogFactory implements DialogFactory {
 	@Override
 	public Dialog createDialog() {
 		return new HtmlDialog();
