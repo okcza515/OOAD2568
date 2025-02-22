@@ -12,7 +12,7 @@ public class Application {
 
         // Build Sports Car
         AutoConcreteBuilder autoConcreteBuilder = new AutoConcreteBuilder();
-        Manufacturer.constructSportsCar(autoConcreteBuilder);
+        manufacturer.constructSportsCar(autoConcreteBuilder);
         Car sportsCar = autoConcreteBuilder.getResult();
         System.out.println("Car built:\n" + sportsCar.getType());
 
