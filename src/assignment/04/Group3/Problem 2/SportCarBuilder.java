@@ -4,6 +4,7 @@ public class SportCarBuilder extends CarBuilder {
     public SportCarBuilder() {
         this.carType = Type.SPORTS_CAR;
         this.tripComputer = new TripComputer();
+        this.gpsNavigator = new GPSNavigator();
     }
 
 }
