@@ -1,4 +1,4 @@
-public class Button {
+public interface Button {
     void render();
     void onClick();
 }
