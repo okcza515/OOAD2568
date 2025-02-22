@@ -1,5 +1,5 @@
 
-public class HtmlButton {
+public class HtmlButton implements Button {
 	public void render() {
 		System.out.println("<button>Test Button</button>");
 		onClick();
