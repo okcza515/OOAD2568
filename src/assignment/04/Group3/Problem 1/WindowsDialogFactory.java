@@ -1,7 +1,7 @@
 
-public class WindowsDialogFactory extends DialogFactory {
+public class WindowsDialogFactory implements DialogFactory {
     @Override
-    public Dialog BuildDialog() {
+    public Dialog createDialog() {
         return new WindowsDialog();
     }
 
