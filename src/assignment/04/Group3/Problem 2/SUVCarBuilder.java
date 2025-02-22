@@ -1,7 +1,8 @@
 public class SUVCarBuilder extends CarBuilder {
-    
+
     public SUVCarBuilder() {
         this.carType = Type.SUV;
+        this.tripComputer = new TripComputer();
     }
     
 }
