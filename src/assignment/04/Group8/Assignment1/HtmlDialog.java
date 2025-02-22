@@ -1,12 +1,7 @@
 
-public class HtmlDialog {
-
-	public void renderWindow() {
-		HtmlButton okButton = createButton();
-		okButton.render();
-	}
-
-	public HtmlButton createButton() {
+public class HtmlDialog extends Dialog {
+	@Override
+	Button createButton() {
 		return new HtmlButton();
 	}
 }
