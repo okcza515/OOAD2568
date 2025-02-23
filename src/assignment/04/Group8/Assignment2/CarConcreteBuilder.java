@@ -1,4 +1,4 @@
-public class AutoConcreteBuilder implements CarBuilder {
+public class CarConcreteBuilder implements CarBuilder {
     private Type type;
     private int seats;
     private Engine engine;
