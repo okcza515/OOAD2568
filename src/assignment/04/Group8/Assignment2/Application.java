@@ -11,9 +11,9 @@ public class Application {
 		Manufacturer manufacturer = new Manufacturer();
 
         // Build Sports Car
-        AutoConcreteBuilder autoConcreteBuilder = new AutoConcreteBuilder();
-        manufacturer.constructSportsCar(autoConcreteBuilder);
-        Car sportsCar = autoConcreteBuilder.getResult();
+        CarConcreteBuilder carConcreteBuilder = new CarConcreteBuilder();
+        manufacturer.constructSportsCar(carConcreteBuilder);
+        Car sportsCar = carConcreteBuilder.getResult();
         System.out.println("Car built:\n" + sportsCar.getType());
 
 	}
