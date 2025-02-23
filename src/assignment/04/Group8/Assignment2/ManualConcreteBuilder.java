@@ -1,5 +1,5 @@
 
-public class CarConcreteBuilder implements CarBuilder {
+public class ManualConcreteBuilder implements CarBuilder {
     private Type type;
     private int seats;
     private Engine engine;
@@ -37,7 +37,7 @@ public class CarConcreteBuilder implements CarBuilder {
         this.gpsNavigator = gpsNavigator;
     }
 
-    public Car getResult() {
-        return new Car(type, seats, engine, transmission, tripComputer, gpsNavigator);
+    public Manual getResult() {
+        return new Manual(type, seats, engine, transmission, tripComputer, gpsNavigator);
     }
 }
