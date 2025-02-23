@@ -1,3 +1,4 @@
+// 65070501076 Danai Saengbuamad
 public class Manual {
 	private final Type type;
     private final int seats;
