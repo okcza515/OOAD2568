@@ -27,5 +27,7 @@ public class Application {
 		manufacturer.constructSUVCar(manualConcreteBuilder);
 		Manual SUVCar = manualConcreteBuilder.getResult();
 		System.out.println("Car built:\n" + SUVCar.print());
+
+		// NOTE: We separate the builder into Car(automatic-semiautometic) and manual car according to the given old main class, we figure out that the manual tyoe is the only one that have special properties.
 	}
 }
