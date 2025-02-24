@@ -27,6 +27,16 @@ public class WindowsButton implements IButton {
 		onClick();
 	}
 
-	
+	@Override
+	public void onClick() {
+		button = new JButton("Exit");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				System.exit(0);
+			}
+		});
+	}
 
 }
