@@ -3,11 +3,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class WindowsButton {
+public class WindowsButton implements Button {
 	JPanel panel = new JPanel();
 	JFrame frame = new JFrame();
 	JButton button;
 
+	@Override
 	public void render() {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JLabel label = new JLabel("Hello World!");
@@ -26,6 +27,7 @@ public class WindowsButton {
 		onClick();
 	}
 
+	@Override
 	public void onClick() {
 		button = new JButton("Exit");
 		button.addActionListener(new ActionListener() {
