@@ -1,3 +1,5 @@
+// Sawitt Ngamvilaisiriwong 65070503469
+
 public class Manual {
 	private final Type type;
     private final int seats;

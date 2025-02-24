@@ -1,3 +1,5 @@
+// Sawitt Ngamvilaisiriwong 65070503469
+
 public class TripComputer {
 	private Car car;
 
