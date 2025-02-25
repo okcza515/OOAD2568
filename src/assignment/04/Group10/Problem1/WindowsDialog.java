@@ -5,4 +5,8 @@ public class WindowsDialog implements DialogFactory {
         WindowsButton okButton = createButton();
         okButton.render();
     }
+    @Override
+	public WindowsButton createButton() {
+		return new WindowsButton();
+	}
 }
