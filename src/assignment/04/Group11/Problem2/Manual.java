@@ -7,14 +7,13 @@ public class Manual {
     private final TripComputer tripComputer;
     private final GPSNavigator gpsNavigator;
 
-    public Manual(Type type, int seats, Engine engine, Transmission transmission,
-                  TripComputer tripComputer, GPSNavigator gpsNavigator) {
-        this.type = type;
-        this.seats = seats;
-        this.engine = engine;
-        this.transmission = transmission;
-        this.tripComputer = tripComputer;
-        this.gpsNavigator = gpsNavigator;
+    public Manual(Car car) {
+        this.type = car.getType();
+        this.seats = car.getSeats();
+        this.engine = car.getEngine();
+        this.transmission = car.getTransmission();
+        this.tripComputer = car.getTripComputer();
+        this.gpsNavigator = car.getGpsNavigator();
     }
 
     public String print() {
@@ -36,3 +35,5 @@ public class Manual {
         return info;
     }
 }
+
+//65070503408 Jarukit Jintanasathirakul
