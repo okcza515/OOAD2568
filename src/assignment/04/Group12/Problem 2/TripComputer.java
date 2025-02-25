@@ -1,6 +1,5 @@
-
 public class TripComputer {
-	private Car car;
+    private Car car;
 
     public void setCar(Car car) {
         this.car = car;

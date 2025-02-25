@@ -1,4 +1,3 @@
-
 public class Car {
     private final Type type;
     private final int seats;
