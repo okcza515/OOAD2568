@@ -1,14 +1,9 @@
 
 public class Application {
-
 	public static void main(String[] args) {
-		Editor editor = new Editor();
-		try {
-            editor.openFile("test.txt");
-            editor.saveFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		String salaryRecords = "Name,Salary\nJohn Smith,100000\nSteven Jobs,912000";
+		FileDataSource plain = new FileDataSource("OutputDemo.txt");
+		plain.writeData(salaryRecords);
+		System.out.println(plain.readData());
 	}
-
 }
