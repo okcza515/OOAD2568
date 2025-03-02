@@ -8,9 +8,9 @@ public class VideoConversionFacade {
         Codec sourceCodec = CodecFactory.extract(file);
         Codec destinationCodec;
         if (format.equals("mp4")) {
-            destinationCodec = new OggCompressionCodec();
-        } else {
             destinationCodec = new MPEG4CompressionCodec();
+        } else {
+            destinationCodec = new OggCompressionCodec(); 
         }
         VideoFile buffer = BitrateReader.read(file, sourceCodec);
         VideoFile intermediateResult = BitrateReader.convert(buffer, destinationCodec);
@@ -19,3 +19,5 @@ public class VideoConversionFacade {
         return result;
     }
 }
+
+//Supanut Wongtanom 65070503437
