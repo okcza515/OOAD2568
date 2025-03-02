@@ -1,7 +1,4 @@
-
 public interface Codec {
-
+    String getType();
 }
-
-
-// Hill you do this
+//Sikares Nuntipatsakul 65070503439
