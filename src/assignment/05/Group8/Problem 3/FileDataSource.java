@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class FileDataSource {
-	private String name;
+	protected String name;
 
     public FileDataSource(String name) {
         this.name = name;
