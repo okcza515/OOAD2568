@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class FileDataSource {
-	private String name;
+public class FileDataSource implements Datasource {
+    private String name;
 
     public FileDataSource(String name) {
         this.name = name;
@@ -28,9 +28,10 @@ public class FileDataSource {
             buffer = new char[(int) file.length()];
             reader.read(buffer);
         } catch (IOException ex) {
-        	System.out.println("Hi");
+            System.out.println("Hi");
             System.out.println(ex.getMessage());
         }
         return new String(buffer);
     }
 }
+// Ratchanon Tarawan 65070503464
