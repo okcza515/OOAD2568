@@ -2,7 +2,7 @@ import java.util.Base64;
 
 public class Encryption {
 
-    private String encode(String data) {
+    protected String encode(String data) {
         byte[] result = data.getBytes();
         for (int i = 0; i < result.length; i++) {
             result[i] += (byte) 1;
@@ -10,7 +10,7 @@ public class Encryption {
         return Base64.getEncoder().encodeToString(result);
     }
 
-    private String decode(String data) {
+    protected String decode(String data) {
         byte[] result = Base64.getDecoder().decode(data);
         for (int i = 0; i < result.length; i++) {
             result[i] -= (byte) 1;
@@ -18,3 +18,5 @@ public class Encryption {
         return new String(result);
     }
 }
+
+//65070501016 Chitsanucha
