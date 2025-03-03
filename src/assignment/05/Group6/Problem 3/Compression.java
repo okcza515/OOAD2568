@@ -1,53 +1,46 @@
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Base64;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
+import java.util.zip.*;
 
-public class Compression {
-	private int compLevel = 6;
-
-    public int getCompressionLevel() {
-        return compLevel;
+public class Compression extends DataSourceDecorator {
+    public Compression(DataSource source) {
+        super(source);
     }
 
-    public void setCompressionLevel(int value) {
-        compLevel = value;
+    @Override
+    public void writeData(String data) {
+        super.writeData(compress(data));
     }
 
-    private String compress(String stringData) {
-        byte[] data = stringData.getBytes();
-        try {
-            ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
-            DeflaterOutputStream dos = new DeflaterOutputStream(bout, new Deflater(compLevel));
-            dos.write(data);
-            dos.close();
-            bout.close();
-            return Base64.getEncoder().encodeToString(bout.toByteArray());
-        } catch (IOException ex) {
-            return null;
+    @Override
+    public String readData() {
+        return decompress(super.readData());
+    }
+
+    private String compress(String data) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             DeflaterOutputStream dos = new DeflaterOutputStream(baos)) {
+            dos.write(data.getBytes());
+            dos.finish();
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
-    private String decompress(String stringData) {
-        byte[] data = Base64.getDecoder().decode(stringData);
-        try {
-            InputStream in = new ByteArrayInputStream(data);
-            InflaterInputStream iin = new InflaterInputStream(in);
-            ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
+    private String decompress(String data) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+             InflaterInputStream iis = new InflaterInputStream(bais);
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             int b;
-            while ((b = iin.read()) != -1) {
-                bout.write(b);
+            while ((b = iis.read()) != -1) {
+                baos.write(b);
             }
-            in.close();
-            iin.close();
-            bout.close();
-            return new String(bout.toByteArray());
-        } catch (IOException ex) {
-            return null;
+            return new String(baos.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }
