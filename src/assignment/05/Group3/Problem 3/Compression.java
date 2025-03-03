@@ -18,7 +18,7 @@ public class Compression {
         compLevel = value;
     }
 
-    private String compress(String stringData) {
+    public String compress(String stringData) {
         byte[] data = stringData.getBytes();
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
@@ -32,7 +32,7 @@ public class Compression {
         }
     }
 
-    private String decompress(String stringData) {
+    public String decompress(String stringData) {
         byte[] data = Base64.getDecoder().decode(stringData);
         try {
             InputStream in = new ByteArrayInputStream(data);
@@ -51,3 +51,6 @@ public class Compression {
         }
     }
 }
+
+//65070501067
+//Kanasorn Sudyodbunphot
