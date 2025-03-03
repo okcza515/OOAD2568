@@ -1,0 +1,3 @@
+Name,Salary
+Rudfaan Narak,100000
+Bangfaan Rakjring,912000
