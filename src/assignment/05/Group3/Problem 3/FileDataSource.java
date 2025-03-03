@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class FileDataSource {
+public class FileDataSource implements DataSource{
 	private String name;
 
     public FileDataSource(String name) {
