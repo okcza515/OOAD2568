@@ -1,7 +1,7 @@
-public abstract class DataSourceDecorator implements Datasource {
-    private Datasource wrappee;
+public abstract class DataSourceDecorator implements DataSource {
+    private DataSource wrappee;
 
-    public DataSourceDecorator(Datasource source) {
+    public DataSourceDecorator(DataSource source) {
         this.wrappee = source;
     }
 
