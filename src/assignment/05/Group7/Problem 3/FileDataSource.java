@@ -5,13 +5,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class FileDataSource {
+public class FileDataSource implements DataSource{
 	private String name;
 
     public FileDataSource(String name) {
         this.name = name;
     }
 
+    @Override
     public void writeData(String data) {
         File file = new File(name);
         try (OutputStream fos = new FileOutputStream(file)) {
@@ -21,6 +22,7 @@ public class FileDataSource {
         }
     }
 
+    @Override
     public String readData() {
         char[] buffer = null;
         File file = new File(name);
