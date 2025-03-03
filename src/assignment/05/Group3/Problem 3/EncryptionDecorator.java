@@ -3,7 +3,7 @@ public class EncryptionDecorator extends DataSourceDecorator {
 
     public EncryptionDecorator(DataSource source) {
         super(source);
-        encryption = new Encryption()
+        encryption = new Encryption();
     }
 
     @Override
