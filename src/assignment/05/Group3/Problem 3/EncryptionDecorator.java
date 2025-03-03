@@ -1,5 +1,22 @@
+import java.util.Base64;
+
 public class EncryptionDecorator extends DataSourceDecorator {
-    private final Encryption encryption;
+
+    private encode(String data) {
+        byte[] result = data.getBytes();
+        for (int i = 0; i < result.length; i++) {
+            result[i] += (byte) 1;
+        }
+        return Base64.getEncoder().encodeToString(result);
+    }
+
+    private decode(String data) {
+        byte[] result = Base64.getDecoder().decode(data);
+        for (int i = 0; i < result.length; i++) {
+            result[i] -= (byte) 1;
+        }
+        return new String(result);
+    }
 
     public EncryptionDecorator(DataSource source) {
         super(source);
@@ -8,12 +25,12 @@ public class EncryptionDecorator extends DataSourceDecorator {
 
     @Override
     public void writeData(String data) {
-        super.writeData(this.encryption.encode(data));
+        super.writeData(encode(data));
     }
 
     @Override
     public String readData() {
-        return this.encryption.decode(super.readData());
+        return decode(super.readData());
     }
 }
 
