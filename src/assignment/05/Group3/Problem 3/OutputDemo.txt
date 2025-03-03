@@ -1,0 +1,3 @@
+Name,Salary
+Thanopol Samsan,100000
+Steven Jobs,210000
