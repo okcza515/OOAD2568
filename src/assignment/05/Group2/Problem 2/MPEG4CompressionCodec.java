@@ -1,8 +1,5 @@
-public class MPEG4CompressionCodec implements Codec {
-    private final String type = "mp4";
 
-    @Override
-    public String getType() {
-        return type;
-    }
+public class MPEG4CompressionCodec implements Codec {
+    public String type = "mp4";
+
 }
