@@ -27,3 +27,5 @@ func (registration StudentRegistration) GetAll() ([]*model.Student, error) {
 	result := registration.Connector.Find(&students)
 	return students, result.Error
 }
+
+
