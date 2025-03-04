@@ -1,17 +1,13 @@
+import java.io.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
-
-public class FileDataSource {
-	private String name;
+public class FileDataSource implements DataSource {
+    private String name;
 
     public FileDataSource(String name) {
         this.name = name;
     }
 
+    @Override
     public void writeData(String data) {
         File file = new File(name);
         try (OutputStream fos = new FileOutputStream(file)) {
@@ -21,6 +17,7 @@ public class FileDataSource {
         }
     }
 
+    @Override
     public String readData() {
         char[] buffer = null;
         File file = new File(name);
@@ -28,7 +25,7 @@ public class FileDataSource {
             buffer = new char[(int) file.length()];
             reader.read(buffer);
         } catch (IOException ex) {
-        	System.out.println("Hi");
+            System.out.println("Hi");
             System.out.println(ex.getMessage());
         }
         return new String(buffer);

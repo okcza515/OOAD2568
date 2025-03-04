@@ -8,7 +8,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 public class Compression {
-	private int compLevel = 6;
+    private int compLevel = 6;
 
     public int getCompressionLevel() {
         return compLevel;
@@ -18,7 +18,7 @@ public class Compression {
         compLevel = value;
     }
 
-    private String compress(String stringData) {
+    String compress(String stringData) {
         byte[] data = stringData.getBytes();
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
@@ -32,7 +32,7 @@ public class Compression {
         }
     }
 
-    private String decompress(String stringData) {
+    String decompress(String stringData) {
         byte[] data = Base64.getDecoder().decode(stringData);
         try {
             InputStream in = new ByteArrayInputStream(data);
