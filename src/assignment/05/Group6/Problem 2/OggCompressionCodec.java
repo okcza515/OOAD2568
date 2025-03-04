@@ -1,4 +1,8 @@
-
 public class OggCompressionCodec implements Codec {
-    public String type = "ogg";
+    private final String type = "ogg";
+
+    @Override
+    public String getType() {
+        return type;
+    }
 }
