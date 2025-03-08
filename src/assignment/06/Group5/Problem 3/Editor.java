@@ -16,7 +16,7 @@ public class Editor {
     }
 
     public void saveFile() throws Exception {
-        email = new EmailNotificationListener("admin@example.com");
+        //email = new EmailNotificationListener("admin@example.com");
         if(this.file != null) {
             publisher.notify("save", file);
         } else {
