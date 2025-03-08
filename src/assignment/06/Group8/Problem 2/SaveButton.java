@@ -1,15 +1,11 @@
-
 import javax.swing.JButton;
-import java.awt.event.ActionEvent;
 
-public class SaveButton extends JButton{
+public class SaveButton extends JButton {
+    private EditorMediator mediator;
 
-	public SaveButton() {
+    public SaveButton(EditorMediator mediator) {
         super("Save");
-    }
-	
-	@Override
-    protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.saveChanges();
+        this.mediator = mediator;
+        addActionListener(e -> mediator.saveNote());
     }
 }

@@ -1,16 +1,11 @@
-
 import javax.swing.JButton;
-import java.awt.event.ActionEvent;
 
-public class AddButton extends JButton{
-	
-	public AddButton() {
+public class AddButton extends JButton {
+    private EditorMediator mediator;
+
+    public AddButton(EditorMediator mediator) {
         super("Add");
+        this.mediator = mediator;
+        addActionListener(e -> mediator.addNote());
     }
-	
-	@Override
-    protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.addNewNote(new Note());
-    }
-
 }
