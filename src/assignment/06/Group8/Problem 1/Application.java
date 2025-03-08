@@ -9,7 +9,7 @@ public class Application {
 	private static Map<Integer, Integer> priceOnProducts = new HashMap<>();
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private static Order order = new Order();
-    private static PayByPayPal payPal;
+    private static PaymentStrategy strategy;
 
     static {
         priceOnProducts.put(1, 2200);
@@ -37,45 +37,32 @@ public class Application {
                 System.out.print("Do you wish to continue selecting products? Y/N: ");
                 continueChoice = reader.readLine();
             } while (continueChoice.equalsIgnoreCase("Y"));
-            
-            payPal = new PayByPayPal();
-            order.processOrder(payPal);
-            System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");
-            String proceed = reader.readLine();
-            if (proceed.equalsIgnoreCase("P")) {
-              if (payPal.pay(order.getTotalCost())) {
-                  System.out.println("Payment has been successful.");
-              } else {
-                  System.out.println("FAIL! Please, check your data.");
-              }
-              order.setClosed();
-          }
 
-//            if (strategy == null) {
-//                System.out.println("Please, select a payment method:" + "\n" +
-//                        "1 - PalPay" + "\n" +
-//                        "2 - Credit Card");
-//                String paymentMethod = reader.readLine();
-//
-//                if (paymentMethod.equals("1")) {
-//                    strategy = new PayByPayPal();
-//                } else {
-//                    strategy = new PayByCreditCard();
-//                }
-//
-//                order.processOrder(strategy);
-//
-//                System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");
-//                String proceed = reader.readLine();
-//                if (proceed.equalsIgnoreCase("P")) {
-//                    if (strategy.pay(order.getTotalCost())) {
-//                        System.out.println("Payment has been successful.");
-//                    } else {
-//                        System.out.println("FAIL! Please, check your data.");
-//                    }
-//                    order.setClosed();
-//                }
-//            }
+           if (strategy == null) {
+               System.out.println("Please, select a payment method:" + "\n" +
+                       "1 - Paypal" + "\n" +
+                       "2 - Credit Card");
+               String paymentMethod = reader.readLine();
+
+               if (paymentMethod.equals("1")) {
+                   strategy = new PayByPayPal();
+               } else {
+                   strategy = new PayByCreditCard();
+               }
+
+               order.processOrder(strategy);
+
+               System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");
+               String proceed = reader.readLine();
+               if (proceed.equalsIgnoreCase("P")) {
+                   if (strategy.pay(order.getTotalCost())) {
+                       System.out.println("Payment has been successful.");
+                   } else {
+                       System.out.println("FAIL! Please, check your data.");
+                   }
+                   order.setClosed();
+               }
+           }
         }
     }
 }
