@@ -21,7 +21,7 @@ public class AddButton extends JButton implements Component {
 	
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.addNewNote(new Note());
+        mediator.addNewNote(new Note());
     }
 
 }

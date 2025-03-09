@@ -16,7 +16,7 @@ public class DeleteButton extends JButton implements Component {
 	
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.deleteNote();
+        mediator.deleteNote();
     }
 
     @Override
