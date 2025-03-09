@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 public class DeleteButton extends JButton implements Component {
 
-    private Mediator mediator
+    private Mediator mediator;
 	public DeleteButton() {
         super("Del");
     }
