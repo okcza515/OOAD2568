@@ -1,8 +1,4 @@
 
-import refactoring_guru.mediator.example.components.*;
-import refactoring_guru.mediator.example.components.Component;
-import refactoring_guru.mediator.example.components.List;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;

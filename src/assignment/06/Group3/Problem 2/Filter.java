@@ -1,16 +1,26 @@
 
-import java.util.ArrayList;
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
-public class Filter extends JTextField{
-	
-	private ListModel listModel;
-	
-	public void setList(ListModel listModel) {
+public class Filter extends JTextField {
+
+    private Mediator mediator;
+    private ListModel listModel;
+
+    public Filter() {
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    public void setList(ListModel listModel) {
         this.listModel = listModel;
     }
-	
-	private void searchElements(String s) {
+
+    private void searchElements(String s) {
         if (listModel == null) {
             return;
         }
