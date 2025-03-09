@@ -2,16 +2,16 @@
 import javax.swing.JTextField;
 import java.awt.event.KeyEvent;
 
-public class Title extends JTextField{
-    private EditorMediator mediators;
+public class Title extends JTextField {
+    private EditorMediators mediators;
 
-    public Title(EditorMediator mediators) {
+    public Title(EditorMediators mediators) {
         this.mediators = mediators;
     }
-    
+
     @Override
-	
-	protected void processComponentKeyEvent(KeyEvent keyEvent) {
+
+    protected void processComponentKeyEvent(KeyEvent keyEvent) {
         mediators.markNote();
     }
 }

@@ -37,12 +37,12 @@ public class Editor implements EditorMediators {
     private JLabel label = new JLabel("Add or select existing note to proceed...");
 
     public Editor() {
-        title = new Title();
-        textBox = new TextBox();
-        add = new AddButton();
-        del = new DeleteButton();
-        save = new SaveButton();
-        list = new List(new DefaultListModel());
+        title = new Title(this);
+        textBox = new TextBox(this);
+        add = new AddButton(this);
+        del = new DeleteButton(this);
+        save = new SaveButton(this);
+        list = new List(new DefaultListModel(), this);
         this.list.addListSelectionListener(listSelectionEvent -> {
             Note note = (Note) list.getSelectedValue();
             if (note != null) {
@@ -51,7 +51,7 @@ public class Editor implements EditorMediators {
                 clear();
             }
         });
-        filter = new Filter();
+        filter = new Filter(this);
     }
 
     @Override
@@ -123,7 +123,6 @@ public class Editor implements EditorMediators {
         }
     }
 
-    @Override
     public void createGUI() {
         JFrame notes = new JFrame("Notes");
         notes.setSize(960, 600);

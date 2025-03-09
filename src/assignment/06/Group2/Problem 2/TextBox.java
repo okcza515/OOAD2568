@@ -2,14 +2,14 @@
 import javax.swing.JTextArea;
 import java.awt.event.KeyEvent;
 
-public class TextBox extends JTextArea{
-    private EditorMediator mediators;
+public class TextBox extends JTextArea {
+    private EditorMediators mediators;
 
-    public TextBox(EditorMediator mediators) {
+    public TextBox(EditorMediators mediators) {
         this.mediators = mediators;
     }
-	
-	@Override
+
+    @Override
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
         mediators.markNote();
     }
