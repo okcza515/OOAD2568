@@ -5,9 +5,10 @@ public class Editor {
 	private File file;
 	private LogOpenListener log;
 	private EmailNotificationListener email;
+	public EventManager events;
 	
 	public Editor(){
-		
+		this.events = new EventManager("open", "save");
 	}
 	
 	public void openFile(String filePath) {
@@ -25,3 +26,4 @@ public class Editor {
 		}
 	}
 }
+//Korawit Sritotum 65070503402

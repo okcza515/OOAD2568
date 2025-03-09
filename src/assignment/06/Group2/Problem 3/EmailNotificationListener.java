@@ -1,7 +1,7 @@
 
 import java.io.File;
 
-public class EmailNotificationListener {
+public class EmailNotificationListener implements EventListener {
 
 	private String email;
 
@@ -14,3 +14,4 @@ public class EmailNotificationListener {
 				+ " operation with the following file: " + file.getName());
 	}
 }
+//Korawit Sritotum 65070503402

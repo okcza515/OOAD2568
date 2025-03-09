@@ -1,7 +1,7 @@
 
 import java.io.File;
 
-public class LogOpenListener {
+public class LogOpenListener implements EventListener {
 	private File log;
 	
 	public LogOpenListener(String fileName) {
@@ -13,3 +13,4 @@ public class LogOpenListener {
 				+ " operation with the following file: " + file.getName());
 	}
 }
+//Korawit Sritotum 65070503402
