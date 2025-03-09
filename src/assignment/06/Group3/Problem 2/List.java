@@ -1,8 +1,8 @@
 
 import javax.swing.*;
 
-public class List extends JList{
-	
+public class List extends JList implements Component {
+    private Mediator mediator;
 	private final DefaultListModel LIST_MODEL;
 	
 	public List(DefaultListModel listModel) {
@@ -12,6 +12,11 @@ public class List extends JList{
         this.setLayoutOrientation(JList.VERTICAL);
         Thread thread = new Thread(new Hide(this));
         thread.start();
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
     }
 	
 	public void addElement(Note note) {
@@ -32,6 +37,11 @@ public class List extends JList{
 	
 	public Note getCurrentElement() {
         return (Note)getSelectedValue();
+    }
+
+    @Override
+    public String getName() {
+        return "List";
     }
 	
 	private class Hide implements Runnable {
