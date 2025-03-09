@@ -1,3 +1,5 @@
+import javax.swing.ListModel;
+
 public interface EditorMediator {
     void addNote();
     void deleteNote();
@@ -7,4 +9,5 @@ public interface EditorMediator {
     void markNote();
     void setElementsList(ListModel listModel);
     void sendToFilter(ListModel listModel);
+    void hideElements(boolean flag);
 }

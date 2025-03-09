@@ -79,6 +79,17 @@ public class Editor implements EditorMediator {
         list.repaint();
     }
 
+    @Override
+    public void hideElements(boolean flag) {
+        titleLabel.setVisible(!flag);
+        textLabel.setVisible(!flag);
+        title.setVisible(!flag);
+        textBox.setVisible(!flag);
+        save.setVisible(!flag);
+        label.setVisible(flag);
+    }
+    
+
     public void createGUI() {
         JFrame notes = new JFrame("Notes");
         notes.setSize(960, 600);

@@ -5,6 +5,12 @@ import javax.swing.*;
 public class Filter extends JTextField{
 	
 	private ListModel listModel;
+    private EditorMediator mediator;
+
+    public Filter(EditorMediator mediator) { 
+        super(20);
+        this.mediator = mediator; 
+    }
 	
 	public void setList(ListModel listModel) {
         this.listModel = listModel;
@@ -16,7 +22,7 @@ public class Filter extends JTextField{
         }
 
         if (s.equals("")) {
-            Editor.setElementsList(listModel);
+            mediator.setElementsList(listModel);
             return;
         }
 
@@ -30,6 +36,6 @@ public class Filter extends JTextField{
                 listModel.addElement(note);
             }
         }
-        Editor.setElementsList(listModel);
+        mediator.setElementsList(listModel);
     }
 }
