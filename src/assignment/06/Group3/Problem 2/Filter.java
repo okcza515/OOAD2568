@@ -1,9 +1,9 @@
 
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import javax.swing.*;
 
-public class Filter extends JTextField {
+public class Filter extends JTextField implements Component {
 
     private Mediator mediator;
     private ListModel listModel;
