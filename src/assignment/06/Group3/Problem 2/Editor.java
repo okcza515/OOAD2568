@@ -3,7 +3,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class Editor {
+public class Editor 
 
     private static Title title;
     private static TextBox textBox;
