@@ -4,10 +4,13 @@ import javax.swing.*;
 public class List extends JList{
 	
 	private final DefaultListModel LIST_MODEL;
+
+    private EditorMediators mediators;
 	
-	public List(DefaultListModel listModel) {
+	public List(DefaultListModel listModel, EditorMediators mediators) {
         super(listModel);
         this.LIST_MODEL = listModel;
+        this.mediators = mediators;
         setModel(listModel);
         this.setLayoutOrientation(JList.VERTICAL);
         Thread thread = new Thread(new Hide(this));
@@ -19,14 +22,14 @@ public class List extends JList{
         int index = LIST_MODEL.size() - 1;
         setSelectedIndex(index);
         ensureIndexIsVisible(index);
-        Editor.sendToFilter(LIST_MODEL);
+        mediators.sendToFilter(LIST_MODEL);
     }
 	
 	public void deleteElement() {
         int index = this.getSelectedIndex();
         try {
             LIST_MODEL.remove(index);
-            Editor.sendToFilter(LIST_MODEL);
+            mediators.sendToFilter(LIST_MODEL);
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
 	
@@ -50,11 +53,13 @@ public class List extends JList{
                     ex.printStackTrace();
                 }
                 if (list.isSelectionEmpty()) {
-                    Editor.hideElements(true);
+                    mediators.hideElements(true);
                 } else {
-                    Editor.hideElements(false);
+                    mediators.hideElements(false);
                 }
             }
         }
     }
 }
+
+// Sikares Nuntipatsakul 65070503439
