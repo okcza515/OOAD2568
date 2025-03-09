@@ -1,6 +1,7 @@
 
 import javax.swing.*;
 
+@SuppressWarnings("unchecked")
 public class List extends JList implements Component {
     private Mediator mediator;
 	private final DefaultListModel LIST_MODEL;
@@ -24,14 +25,14 @@ public class List extends JList implements Component {
         int index = LIST_MODEL.size() - 1;
         setSelectedIndex(index);
         ensureIndexIsVisible(index);
-        Editor.sendToFilter(LIST_MODEL);
+        mediator.sendToFilter(LIST_MODEL);
     }
 	
 	public void deleteElement() {
         int index = this.getSelectedIndex();
         try {
             LIST_MODEL.remove(index);
-            Editor.sendToFilter(LIST_MODEL);
+            mediator.sendToFilter(LIST_MODEL);
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
 	
@@ -60,9 +61,9 @@ public class List extends JList implements Component {
                     ex.printStackTrace();
                 }
                 if (list.isSelectionEmpty()) {
-                    Editor.hideElements(true);
+                    mediator.hideElements(true);
                 } else {
-                    Editor.hideElements(false);
+                    mediator.hideElements(false);
                 }
             }
         }
