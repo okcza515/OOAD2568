@@ -1,17 +1,17 @@
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import java.awt.*;
 
-public class Editor {
+public class Editor implements Mediator {
 
-    private static Title title;
-    private static TextBox textBox;
-    private static AddButton add;
-    private static DeleteButton del;
-    private static SaveButton save;
-    private static List list;
-    private static Filter filter;
+    private Title title;
+    private TextBox textBox;
+    private AddButton add;
+    private DeleteButton del;
+    private SaveButton save;
+    private List list;
+    private Filter filter;
 
     private static JLabel titleLabel = new JLabel("Title:");
     private static JLabel textLabel = new JLabel("Text:");
