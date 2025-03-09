@@ -16,6 +16,12 @@ public class Filter extends JTextField {
         this.mediator = mediator;
     }
 
+    @Override
+    protected void processComponentKeyEvent(KeyEvent keyEvent) {
+        String start = getText();
+        searchElements(start);
+    }
+
     public void setList(ListModel listModel) {
         this.listModel = listModel;
     }
@@ -26,7 +32,7 @@ public class Filter extends JTextField {
         }
 
         if (s.equals("")) {
-            Editor.setElementsList(listModel);
+            mediator.setElementsList(listModel);
             return;
         }
 
@@ -40,6 +46,11 @@ public class Filter extends JTextField {
                 listModel.addElement(note);
             }
         }
-        Editor.setElementsList(listModel);
+        mediator.setElementsList(listModel);
+    }
+
+    @Override
+    public String getName() {
+        return "Filter";
     }
 }
