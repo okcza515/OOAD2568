@@ -2,7 +2,7 @@
 public class Application {
 
 	public static void main(String[] args) {
-		Editor editor = new Editor();
+		Mediator mediator = new Editor();
 
 		mediator.registerComponent(new Title());
 		mediator.registerComponent(new TextBox());
@@ -12,7 +12,7 @@ public class Application {
 		mediator.registerComponent(new List(new DefaultListModel()));
 		mediator.registerComponent(new Filter());
 
-		editor.createGUI();
+		mediator.createGUI();
 	}
 
 }
