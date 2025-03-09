@@ -15,7 +15,7 @@ public class SaveButton extends JButton implements Component{
 
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        mediator.saveChange();
+        mediator.saveChanges();
     }
 
     @Override
@@ -23,3 +23,5 @@ public class SaveButton extends JButton implements Component{
         return "SaveButton";
     }
 }
+
+//65070501088 Sopida Keawjongkool

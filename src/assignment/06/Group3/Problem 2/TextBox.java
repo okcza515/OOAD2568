@@ -19,3 +19,5 @@ public class TextBox extends JTextArea implements Component{
         return "TextBox";
     }
 }
+
+//65070501088 Sopida Keawjongkool
