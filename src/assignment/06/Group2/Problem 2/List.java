@@ -1,40 +1,44 @@
 
 import javax.swing.*;
 
-public class List extends JList{
-	
-	private final DefaultListModel LIST_MODEL;
-	
-	public List(DefaultListModel listModel) {
+public class List extends JList {
+
+    private final DefaultListModel LIST_MODEL;
+
+    private EditorMediators mediators;
+
+    public List(DefaultListModel listModel, EditorMediators mediators) {
         super(listModel);
         this.LIST_MODEL = listModel;
+        this.mediators = mediators;
         setModel(listModel);
         this.setLayoutOrientation(JList.VERTICAL);
         Thread thread = new Thread(new Hide(this));
         thread.start();
     }
-	
-	public void addElement(Note note) {
+
+    public void addElement(Note note) {
         LIST_MODEL.addElement(note);
         int index = LIST_MODEL.size() - 1;
         setSelectedIndex(index);
         ensureIndexIsVisible(index);
-        Editor.sendToFilter(LIST_MODEL);
+        mediators.sendToFilter(LIST_MODEL);
     }
-	
-	public void deleteElement() {
+
+    public void deleteElement() {
         int index = this.getSelectedIndex();
         try {
             LIST_MODEL.remove(index);
-            Editor.sendToFilter(LIST_MODEL);
-        } catch (ArrayIndexOutOfBoundsException ignored) {}
+            mediators.sendToFilter(LIST_MODEL);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        }
     }
-	
-	public Note getCurrentElement() {
-        return (Note)getSelectedValue();
+
+    public Note getCurrentElement() {
+        return (Note) getSelectedValue();
     }
-	
-	private class Hide implements Runnable {
+
+    private class Hide implements Runnable {
         private List list;
 
         Hide(List list) {
@@ -50,11 +54,13 @@ public class List extends JList{
                     ex.printStackTrace();
                 }
                 if (list.isSelectionEmpty()) {
-                    Editor.hideElements(true);
+                    mediators.hideElements(true);
                 } else {
-                    Editor.hideElements(false);
+                    mediators.hideElements(false);
                 }
             }
         }
     }
 }
+
+// Sikares Nuntipatsakul 65070503439

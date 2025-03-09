@@ -4,12 +4,17 @@ import java.awt.event.ActionEvent;
 
 public class SaveButton extends JButton{
 
-	public SaveButton() {
+    private EditorMediators mediators;
+
+	public SaveButton(EditorMediators mediators) {
         super("Save");
+        this.mediators = mediators;
     }
 	
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.saveChanges();
+        mediators.saveChanges();
     }
 }
+
+// Sikares Nuntipatsakul 65070503439

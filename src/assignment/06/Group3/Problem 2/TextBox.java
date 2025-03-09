@@ -1,11 +1,23 @@
-
 import javax.swing.JTextArea;
 import java.awt.event.KeyEvent;
 
-public class TextBox extends JTextArea{
-	
-	@Override
+public class TextBox extends JTextArea implements Component{
+    private Mediator mediator;
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
-        Editor.markNote();
+        mediator.markNote();
+    }
+
+    @Override
+    public String getName() {
+        return "TextBox";
     }
 }
+
+//65070501088 Sopida Keawjongkool

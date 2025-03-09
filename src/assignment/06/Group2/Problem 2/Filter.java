@@ -2,21 +2,26 @@
 import java.util.ArrayList;
 import javax.swing.*;
 
-public class Filter extends JTextField{
-	
-	private ListModel listModel;
-	
-	public void setList(ListModel listModel) {
+public class Filter extends JTextField {
+
+    private ListModel listModel;
+    private EditorMediators mediator;
+
+    public Filter(EditorMediators mediator) {
+        this.mediator = mediator;
+    }
+
+    public void setList(ListModel listModel) {
         this.listModel = listModel;
     }
-	
-	private void searchElements(String s) {
+
+    private void searchElements(String s) {
         if (listModel == null) {
             return;
         }
 
         if (s.equals("")) {
-            Editor.setElementsList(listModel);
+            mediator.setElementsList(listModel);
             return;
         }
 
@@ -30,6 +35,7 @@ public class Filter extends JTextField{
                 listModel.addElement(note);
             }
         }
-        Editor.setElementsList(listModel);
+        mediator.setElementsList(listModel);
     }
 }
+// Ratchnon Tarawan 65070503464
