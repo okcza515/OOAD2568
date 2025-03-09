@@ -2,14 +2,17 @@
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 
-public class DeleteButton extends JButton{
-	
-	public DeleteButton() {
+public class DeleteButton extends JButton {
+    private EditorMediators mediators;
+
+    public DeleteButton(EditorMediators mediators) {
         super("Del");
+        this.mediators = mediators;
     }
-	
-	@Override
+
+    @Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.deleteNote();
+        mediators.deleteNote();
     }
 }
+// Ratchnon Tarawan 65070503464

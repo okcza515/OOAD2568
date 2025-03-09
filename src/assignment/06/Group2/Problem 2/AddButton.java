@@ -2,15 +2,18 @@
 import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 
-public class AddButton extends JButton{
-	
-	public AddButton() {
+public class AddButton extends JButton {
+    private EditorMediators mediators;
+
+    public AddButton(EditorMediators mediators) {
         super("Add");
-    }
-	
-	@Override
-    protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.addNewNote(new Note());
+        this.mediators = mediators;
     }
 
+    @Override
+    protected void fireActionPerformed(ActionEvent actionEvent) {
+        mediators.addNewNote(new Note());
+    }
 }
+
+// Ratchnon Tarawan 65070503464
