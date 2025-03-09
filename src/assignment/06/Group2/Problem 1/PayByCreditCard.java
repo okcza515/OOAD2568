@@ -1,12 +1,14 @@
 
+//Concrete Strategy
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class PayByCreditCard {
+public class PayByCreditCard implements Strategy {
 	private final BufferedReader READER = new BufferedReader(new InputStreamReader(System.in));
 	private CreditCard card;
 
+	@Override
 	public void collectPaymentDetails() {
 		try {
 			System.out.print("Enter the card number: ");
@@ -22,6 +24,7 @@ public class PayByCreditCard {
 		}
 	}
 
+	@Override
 	public boolean pay(int paymentAmount) {
 		if (cardIsPresent()) {
 			System.out.println("Paying " + paymentAmount + " using Credit Card.");
@@ -36,3 +39,5 @@ public class PayByCreditCard {
 		return card != null;
 	}
 }
+
+//Supanut Wongtanom 65070503437
