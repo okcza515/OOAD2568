@@ -4,7 +4,7 @@ public interface Mediator {
     void addNewNote(Note note);
     void deleteNote();
     void getInfoFromList(Note note);
-    void saveChange();
+    void saveChanges();
     void markNote();
     void clear();
     void sendToFilter(ListModel listModel);
