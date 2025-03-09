@@ -21,7 +21,7 @@ public class DeleteButton extends JButton implements Component {
 
     @Override
     public String getName() {
-        return "DeleteButton";
+        return "DelButton";
     }
 }
 
