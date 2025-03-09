@@ -24,7 +24,7 @@ public class EventManager {
     }
 
     public void notify(String eventType, File file) {
-        list<EventListener> users = listeners.get(eventType);
+        List<EventListener> users = listeners.get(eventType);
         for (EventListener listener : users) {
             listener.update(eventType, file);
         }
