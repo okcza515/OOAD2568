@@ -1,3 +1,4 @@
+// 65070501019 Natlada Simasathien
 
 public class Note {
 	private String name;
@@ -23,6 +24,7 @@ public class Note {
 		this.text = text;
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
