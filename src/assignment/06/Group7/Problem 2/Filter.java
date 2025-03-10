@@ -1,22 +1,35 @@
-
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 
-public class Filter extends JTextField{
-	
-	private ListModel listModel;
-	
-	public void setList(ListModel listModel) {
+public class Filter extends JTextField implements Component {
+    private Mediator mediator;
+    private ListModel listModel;
+
+    public Filter() {}
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
+    protected void processComponentKeyEvent(KeyEvent keyEvent) {
+        String start = getText();
+        searchElements(start);
+    }
+
+    public void setList(ListModel listModel) {
         this.listModel = listModel;
     }
-	
-	private void searchElements(String s) {
+
+    private void searchElements(String s) {
         if (listModel == null) {
             return;
         }
 
         if (s.equals("")) {
-            Editor.setElementsList(listModel);
+            mediator.setElementsList(listModel);
             return;
         }
 
@@ -30,6 +43,11 @@ public class Filter extends JTextField{
                 listModel.addElement(note);
             }
         }
-        Editor.setElementsList(listModel);
+        mediator.setElementsList(listModel);
+    }
+
+    @Override
+    public String getName() {
+        return "Filter";
     }
 }
