@@ -1,15 +1,16 @@
-
 import java.io.File;
 
-public class LogOpenListener {
-	private File log;
-	
-	public LogOpenListener(String fileName) {
-		this.log = new File(fileName);
-	}
-	
-	public void update(String eventType, File file) {
-		System.out.println("Save to log " + log + ": Someone has performed " + eventType
-				+ " operation with the following file: " + file.getName());
-	}
+// 65070501011 Chayapol Wongpuwarak
+public class LogOpenListener implements EventListener {
+    private final String logFileName;
+
+    public LogOpenListener(String fileName) {
+        this.logFileName = fileName;
+    }
+
+    @Override
+    public void update(String eventType, File file) {
+        System.out.println("Save to log " + logFileName + ": Someone performed " + eventType 
+                + " operation on the file: " + file.getName());
+    }
 }
