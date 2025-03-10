@@ -1,24 +1,19 @@
-// 65070501019 Natlada Simasathien
 
 import javax.swing.*;
 
-@SuppressWarnings("unchecked")
-public class List extends JList implements Element {
-    private Mediator mediator;
-	private final DefaultListModel LIST_MODEL;
+public class List extends JList{
 	
-	public List(DefaultListModel listModel) {
+	private final DefaultListModel LIST_MODEL;
+    private EditorMediator mediator;
+	
+	public List(EditorMediator mediator, DefaultListModel listModel) {
         super(listModel);
         this.LIST_MODEL = listModel;
+        this.mediator = mediator;
         setModel(listModel);
         this.setLayoutOrientation(JList.VERTICAL);
         Thread thread = new Thread(new Hide(this));
         thread.start();
-    }
-
-    @Override
-    public void setMediator(Mediator mediator) {
-        this.mediator = mediator;
     }
 	
 	public void addElement(Note note) {
@@ -39,11 +34,6 @@ public class List extends JList implements Element {
 	
 	public Note getCurrentElement() {
         return (Note)getSelectedValue();
-    }
-
-    @Override
-    public String getName() {
-        return "List";
     }
 	
 	private class Hide implements Runnable {

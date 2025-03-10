@@ -1,9 +1,8 @@
-
 import java.io.File;
 
 public class Editor {
-	public EventManager events;
     private File file;
+    public EventManager events;
 
     public Editor() {
         this.events = new EventManager("open", "save");
@@ -18,9 +17,7 @@ public class Editor {
         if (this.file != null) {
             events.notify("save", file);
         } else {
-            throw new Exception("Open a file first.");
+            throw new Exception("Please open a file first.");
         }
     }
 }
-
-//65070501085

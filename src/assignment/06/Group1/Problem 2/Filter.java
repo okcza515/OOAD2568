@@ -1,33 +1,32 @@
-// 65070501019 Natlada Simasathien
-
+import javax.swing.*;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import javax.swing.*;
 
-public class Filter extends JTextField implements Element {
+public class Filter extends JTextField{
 
-    private Mediator mediator;
-    private ListModel listModel;
+    private EditorMediator mediator;
 
-    public Filter() {
-    }
-
-    @Override
-    public void setMediator(Mediator mediator) {
+    public Filter(EditorMediator mediator) {
+        super();
         this.mediator = mediator;
-    }
 
-    @Override
-    protected void processComponentKeyEvent(KeyEvent keyEvent) {
-        String start = getText();
-        searchElements(start);
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String searchText = getText().toLowerCase();
+                searchElements(searchText);
+            }
+        });
     }
-
-    public void setList(ListModel listModel) {
+	
+	private ListModel listModel;
+	
+	public void setList(ListModel listModel) {
         this.listModel = listModel;
     }
-
-    private void searchElements(String s) {
+	
+	private void searchElements(String s) {
         if (listModel == null) {
             return;
         }
@@ -48,10 +47,5 @@ public class Filter extends JTextField implements Element {
             }
         }
         mediator.setElementsList(listModel);
-    }
-
-    @Override
-    public String getName() {
-        return "Filter";
     }
 }
