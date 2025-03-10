@@ -1,15 +1,28 @@
+// 65070501049 Roodfan Maimahad
 
-import javax.swing.JButton;
 import java.awt.event.ActionEvent;
+import javax.swing.JButton;
 
-public class DeleteButton extends JButton{
-	
+public class DeleteButton extends JButton implements Element {
+
+    private Mediator mediator;
 	public DeleteButton() {
-        super("Del");
+        super("Delete");
+    }
+
+    @Override
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
     }
 	
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.deleteNote();
+        mediator.deleteNote();
+    }
+
+    @Override
+    public String getName() {
+        return "Delete Button";
     }
 }
+
