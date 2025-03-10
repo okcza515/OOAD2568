@@ -1,3 +1,4 @@
+//65070501076 Danai Saengbuamad
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -5,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PayByPayPal {
+public class PayByPayPal implements PaymentStrategy{
 	private static final Map<String, String> DATA_BASE = new HashMap<>();
 	private final BufferedReader READER = new BufferedReader(new InputStreamReader(System.in));
 	private String email;
@@ -17,6 +18,7 @@ public class PayByPayPal {
 		DATA_BASE.put("qwerty", "cpe362@cpe.com");
 	}
 
+	@Override
 	public void collectPaymentDetails() {
 		try {
 			while (!signedIn) {
@@ -40,6 +42,7 @@ public class PayByPayPal {
 		return signedIn;
 	}
 
+	@Override
 	public boolean pay(int paymentAmount) {
 		if (signedIn) {
 			System.out.println("Paying " + paymentAmount + " using PayPal.");
