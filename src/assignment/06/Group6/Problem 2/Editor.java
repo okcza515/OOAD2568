@@ -3,56 +3,56 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class Editor implements Mediator{
-	
-	private Title title;
+public class Editor implements Mediator {
+
+    private Title title;
     private TextBox textBox;
     private AddButton add;
     private DeleteButton del;
     private SaveButton save;
     private List list;
-	private Filter filter;
-	private JLabel titleLabel = new JLabel("Title:");
+    private Filter filter;
+    private JLabel titleLabel = new JLabel("Title:");
     private JLabel textLabel = new JLabel("Text:");
     private JLabel label = new JLabel("Add or select existing note to proceed...");
-	
-	public Editor(){
-		title = new Title();
-		textBox = new TextBox(this);
-		add = new AddButton(this);
-		del = new DeleteButton(this);
-		save = new SaveButton(this);
-		list = new List(new DefaultListModel(), this);
+
+    public Editor() {
+        title = new Title();
+        textBox = new TextBox(this);
+        add = new AddButton(this);
+        del = new DeleteButton(this);
+        save = new SaveButton(this);
+        list = new List(new DefaultListModel(), this);
 
         // Set mediator for textBox and title
         title.mediator = this;
         textBox.mediator = this;
 
-		this.list.addListSelectionListener(listSelectionEvent -> {
-            Note note = (Note)list.getSelectedValue();
+        this.list.addListSelectionListener(listSelectionEvent -> {
+            Note note = (Note) list.getSelectedValue();
             if (note != null) {
                 getInfoFromList(note);
             } else {
                 clear();
             }
         });
-		filter = new Filter(this);
-	}
-	
+        filter = new Filter(this);
+    }
+
     @Override
-	public void getInfoFromList(Note note) {
+    public void getInfoFromList(Note note) {
         title.setText(note.getName().replace('*', ' '));
         textBox.setText(note.getText());
     }
-	
+
     @Override
-	public void clear() {
+    public void clear() {
         title.setText("");
         textBox.setText("");
     }
-	
+
     @Override
-	public void hideElements(boolean flag) {
+    public void hideElements(boolean flag) {
         titleLabel.setVisible(!flag);
         textLabel.setVisible(!flag);
         title.setVisible(!flag);
@@ -60,27 +60,27 @@ public class Editor implements Mediator{
         save.setVisible(!flag);
         label.setVisible(flag);
     }
-	
+
     @Override
-	public void addNewNote(Note note) {
-		title.setText("");
+    public void addNewNote(Note note) {
+        title.setText("");
         textBox.setText("");
         list.addElement(note);
-	}
-	
+    }
+
     @Override
-	public void sendToFilter(ListModel listModel) {
+    public void sendToFilter(ListModel listModel) {
         filter.setList(listModel);
     }
-	
+
     @Override
-	public void setElementsList(ListModel listM) {
+    public void setElementsList(ListModel listM) {
         list.setModel(listM);
         list.repaint();
     }
-	
+
     @Override
-	public void markNote() {
+    public void markNote() {
         try {
             Note note = list.getCurrentElement();
             String name = note.getName();
@@ -88,32 +88,29 @@ public class Editor implements Mediator{
                 note.setName(note.getName() + "*");
             }
             list.repaint();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
-	
+
     @Override
-	public void deleteNote() {
+    public void deleteNote() {
         list.deleteElement();
     }
-	
+
     @Override
-	public void saveChanges() {
+    public void saveChanges() {
         try {
             Note note = (Note) list.getSelectedValue();
             note.setName(title.getText());
             note.setText(textBox.getText());
             list.repaint();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
 
-    @Override
-    public void updateNoteText(String text) {
-
-    }
-
-	public void createGUI() {
-		JFrame notes = new JFrame("Notes");
-		notes.setSize(960, 600);
+    public void createGUI() {
+        JFrame notes = new JFrame("Notes");
+        notes.setSize(960, 600);
         notes.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JPanel left = new JPanel();
         left.setBorder(new LineBorder(Color.BLACK));
@@ -164,5 +161,5 @@ public class Editor implements Mediator{
         notes.setResizable(false);
         notes.setLocationRelativeTo(null);
         notes.setVisible(true);
-	}
+    }
 }

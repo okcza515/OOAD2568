@@ -19,5 +19,4 @@ public interface Mediator {
 
     void saveChanges();
 
-    void updateNoteText(String text);
 }
