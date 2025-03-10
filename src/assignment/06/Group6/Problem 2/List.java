@@ -2,11 +2,13 @@
 import javax.swing.*;
 
 public class List extends JList{
+    protected Mediator mediator;
 	
 	private final DefaultListModel LIST_MODEL;
 	
-	public List(DefaultListModel listModel) {
+	public List(DefaultListModel listModel, Mediator mediator) {
         super(listModel);
+        this.mediator = mediator;
         this.LIST_MODEL = listModel;
         setModel(listModel);
         this.setLayoutOrientation(JList.VERTICAL);
@@ -19,14 +21,14 @@ public class List extends JList{
         int index = LIST_MODEL.size() - 1;
         setSelectedIndex(index);
         ensureIndexIsVisible(index);
-        Editor.sendToFilter(LIST_MODEL);
+        mediator.sendToFilter(LIST_MODEL);
     }
 	
 	public void deleteElement() {
         int index = this.getSelectedIndex();
         try {
             LIST_MODEL.remove(index);
-            Editor.sendToFilter(LIST_MODEL);
+            mediator.sendToFilter(LIST_MODEL);
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
 	
@@ -50,9 +52,9 @@ public class List extends JList{
                     ex.printStackTrace();
                 }
                 if (list.isSelectionEmpty()) {
-                    Editor.hideElements(true);
+                    mediator.hideElements(true);
                 } else {
-                    Editor.hideElements(false);
+                    mediator.hideElements(false);
                 }
             }
         }

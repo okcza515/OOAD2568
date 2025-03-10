@@ -3,8 +3,13 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 public class Filter extends JTextField{
+    protected Mediator mediator;
 	
 	private ListModel listModel;
+
+    public Filter(Mediator mediator) {
+        this.mediator = mediator;
+    }
 	
 	public void setList(ListModel listModel) {
         this.listModel = listModel;
@@ -16,7 +21,7 @@ public class Filter extends JTextField{
         }
 
         if (s.equals("")) {
-            Editor.setElementsList(listModel);
+            mediator.setElementsList(listModel);
             return;
         }
 
@@ -30,6 +35,6 @@ public class Filter extends JTextField{
                 listModel.addElement(note);
             }
         }
-        Editor.setElementsList(listModel);
+        mediator.setElementsList(listModel);
     }
 }

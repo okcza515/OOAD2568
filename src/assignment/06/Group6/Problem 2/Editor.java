@@ -3,26 +3,31 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class Editor {
+public class Editor implements Mediator{
 	
-	private static Title title;
-    private static TextBox textBox;
-    private static AddButton add;
-    private static DeleteButton del;
-    private static SaveButton save;
-    private static List list;
-	private static Filter filter;
-	private static JLabel titleLabel = new JLabel("Title:");
-    private static JLabel textLabel = new JLabel("Text:");
-    private static JLabel label = new JLabel("Add or select existing note to proceed...");
+	private Title title;
+    private TextBox textBox;
+    private AddButton add;
+    private DeleteButton del;
+    private SaveButton save;
+    private List list;
+	private Filter filter;
+	private JLabel titleLabel = new JLabel("Title:");
+    private JLabel textLabel = new JLabel("Text:");
+    private JLabel label = new JLabel("Add or select existing note to proceed...");
 	
 	public Editor(){
 		title = new Title();
-		textBox = new TextBox();
-		add = new AddButton();
-		del = new DeleteButton();
-		save = new SaveButton();
-		list = new List(new DefaultListModel());
+		textBox = new TextBox(this);
+		add = new AddButton(this);
+		del = new DeleteButton(this);
+		save = new SaveButton(this);
+		list = new List(new DefaultListModel(), this);
+
+        // Set mediator for textBox and title
+        title.mediator = this;
+        textBox.mediator = this;
+
 		this.list.addListSelectionListener(listSelectionEvent -> {
             Note note = (Note)list.getSelectedValue();
             if (note != null) {
@@ -31,20 +36,23 @@ public class Editor {
                 clear();
             }
         });
-		filter = new Filter();
+		filter = new Filter(this);
 	}
 	
-	public static void getInfoFromList(Note note) {
+    @Override
+	public void getInfoFromList(Note note) {
         title.setText(note.getName().replace('*', ' '));
         textBox.setText(note.getText());
     }
 	
-	public static void clear() {
+    @Override
+	public void clear() {
         title.setText("");
         textBox.setText("");
     }
 	
-	public static void hideElements(boolean flag) {
+    @Override
+	public void hideElements(boolean flag) {
         titleLabel.setVisible(!flag);
         textLabel.setVisible(!flag);
         title.setVisible(!flag);
@@ -53,22 +61,26 @@ public class Editor {
         label.setVisible(flag);
     }
 	
-	public static void addNewNote(Note note) {
+    @Override
+	public void addNewNote(Note note) {
 		title.setText("");
         textBox.setText("");
         list.addElement(note);
 	}
 	
-	public static void sendToFilter(ListModel listModel) {
+    @Override
+	public void sendToFilter(ListModel listModel) {
         filter.setList(listModel);
     }
 	
-	public static void setElementsList(ListModel listM) {
+    @Override
+	public void setElementsList(ListModel listM) {
         list.setModel(listM);
         list.repaint();
     }
 	
-	public static void markNote() {
+    @Override
+	public void markNote() {
         try {
             Note note = list.getCurrentElement();
             String name = note.getName();
@@ -79,11 +91,13 @@ public class Editor {
         } catch (NullPointerException ignored) {}
     }
 	
-	public static void deleteNote() {
+    @Override
+	public void deleteNote() {
         list.deleteElement();
     }
 	
-	public static void saveChanges() {
+    @Override
+	public void saveChanges() {
         try {
             Note note = (Note) list.getSelectedValue();
             note.setName(title.getText());
@@ -91,7 +105,12 @@ public class Editor {
             list.repaint();
         } catch (NullPointerException ignored) {}
     }
-	
+
+    @Override
+    public void updateNoteText(String text) {
+
+    }
+
 	public void createGUI() {
 		JFrame notes = new JFrame("Notes");
 		notes.setSize(960, 600);
