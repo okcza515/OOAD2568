@@ -1,10 +1,10 @@
-
+//65070501008
 public class Order {
 	private int totalCost = 0;
 	private boolean isClosed = false;
 
-	public void processOrder(PayByPayPal payPal) {
-		payPal.collectPaymentDetails();
+	public void processOrder(PaymentStrategy strategy) {
+		strategy.collectPaymentDetails();
 	}
 
 	public void setTotalCost(int cost) {
