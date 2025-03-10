@@ -1,17 +1,17 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class PayByCreditCard {
+public class PayByCreditCard implements PaymentStrategy {
 	private final BufferedReader READER = new BufferedReader(new InputStreamReader(System.in));
 	private CreditCard card;
 
+	@Override
 	public void collectPaymentDetails() {
 		try {
 			System.out.print("Enter the card number: ");
 			String number = READER.readLine();
-			System.out.print("Enter the card expiration date 'mm/yy': ");
+			System.out.print("Enter the card expiration date (MM/YY): ");
 			String date = READER.readLine();
 			System.out.print("Enter the CVV code: ");
 			String cvv = READER.readLine();
@@ -22,11 +22,17 @@ public class PayByCreditCard {
 		}
 	}
 
+	@Override
 	public boolean pay(int paymentAmount) {
 		if (cardIsPresent()) {
-			System.out.println("Paying " + paymentAmount + " using Credit Card.");
-			card.setAmount(card.getAmount() - paymentAmount);
-			return true;
+			if (card.getAmount() >= paymentAmount) {
+				System.out.println("Paying " + paymentAmount + " using Credit Card.");
+				card.setAmount(card.getAmount() - paymentAmount);
+				return true;
+			} else {
+				System.out.println("Not enough funds on the card.");
+				return false;
+			}
 		} else {
 			return false;
 		}
