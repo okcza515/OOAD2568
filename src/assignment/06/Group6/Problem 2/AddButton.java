@@ -3,14 +3,16 @@ import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 
 public class AddButton extends JButton{
+    protected Mediator mediator;
 	
-	public AddButton() {
+	public AddButton(Mediator mediator) {
         super("Add");
+        this.mediator = mediator;
     }
 	
 	@Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.addNewNote(new Note());
+        mediator.addNewNote(new Note());
     }
 
 }
