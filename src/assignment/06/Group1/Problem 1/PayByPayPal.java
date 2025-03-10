@@ -34,4 +34,22 @@ public class PayByPayPal implements IPaymentStrategy {
             ex.printStackTrace();
         }
     }
+    private boolean verify() {
+        setSignedIn(email.equals(DATA_BASE.get(password)));
+        return signedIn;
+    }
+
+    @Override
+    public boolean pay(int paymentAmount) {
+        if (signedIn) {
+            System.out.println("Paying " + paymentAmount + " using PayPal.");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void setSignedIn(boolean signedIn) {
+        this.signedIn = signedIn;
+    }
 }
