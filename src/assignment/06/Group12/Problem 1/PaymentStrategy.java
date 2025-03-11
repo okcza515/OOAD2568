@@ -1,6 +1,6 @@
-public class PaymentStrategy {
+public interface PaymentStrategy {
     public boolean pay(int paymentAmount);
-    public void collectPaymentDetails(); 
+    public void collectPaymentDetails();
 }
 
 

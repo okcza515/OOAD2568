@@ -3,7 +3,7 @@ public class Order {
 	private int totalCost = 0;
 	private boolean isClosed = false;
 
-	public void processOrder(PaymentStrategy payPal) {
+	public void processOrder(PaymentStrategy strategy) {
 		strategy.collectPaymentDetails();
 	}
 
