@@ -1,4 +1,5 @@
-package PACKAGE_NAME;
-
 public interface Element {
+    void setMediator(Mediator mediator);
+
+    String getName();
 }
