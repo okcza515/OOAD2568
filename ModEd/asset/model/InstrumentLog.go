@@ -6,7 +6,7 @@ import (
 )
 
 type InstrumentLog struct {
-	LogID        uuid.UUID               `gorm:"type:text;primaryKey;not null;unique" json:"log_id" csv:"log_id"`
+	LogID        uuid.UUID               `gorm:"type:text;primaryKey" json:"log_id" csv:"log_id"`
 	Timestamp    time.Time               `gorm:"type:timestamp;not null" json:"timestamp" csv:"timestamp"`
 	RefUserID    *uuid.UUID              `gorm:"type:text" json:"ref_user_id,omitempty" csv:"ref_user_id"`
 	StaffUserID  uuid.UUID               `gorm:"type:text;not null" json:"staff_user_id" csv:"staff_user_id"`
