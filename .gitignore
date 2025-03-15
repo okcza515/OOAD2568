@@ -29,3 +29,6 @@ replay_pid*
 # for IntelliJ IDEA user
 .idea/
 *.iml
+
+#ignore go build
+ModEd/bin
