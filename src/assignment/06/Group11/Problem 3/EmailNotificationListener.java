@@ -1,16 +1,34 @@
-
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
-public class EmailNotificationListener {
+public class EmailNotificationListener implements EventListener {
+    private List<String> emails;
 
-	private String email;
+    public EmailNotificationListener(String email) {
+        this.emails = new ArrayList<>();
+        this.emails.add(email);
+    }
 
-	public EmailNotificationListener(String email) {
-		this.email = email;
-	}
+    public EmailNotificationListener(List<String> emails) {
+        this.emails = new ArrayList<>(emails);
+    }
 
-	public void update(String eventType, File file) {
-		System.out.println("Email to " + email + ": Someone has performed " + eventType
-				+ " operation with the following file: " + file.getName());
-	}
+    public void addEmail(String email) {
+        if (!emails.contains(email)) {
+            emails.add(email);
+        }
+    }
+
+    public void removeEmail(String email) {
+        emails.remove(email);
+    }
+
+    @Override
+    public void update(String eventType, File file) {
+        for (String email : emails) {
+            System.out.println("Email to " + email + ": Someone has performed " + eventType
+                    + " operation with the following file: " + file.getName());
+        }
+    }
 }
