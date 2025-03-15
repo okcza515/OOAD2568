@@ -14,7 +14,7 @@ func CreateMapper(path string) (StudentDataMapper, error) {
 	if path[length-4:length] == ".csv" {
 		mapper := &CSVMapper{Path: path}
 		return mapper, nil
-	} else if path[length-4:length] == ".json" {
+	} else if path[length-5:length] == ".json" {
 		mapper := &JSONMapper{Path: path}
 		return mapper, nil
 	} else {
