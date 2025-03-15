@@ -7,7 +7,7 @@ import (
 
 type Supply struct {
 	gorm.Model
-	SupplyID    uuid.UUID      `gorm:"type:text;primaryKey;default:gen_random_uuid()" json:"supply_id,omitempty" csv:"supply_id,omitempty"`
+	SupplyID    uuid.UUID      `gorm:"type:text;primaryKey" json:"supply_id" csv:"supply_id"`
 	SupplyLabel string         `gorm:"not null" json:"supply_label,omitempty" csv:"supply_label,omitempty"`
 	Description string         `gorm:"type:text" json:"description,omitempty" csv:"description,omitempty"`
 	RoomID      uuid.UUID      `gorm:"type:text;not null" json:"room_id,omitempty" csv:"room_id,omitempty"`
