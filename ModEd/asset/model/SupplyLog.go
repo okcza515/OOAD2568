@@ -15,6 +15,6 @@ type SupplyLog struct {
 	StaffUserID uuid.UUID       `gorm:"type:uuid;not null" json:"staff_user_id" csv:"staff_user_id"`
 	Action      SupplyLogAction `gorm:"not null" json:"action" csv:"action"`
 	SupplyID    uuid.UUID       `gorm:"type:uuid;not null" json:"supply_id" csv:"supply_id"`
-	Description *string         `json:"description,omitempty" csv:"description,omitempty"`
+	Description string          `json:"description,omitempty" csv:"description,omitempty"`
 	Quantity    int             `gorm:"not null;" json:"quantity" csv:"quantity"`
 }
