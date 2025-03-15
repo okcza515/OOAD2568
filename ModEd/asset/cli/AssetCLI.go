@@ -1,1 +1,9 @@
-package cli
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hi im asset")
+}
