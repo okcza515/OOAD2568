@@ -1,4 +1,4 @@
-
+//65070503409 Chayaphon Chaisangkha
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,31 +51,31 @@ public class Application {
               order.setClosed();
           }
 
-//            if (strategy == null) {
-//                System.out.println("Please, select a payment method:" + "\n" +
-//                        "1 - PalPay" + "\n" +
-//                        "2 - Credit Card");
-//                String paymentMethod = reader.readLine();
-//
-//                if (paymentMethod.equals("1")) {
-//                    strategy = new PayByPayPal();
-//                } else {
-//                    strategy = new PayByCreditCard();
-//                }
-//
-//                order.processOrder(strategy);
-//
-//                System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");
-//                String proceed = reader.readLine();
-//                if (proceed.equalsIgnoreCase("P")) {
-//                    if (strategy.pay(order.getTotalCost())) {
-//                        System.out.println("Payment has been successful.");
-//                    } else {
-//                        System.out.println("FAIL! Please, check your data.");
-//                    }
-//                    order.setClosed();
-//                }
-//            }
+           if (strategy == null) {
+               System.out.println("Please, select a payment method:" + "\n" +
+                       "1 - PalPay" + "\n" +
+                       "2 - Credit Card");
+               String paymentMethod = reader.readLine();
+
+               if (paymentMethod.equals("1")) {
+                   strategy = new PayByPayPal();
+               } else {
+                   strategy = new PayByCreditCard();
+               }
+
+               order.processOrder(strategy);
+
+               System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");
+               String proceed = reader.readLine();
+               if (proceed.equalsIgnoreCase("P")) {
+                   if (strategy.pay(order.getTotalCost())) {
+                       System.out.println("Payment has been successful.");
+                   } else {
+                       System.out.println("FAIL! Please, check your data.");
+                   }
+                   order.setClosed();
+               }
+           }
         }
     }
 }
