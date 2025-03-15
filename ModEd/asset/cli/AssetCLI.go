@@ -8,11 +8,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"os"
-	"time"
 )
 
 func main() {
@@ -36,8 +37,9 @@ func main() {
 	}
 
 	instrumentLogController := controller.InstrumentLogController{Db: db}
+	migrationController := controller.MigrationController{Db: db}
 
-	err = instrumentLogController.MigrateToDB()
+	err = migrationController.MigrateToDB()
 	if err != nil {
 		panic("err: migration failed")
 	}
