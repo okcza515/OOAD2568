@@ -16,7 +16,7 @@ type WILProjectApplication struct {
 	Company                 uuid.UUID
 	Mentor                  string
 	Students                []modelCommon.Student
-	Advisor                 modelCommon.Instructor
+	Advisor                 Instructor //TODO: Change this Instructor model to modelCommon.Instructor when its already implemented
 	ApplicationStatus       WILApplicationStatusEnum
 	TurninDate              time.Time
 }

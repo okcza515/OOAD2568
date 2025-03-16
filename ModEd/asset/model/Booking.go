@@ -5,7 +5,7 @@ import (
 )
 
 type Booking struct {
-	ID				string
+	BookingID		string
 	ClassroomID		string
 	UserID          string
 	UserRole        Role
