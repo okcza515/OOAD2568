@@ -1,7 +1,8 @@
 package model
 
 import (
-	"ModEd/common/model"
+	master "ModEd/common/model"
+	curriculum "ModEd/curriculum/model"
 	"time"
 )
 
@@ -9,13 +10,12 @@ type PermanentSchedule struct {
 	StartDate   time.Time
 	EndDate     time.Time
 	IsAvailable bool
-	Faculty     model.Faculty
-	Department  model.Department
-	ProgramType model.ProgramType
+	Faculty     master.Faculty
+	Department  master.Department
+	ProgramType master.ProgramType
 	Classroom   string
-	Course      string
-	Section     int
-	Class       string
+	Course      curriculum.Course
+	Class       curriculum.Class
 }
 
 /*func (ps *PermanentSchedule) SetStarttime(starttime time.Time) {
