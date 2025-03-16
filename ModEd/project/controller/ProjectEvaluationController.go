@@ -13,9 +13,9 @@ type AssignmentEvaluation struct{}
 type PresentationEvaluation struct{}
 type ReportEvaluation struct{}
 
-type EvaluationController struct{}
+type ProjectEvaluationController struct{}
 
-func (e *EvaluationController) EvaluateTask(evaluation *model.Evaluation) (float64, string, error) {
+func (e *ProjectEvaluationController) EvaluateTask(evaluation *model.Evaluation) (float64, string, error) {
 	var evaluator model.EvaluationStrategy
 
 	switch evaluation.AssignmentType {
@@ -70,7 +70,6 @@ func (a *PresentationEvaluation) Evaluate(evaluation model.Evaluation) (float64,
 		return 0, "", err
 	}
 
-	// 🔥 Clear leftover newline from Scanf
 	reader.ReadString('\n')
 
 	fmt.Print("Enter comment: ")
@@ -95,7 +94,6 @@ func (a *ReportEvaluation) Evaluate(evaluation model.Evaluation) (float64, strin
 		return 0, "", err
 	}
 
-	// 🔥 Clear leftover newline from Scanf
 	reader.ReadString('\n')
 
 	fmt.Print("Enter comment: ")

@@ -29,7 +29,7 @@ func main() {
 		Comment:        "",
 	}
 
-	evaluationController := controller.EvaluationController{}
+	evaluationController := controller.ProjectEvaluationController{}
 	score, comment, err := evaluationController.EvaluateTask(&testEvaluation)
 
 	if err != nil {
