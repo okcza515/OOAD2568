@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
 	"time"
 
 	"github.com/google/uuid"
@@ -37,6 +38,7 @@ func main() {
 	}
 
 	instrumentLogController := controller.InstrumentLogController{Db: db}
+	supplyController := controller.SupplyController{Db: db}
 	migrationController := controller.MigrationController{Db: db}
 
 	err = migrationController.MigrateToDB()
@@ -58,6 +60,37 @@ func main() {
 	}
 
 	db.Create(exampleLog)
+
+	exampleSupply := model.Supply{
+		SupplyID: uuid.New(),
+		SupplyLabel: "New supply",
+		Description: nil,
+		RoomID: uuid.New(),
+		Location: nil,
+		CategoryID: nil,
+		Quantity: 100,
+		DeletedAt: gorm.DeletedAt{},
+	}
+
+	supplyController.Create(&exampleSupply)
+
+	supplys, err := supplyController.GetAll()
+
+	if err != nil {
+		panic("err: query supply failed")
+	}
+
+	for _, supplyLog := range *supplys {
+		util.PrintStruct(supplyLog)
+	}
+
+	supply, err := supplyController.GetByID((*supplys)[len((*supplys))-1].SupplyID)
+
+	if err != nil {
+		panic("err: query supply deleted")
+	}
+
+	util.PrintStruct(*supply)
 
 	logs, err := instrumentLogController.GetAll()
 	if err != nil {
