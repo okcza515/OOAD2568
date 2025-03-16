@@ -1,17 +1,27 @@
+//Chanawat Limpanatewin 65070503445
+
 package model
 
 import (
 	"time"
+	//"ModEd/common/model"
+	//"gorm.io/gorm"
 )
 
-// Evaluation represents an instructor's evaluation of a student's submission
 type Evaluation struct {
-	ID           uint    `gorm:"primaryKey"`
-	Score        float64 `gorm:"not null"`
+	StudentID    int
+	InstructorID int
+	Score        float64
 	Feedback     string
-	EvaluatedAt  time.Time `gorm:"not null"`
-	SubmissionID uint      `gorm:"uniqueIndex;not null"`
-	InstructorID uint      `gorm:"not null"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	EvaluatedAt  time.Time
 }
+
+////อีกแบบนึง
+// type Evaluation struct {
+// 	gorm.Model
+// 	StudentID		model.Student
+// 	InstructorID	model.Instructor
+// 	Score			float64
+// 	Feedback		string
+// 	EvaluatedAt		time.Time
+// }
