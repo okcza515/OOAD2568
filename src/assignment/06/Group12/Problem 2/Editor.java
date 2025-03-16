@@ -1,50 +1,49 @@
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class Editor {
-	
-	private static Title title;
-    private static TextBox textBox;
-    private static AddButton add;
-    private static DeleteButton del;
-    private static SaveButton save;
-    private static List list;
-	private static Filter filter;
-	private static JLabel titleLabel = new JLabel("Title:");
-    private static JLabel textLabel = new JLabel("Text:");
-    private static JLabel label = new JLabel("Add or select existing note to proceed...");
-	
-	public Editor(){
-		title = new Title();
-		textBox = new TextBox();
-		add = new AddButton();
-		del = new DeleteButton();
-		save = new SaveButton();
-		list = new List(new DefaultListModel());
-		this.list.addListSelectionListener(listSelectionEvent -> {
-            Note note = (Note)list.getSelectedValue();
+
+    private Title title;
+    private TextBox textBox;
+    private AddButton add;
+    private DeleteButton del;
+    private SaveButton save;
+    private List list;
+    private Filter filter;
+    private JLabel titleLabel = new JLabel("Title:");
+    private JLabel textLabel = new JLabel("Text:");
+    private JLabel label = new JLabel("Add or select existing note to proceed...");
+
+    public Editor() {
+        title = new Title(this);
+        textBox = new TextBox(this);
+        add = new AddButton("Add", this);
+        del = new DeleteButton("Del", this);
+        save = new SaveButton("Save", this);
+        list = new List(new DefaultListModel<>(), this);
+        list.addListSelectionListener(e -> {
+            Note note = (Note) list.getSelectedValue();
             if (note != null) {
                 getInfoFromList(note);
             } else {
                 clear();
             }
         });
-		filter = new Filter();
-	}
-	
-	public static void getInfoFromList(Note note) {
+        filter = new Filter(this);
+    }
+
+    public void getInfoFromList(Note note) {
         title.setText(note.getName().replace('*', ' '));
         textBox.setText(note.getText());
     }
-	
-	public static void clear() {
+
+    public void clear() {
         title.setText("");
         textBox.setText("");
     }
-	
-	public static void hideElements(boolean flag) {
+
+    public void hideElements(boolean flag) {
         titleLabel.setVisible(!flag);
         textLabel.setVisible(!flag);
         title.setVisible(!flag);
@@ -52,79 +51,88 @@ public class Editor {
         save.setVisible(!flag);
         label.setVisible(flag);
     }
-	
-	public static void addNewNote(Note note) {
-		title.setText("");
+
+    public void addNewNote(Note note) {
+        title.setText("");
         textBox.setText("");
         list.addElement(note);
-	}
-	
-	public static void sendToFilter(ListModel listModel) {
+    }
+
+    public void sendToFilter(DefaultListModel<Note> listModel) {
         filter.setList(listModel);
     }
-	
-	public static void setElementsList(ListModel listM) {
+
+    public void setElementsList(ListModel listM) {
         list.setModel(listM);
         list.repaint();
     }
-	
-	public static void markNote() {
+
+    public void markNote() {
         try {
             Note note = list.getCurrentElement();
             String name = note.getName();
             if (!name.endsWith("*")) {
-                note.setName(note.getName() + "*");
+                note.setName(name + "*");
             }
             list.repaint();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
-	
-	public static void deleteNote() {
+
+    public void deleteNote() {
         list.deleteElement();
     }
-	
-	public static void saveChanges() {
+
+    public void saveChanges() {
         try {
             Note note = (Note) list.getSelectedValue();
             note.setName(title.getText());
             note.setText(textBox.getText());
             list.repaint();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+        }
     }
-	
-	public void createGUI() {
-		JFrame notes = new JFrame("Notes");
-		notes.setSize(960, 600);
-        notes.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+    public void createGUI() {
+        JFrame frame = new JFrame("Notes");
+        frame.setSize(960, 600);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         JPanel left = new JPanel();
         left.setBorder(new LineBorder(Color.BLACK));
         left.setSize(320, 600);
         left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS));
+
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Filter:"));
         filter.setColumns(20);
         filterPanel.add(filter);
         filterPanel.setPreferredSize(new Dimension(280, 40));
+
         JPanel listPanel = new JPanel();
         list.setFixedCellWidth(260);
         listPanel.setSize(320, 470);
         JScrollPane scrollPane = new JScrollPane(list);
         scrollPane.setPreferredSize(new Dimension(275, 410));
         listPanel.add(scrollPane);
+
         JPanel buttonPanel = new JPanel();
         add.setPreferredSize(new Dimension(85, 25));
         buttonPanel.add(add);
         del.setPreferredSize(new Dimension(85, 25));
         buttonPanel.add(del);
         buttonPanel.setLayout(new FlowLayout());
+
         left.add(filterPanel);
         left.add(listPanel);
         left.add(buttonPanel);
+
         JPanel right = new JPanel();
         right.setLayout(null);
         right.setSize(640, 600);
         right.setLocation(320, 0);
         right.setBorder(new LineBorder(Color.BLACK));
+
         titleLabel.setBounds(20, 4, 50, 20);
         title.setBounds(60, 5, 555, 20);
         textLabel.setBounds(20, 4, 50, 130);
@@ -133,17 +141,19 @@ public class Editor {
         save.setBounds(270, 535, 80, 25);
         label.setFont(new Font("Verdana", Font.PLAIN, 22));
         label.setBounds(100, 240, 500, 100);
+
         right.add(label);
         right.add(titleLabel);
         right.add(title);
         right.add(textLabel);
         right.add(textBox);
         right.add(save);
-        notes.setLayout(null);
-        notes.getContentPane().add(left);
-        notes.getContentPane().add(right);
-        notes.setResizable(false);
-        notes.setLocationRelativeTo(null);
-        notes.setVisible(true);
-	}
+
+        frame.setLayout(null);
+        frame.getContentPane().add(left);
+        frame.getContentPane().add(right);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 }

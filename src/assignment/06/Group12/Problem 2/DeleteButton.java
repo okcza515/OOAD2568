@@ -1,15 +1,17 @@
-
-import javax.swing.JButton;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-public class DeleteButton extends JButton{
-	
-	public DeleteButton() {
-        super("Del");
+public class DeleteButton extends JButton {
+
+    private Editor mediator;
+
+    public DeleteButton(String text, Editor mediator) {
+        super(text);
+        this.mediator = mediator;
     }
-	
-	@Override
+
+    @Override
     protected void fireActionPerformed(ActionEvent actionEvent) {
-        Editor.deleteNote();
+        mediator.deleteNote();
     }
 }
