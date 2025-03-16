@@ -1,0 +1,11 @@
+instrument_id,instrument_label,instrument_code,description,instrument_status,room_id,location,category_id,cost,instrument_serial_id,add_year,budget_source,brand,model,deleted_at
+d9f1a4c2-3b1a-4e0e-8456-2a9c1f9c9a11,Digital Oscilloscope,67DH01,A chinese oscilloscope,Available,CPE1119,Cabinet 14,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,44990.00,SN123456,2024,University Budget,RIGOL,DHO802,
+a8f3b5d1-6c4d-4b9e-9201-56fd8d743a12,Digital Oscilloscope,67DH02,A chinese oscilloscope,Available,CPE1119,Cabinet 14,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,44990.00,SN789012,2024,Government Grant,RIGOL,DHO802,
+7e1c6d34-8a0f-4b5b-9cde-15fd0a3b1234,Digital Oscilloscope,67DH03,A chinese oscilloscope,Available,CPE1119,Cabinet 14,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,44990.00,SN345678,2024,Department Funding,RIGOL,DHO802,
+0f9a3b6d-2e1c-47a8-9e57-c3d1f9b8a412,Multimeter,67DM01,A chinese multimeter,Available,CPE1119,Cabinet Spider-man,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,25690.00,SN901234,2024,Industry Grant,RIGOL,DM858E,
+3d5e7a92-4c1f-4b9c-8e21-d7c4b5a6e8d5,Multimeter,67DM02,A chinese multimeter,Broken,CPE1119,Cabinet Spider-man,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,25690.00,SN567890,2023,Government Budget,RIGOL,DM858E,
+5e7a1c3d-2b4f-4b9a-8d57-d6e1c3f4b8a6,Multimeter,67DM03,A chinese multimeter,Broken,CPE1119,Cabinet Spider-man,3d5f6a72-9e42-4c67-8d21-ef2c82b0478a,25690.00,SN678901,2024,University Grant,RIGOL,DM858E,
+9a3b5e7d-2c4f-4b1a-8d76-e1c3f4b8a6d5,Power Supply,67PS01,A chinese power supply,Available,CPE1119,Cabinet 6,6a9d2e4b-1f72-48c1-832a-b2e73d5c5d89,18990.00,SN890123,2024,Industry Collaboration,METRIX,MPS-3264,
+2b4f5e7a-3c1d-4b9a-8d67-c3f4b8a6e1d5,Power Supply,67PS02,A chinese power supply,Available,CPE1119,Cabinet 6,6a9d2e4b-1f72-48c1-832a-b2e73d5c5d89,18990.00,SN123890,2024,Private Donation,METRIX,MPS-3264,
+3d9f5e7a-4c1b-4b8a-9d67-e1c3f4b8a6d5,Function Generator,67DG01,A chinese function generator,Available,CPE1119,Cabinet Jesse,6a9d2e4b-1f72-48c1-832a-b2e73d5c5d89,32690.00,SN456789,2024,Research Grant,RIGOL,DG852 Pro,
+7a3b5e9d-2c4f-4b1a-8d67-c3f4b8a6e1d5,Function Generator,67DG02,A chinese function generator,Available,CPE1119,Cabinet Jesse,6a9d2e4b-1f72-48c1-832a-b2e73d5c5d89,32690.00,SN234567,2024,University Funding,RIGOL,DG852 Pro,
