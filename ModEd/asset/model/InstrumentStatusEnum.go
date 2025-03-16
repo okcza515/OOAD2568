@@ -1,27 +1,13 @@
 package model
 
-type InstrumentStatusEnum int
+type InstrumentStatusEnum string
 
 const (
-	INS_AVAILABLE InstrumentStatusEnum = iota
-	INS_BORROWED
-	INS_BROKEN
-	INS_LOST
-	INS_SALVAGING
-	INS_SALVAGED
-	INS_DONATED
+	INS_AVAILABLE InstrumentStatusEnum = "Available"
+	INS_BORROWED  InstrumentStatusEnum = "Borrowed"
+	INS_BROKEN    InstrumentStatusEnum = "Broken"
+	INS_LOST      InstrumentStatusEnum = "Lost"
+	INS_SALVAGING InstrumentStatusEnum = "Salvaging"
+	INS_SALVAGED  InstrumentStatusEnum = "Salvaged"
+	INS_DONATED   InstrumentStatusEnum = "Donated"
 )
-
-var InstrumentStatusEnumLabel = map[InstrumentStatusEnum]string{
-	INS_AVAILABLE: "Available",
-	INS_BORROWED:  "Borrowed",
-	INS_BROKEN:    "Broken",
-	INS_LOST:      "Lost",
-	INS_SALVAGING: "Salvaging",
-	INS_SALVAGED:  "Salvaged",
-	INS_DONATED:   "Donated",
-}
-
-func (status InstrumentStatusEnum) String() string {
-	return InstrumentStatusEnumLabel[status]
-}
