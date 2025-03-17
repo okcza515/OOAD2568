@@ -14,5 +14,4 @@ type ScoreReportAdvisor struct {
 
 	Report    *Report    `gorm:"foreignKey:ReportId"`
 	Advisor   *Advisor   `gorm:"foreignKey:AdvisorId"`
-	Committee *Committee `gorm:"foreignKey:CommitteeId"`
 }
