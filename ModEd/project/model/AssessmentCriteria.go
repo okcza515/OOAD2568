@@ -1,9 +1,12 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type AssessmentCriteria struct {
 	gorm.Model
-	ID           uint64 `gorm:"primaryKey"`
-	CriteriaName string `gorm:"not null"`
+	AssessmentCriteriaId uuid.UUID `gorm:"type:uuid;primaryKey"`
+	CriteriaName         string    `gorm:"not null"`
 }

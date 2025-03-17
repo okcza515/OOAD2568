@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/curriculum/model/wil-project"
+	model "ModEd/curriculum/model/wil-project"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -28,4 +28,18 @@ func (repo IndependentStudyController) GetIndenpendentStudyByID(id uuid.UUID) (*
 	independentStudy := new(model.IndependentStudy)
 	result := repo.Connector.First(&independentStudy, "independent_study_id = ?", id)
 	return independentStudy, result.Error
+}
+
+func (repo IndependentStudyController) GetIndenpendentStudyAll() ([]*model.IndependentStudy, error) {
+	independentStudy := []*model.IndependentStudy{}
+	result := repo.Connector.Find(&independentStudy, "DeletedAt IS NULL")
+	return independentStudy, result.Error
+}
+
+func (repo IndependentStudyController) UpdateIndenpendentStudy(updatedStudy *model.IndependentStudy) error {
+	result := repo.Connector.Save(updatedStudy)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }

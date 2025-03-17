@@ -9,11 +9,11 @@ import (
 
 type Report struct {
 	gorm.Model
-	ReportId        uuid.UUID  `gorm:"type:uuid;primaryKey"`
-	SeniorProjectID uuid.UUID  `gorm:"type:uuid;not null"`
-	ReportType      ReportType `gorm:"type:varchar(255);not null"`
+	ReportId        uuid.UUID  `gorm:"type:text;primaryKey"`
+	SeniorProjectId uuid.UUID  `gorm:"type:text;not null"`
+	ReportType      ReportType `gorm:"type:varchar(50);not null"`
 	Date            time.Time  `gorm:"not null"`
 
-	ScoreReportAdvisors   []ScoreReportAdvisor   `gorm:"foreignKey:ReportID"`
-	ScoreReportCommittees []ScoreReportCommittee `gorm:"foreignKey:ReportID"`
+	ScoreReportAdvisors   []ScoreReportAdvisor   `gorm:"foreignKey:ReportId"`
+	ScoreReportCommittees []ScoreReportCommittee `gorm:"foreignKey:ReportId"`
 }
