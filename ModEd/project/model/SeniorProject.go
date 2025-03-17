@@ -10,12 +10,12 @@ type SeniorProject struct {
 	SeniorProjectId uuid.UUID `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
 	GroupName       string    `gorm:"not null"`
 
-	GroupMembers  []GroupMember  `gorm:"foreignKey:SeniorProjectID"`
-	Advisors      []Advisor      `gorm:"foreignKey:SeniorProjectID"`
-	Committees    []Committee    `gorm:"foreignKey:SeniorProjectID"`
-	Assignments   []Assignment   `gorm:"foreignKey:SeniorProjectID"`
-	Presentations []Presentation `gorm:"foreignKey:SeniorProjectID"`
-	Reports       []Report       `gorm:"foreignKey:SeniorProjectID"`
+	GroupMembers  []*GroupMember  `gorm:"foreignKey:SeniorProjectId"`
+	Advisors      []*Advisor      `gorm:"foreignKey:SeniorProjectId"`
+	Committees    []*Committee    `gorm:"foreignKey:SeniorProjectId"`
+	Assignments   []*Assignment   `gorm:"foreignKey:SeniorProjectId"`
+	Presentations []*Presentation `gorm:"foreignKey:SeniorProjectId"`
+	Reports       []*Report       `gorm:"foreignKey:SeniorProjectId"`
 
-	Assessment Assessment `gorm:"foreignKey:SeniorProjectID"`
+	Assessment *Assessment `gorm:"foreignKey:SeniorProjectId"`
 }
