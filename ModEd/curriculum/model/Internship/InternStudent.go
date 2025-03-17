@@ -9,6 +9,6 @@ import (
 type InternStudent struct {
   gorm.Model
   model.Student
-	InternID uuid.UUID
-  InternStatus InternStatus  `csv:"-"`
+	InternID 			uuid.UUID
+  InternStatus 	InternStatus  `csv:"-"`
 }
