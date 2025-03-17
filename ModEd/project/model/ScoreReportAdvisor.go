@@ -12,5 +12,7 @@ type ScoreReportAdvisor struct {
 	AdvisorId            uuid.UUID `gorm:"type:text;not null"`
 	Score                float64   `gorm:"not null"`
 
-	Report *Report `gorm:"foreignKey:ReportId"`
+	Report    *Report    `gorm:"foreignKey:ReportId"`
+	Advisor   *Advisor   `gorm:"foreignKey:AdvisorId"`
+	Committee *Committee `gorm:"foreignKey:CommitteeId"`
 }
