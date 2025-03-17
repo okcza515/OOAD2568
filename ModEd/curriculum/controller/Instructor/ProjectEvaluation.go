@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/project/model"
+	"ModEd/curriculum/model"
 	"bufio"
 	"errors"
 	"fmt"
@@ -16,8 +16,7 @@ type ReportEvaluation struct{}
 type ProjectEvaluationController struct{}
 
 func (e *ProjectEvaluationController) EvaluateTask(evaluation *model.Evaluation) (float64, string, error) {
-	var evaluator model.EvaluationStrategy
-
+	var evaluator model.ProjectEvaluationStrategy
 	switch evaluation.AssignmentType {
 	case "assignment":
 		evaluator = &AssignmentEvaluation{}

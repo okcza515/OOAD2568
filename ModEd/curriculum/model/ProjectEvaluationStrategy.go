@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type EvaluationStrategy interface {
+type ProjectEvaluationStrategy interface {
 	Evaluate(evaluation Evaluation) (float64, string, error)
 }
 
@@ -18,10 +18,10 @@ type Evaluation struct {
 	Score          float64   `gorm:"not null"`
 	Comment        string    `gorm:"-"`
 
-	strategy EvaluationStrategy `gorm:"-"`
+	strategy ProjectEvaluationStrategy `gorm:"-"`
 }
 
-func (e *Evaluation) SetEvaluationStrategy(strategy EvaluationStrategy) {
+func (e *Evaluation) SetEvaluationStrategy(strategy ProjectEvaluationStrategy) {
 	e.strategy = strategy
 }
 
