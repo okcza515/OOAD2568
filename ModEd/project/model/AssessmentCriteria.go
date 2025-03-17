@@ -7,6 +7,6 @@ import (
 
 type AssessmentCriteria struct {
 	gorm.Model
-	AssessmentCriteriaId uuid.UUID `gorm:"type:uuid;primaryKey"`
+	AssessmentCriteriaId uuid.UUID `gorm:"type:text;uuid;primaryKey"`
 	CriteriaName         string    `gorm:"not null"`
 }
