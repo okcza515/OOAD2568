@@ -7,9 +7,9 @@ import (
 
 type WILProject struct {
 	gorm.Model
-	WilProjectId     uuid.UUID
+	WilProjectId     uuid.UUID `gorm:"primaryKey;unique"`
 	SeniorProjectId  uuid.UUID
 	Company          uuid.UUID
 	Mentor           string
-	IndependentStudy []IndependentStudy
+	IndependentStudy []IndependentStudy `gorm:"foreignKey:IndependentStudyId"`
 }
