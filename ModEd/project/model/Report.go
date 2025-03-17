@@ -14,6 +14,6 @@ type Report struct {
 	ReportType      ReportType `gorm:"type:varchar(50);not null"`
 	Date            time.Time  `gorm:"not null"`
 
-	ScoreReportAdvisors   []ScoreReportAdvisor   `gorm:"foreignKey:ReportId"`
-	ScoreReportCommittees []ScoreReportCommittee `gorm:"foreignKey:ReportId"`
+	ScoresReportAdvisor   []ScoreReportAdvisor   `gorm:"foreignKey:ReportId"`
+	ScoresReportCommittee []ScoreReportCommittee `gorm:"foreignKey:ReportId"`
 }
