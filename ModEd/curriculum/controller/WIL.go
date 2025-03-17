@@ -1,6 +1,7 @@
 package controller
 
 import (
+	commonModel "ModEd/common/model"
 	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
@@ -12,7 +13,8 @@ type WIL struct {
 
 func CreateWIL(connector *gorm.DB) *WIL {
 	wil := WIL{Connector: connector}
-	connector.AutoMigrate(&model.WILProjectApplication{})
+	connector.AutoMigrate(&commonModel.Student{}, &model.WILProjectApplication{}, &model.WILProjectMembers{})
+
 	return &wil
 }
 
