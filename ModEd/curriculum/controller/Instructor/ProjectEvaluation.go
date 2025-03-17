@@ -2,11 +2,7 @@ package controller
 
 import (
 	"ModEd/curriculum/model"
-	"bufio"
 	"errors"
-	"fmt"
-	"os"
-	"strings"
 )
 
 type AssignmentEvaluation struct{}
@@ -34,73 +30,22 @@ func (e *ProjectEvaluationController) EvaluateTask(evaluation *model.Evaluation)
 }
 
 func (a *AssignmentEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Println("-----Assignment Evaluation------")
-
-	fmt.Print("Enter score: ")
-	var score float64
-	_, err := fmt.Scanf("%f", &score)
-	if err != nil {
-		return 0, "", err
-	}
-
-	reader.ReadString('\n')
-
-	fmt.Print("Enter comment: ")
-	comment, err := reader.ReadString('\n')
-	if err != nil {
-		return 0, "", err
-	}
-	comment = strings.TrimSpace(comment)
+	score := 10.0
+	comment := ""
 
 	return score, comment, nil
 }
 
 func (a *PresentationEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Println("-----Presentation Evaluation-----")
-
-	fmt.Print("Enter score: ")
-	var score float64
-	_, err := fmt.Scanf("%f", &score)
-	if err != nil {
-		return 0, "", err
-	}
-
-	reader.ReadString('\n')
-
-	fmt.Print("Enter comment: ")
-	comment, err := reader.ReadString('\n')
-	if err != nil {
-		return 0, "", err
-	}
-	comment = strings.TrimSpace(comment)
+	score := 10.0
+	comment := ""
 
 	return score, comment, nil
 }
 
 func (a *ReportEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Println("------Report Evaluation------")
-
-	fmt.Print("Enter score: ")
-	var score float64
-	_, err := fmt.Scanf("%f", &score)
-	if err != nil {
-		return 0, "", err
-	}
-
-	reader.ReadString('\n')
-
-	fmt.Print("Enter comment: ")
-	comment, err := reader.ReadString('\n')
-	if err != nil {
-		return 0, "", err
-	}
-	comment = strings.TrimSpace(comment)
+	score := 10.0
+	comment := ""
 
 	return score, comment, nil
 }

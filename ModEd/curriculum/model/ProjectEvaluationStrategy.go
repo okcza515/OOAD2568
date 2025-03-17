@@ -11,14 +11,14 @@ type ProjectEvaluationStrategy interface {
 }
 
 type Evaluation struct {
-	ID             uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	TaskID         uuid.UUID `gorm:"type:uuid;not null"`
-	GroupID        uuid.UUID `gorm:"type:uuid;not null"`
-	AssignmentType string    `gorm:"not null"`
-	Score          float64   `gorm:"not null"`
-	Comment        string    `gorm:"-"`
+	ID             uuid.UUID
+	TaskID         uuid.UUID
+	GroupID        uuid.UUID
+	AssignmentType string
+	Score          float64
+	Comment        string
 
-	strategy ProjectEvaluationStrategy `gorm:"-"`
+	strategy ProjectEvaluationStrategy
 }
 
 func (e *Evaluation) SetEvaluationStrategy(strategy ProjectEvaluationStrategy) {

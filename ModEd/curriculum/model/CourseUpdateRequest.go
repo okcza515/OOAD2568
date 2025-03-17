@@ -8,12 +8,12 @@ import (
 )
 
 type CourseUpdateRequest struct {
-	CourseID    uuid.UUID                   `json:"course_id"`
-	RequestType CourseUpdateRequestTypeEnum `json:"request_type"`
-	UpdatedBy   Instructor                  `json:"updated_by"`
-	UpdatedAt   time.Time                   `json:"updated_at"`
+	CourseID    uuid.UUID
+	RequestType CourseUpdateRequestTypeEnum
+	UpdatedBy   Instructor
+	UpdatedAt   time.Time
 
-	UpdateStrategy CourseUpdateStrategy `json:"-"`
+	UpdateStrategy CourseUpdateStrategy
 }
 
 type CourseNameUpdate struct {
