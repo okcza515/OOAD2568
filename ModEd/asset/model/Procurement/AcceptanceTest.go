@@ -1,17 +1,13 @@
 package model
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
 type AcceptanceTest struct {
-	AcceptanceTestID uuid.UUID `gorm:"type:uuid;primaryKey"` // PK
-	ProcurementID    uuid.UUID `gorm:"type:uuid;not null"`
-	Criteria         string    `gorm:"type:text"`
-	Results          string    `gorm:"type:text"`
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	AcceptanceTestID     uuid.UUID                  `gorm:"type:uuid;primaryKey"` // PK
+	TORID                uuid.UUID                  `gorm:"type:uuid;not null"`   // for connection
+	AcceptanceCriteriaID AcceptanceCriteria         `gorm:"foreignKey:AcceptanceCriteriaID"`
+	WorkflowID           AcceptanceApprovalWorkflow `gorm:"foreignKey:AcceptanceApprovalWorkflowID"`
+	Results              string                     `gorm:"type:text"`
 }

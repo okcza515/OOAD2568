@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -8,4 +10,5 @@ type ApprovalStatus struct {
 	ApprovalStatusID uuid.UUID `gorm:"type:uuid;primaryKey"` // PK
 	Status           string    `gorm:"type:varchar(50);not null"`
 	Description      string    `gorm:"type:text"`
+	ApprovalDate     time.Time `gorm:"type:time;not null"`
 }

@@ -5,9 +5,9 @@ import (
 )
 
 type TOR struct {
-	TORID		  uuid.UUID `gorm:"type:uuid;primaryKey"`
-	ProcurementID uuid.UUID `gorm:"type:uuid;not null"`
-	Scope         string    `gorm:"type:text"`
-	Deliverables  string    `gorm:"type:text"`
-	Timeline      string    `gorm:"type:text"`
+	TORID         uuid.UUID          `gorm:"type:uuid;primaryKey"`
+	ProcurementID uuid.UUID          `gorm:"type:uuid;not null"`
+	Scope         string             `gorm:"type:text"`
+	Deliverables  AcceptanceCriteria `gorm:"type:text"` //to-do: make it work properly.
+	Timeline      string             `gorm:"type:text"`
 }

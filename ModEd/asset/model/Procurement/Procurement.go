@@ -5,7 +5,7 @@ import (
 )
 
 type Procurement struct {
-	ID             uuid.UUID        `gorm:"type:uuid;primaryKey"` // PK
+	ProcurementID  uuid.UUID        `gorm:"type:uuid;primaryKey"` // PK
 	RequestID      string           `gorm:"unique;not null"`
 	Description    string           `gorm:"type:text"`
 	RequestedItems []RequestedItem  `gorm:"foreignKey:ProcurementID"`
