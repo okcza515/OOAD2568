@@ -5,12 +5,8 @@ import (
 )
 
 type Procurement struct {
-	ProcurementID  uuid.UUID        `gorm:"type:uuid;primaryKey"` // PK
-	RequestID      string           `gorm:"unique;not null"`
-	Description    string           `gorm:"type:text"`
-	RequestedItems []RequestedItem  `gorm:"foreignKey:ProcurementID"`
-	Budget         BudgetAllocation `gorm:"foreignKey:ProcurementID"`
-	Approval       ApprovalWorkflow `gorm:"foreignKey:ProcurementID"`
-	Supplier       Supplier         `gorm:"foreignKey:SupplierID"`
-	Status         string           `gorm:"type:varchar(50);not null"`
+	ProcurementID                 uuid.UUID   `gorm:"type:uuid;primaryKey"` // PK
+	TORcandidate                  []uuid.UUID `gorm:"foreignKey:TORID"`
+	ItemRequestID                 uuid.UUID   `gorm:"foreignKey:ItemRequestID"`
+	ProcurementApprovalWorkflowID uuid.UUID   `gorm:"type:uuid;ProcurementApprovalWorkflowID"`
 }

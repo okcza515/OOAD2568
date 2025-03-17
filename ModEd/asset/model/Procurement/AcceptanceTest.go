@@ -5,9 +5,10 @@ import (
 )
 
 type AcceptanceTest struct {
-	AcceptanceTestID     uuid.UUID                  `gorm:"type:uuid;primaryKey"` // PK
-	TORID                uuid.UUID                  `gorm:"type:uuid;not null"`   // for connection
-	AcceptanceCriteriaID AcceptanceCriteria         `gorm:"foreignKey:AcceptanceCriteriaID"`
-	WorkflowID           AcceptanceApprovalWorkflow `gorm:"foreignKey:AcceptanceApprovalWorkflowID"`
-	Results              string                     `gorm:"type:text"`
+	AcceptanceTestID     uuid.UUID `gorm:"type:uuid;primaryKey"` // PK
+	ProcurementID        uuid.UUID `gorm:"foreignKey:ProcurementID"`
+	TORID                uuid.UUID `gorm:"type:uuid;not null"` // for connection
+	AcceptanceCriteriaID uuid.UUID `gorm:"foreignKey:AcceptanceCriteriaID"`
+	WorkflowID           uuid.UUID `gorm:"foreignKey:AcceptanceApprovalWorkflowID"`
+	Results              string    `gorm:"type:text"`
 }
