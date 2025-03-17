@@ -6,5 +6,6 @@ import (
 
 type Faculty struct {
 	gorm.Model
-	Name string
+	Name 	string
+	Budget 	int
 }

@@ -38,6 +38,6 @@ func (instructor Instructor) Update(instructorId string, updatedData map[string]
 		Updates(updatedData).Error
 }
 
-func (instructor Instructor) Delete(instructorId string) error {
+func (instructor Instructor) DeleteByInstructorId(instructorId string) error {
 	return instructor.Connector.Where("instructor_id = ?", instructorId).Delete(&model.Instructor{}).Error
 }
