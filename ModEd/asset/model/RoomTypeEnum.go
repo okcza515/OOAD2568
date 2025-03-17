@@ -3,7 +3,7 @@ package model
 type RoomTypeEnum string
 
 const (
-	LectureRoom RoomTypeEnum = "LectureRoom"
-	LabRoom     RoomTypeEnum = "LabRoom"
-	MeetingRoom RoomTypeEnum = "MeetingRoom"
+	LectureRoom RoomTypeEnum = "Lecture Room"
+	LabRoom     RoomTypeEnum = "Lab Room"
+	MeetingRoom RoomTypeEnum = "Meeting Room"
 )

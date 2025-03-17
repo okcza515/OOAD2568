@@ -10,22 +10,22 @@ type InstructorHRController struct {
 	db *gorm.DB
 }
 
-// NewInstructorHRController creates a new instance of InstructorHRController
+// CreateInstructorHRController creates a new instance of InstructorHRController
 // and automigrates the InstructorInfo model.
-func NewInstructorHRController(db *gorm.DB) *InstructorHRController {
+func CreateInstructorHRController(db *gorm.DB) *InstructorHRController {
 	db.AutoMigrate(&model.InstructorInfo{})
 	return &InstructorHRController{db: db}
 }
 
-// ListAllInstructorInfos returns all InstructorInfo records.
-func (c *InstructorHRController) ListAllInstructorInfos() ([]model.InstructorInfo, error) {
+// GetAll returns all InstructorInfo records.
+func (c *InstructorHRController) GetAll() ([]model.InstructorInfo, error) {
 	var infos []model.InstructorInfo
 	err := c.db.Find(&infos).Error
 	return infos, err
 }
 
-// RetrieveInstructorInfo retrieves an instructor's HR information by ID.
-func (c *InstructorHRController) RetrieveInstructorInfo(id string) (*model.InstructorInfo, error) {
+// GetById retrieves an instructor's HR information by ID.
+func (c *InstructorHRController) GetById(id string) (*model.InstructorInfo, error) {
 	var instructorInfo model.InstructorInfo
 	if err := c.db.Where("instructor_id = ?", id).First(&instructorInfo).Error; err != nil {
 		return nil, err
@@ -33,17 +33,17 @@ func (c *InstructorHRController) RetrieveInstructorInfo(id string) (*model.Instr
 	return &instructorInfo, nil
 }
 
-// InsertInstructorInfo inserts a new InstructorInfo record.
-func (c *InstructorHRController) InsertInstructorInfo(info *model.InstructorInfo) error {
+// Insert inserts a new InstructorInfo record.
+func (c *InstructorHRController) Insert(info *model.InstructorInfo) error {
 	return c.db.Create(info).Error
 }
 
-// UpdateInstructorInfo updates an existing InstructorInfo record.
-func (c *InstructorHRController) UpdateInstructorInfo(info *model.InstructorInfo) error {
+// Update updates an existing InstructorInfo record.
+func (c *InstructorHRController) Update(info *model.InstructorInfo) error {
 	return c.db.Save(info).Error
 }
 
-// DeleteInstructorInfo deletes an instructor's HR information by ID.
-func (c *InstructorHRController) DeleteInstructorInfo(id string) error {
+// Delete deletes an instructor's HR information by ID.
+func (c *InstructorHRController) Delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
