@@ -62,3 +62,6 @@ func (c *StudentHRController) UpdateStudentStatus(sid string, status commonModel
     // Save the updated record
     return c.db.Save(&studentInfo).Error
 }
+func (c *StudentHRController) UpsertStudentInfo(info *model.StudentInfo) error {
+	return c.db.FirstOrCreate(info).Error
+}
