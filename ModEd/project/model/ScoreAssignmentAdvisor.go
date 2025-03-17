@@ -7,7 +7,7 @@ import (
 
 type ScoreAssignmentAdvisor struct {
 	gorm.Model
-	ScoreAssignmentAdvisorId uint `gorm:"primaryKey;default:gen_random_uuid()"`
+	ScoreAssignmentAdvisorId uuid.UUID `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
 	AssignmentId uuid.UUID    `gorm:"not null;index"`
 	AdvisorId    uuid.UUID    `gorm:"not null;index"`
 	Score        float64 `gorm:"not null"`

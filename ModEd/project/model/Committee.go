@@ -1,11 +1,13 @@
 package model
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Committee struct {
 	gorm.Model
-	SeniorProjectID 	uint           `gorm:"not null;index"`
-	InstructorID    	uint           `gorm:"not null;index"`
+	CommitteeId 		uuid.UUID		`gorm:"type:text;primaryKey;"`
+	SeniorProjectId 	uuid.UUID		`gorm:"type:text;not null;index"`
+	InstructorId    	uuid.UUID		`gorm:"type:text;not null;index"`
 }

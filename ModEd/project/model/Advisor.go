@@ -1,14 +1,16 @@
 package model
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Advisor struct {
 	gorm.Model
-	SeniorProjectId		uint64	`gorm:"not null;index"`
-	Name 				string	`gorm:"not null;size:255"`
-	Email    			string	`gorm:"not null;size:255"`
-	InstructorID 		string	`gorm:"not null:size:255"`
-	IsPrimary   		bool	`gorm:"not null"`
+	AdvisorId			uuid.UUID	`gorm:"type:text;primaryKey"`
+	SeniorProjectId		uuid.UUID	`gorm:"type:text;not null;index"`
+	InstructorId 		uuid.UUID	`gorm:"type:text;not null;index"`
+	Name 				string		`gorm:"not null"`
+	Email    			string		`gorm:"not null"`
+	IsPrimary   		bool		`gorm:"not null"`
 }

@@ -3,11 +3,11 @@ package model
 type ReportType string
 
 const (
-	ReportTypeIdea      ReportType = "idea"
-	ReportTypeProposal  ReportType = "proposal"
-	ReportTypeProgress  ReportType = "progress"
-	ReportTypeMidterm   ReportType = "midterm"
-	ReportTypeFinal     ReportType = "final"
+	ReportTypeIdea      ReportType = "Idea"
+	ReportTypeProposal  ReportType = "Proposal"
+	ReportTypeProgress  ReportType = "Progress"
+	ReportTypeMidterm   ReportType = "Midterm"
+	ReportTypeFinal     ReportType = "Final"
 )
 
 func ValidReportTypes() []ReportType {
