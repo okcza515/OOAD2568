@@ -1,10 +1,14 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type ScorePresentationCommittee struct {
 	gorm.Model
-	PresentationID uint    `gorm:"not null;index"`
-	CommitteeID    uint    `gorm:"not null;index"`
-	Score          float64 `gorm:"not null"`
+	PresentationId uuid.UUID     `gorm:"not null;index"`
+	CommitteeId    uuid.UUID     `gorm:"not null;index"`
+	Score          float64       `gorm:"not null"`
+	Presentation   *Presentation `gorm:"foreignKey:PresentationId"`
 }

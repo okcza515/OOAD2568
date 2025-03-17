@@ -3,9 +3,9 @@ package model
 type PresentationType string
 
 const (
-	PresentationTypeProposal PresentationType = "proposal"
-	PresentationTypeMidterm  PresentationType = "midterm"
-	PresentationTypeFinal    PresentationType = "final"
+	PresentationTypeProposal PresentationType = "Proposal"
+	PresentationTypeMidterm  PresentationType = "Midterm"
+	PresentationTypeFinal    PresentationType = "Final"
 )
 
 func ValidPresentationTypes() []PresentationType {
