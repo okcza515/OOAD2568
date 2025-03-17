@@ -19,7 +19,7 @@ func main() {
 		path     string
 	)
 
-	flag.StringVar(&database, "database", "data/WILProject/WILProject.bin", "Path of SQLite Database.") //TODO: Waiting for common database cli implemente
+	flag.StringVar(&database, "database", "data/wil-project/WILProject.bin", "Path of SQLite Database.") //TODO: Waiting for common database cli implemente
 	flag.StringVar(&path, "path", "", "Path to CSV or JSON for WIL Application ")
 	flag.Parse()
 
