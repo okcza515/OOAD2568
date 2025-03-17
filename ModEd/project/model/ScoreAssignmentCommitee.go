@@ -11,8 +11,7 @@ type ScoreAssignmentCommittee struct {
 	AssignmentId 				uuid.UUID    	`gorm:"not null;index"`
 	CommitteeId  				uuid.UUID    	`gorm:"not null;index"`
 	Score        				float64 		`gorm:"not null"`
-	
+
 	Assignment   				*Assignment 	`gorm:"foreignKey:AssignmentId"`
-	Advisor 					*Advisor 		`gorm:"foreignKey:AdvisorId"`
 	Committee 					*Committee 		`gorm:"foreignKey:CommitteeId"`
 }
