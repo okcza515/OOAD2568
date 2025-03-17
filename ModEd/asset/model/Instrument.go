@@ -8,7 +8,7 @@ import (
 type Instrument struct {
 	InstrumentID       uuid.UUID            `gorm:"type:text;primaryKey" json:"instrument_id" csv:"instrument_id"`
 	InstrumentLabel    string               `gorm:"not null" json:"instrument_label" csv:"instrument_label"`
-	InstrumentCode     string               `gorm:"not null;unique" json:"instrument_code" csv:"instrument_code"`
+	InstrumentCode     string               `gorm:"type:text; not null; uniqueIndex" json:"instrument_code" csv:"instrument_code"`
 	Description        *string              `gorm:"type:text" json:"description" csv:"description"`
 	InstrumentStatus   InstrumentStatusEnum `gorm:"type:text;not null" json:"instrument_status" csv:"instrument_status"`
 	RoomID             string               `gorm:"type:text;not null" json:"room_id" csv:"room_id"`
@@ -21,4 +21,5 @@ type Instrument struct {
 	InstrumentBrand    *string              `gorm:"type:text" json:"brand" csv:"brand"`
 	InstrumentModel    *string              `gorm:"type:text" json:"model" csv:"model"`
 	DeletedAt          gorm.DeletedAt       `gorm:"index" json:"deleted_at" csv:"deleted_at"`
+	InstrumentLog      []InstrumentLog      `gorm:"foreignKey:InstrumentID;references:InstrumentID;constraint:OnUpdate:CASCADE;"`
 }
