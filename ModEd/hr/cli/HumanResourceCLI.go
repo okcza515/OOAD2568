@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
 	hrModel "ModEd/hr/model"
@@ -75,8 +76,8 @@ func listStudents(args []string) {
 	fs.Parse(args)
 
 	db := openDatabase(*databasePath)
-	studentController := controller.NewStudentHRController(db)
-	studentInfos, err := studentController.ListAllStudentInfos()
+	studentController := controller.CreateStudentHRController(db)
+	studentInfos, err := studentController.GetAll()
 	if err != nil {
 		fmt.Printf("Error listing students: %v\n", err)
 		os.Exit(1)
@@ -107,8 +108,8 @@ func updateStudent(args []string) {
 	}
 
 	db := openDatabase(*databasePath)
-	studentController := controller.NewStudentHRController(db)
-	studentInfo, err := studentController.RetrieveStudentInfo(*studentID)
+	studentController := controller.CreateStudentHRController(db)
+	studentInfo, err := studentController.GetById(*studentID)
 	if err != nil {
 		fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
 		os.Exit(1)
@@ -134,7 +135,7 @@ func updateStudent(args []string) {
 		studentInfo.Email = *emailStudent
 	}
 
-	if err := studentController.UpdateStudentInfo(studentInfo); err != nil {
+	if err := studentController.Update(studentInfo); err != nil {
 		fmt.Printf("Failed to update student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -159,7 +160,7 @@ func addStudent(args []string) {
 	}
 
 	db := openDatabase(*databasePath)
-	studentController := controller.NewStudentHRController(db)
+	studentController := controller.CreateStudentHRController(db)
 	newStudent := hrModel.StudentInfo{
 		Student: commonModel.Student{
 			SID:       *studentID,
@@ -171,7 +172,7 @@ func addStudent(args []string) {
 		PhoneNumber: *phoneNumber,
 	}
 
-	if err := studentController.InsertStudentInfo(&newStudent); err != nil {
+	if err := studentController.Insert(&newStudent); err != nil {
 		fmt.Printf("Failed to add student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -191,8 +192,8 @@ func deleteStudent(args []string) {
 	}
 
 	db := openDatabase(*databasePath)
-	studentController := controller.NewStudentHRController(db)
-	if err := studentController.DeleteStudentInfo(*studentID); err != nil {
+	studentController := controller.CreateStudentHRController(db)
+	if err := studentController.Delete(*studentID); err != nil {
 		fmt.Printf("Failed to delete student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -220,10 +221,10 @@ func updateStudentStatus(args []string) {
 	}
 
 	db := openDatabase(*databasePath)
-	studentController := controller.NewStudentHRController(db)
+	studentController := controller.CreateStudentHRController(db)
 
 	// Use the dedicated controller method for updating status
-	if err := studentController.UpdateStudentStatus(*studentID, newStatus); err != nil {
+	if err := studentController.UpdateStatus(*studentID, newStatus); err != nil {
 		fmt.Printf("Failed to update student status: %v\n", err)
 		os.Exit(1)
 	}
@@ -256,7 +257,7 @@ func importStudents(args []string) {
 	hrRecords := hrMapper.Map() // hrRecords is []*hrModel.HRInfo
 
 	db := openDatabase(*databasePath)
-	hrController := controller.NewStudentHRController(db)
+	hrController := controller.CreateStudentHRController(db)
 
 	for _, hrRec := range hrRecords {
 		// Create the common student controller.
@@ -276,7 +277,7 @@ func importStudents(args []string) {
 		}
 
 		// Upsert (insert or update) so that duplicate records are not created.
-		if err := hrController.UpsertStudentInfo(&newStudent); err != nil {
+		if err := hrController.Upsert(&newStudent); err != nil {
 			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.SID, err)
 			continue
 		}
