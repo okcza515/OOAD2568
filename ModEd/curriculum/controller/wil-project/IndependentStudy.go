@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/curriculum/model"
+	"ModEd/curriculum/model/wil-project"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -26,6 +26,6 @@ func (repo IndependentStudyController) CreateIndependentStudy(independentStudies
 
 func (repo IndependentStudyController) GetIndenpendentStudyByID(id uuid.UUID) (*model.IndependentStudy, error) {
 	independentStudy := new(model.IndependentStudy)
-	result := repo.Connector.First(&independentStudy, "IndependentStudyId = ?", id)
+	result := repo.Connector.First(&independentStudy, "independent_study_id = ?", id)
 	return independentStudy, result.Error
 }

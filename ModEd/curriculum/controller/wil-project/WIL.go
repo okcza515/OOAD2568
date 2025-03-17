@@ -2,7 +2,7 @@ package controller
 
 import (
 	commonModel "ModEd/common/model"
-	"ModEd/curriculum/model"
+	model "ModEd/curriculum/model/wil-project"
 
 	"gorm.io/gorm"
 )
