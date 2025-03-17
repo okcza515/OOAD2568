@@ -1,10 +1,14 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type ScoreReportCommittee struct {
 	gorm.Model
-	ReportID    uint    `gorm:"not null"`
-	CommitteeID uint    `gorm:"not null"`
-	Score       float64 `gorm:"not null"`
+	ReportID    uuid.UUID `gorm:"type:uuid;not null"`
+	CommitteeID uuid.UUID `gorm:"type:uuid;not null"`
+	Score       float64   `gorm:"not null"`
+	Report      *Report   `gorm:"foreignKey:ReportId"`
 }
