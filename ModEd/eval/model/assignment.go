@@ -18,7 +18,7 @@ type Assignment struct {
 	DueDate     time.Time              //วัน deadline
 	Status      string                 //สเตตัส assignment
 	Submission  []AssignmentSubmission //รายละเอียดการส่ง
-	SubmitNum   uint                   //จำนวนคนที่ส่ง
+	TotalSubmit uint                   //จำนวนคนที่ส่ง
 }
 
 type AssignmentSubmission struct { //รายละเอียดการส่ง
