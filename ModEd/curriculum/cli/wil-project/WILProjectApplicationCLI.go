@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 
-	controller := controller.CreateWIL(connector)
+	controller := controller.CreateWILProjectApplicationController(connector)
 
 	var applications []*model.WILProjectApplication
 	if err := deserializer.Deserialize(&applications); err != nil {
