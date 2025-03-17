@@ -11,5 +11,6 @@ type Progress struct {
 	AssignmentId 	uuid.UUID   	`gorm:"not null;index"`
 	Name         	string 			`gorm:"not null"`
 	IsCompleted  	bool   			`gorm:"not null"`
+	
 	Assignment   	*Assignment 	`gorm:"foreignKey:AssignmentId"`
 }
