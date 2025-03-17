@@ -12,5 +12,5 @@ type ScoreAssessment struct {
 	Score        float64 `gorm:"not null"`
 
 	Assessment   *Assessment `gorm:"foreignKey:AssignmentId"`
-	Advisor      Advisor     `gorm:"foreignKey:AdvisorId"`
+	Advisor      *Advisor     `gorm:"foreignKey:AdvisorId"`
 }

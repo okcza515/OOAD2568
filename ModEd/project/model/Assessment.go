@@ -10,7 +10,8 @@ type Assessment struct {
 	AssessmentId          uuid.UUID     `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
 	SeniorProjectId   uuid.UUID     `gorm:"type:text;not null;index"`
 	
-	AssessmentCriteria  []AssessmentCriteria `gorm:"foreignKey:AssessmentCriteriaId"`
-	ScoreAssessment []ScoreAssessment `gorm:"foreignKey:AssessmentId"`
+	AssessmentCriteria  []*AssessmentCriteria `gorm:"foreignKey:AssessmentCriteriaId"`
+	ScoreAssessmentAdvisor []*ScoreAssessment `gorm:"foreignKey:AssessmentId"`
+	ScoreAssessmentComittee []*ScoreAssessment `gorm:"foreignKey:AssessmentId"`
 	SeniorProject *SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }
