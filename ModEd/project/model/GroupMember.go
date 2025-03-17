@@ -8,6 +8,6 @@ import (
 type GroupMember struct {
 	gorm.Model
 	GroupMemberId   uuid.UUID `gorm:"type:uuid;primaryKey"`
-	SeniorProjectID uint64    `gorm:"not null"`
+	SeniorProjectId uuid.UUID `gorm:"not null;index"`
 	StudentID       uint64    `gorm:"not null"`
 }
