@@ -1,10 +1,13 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type ScoreReportAdvisor struct {
 	gorm.Model
-	ReportID  uint    `gorm:"not null"`
-	AdvisorID uint    `gorm:"not null"`
+	ReportID  uuid.UUID    `gorm:"type:uuid;not null"`
+	AdvisorID uuid.UUID    `gorm:"type:uuid;not null"`
 	Score     float64 `gorm:"not null"`
 }
