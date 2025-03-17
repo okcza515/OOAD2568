@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ModEd/curriculum/controller"
-	"ModEd/curriculum/model"
+	controller "ModEd/curriculum/controller/wil-project"
+	model "ModEd/curriculum/model/wil-project"
 	"ModEd/curriculum/pkg/deserializer"
 	"errors"
 	"flag"

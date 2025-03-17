@@ -7,9 +7,9 @@
     "Mentor": "Mr. Boonruk Chipipop",
     "Students": [
       {
-        "SID": "1",
+        "StudentId": "1",
         "Student": {
-          "StudentID": "1",
+          "SID": "1",
           "FirstName": "Sorawit",
           "LastName": "Udomvittayasard",
           "Email": "sorawit.udom@cpe1119.ac.th",
@@ -20,9 +20,9 @@
         }
       },
       {
-        "SID": "2",
+        "StudentId": "2",
         "Student": {
-          "StudentID": "2",
+          "SID": "2",
           "FirstName": "Chanapat",
           "LastName": "Limthongkul",
           "Email": "chanapat.limt@cpe1119.ac.th",

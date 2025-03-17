@@ -13,7 +13,7 @@ type WIL struct {
 
 func CreateWIL(connector *gorm.DB) *WIL {
 	wil := WIL{Connector: connector}
-	connector.AutoMigrate(&commonModel.Student{}, &model.WILProjectApplication{}, &model.WILProjectMembers{})
+	connector.AutoMigrate(&commonModel.Student{}, &model.WILProjectApplication{}, &model.WILProjectMember{})
 
 	return &wil
 }
