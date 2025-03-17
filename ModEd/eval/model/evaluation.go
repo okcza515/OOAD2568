@@ -3,25 +3,18 @@
 package model
 
 import (
+	"ModEd/common/model"
 	"time"
-	//"ModEd/common/model"
-	//"gorm.io/gorm"
+
+	"gorm.io/gorm"
 )
 
 type Evaluation struct {
-	StudentID    int
-	InstructorID int
-	Score        float64
+	gorm.Model
+	SID          model.Student    `gorm:"foreignKey":SID`
+	InstructorId model.Instructor `gorm:"foreignKey":InstructorId`
+	Score        float64          `gorm:"not null"`
 	Feedback     string
 	EvaluatedAt  time.Time
+	LastUpdate   time.Time
 }
-
-////อีกแบบนึง
-// type Evaluation struct {
-// 	gorm.Model
-// 	StudentID		model.Student
-// 	InstructorID	model.Instructor
-// 	Score			float64
-// 	Feedback		string
-// 	EvaluatedAt		time.Time
-// }
