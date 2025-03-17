@@ -7,14 +7,9 @@ import (
 
 type Assessment struct {
 	gorm.Model
-	ID          string    `json:"ID"`
-	ProjectID   string    `json:"ProjectID"`
-	AssessmentCriteria  AssessmentCriteria `json:"AssessmentCriteria"`
-}
-
-
-type AssessmentRepository interface {
-	Create(Assessment) (Assessment, error)
-	Update(Assessment) (Assessment, error)
-	Delete(Assessment) error
+	Id          uuid.UUID     `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
+	ProjectId   uuid.UUID     `gorm:"type:text;not null;index"`
+	
+	AssessmentCriteria  AssessmentCriteria `gorm:"foreignKey:AssessmentId"`
+	ScoreAssessment []Assessment `gorm:"foreignKey:AssessmentId"`
 }
