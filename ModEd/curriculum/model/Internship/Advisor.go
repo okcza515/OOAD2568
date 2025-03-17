@@ -8,6 +8,6 @@ import (
 
 type Advisor struct {
 	gorm.Model
-	mmdel.Instructor
+	model.Instructor
 		AdvisorID uuid.UUID
 }
