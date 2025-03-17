@@ -11,5 +11,5 @@ type ScoreAssignmentAdvisor struct {
 	AssignmentId uuid.UUID    `gorm:"not null;index"`
 	AdvisorId    uuid.UUID    `gorm:"not null;index"`
 	Score        float64 `gorm:"not null"`
-	Assignment   Assignment `gorm:"foreignKey:AssignmentId"`
+	Assignment   *Assignment `gorm:"foreignKey:AssignmentId"`
 }

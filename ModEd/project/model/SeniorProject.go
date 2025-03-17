@@ -7,6 +7,6 @@ import (
 
 type SeniorProject struct {
 	gorm.Model
-	SeniorProjectId uuid.UUID `gorm:"type:uuid;primaryKey"`
+	SeniorProjectId uuid.UUID `gorm:"type:text;uuid;primaryKey"`
 	GroupName       string    `gorm:"not null"`
 }

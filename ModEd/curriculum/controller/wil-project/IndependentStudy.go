@@ -30,7 +30,7 @@ func (repo IndependentStudyController) GetIndenpendentStudyByID(id uuid.UUID) (*
 	return independentStudy, result.Error
 }
 
-func (repo IndependentStudyController) GetIndenpendentStudyAll() ([]*model.IndependentStudy, error) {
+func (repo IndependentStudyController) GetAllIndenpendentStudy() ([]*model.IndependentStudy, error) {
 	independentStudy := []*model.IndependentStudy{}
 	result := repo.Connector.Find(&independentStudy, "DeletedAt IS NULL")
 	return independentStudy, result.Error

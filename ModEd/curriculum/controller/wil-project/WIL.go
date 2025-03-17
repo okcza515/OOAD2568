@@ -11,7 +11,7 @@ type WIL struct {
 	Connector *gorm.DB
 }
 
-func CreateWIL(connector *gorm.DB) *WIL {
+func CreateWILProjectApplicationController(connector *gorm.DB) *WIL {
 	wil := WIL{Connector: connector}
 	connector.AutoMigrate(&commonModel.Student{}, &model.WILProjectApplication{}, &model.WILProjectMember{})
 
@@ -28,4 +28,18 @@ func (repo WIL) GetAllWILProjectApplications() ([]*model.WILProjectApplication, 
 	applications := []*model.WILProjectApplication{}
 	result := repo.Connector.Find(&applications)
 	return applications, result.Error
+}
+
+func (repo WIL) GetWILProjectApplicationByID(id uint) (*model.WILProjectApplication, error) {
+	application := &model.WILProjectApplication{}
+	result := repo.Connector.Where("WILProjectApplicationId = ?", id).First(application)
+	return application, result.Error
+}
+
+func (repo WIL) UpdateWILProjectApplication(application *model.WILProjectApplication) error {
+	result := repo.Connector.Save(application)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
