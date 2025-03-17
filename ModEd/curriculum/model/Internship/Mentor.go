@@ -12,5 +12,5 @@ type Mentor struct {
 	MentorLastName		string
 	MentorEmail 			string
 	MentorPhone 			string
-	Company 					Company
+	Company 					Company	`gorm:"foreignKey:CompanyID;references:CompanyID"`
 }
