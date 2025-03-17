@@ -8,10 +8,9 @@ import (
 type ScoreReportAdvisor struct {
 	gorm.Model
 	ScoreReportAdvisorId uuid.UUID `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
-	ReportId  uuid.UUID `gorm:"type:text;not null"`
-	AdvisorId uuid.UUID `gorm:"type:text;not null"`
-	Score     float64   `gorm:"not null"`
-	
-	Report    *Report   `gorm:"foreignKey:ReportId"`
-}
+	ReportId             uuid.UUID `gorm:"type:text;not null"`
+	AdvisorId            uuid.UUID `gorm:"type:text;not null"`
+	Score                float64   `gorm:"not null"`
 
+	Report *Report `gorm:"foreignKey:ReportId"`
+}
