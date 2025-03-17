@@ -1,11 +1,13 @@
 package model
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Faculty struct {
 	gorm.Model
-	Name 	string
-	Budget 	int
+	FacultyId 	uuid.UUID
+	Name 		string
+	Budget 		int
 }
