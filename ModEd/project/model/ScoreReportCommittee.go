@@ -7,7 +7,8 @@ import (
 
 type ScoreReportCommittee struct {
 	gorm.Model
-	ReportID    uuid.UUID    `gorm:"type:uuid;not null"`
-	CommitteeID uuid.UUID    `gorm:"type:uuid;not null"`
-	Score       float64 `gorm:"not null"`
+	ReportID    uuid.UUID `gorm:"type:uuid;not null"`
+	CommitteeID uuid.UUID `gorm:"type:uuid;not null"`
+	Score       float64   `gorm:"not null"`
+	Report      *Report   `gorm:"foreignKey:ReportId"`
 }
