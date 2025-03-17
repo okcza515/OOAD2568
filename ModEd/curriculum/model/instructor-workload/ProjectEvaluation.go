@@ -1,0 +1,16 @@
+package model
+
+import (
+	"github.com/google/uuid"
+)
+
+type ProjectEvaluation struct {
+	ID             uuid.UUID                 `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	TaskID         uuid.UUID                 `gorm:"type:uuid;not null;index"`
+	GroupID        uuid.UUID                 `gorm:"type:uuid;not null;index"`
+	AssignmentType ProjectEvaluationTypeEnum `gorm:"type:float6;not null"`
+	Score          float64                   `gorm:"type:decimal(5,2);not null"`
+	Comment        string                    `gorm:"type:text;not null"`
+
+	strategy ProjectEvaluationStrategy `gorm:"-"`
+}

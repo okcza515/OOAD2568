@@ -1,37 +1,49 @@
 package main
 
 import (
-	"ModEd/curriculum/model"
-	"ModEd/curriculum/pkg/deserializer"
+	CommonModel "ModEd/common/model"
+	controller "ModEd/curriculum/controller/Internship"
+	model "ModEd/curriculum/model/Internship"
+
 	"flag"
-	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
 	var (
-		path string
+		database string
+		path     string
 	)
 
-	flag.StringVar(&path, "path", "", "Path to CSV or JSON for student registration.")
+	flag.StringVar(&database, "database", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/internship_data.bin", "Path of SQLite Database.") //TODO: Waiting for common database cli implemente
+	flag.StringVar(&path, "path", "", "Path to CSV or JSON for WIL Application ")
 	flag.Parse()
 
-	deserializer, err := deserializer.NewFileDeserializer(path)
+	connector, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
 	if err != nil {
-		panic(err)
-	}
-	var courses []*model.Course
-	if err := deserializer.Deserialize(&courses); err != nil {
-		panic(err)
+		panic("failed to connect database")
 	}
 
-	for _, v := range courses {
-		fmt.Printf("Course Id: %s, Course Name: %s, Course Optional: %t\n", v.CourseId, v.Name, v.Optional)
+	InternStudent := &model.InternStudent{
+		Student: CommonModel.Student{
+			SID:       "65070501001",
+			FirstName: "Mick",
+			LastName:  "Doe",
+			Email:     "mm@example.com",
+			StartDate: time.Now(),
+			BirthDate: time.Now(),
+			Program:   CommonModel.ProgramType(1),
+			Status:    CommonModel.StudentStatus(1),
+		},
+		InternID:     uuid.New(),
+		InternStatus: model.ACTIVE,
 	}
-	// var classes []*model.Class
-	// if err := deserializer.Deserialize(&classes); err != nil {
-	// 	panic(err)
-	// }
-	// for _, v := range classes {
-	// 	fmt.Printf("Class Id: %s, Course Id: %s, Class Section: %d, Class Schedule: %s\n", v.ClassId, v.CourseId, v.Section, v.Schedule)
-	// }
+
+	controller := controller.CreateInternshipApplicationController(connector)
+
+	controller.RegisterInternshipApplication(InternStudent)
 }

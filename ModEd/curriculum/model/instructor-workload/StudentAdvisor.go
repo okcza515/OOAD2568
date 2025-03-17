@@ -8,6 +8,7 @@ import (
 
 type StudentAdvisor struct {
 	gorm.Model
-	AdvisorId string
-	Students  []commonModel.Student
+	AdvisorID uint                   `gorm:"not null;index"`
+	Advisor   commonModel.Instructor `gorm:"foreignKey:AdvisorID"`
+	Students  []commonModel.Student  `gorm:"many2many:student_advisor_students;"`
 }
