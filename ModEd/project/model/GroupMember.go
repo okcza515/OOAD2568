@@ -1,10 +1,13 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type GroupMember struct {
 	gorm.Model
-	ID              uint64 `gorm:"primaryKey"`
-	SeniorProjectID uint64 `gorm:"not null"`
-	StudentID       uint64 `gorm:"not null"`
+	GroupMemberId   uuid.UUID `gorm:"type:uuid;primaryKey"`
+	SeniorProjectID uint64    `gorm:"not null"`
+	StudentID       uint64    `gorm:"not null"`
 }
