@@ -7,8 +7,8 @@ import (
 
 type ScorePresentationCommittee struct {
 	gorm.Model
-	PresentationId uuid.UUID     `gorm:"not null;index"`
-	CommitteeId    uuid.UUID     `gorm:"not null;index"`
+	PresentationId uuid.UUID     `gorm:"type:text;not null;index"`
+	CommitteeId    uuid.UUID     `gorm:"type:text;not null;index"`
 	Score          float64       `gorm:"not null"`
 	Presentation   *Presentation `gorm:"foreignKey:PresentationId"`
 }
