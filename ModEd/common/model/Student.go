@@ -8,8 +8,7 @@ import (
 
 type Student struct {
 	gorm.Model
-	// Sorry for the change, Change SID to StudentID for consistency.
-	StudentID string        `csv:"SID" gorm:"primarykey;size:16"`
+	SID       string        `csv:"SID" gorm:"primarykey;size:16"`
 	FirstName string        `csv:"FirstName"`
 	LastName  string        `csv:"LastName"`
 	Email     string        `csv:"Email"`

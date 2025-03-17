@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/curriculum/model"
+	model "ModEd/curriculum/model/wil-project"
 	"time"
 
 	"gorm.io/gorm"
