@@ -9,8 +9,7 @@ import (
 
 type Advisor struct {
 	gorm.Model
-	model.Instructor
-
 	AdvisorID uuid.UUID
-	Student   []model.Student `gorm:"foreignKey:StudentID"`
+	Advisor   model.Instructor `json:"Advisor" gorm:"foreignKey:AdvisorID;references:instructor_id"`
+	Student   []model.Student  `json:"Student" gorm:"foreignKey:StudentID;references:SID"`
 }
