@@ -19,5 +19,6 @@ type Assignment struct {
 	ScoreAssignmentAdvisor		[]*ScoreAssessmentAdvisor 	`gorm:"foreignKey:AssignmentId"`
 	ScoreAssignmentCommittee	[]*ScoreAssessmentCommittee `gorm:"foreignKey:AssignmentId"`
 
-	Progress				[]*Progress	`gorm:"foreignKey:AssignmentId"`
+	SeniorProject	*SeniorProject	`gorm:"foreignKey:AssignmentId"`		
+	Progress		[]*Progress		`gorm:"foreignKey:AssignmentId"`
 }

@@ -7,9 +7,11 @@ import (
 
 type ScoreAssignmentCommittee struct {
 	gorm.Model
-	ScoreAssignmentCommitteeId uuid.UUID `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
-	AssignmentId uuid.UUID    `gorm:"not null;index"`
-	CommitteeId  uuid.UUID    `gorm:"not null;index"`
-	Score        float64 `gorm:"not null"`
-	Assignment   *Assignment `gorm:"foreignKey:AssignmentId"`
+	ScoreAssignmentCommitteeId 	uuid.UUID 		`gorm:"type:text;primaryKey;default:gen_random_uuid()"`
+	AssignmentId 				uuid.UUID    	`gorm:"not null;index"`
+	CommitteeId  				uuid.UUID    	`gorm:"not null;index"`
+	Score        				float64 		`gorm:"not null"`
+	Assignment   				*Assignment 	`gorm:"foreignKey:AssignmentId"`
+	Advisor 					*Advisor 		`gorm:"foreignKey:AdvisorId"`
+	Committee 					*Committee 		`gorm:"foreignKey:CommitteeId"`
 }
