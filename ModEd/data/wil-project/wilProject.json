@@ -13,8 +13,8 @@
         "Email": "sorawit.udom@cpe1119.ac.th",
         "StartDate": "2025-03-16T00:00:00Z",
         "BirthDate": "2025-03-16T00:00:00Z",
-        "Program": "0",
-        "Status": "1"
+        "Program": 0,
+        "Status": 1
       },
       {
         "SID": "2",
@@ -23,8 +23,8 @@
         "Email": "chanapat.limt@cpe1119.ac.th",
         "StartDate": "2025-03-16T00:00:00Z",
         "BirthDate": "2025-03-16T00:00:00Z",
-        "Program": "0",
-        "Status": "1"
+        "Program": 0,
+        "Status": 1
       }
     ],
     "ApplicationStatus": "Pending",
