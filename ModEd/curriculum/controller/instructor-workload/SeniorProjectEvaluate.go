@@ -1,17 +1,21 @@
 package controller
 
 import (
-	"ModEd/curriculum/model"
+	model "ModEd/curriculum/model/instructor-workload"
 	"errors"
+
+	"gorm.io/gorm"
 )
 
 type AssignmentEvaluation struct{}
 type PresentationEvaluation struct{}
 type ReportEvaluation struct{}
 
-type ProjectEvaluationController struct{}
+type SeniorProjectEvaluateController struct {
+	Connector *gorm.DB
+}
 
-func (e *ProjectEvaluationController) EvaluateTask(evaluation *model.Evaluation) (float64, string, error) {
+func (e *SeniorProjectEvaluateController) EvaluateTask(evaluation *model.ProjectEvaluation) (float64, string, error) {
 	var evaluator model.ProjectEvaluationStrategy
 	switch evaluation.AssignmentType {
 	case "assignment":
@@ -29,22 +33,22 @@ func (e *ProjectEvaluationController) EvaluateTask(evaluation *model.Evaluation)
 	return evaluation.ExecuteEvaluation()
 }
 
-func (a *AssignmentEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
+func (a *AssignmentEvaluation) Evaluate(evaluation model.ProjectEvaluation) (float64, string, error) {
 	score := 10.0
 	comment := ""
 
 	return score, comment, nil
 }
 
-func (a *PresentationEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
-	score := 10.0
+func (a *PresentationEvaluation) Evaluate(evaluation model.ProjectEvaluation) (float64, string, error) {
+	score := 20.0
 	comment := ""
 
 	return score, comment, nil
 }
 
-func (a *ReportEvaluation) Evaluate(evaluation model.Evaluation) (float64, string, error) {
-	score := 10.0
+func (a *ReportEvaluation) Evaluate(evaluation model.ProjectEvaluation) (float64, string, error) {
+	score := 30.0
 	comment := ""
 
 	return score, comment, nil

@@ -1,17 +1,19 @@
 package model
 
 import (
+	commonModel "ModEd/common/model"
+
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type CourseUpdateRequest struct {
-	CourseID    uuid.UUID
-	RequestType CourseUpdateRequestTypeEnum
-	UpdatedBy   Instructor
-	UpdatedAt   time.Time
+	gorm.Model
+	CourseId    string                      `gorm:"not null"`
+	RequestType CourseUpdateRequestTypeEnum `gorm:"not null"`
+	UpdatedBy   commonModel.Instructor      `gorm:"not null"`
+	UpdatedAt   time.Time                   `gorm:"not null"`
 
 	UpdateStrategy CourseUpdateStrategy
 }

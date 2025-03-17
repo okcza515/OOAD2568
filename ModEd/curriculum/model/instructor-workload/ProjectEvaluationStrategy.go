@@ -7,10 +7,10 @@ import (
 )
 
 type ProjectEvaluationStrategy interface {
-	Evaluate(evaluation Evaluation) (float64, string, error)
+	Evaluate(evaluation ProjectEvaluation) (float64, string, error)
 }
 
-type Evaluation struct {
+type ProjectEvaluation struct {
 	ID             uuid.UUID
 	TaskID         uuid.UUID
 	GroupID        uuid.UUID
@@ -21,11 +21,11 @@ type Evaluation struct {
 	strategy ProjectEvaluationStrategy
 }
 
-func (e *Evaluation) SetEvaluationStrategy(strategy ProjectEvaluationStrategy) {
+func (e *ProjectEvaluation) SetEvaluationStrategy(strategy ProjectEvaluationStrategy) {
 	e.strategy = strategy
 }
 
-func (e *Evaluation) ExecuteEvaluation() (float64, string, error) {
+func (e *ProjectEvaluation) ExecuteEvaluation() (float64, string, error) {
 	if e.strategy == nil {
 		return 0, "", errors.New("Evaluation strategy is not set")
 	}
