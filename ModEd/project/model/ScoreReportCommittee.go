@@ -13,6 +13,5 @@ type ScoreReportCommittee struct {
 	Score                  float64   `gorm:"not null"`
 
 	Report    *Report    `gorm:"foreignKey:ReportId"`
-	Advisor   *Advisor   `gorm:"foreignKey:AdvisorId"`
 	Committee *Committee `gorm:"foreignKey:CommitteeId"`
 }
