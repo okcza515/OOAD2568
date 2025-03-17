@@ -17,4 +17,5 @@ type Report struct {
 
 	ScoresReportAdvisor   []ScoreReportAdvisor   `gorm:"foreignKey:ReportId"`
 	ScoresReportCommittee []ScoreReportCommittee `gorm:"foreignKey:ReportId"`
+	SeniorProject         *SeniorProject         `gorm:"foreignKey:SeniorProjectId"`
 }
