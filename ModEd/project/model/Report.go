@@ -9,6 +9,7 @@ import (
 
 type Report struct {
 	gorm.Model
+	ReportId        uuid.UUID  `gorm:"type:uuid;primaryKey"`
 	SeniorProjectID uuid.UUID  `gorm:"type:uuid;not null"`
 	ReportType      ReportType `gorm:"type:varchar(255);not null"`
 	Date            time.Time  `gorm:"not null"`
