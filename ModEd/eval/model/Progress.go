@@ -12,11 +12,9 @@ import (
 
 type Progress struct {
 	gorm.Model
-	SID        string        `gorm:"not null"` // รหัสนักศึกษา
-	Student    model.Student `gorm:"foreignKey:SID"`
-	Title      string        // ชื่อ Assignment
-	Assignment Assignment    `gorm:"foreignKey:Title"`
-	Status     string        // Status: Submitted, Late, Not Submitted
-	LastUpdate time.Time     `gorm:"autoUpdateTime"` // Update ล่าสุด
-	SubmitNum  uint          // จำนวนคนส่ง
+	SID         model.Student `gorm:"foreignKey:SID"` // รหัสนักศึกษา
+	Title       Assignment    // หัวข้อ assignment
+	Status      string        // Status: Submitted, Late, Not Submitted
+	LastUpdate  time.Time     `gorm:"autoUpdateTime"` // Update ล่าสุด
+	TotalSubmit uint          // จำนวนคนส่ง
 }
