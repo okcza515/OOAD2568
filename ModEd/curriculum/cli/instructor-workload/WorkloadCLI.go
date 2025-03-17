@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	controller := controller.CreateCourseUpdateController(connector)
-
-	controller.CourseUpdate(&model.CourseUpdateRequest{RequestType: model.NAME})
+	controller := controller.CreateCourseManageController(connector)
+	controller.GetScheduleByCourse("courseId")
+	controller.UpdateCourseName(&model.CourseNameUpdate{})
 }
