@@ -9,7 +9,7 @@ import (
 
 type InternshipSchedule struct {
 	gorm.Model
-	ScheduleId uuid.UUID
+	ScheduleId uuid.UUID     `gorm:"primaryKey"`
 	Student    InternStudent `gorm:"foreignKey:StudentID"`
 	StartDate  time.Time
 	EndDate    time.Time

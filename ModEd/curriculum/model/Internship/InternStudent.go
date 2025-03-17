@@ -7,8 +7,8 @@ import (
 )
 
 type InternStudent struct {
-  gorm.Model
-  Student 			model.Student	`json:"Student" gorm:"foreignKey:StudentID;references:SID"`
-	InternID 			uuid.UUID
-  InternStatus 	InternStatus  `csv:"-"`
+	gorm.Model
+	Student      model.Student `json:"Student" gorm:"foreignKey:StudentID;references:SID"`
+	InternID     uuid.UUID     `gorm:"primaryKey"`
+	InternStatus InternStatus  `csv:"-"`
 }

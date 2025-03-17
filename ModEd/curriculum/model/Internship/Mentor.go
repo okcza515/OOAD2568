@@ -7,10 +7,10 @@ import (
 
 type Mentor struct {
 	gorm.Model
-	MentorID 					uuid.UUID
-	MentorFirstName 	string
-	MentorLastName		string
-	MentorEmail 			string
-	MentorPhone 			string
-	Company 					Company	`gorm:"foreignKey:CompanyID;references:CompanyID"`
+	MentorID        uuid.UUID `gorm:"primaryKey"`
+	MentorFirstName string    `gorm:"type:varchar(255)"`
+	MentorLastName  string    `gorm:"type:varchar(255)"`
+	MentorEmail     string    `gorm:"type:varchar(255)"`
+	MentorPhone     string    `gorm:"type:varchar(255)"`
+	Company         Company   `gorm:"foreignKey:CompanyID;references:CompanyID"`
 }

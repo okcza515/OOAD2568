@@ -7,6 +7,6 @@ import (
 
 type Company struct {
 	gorm.Model
-	CompanyId   uuid.UUID
-	CompanyName string
+	CompanyId   uuid.UUID `gorm:"primaryKey"`
+	CompanyName string    `gorm:"type:varchar(255)"`
 }
