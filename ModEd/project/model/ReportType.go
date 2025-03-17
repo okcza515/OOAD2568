@@ -12,10 +12,11 @@ const (
 
 func ValidReportTypes() []ReportType {
 	return []ReportType{
-		ReportTypeProgress,
-		ReportTypeFinal,
-		ReportTypeMidterm,
+		ReportTypeIdea,
 		ReportTypeProposal,
+		ReportTypeProgress,
+		ReportTypeMidterm,
+		ReportTypeFinal,
 	}
 }
 
