@@ -11,7 +11,7 @@ type WIL struct {
 	Connector *gorm.DB
 }
 
-func CreateWIL(connector *gorm.DB) *WIL {
+func CreateWILProjectApplicationController(connector *gorm.DB) *WIL {
 	wil := WIL{Connector: connector}
 	connector.AutoMigrate(&commonModel.Student{}, &model.WILProjectApplication{}, &model.WILProjectMember{})
 
