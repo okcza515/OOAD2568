@@ -3,7 +3,24 @@ package model
 type PresentationType string
 
 const (
-	InitialPresentation PresentationType = "Proposal"
-	MidtermPresentation PresentationType = "Midterm"
-	FinalPresentation   PresentationType = "Final"
+	PresentationTypeProposal PresentationType = "proposal"
+	PresentationTypeMidterm  PresentationType = "midterm"
+	PresentationTypeFinal    PresentationType = "final"
 )
+
+func ValidPresentationTypes() []PresentationType {
+	return []PresentationType{
+		PresentationTypeProposal,
+		PresentationTypeMidterm,
+		PresentationTypeFinal,
+	}
+}
+
+func (rt PresentationType) IsValid() bool {
+	for _, validType := range ValidPresentationTypes() {
+		if rt == validType {
+			return true
+		}
+	}
+	return false
+}

@@ -9,8 +9,8 @@ import (
 type SeniorProjectGroup struct {
 	gorm.Model
 	GroupMember  []model.Student           `json:"group_member"`
-	Advisor      *Advisor                  `json:"advisor"`
-	Commitee     []Commitee                `json:"commitee"`
+	Advisor      Advisor                   `json:"advisor"`
+	Committee    []Committee               `json:"committee"`
 	Schedule     []SeniorProjectSchedule   `json:"schedule"`
 	Assignment   []SeniroProjectAssignment `json:"assignment"`
 	Presentation []Presentation            `json:"presentation"`
