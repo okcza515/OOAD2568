@@ -9,10 +9,10 @@ import (
 
 type Committee struct {
 	gorm.Model
-	CommitteeId 		uuid.UUID		`gorm:"type:text;primaryKey;default:gen_random_uuid()"`
-	SeniorProjectId 	uuid.UUID		`gorm:"type:text;not null;index"`
-	InstructorId    	uuid.UUID		`gorm:"type:text;not null;index"`
+	CommitteeId     uuid.UUID `gorm:"type:text;primaryKey;default:gen_random_uuid()"`
+	SeniorProjectId uuid.UUID `gorm:"type:text;not null;index"`
+	InstructorId    uuid.UUID `gorm:"type:text;not null;index"`
 
-	SeniorProject	*SeniorProject		`gorm:"foreignKey:SeniorProjectId"`
-	Instructor 		*common.Instructor	`gorm:"foreignKey:InstructorId"`
+	SeniorProject *SeniorProject     `gorm:"foreignKey:SeniorProjectId"`
+	Instructor    *common.Instructor `gorm:"foreignKey:InstructorId"`
 }
