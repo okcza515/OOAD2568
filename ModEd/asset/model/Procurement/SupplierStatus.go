@@ -5,8 +5,8 @@ import (
 )
 
 type SupplierStatus struct {
-	ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
-	SupplierID uuid.UUID `gorm:"type:uuid;not null"`
-	Status     string    `gorm:"type:varchar(50);not null"`
-	Remarks    string    `gorm:"type:text"`
+	SupplierStatusID	uuid.UUID `gorm:"type:uuid;primaryKey"`
+	SupplierID 			uuid.UUID `gorm:"type:uuid;not null"`
+	Status    			string    `gorm:"type:varchar(50);not null"`
+	Remarks    			string    `gorm:"type:text"`
 }

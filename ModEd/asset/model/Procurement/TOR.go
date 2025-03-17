@@ -5,7 +5,7 @@ import (
 )
 
 type TOR struct {
-	ID            uuid.UUID `gorm:"type:uuid;primaryKey"`
+	TORID		  uuid.UUID `gorm:"type:uuid;primaryKey"`
 	ProcurementID uuid.UUID `gorm:"type:uuid;not null"`
 	Scope         string    `gorm:"type:text"`
 	Deliverables  string    `gorm:"type:text"`
