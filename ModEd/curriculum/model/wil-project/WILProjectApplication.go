@@ -1,7 +1,9 @@
 package model
 
+import "github.com/google/uuid"
+
 type WILProjectApplication struct {
-	WILProjectApplicationId string             `json:"WILProjectApplicationId" gorm:"primaryKey;unique"`
+	WILProjectApplicationId uuid.UUID          `json:"WILProjectApplicationId" gorm:"primaryKey;unique"`
 	ProjectName             string             `json:"ProjectName"`
 	ProjectDetail           string             `json:"ProjectDetail"`
 	Company                 string             `json:"Company"`
