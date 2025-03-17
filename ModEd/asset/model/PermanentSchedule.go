@@ -4,28 +4,19 @@ import (
 	master "ModEd/common/model"
 	curriculum "ModEd/curriculum/model"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type PermanentSchedule struct {
-	StartDate   time.Time
-	EndDate     time.Time
-	IsAvailable bool
-	Faculty     master.Faculty
-	Department  master.Department
-	ProgramType master.ProgramType
+	ScheduleID  uuid.UUID          `gorm:"type:text;primaryKey"`
+	StartDate   time.Time          `gorm:"type:timestamp"`
+	EndDate     time.Time          `gorm:"type:timestamp"`
+	IsAvailable bool               `gorm:"type:boolean"`
+	Faculty     master.Faculty     `gorm:"foreignKey:FacultyID;references:FacultyID"`
+	Department  master.Department  `gorm:"foreignKey:DepartmentID;references:DepartmentID"`
+	ProgramType master.ProgramType `gorm:"foreignKey:ProgramType;references:ProgramType"`
 	Classroom   string
-	Course      curriculum.Course
-	Class       curriculum.Class
+	Course      curriculum.Course `gorm:"foreignKey:CourseID;references:CourseID"`
+	Class       curriculum.Class  `gorm:"foreignKey:ClassID;references:ClassID"`
 }
-
-/*func (ps *PermanentSchedule) SetStarttime(starttime time.Time) {
-	if ps.Starttime.IsZero() {
-		ps.Starttime = starttime
-	}
-}
-
-func (ps *PermanentSchedule) SetEndtime(endtime time.Time) {
-	if ps.Endtime.IsZero() {
-		ps.Endtime = endtime
-	}
-}*/
