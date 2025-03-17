@@ -1,15 +1,14 @@
 package util
 
 import (
-	"ModEd/common/model"
 	"errors"
 )
 
-type StudentDataMapper interface {
-	Map() []*model.Student
+type DataMapper interface {
+	Map(data interface{}) error
 }
 
-func CreateMapper(path string) (StudentDataMapper, error) {
+func CreateMapper(path string) (DataMapper, error) {
 	length := len(path)
 	if path[length-4:length] == ".csv" {
 		mapper := &CSVMapper{Path: path}
