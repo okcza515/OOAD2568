@@ -13,7 +13,7 @@ import "ModEd/utils/deserializer"
 ```go
 deserializer, err := deserializer NewFileDeserializer(path)
 if err != nil {
-	panic(err)
+	//error handling
 }
 ```
 3. `courses` will be automatically generate based on given type and data.
@@ -21,7 +21,12 @@ if err != nil {
 ```go
 var courses []*model.Course
 if err := deserializer.Deserialize(&courses); err != nil {
-	panic(err)
+	//error handling
 }
 ```
+4. There are also other `deserialize` method to use
+
+- `Deserialize()` - automatically select between CSV and JSON.
+- `DeserializeCSV()` - manually select CSV.
+- `DeserializeJSON()` - manually select JSON.
 
