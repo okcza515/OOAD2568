@@ -2,7 +2,7 @@ package main
 
 import (
 	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils/deserializer"
+	"ModEd/utils/deserializer"
 	"flag"
 	"fmt"
 )
