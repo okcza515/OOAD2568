@@ -16,7 +16,6 @@ type Booking struct {
 	EndDate       	time.Time 	`gorm:"type:timestamp;not null" json:"end_date" csv:"end_date"`
 	IsAvailable   	bool      	`gorm:"type:boolean;not null" json:"is_available" csv:"is_available"`
 	EventName     	string    	`gorm:"type:text;not null" json:"event_name" csv:"event_name"`
-	RoomStatus    	bool      	`gorm:"type:boolean;not null" json:"room_status" csv:"room_status"`
 	CapacityLimit	int       	`gorm:"type:integer;not null" json:"capacity_limit" csv:"capacity_limit"`
 }
 
