@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package model
 
 // InterviewCriteria defines the criteria for an interview.

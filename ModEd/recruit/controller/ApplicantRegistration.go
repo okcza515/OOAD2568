@@ -1,8 +1,10 @@
+// MEP-1003 Student Recruitment
 package controller
 
 import (
-    "ModEd/recruit/model"
-    "gorm.io/gorm"
+	"ModEd/recruit/model"
+
+	"gorm.io/gorm"
 )
 
 type ApplicantController struct {

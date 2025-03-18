@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package main
 
 import (
@@ -78,7 +79,7 @@ func main() {
 	interviewController := controller.CreateInterviewController(db.DB)
 
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
-		fmt.Println("❌ Failed to initialize application rounds:", err)
+		fmt.Println("Failed to initialize application rounds:", err)
 		return
 	}
 
