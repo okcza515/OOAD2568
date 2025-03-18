@@ -3,7 +3,7 @@ package main
 import (
 	controller "ModEd/curriculum/controller/wil-project"
 	model "ModEd/curriculum/model/wil-project"
-	"ModEd/curriculum/pkg/deserializer"
+	"ModEd/curriculum/utils/deserializer"
 	"errors"
 	"flag"
 	"fmt"
