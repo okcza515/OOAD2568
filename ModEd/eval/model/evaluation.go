@@ -17,6 +17,5 @@ type Evaluation struct {
 	InstructorId model.Instructor `gorm:"foreignKey:InstructorId"` //รหัสอาจารย์ที่ตรวจ
 	Score        float64          `gorm:"not null"`                //คะแนนที่นักศึกษาได้
 	Feedback     string           //คำแนะนำจากอาจารย์
-	EvaluatedAt  time.Time        //เริ่มประเมินเมื่อไร
-	LastUpdate   time.Time        //มีการแก้ไขล่าสุดเมื่อไร
+	EvaluatedAt  time.Time        //ประเมินเมื่อไร
 }
