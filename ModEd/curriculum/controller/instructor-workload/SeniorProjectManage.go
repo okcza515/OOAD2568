@@ -22,6 +22,15 @@ func (s SeniorProjectEvaluateController) GetSeniorProjectUnderAdvisor(instructor
 	return projects, nil
 }
 
+func (s SeniorProjectEvaluateController) GetSeniorProjectUnderCommittee(instructorId string) ([]*projectModel.SeniorProject, error) {
+	projects := []*projectModel.SeniorProject{}
+	result := s.Connector.Find(&projects, "committee_id = ?", instructorId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return projects, nil
+}
+
 func (e *SeniorProjectEvaluateController) EvaluateTask(evaluation *model.ProjectEvaluation) (float64, string, error) {
 	switch evaluation.AssignmentType {
 	case "assignment":

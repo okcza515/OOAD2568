@@ -35,4 +35,5 @@ func main() {
 	controller := controller.CreateCourseManageController(connector)
 	controller.GetScheduleByCourse("courseId")
 	controller.UpdateCourseName(&model.CourseNameUpdate{})
+	controller.CreateClassMaterial(&model.ClassMaterial{})
 }

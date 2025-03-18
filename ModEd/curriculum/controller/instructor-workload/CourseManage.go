@@ -58,3 +58,19 @@ func (courseUpdate *CourseManageController) UpdateCoursePrerequisite(coursePrere
 
 	return nil
 }
+
+func (c CourseManageController) AssignInstructorToCourse(instructorCourse *model.AssignedCourse) error {
+	result := c.Connector.Create(instructorCourse)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (c CourseManageController) CreateClassMaterial(classMaterial *model.ClassMaterial) (string, error) {
+	result := c.Connector.Create(classMaterial)
+	if result.Error != nil {
+		return "", result.Error
+	}
+	return "Class material created", nil
+}
