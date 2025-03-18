@@ -13,7 +13,7 @@ func NewBaseController[T any](db *gorm.DB) *BaseController[T] {
 }
 
 func (c *BaseController[T]) Insert(data T) error {
-	return c.db.Create(data).Error
+	return c.db.Create(&data).Error
 }
 
 func (c *BaseController[T]) UpdateByID(id uint, data *T) error {
