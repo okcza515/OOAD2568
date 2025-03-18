@@ -3,16 +3,15 @@ package controller
 import (
 	"ModEd/project/model"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type IReportController interface {
 	ListAllReports() ([]model.Report, error)
-	RetrieveReport(id uuid.UUID) (*model.Report, error)
+	RetrieveReport(id uint) (*model.Report, error)
 	InsertReport(report *model.Report) error
 	UpdateReport(report *model.Report) error
-	DeleteReport(id uuid.UUID) error
+	DeleteReport(id uint) error
 }
 
 type ReportController struct {
@@ -29,9 +28,9 @@ func (c *ReportController) ListAllReports() ([]model.Report, error) {
 	return reports, err
 }
 
-func (c *ReportController) RetrieveReport(id uuid.UUID) (*model.Report, error) {
+func (c *ReportController) RetrieveReport(id uint) (*model.Report, error) {
 	var report model.Report
-	if err := c.db.Where("report_id = ?", id).First(&report).Error; err != nil {
+	if err := c.db.Where("id = ?", id).First(&report).Error; err != nil {
 		return nil, err
 	}
 	return &report, nil
@@ -45,6 +44,6 @@ func (c *ReportController) UpdateReport(report *model.Report) error {
 	return c.db.Save(report).Error
 }
 
-func (c *ReportController) DeleteReport(id uuid.UUID) error {
-	return c.db.Where("report_id = ?", id).Delete(&model.Report{}).Error
+func (c *ReportController) DeleteReport(id uint) error {
+	return c.db.Where("id = ?", id).Delete(&model.Report{}).Error
 }
