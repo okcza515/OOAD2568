@@ -19,7 +19,7 @@ type PresentationController struct {
 }
 
 func NewPresentationController(db *gorm.DB) IPresentationController {
-	return &PresentationController{}
+	return &PresentationController{db: db}
 }
 
 func (c *PresentationController) ListAllPresentations() ([]model.Presentation, error) {
