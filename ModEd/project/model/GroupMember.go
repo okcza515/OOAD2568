@@ -6,7 +6,6 @@ import (
 
 type GroupMember struct {
 	gorm.Model
-	GroupMemberId   uint `gorm:"primaryKey"`
 	SeniorProjectId uint `gorm:"not null;index"`
 	StudentId       uint `gorm:"not null:index"`
 }

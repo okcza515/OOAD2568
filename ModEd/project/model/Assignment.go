@@ -8,7 +8,6 @@ import (
 
 type Assignment struct {
 	gorm.Model
-	AssignmentId    uint       `gorm:"type:text;primaryKey"`
 	SeniorProjectId uint       `gorm:"type:text;not null;index"`
 	Name            string     `gorm:"not null"`
 	Description     string     `gorm:"not null"`
