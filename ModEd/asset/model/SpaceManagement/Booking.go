@@ -18,12 +18,3 @@ type Booking struct {
 	EventName     	string    	`gorm:"type:text;not null" json:"event_name" csv:"event_name"`
 	CapacityLimit	int       	`gorm:"type:integer;not null" json:"capacity_limit" csv:"capacity_limit"`
 }
-
-// func (b *Booking) IsRoomAvailable(startTime, endTime time.Time) bool {
-// 	if (startTime.After(b.StartDate) && startTime.Before(b.EndDate)) ||
-// 		(endTime.After(b.StartDate) && endTime.Before(b.EndDate)) ||
-// 		startTime.Equal(b.StartDate) || endTime.Equal(b.EndDate) {
-// 		return false
-// 	}
-// 	return true
-// }
