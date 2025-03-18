@@ -22,7 +22,7 @@ func (student Student) GetAll() ([]*model.Student, error) {
 	return students, result.Error
 }
 
-func (student Student) GetByStudentID(sid string) (*model.Student, error) {
+func (student Student) GetByStudentId(sid string) (*model.Student, error) {
 	s := &model.Student{}
 	result := student.Connector.Where("s_id = ?", sid).First(student)
 	return s, result.Error
@@ -38,6 +38,6 @@ func (student Student) Update(sid string, updatedData map[string]any) error {
 		Updates(updatedData).Error
 }
 
-func (student Student) Delete(sid string) error {
+func (student Student) DeleteByStudentId(sid string) error {
 	return student.Connector.Where("s_id = ?", sid).Delete(&model.Student{}).Error
 }

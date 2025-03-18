@@ -13,15 +13,17 @@ import (
 // Model to store quiz detail
 type Quiz struct {
 	gorm.Model
-	ID          uint                   //Quiz ID
-	Title       string                 //Quiz Title
-	Description string                 //Quiz Description
-	Released    bool                   //to check if quiz is released
-	QuizStart   time.Time              //Time that quiz start
-	QuizEnd     time.Time              //Time that quiz finish
-	Status      string                 //Quiz status
-	Submission  []AssignmentSubmission //Submission detail
-	TotalSubmit uint                   //Toltal number of submited quiz
+	ID           uint             //Quiz ID
+	Title        string           //Quiz Title
+	Description  string           //Quiz Description
+	CourseId     model.Instructor //Course ID of quiz
+	InstructorId model.Instructor //Instructor ID of quiz
+	Released     bool             //to check if quiz is released
+	QuizStart    time.Time        //Time that quiz start
+	QuizEnd      time.Time        //Time that quiz finish
+	Status       string           //Quiz status
+	Submission   []QuizSubmission //Submission detail
+	TotalSubmit  uint             //Toltal number of submited quiz
 }
 
 // Model to store quiz submission detail

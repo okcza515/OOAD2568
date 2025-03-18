@@ -14,4 +14,5 @@ type Supply struct {
 	CategoryID  *uuid.UUID     `gorm:"type:text" json:"category_id" csv:"category_id"`
 	Quantity    int            `gorm:"not null" json:"quantity" csv:"quantity"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deleted_at" csv:"deleted_at"`
+	SupplyLog   []SupplyLog    `gorm:"foreignKey:SupplyID" json:"-" csv:"-"`
 }

@@ -11,4 +11,5 @@ type ScorePresentationAdvisor struct {
 	AdvisorId      uuid.UUID     `gorm:"type:text;not null;index"`
 	Score          float64       `gorm:"not null"`
 	Presentation   *Presentation `gorm:"foreignKey:PresentationId"`
+	Advisor        *Advisor      `gorm:"foreignKey:AdvisorId"`
 }
