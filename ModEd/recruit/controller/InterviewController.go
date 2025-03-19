@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package controller
 
 import (
@@ -18,7 +19,7 @@ func CreateInterviewController(db *gorm.DB) *InterviewController {
 	controller := &InterviewController{DB: db}
 
 	if err := db.AutoMigrate(&model.Interview{}); err != nil {
-		fmt.Println("❌ Failed to migrate interviews table:", err)
+		fmt.Println("Failed to migrate interviews table:", err)
 	}
 
 	return controller

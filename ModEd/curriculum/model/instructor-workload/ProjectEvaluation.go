@@ -5,12 +5,10 @@ import (
 )
 
 type ProjectEvaluation struct {
-	ID             uuid.UUID                 `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	TaskID         uuid.UUID                 `gorm:"type:uuid;not null;index"`
-	GroupID        uuid.UUID                 `gorm:"type:uuid;not null;index"`
+	EvaluationId   uuid.UUID                 `gorm:"type:string;default:uuid_generate_v4();primaryKey"`
+	TaskId         uuid.UUID                 `gorm:"type:string;not null;index"`
+	GroupId        uuid.UUID                 `gorm:"type:string;not null;index"`
 	AssignmentType ProjectEvaluationTypeEnum `gorm:"type:float6;not null"`
 	Score          float64                   `gorm:"type:decimal(5,2);not null"`
 	Comment        string                    `gorm:"type:text;not null"`
-
-	strategy ProjectEvaluationStrategy `gorm:"-"`
 }

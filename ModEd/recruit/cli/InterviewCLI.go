@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -7,8 +8,9 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"gorm.io/gorm"
+
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func InterviewCLI(interviewCtrl *controller.InterviewController) {
@@ -143,7 +145,7 @@ func ReportInterviewDetails(db *gorm.DB, applicantID uuid.UUID) {
 		return
 	}
 
-	// ✅ เช็คว่า `InterviewScore` มีค่าหรือไม่
+	//  เช็คว่า `InterviewScore` มีค่าหรือไม่
 	scoreText := "N/A"
 	if interview.InterviewScore != nil {
 		scoreText = fmt.Sprintf("%.2f", *interview.InterviewScore) // แสดงทศนิยม 2 ตำแหน่ง

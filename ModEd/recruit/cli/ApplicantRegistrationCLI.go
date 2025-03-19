@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -114,7 +115,7 @@ func RegisterApplicantCLI(
 
 	err := applicantCtrl.RegisterApplicant(&applicant)
 	if err != nil {
-		fmt.Println("❌ Registration failed:", err)
+		fmt.Println("Registration failed:", err)
 		return
 	}
 
