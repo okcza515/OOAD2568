@@ -5,13 +5,12 @@ import (
 
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type CourseUpdateRequest struct {
 	gorm.Model
-	CourseId    uuid.UUID                   `gorm:"type:varchar(255);not null;index"`
+	CourseId    int                         `gorm:"not null;index"`
 	RequestType CourseUpdateRequestTypeEnum `gorm:"type:string;not null"`
 	UpdatedBy   commonModel.Instructor      `gorm:"foreignKey:UpdatedByID"`
 	UpdatedAt   time.Time                   `gorm:"not null;autoUpdateTime"`
@@ -19,13 +18,13 @@ type CourseUpdateRequest struct {
 
 type CourseNameUpdate struct {
 	gorm.Model
-	CourseId  uuid.UUID              `gorm:"type:varchar(255);not null;index"`
+	CourseId  int                    `gorm:"not null;index"`
 	NewName   string                 `gorm:"type:string;not null"`
 	UpdatedBy commonModel.Instructor `gorm:"foreignKey:UpdatedByID"`
 }
 
 type CoursePrerequisiteUpdate struct {
 	gorm.Model
-	CourseId  uuid.UUID              `gorm:"type:varchar(255);not null;index"`
+	CourseId  int                    `gorm:"not null;index"`
 	UpdatedBy commonModel.Instructor `gorm:"foreignKey:UpdatedByID"`
 }

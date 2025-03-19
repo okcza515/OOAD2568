@@ -6,7 +6,7 @@ import (
 )
 
 type AssignedCourse struct {
-	AssignedCourseId string                   `gorm:"type:string;default:uuid_generate_v4();primaryKey"`
+	AssignedCourseId int                      `gorm:"primaryKey;autoIncrement"`
 	Instructors      []commonModel.Instructor `gorm:"many2many:assigned_course_instructors;"`
 	Course           model.Course
 }
