@@ -49,6 +49,10 @@ func main() {
 		deleteStudent(commandArgs)
 	case "updateStatus":
 		updateStudentStatus(commandArgs)
+	case "import":
+		importStudents(commandArgs)
+	case "sync":
+		synchronizeStudents(commandArgs)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		fmt.Println("Available commands: list, add, update, delete")

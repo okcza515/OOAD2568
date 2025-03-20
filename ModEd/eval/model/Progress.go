@@ -13,9 +13,9 @@ import (
 
 type Progress struct {
 	gorm.Model
-	SID         model.Student `gorm:"foreignKey:SID"` // รหัสนักศึกษาและประกาศว่าตัวแปรเป็น foreign key
-	Title       Assignment    // หัวข้อ assignment
-	Status      string        // Status: Submitted, Late, Not Submitted
-	LastUpdate  time.Time     `gorm:"autoUpdateTime"` // Update ล่าสุด
-	TotalSubmit uint          // จำนวนคนส่ง
+	SID         model.Student `gorm:"foreignKey:SID"`
+	Title       Assignment
+	Status      string
+	LastUpdate  time.Time `gorm:"autoUpdateTime"`
+	TotalSubmit uint
 }
