@@ -2,15 +2,13 @@ package model
 
 import (
 	CommonModel "ModEd/common/model"
-
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type InternStudent struct {
 	gorm.Model
-	StudentID    uint                `gorm:"index"`
-	Student      CommonModel.Student `gorm:"foreignKey:StudentID"`
-	InternID     uuid.UUID           `gorm:"type:uuid"`
+	InternID     int                 `gorm:"primaryKey autoIncrement:true"`
 	InternStatus InternStatus        `gorm:"type:varchar(20)"`
+	StudentCode  uint                `gorm:"index"`
+	Student      CommonModel.Student `gorm:"foreignKey:StudentID"`
 }
