@@ -16,7 +16,7 @@ func CreateStudentRegistration(connector *gorm.DB) *StudentRegistration {
 	return &registration
 }
 
-func (registration StudentRegistration) Register(students []*model.Student) {
+func (registration *StudentRegistration) Register(students []*model.Student) {
 	for _, student := range students {
 		registration.Connector.Create(student)
 	}
@@ -28,4 +28,6 @@ func (registration StudentRegistration) GetAll() ([]*model.Student, error) {
 	return students, result.Error
 }
 
-
+func (registration *StudentRegistration) TruncateStudents() error {
+	return registration.Connector.Exec("DELETE FROM students; VACUUM;").Error
+}
