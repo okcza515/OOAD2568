@@ -8,7 +8,7 @@ import (
 type InternshipSchedule struct {
 	gorm.Model
 	InternshipScheduleId int           `gorm:"primaryKey autoIncrement"`
-	Student              InternStudent `gorm:"foreignKey:StudentID"`
+	Student              InternStudent `gorm:"foreignKey:InternStudentId"`
 	StartDate            time.Time
 	EndDate              time.Time
 }
