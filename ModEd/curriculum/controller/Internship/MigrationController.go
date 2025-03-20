@@ -18,7 +18,8 @@ func (c *MigrationController) MigrateToDB() error {
 		&model.InternshipSchedule{},
 		&model.SupervisorReview{},
 		&modelCommon.Student{},
-		//&model.InternshipApplication{},
+		&model.InternshipReport{},
+		&model.InternshipApplication{},
 	)
 	if err != nil {
 		return errors.New("err: migration failed")
