@@ -3,7 +3,7 @@ package controller
 import (
 	model "ModEd/curriculum/model/Internship"
 	"errors"
-
+	modelCommon "ModEd/common/model"
 	"gorm.io/gorm"
 )
 
@@ -17,6 +17,7 @@ func (c *MigrationController) MigrateToDB() error {
 		&model.Company{},
 		&model.InternshipSchedule{},
 		&model.SupervisorReview{},
+		&modelCommon.Student{},
 		//&model.InternshipApplication{},
 	)
 	if err != nil {
