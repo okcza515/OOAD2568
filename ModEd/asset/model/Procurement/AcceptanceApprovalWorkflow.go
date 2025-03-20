@@ -1,12 +1,16 @@
-//MEP-1014
+// MEP-1014
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
 type AcceptanceApprovalWorkflow struct {
 	AcceptanceApprovalWorkflowID uuid.UUID   `gorm:"type:uuid;primaryKey"`
-	ApproversID                  []uuid.UUID `gorm:"foreignKey:InstructorId"` //TO-DO: Fix this data type
-	Status                       uuid.UUID   `gorm:"foreignKey:AcceptanceApprovalStatusID"`
+	ApproversID                  []uuid.UUID `gorm:"foreignKey:InstructorId"` //TODO: Fix this data type
+	Status                       string      `gorm:"type:varchar(50);not null"`
+	Description                  string      `gorm:"type:text"`
+	ApprovalTime                 time.Time   `gorm:"type:time;not null"`
 }

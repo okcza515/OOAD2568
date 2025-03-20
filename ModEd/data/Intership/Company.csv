@@ -1,4 +1,11 @@
-CompanyId,CompanyName
-550e8400-e29b-41d4-a716-446655440000,Mickiee Ltd
-550e8400-e29b-41d4-a716-446655440001,BoomBoom Corp
-550e8400-e29b-41d4-a716-446655440002,BigChit Inc
+CompanyId,CompanyName,MentorFirstName,MentorLastName,MentorEmail,MentorPhone
+1,Alpha Tech,John,Doe,john.doe@example.com,123-456-7890
+2,Beta Solutions,Jane,Smith,jane.smith@example.com,987-654-3210
+3,Gamma Innovations,James,Brown,james.brown@example.com,456-789-0123
+4,Delta Systems,Emily,White,emily.white@example.com,321-654-0987
+5,Epsilon Networks,Michael,Johnson,michael.johnson@example.com,789-012-3456
+6,Zeta Analytics,Sophia,Miller,sophia.miller@example.com,654-321-7890
+7,Theta Robotics,Daniel,Clark,daniel.clark@example.com,147-258-3690
+8,Iota Security,Olivia,Evans,olivia.evans@example.com,369-147-2580
+9,Kappa Designs,Ethan,Wilson,ethan.wilson@example.com,741-852-9630
+10,Lambda Consulting,Ava,Roberts,ava.roberts@example.com,852-963-7410
