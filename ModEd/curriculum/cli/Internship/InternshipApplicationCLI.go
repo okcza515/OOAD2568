@@ -17,8 +17,8 @@ func main() {
 		path     string
 	)
 
-	flag.StringVar(&database, "database", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/ModEd.bin", "Path of SQLite Database.")
-	flag.StringVar(&path, "path", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/Company.csv", "Path to CSV or JSON for student registration.")
+	flag.StringVar(&database, "database", "", "Path of SQLite Database.")
+	flag.StringVar(&path, "path", "", "Path to CSV or JSON for student registration.")
 	flag.Parse()
 
 	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
