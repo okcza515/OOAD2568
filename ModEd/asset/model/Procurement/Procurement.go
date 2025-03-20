@@ -12,5 +12,4 @@ type Procurement struct {
 	TORcandidate                  []uuid.UUID `gorm:"foreignKey:TORID"`
 	ItemRequestID                 uuid.UUID   `gorm:"foreignKey:ItemRequestID"`
 	ProcurementApprovalWorkflowID uuid.UUID   `gorm:"type:uuid;ProcurementApprovalWorkflowID"`
-	ItemApprovalStatusID          string      `gorm:"not null"`
 }
