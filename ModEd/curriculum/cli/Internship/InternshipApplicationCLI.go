@@ -1,14 +1,12 @@
 package main
 
 import (
-	CommonModel "ModEd/common/model"
 	controller "ModEd/curriculum/controller/Internship"
-	model "ModEd/curriculum/model/Internship"
 
+	"errors"
 	"flag"
-	"time"
+	"os"
 
-	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -19,31 +17,24 @@ func main() {
 		path     string
 	)
 
-	flag.StringVar(&database, "database", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/internship_data.bin", "Path of SQLite Database.") //TODO: Waiting for common database cli implemente
-	flag.StringVar(&path, "path", "", "Path to CSV or JSON for WIL Application ")
+	flag.StringVar(&database, "database", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/ModEd.bin", "Path of SQLite Database.")
+	flag.StringVar(&path, "path", "C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/Company.csv", "Path to CSV or JSON for student registration.")
 	flag.Parse()
 
-	connector, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
-	InternStudent := &model.InternStudent{
-		Student: CommonModel.Student{
-			SID:       "65070501001",
-			FirstName: "Mick",
-			LastName:  "Doe",
-			Email:     "mm@example.com",
-			StartDate: time.Now(),
-			BirthDate: time.Now(),
-			Program:   CommonModel.ProgramType(1),
-			Status:    CommonModel.StudentStatus(1),
-		},
-		InternID:     uuid.New(),
-		InternStatus: model.ACTIVE,
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		panic("*** Error: " + path + " does not exist.\n")
 	}
 
-	controller := controller.CreateInternshipApplicationController(connector)
+	migrationController := controller.MigrationController{Db: db}
 
-	controller.RegisterInternshipApplication(InternStudent)
+	err = migrationController.MigrateToDB()
+	if err != nil {
+		panic("err: migration failed")
+	}
+
 }
