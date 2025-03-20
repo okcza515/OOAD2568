@@ -1,16 +1,14 @@
 package model
 
 import (
-	"time"
-
-	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"time"
 )
 
 type InternshipSchedule struct {
 	gorm.Model
-	ScheduleId uuid.UUID     `gorm:"primaryKey"`
-	Student    InternStudent `gorm:"foreignKey:StudentID"`
-	StartDate  time.Time
-	EndDate    time.Time
+	InternshipScheduleId int           `gorm:"primaryKey autoIncrement"`
+	Student              InternStudent `gorm:"foreignKey:StudentID"`
+	StartDate            time.Time
+	EndDate              time.Time
 }

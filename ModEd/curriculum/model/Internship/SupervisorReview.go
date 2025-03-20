@@ -7,8 +7,8 @@ import (
 
 type SupervisorReview struct {
 	gorm.Model
-	ReviewId        uuid.UUID     `gorm:"primaryKey"`
-	Student         InternStudent `gorm:"foreignKey:StudentID"`
-	InstructorScore int           `gorm:"type:int"`
-	MentorScore     int           `gorm:"type:int"`
+	SupervisorReviewId int           `gorm:"primaryKey autoIncrement"`
+	Student            InternStudent `gorm:"foreignKey:StudentID"`
+	InstructorScore    int           `gorm:"type:int"`
+	MentorScore        int           `gorm:"type:int"`
 }
