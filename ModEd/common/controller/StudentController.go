@@ -41,3 +41,14 @@ func (student StudentController) Update(sid string, updatedData map[string]any) 
 func (student StudentController) DeleteByStudentId(sid string) error {
 	return student.Connector.Where("s_id = ?", sid).Delete(&model.Student{}).Error
 }
+
+func (student StudentController) TruncateStudents() error {
+	return student.Connector.Exec("DELETE FROM students").Error
+}
+
+func (student StudentController) Register(students []*model.Student) {
+	_ = student.TruncateStudents()
+	for _, s := range students {
+		student.Connector.Create(s)
+	}
+}

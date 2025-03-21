@@ -4,6 +4,7 @@ import (
 	controller "ModEd/common/controller"
 	"ModEd/common/model"
 	"ModEd/utils/deserializer"
+
 	// "ModEd/core"
 	"errors"
 	"flag"
@@ -13,8 +14,6 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-
-
 
 func main() {
 	var (
@@ -38,17 +37,17 @@ func main() {
 		return
 	}
 
-	studentController := controller.CreateStudentRegistration(connector)
+	studentController := controller.CreateStudentController(connector)
 	instructorController := controller.CreateInstructorController(connector)
-			// controller := core.NewBaseController[*model.Student](connector)
+	// controller := core.NewBaseController[*model.Student](connector)
 
-			// mapper, err := util.CreateMapper(path)
-			// if err != nil {
-			// 	panic(err)
-			// }
+	// mapper, err := util.CreateMapper(path)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-			// students := mapper.Map()
-			// controller.Register(students)
+	// students := mapper.Map()
+	// controller.Register(students)
 
 	deserializer, err := deserializer.NewFileDeserializer(path)
 	if err != nil {
@@ -61,13 +60,13 @@ func main() {
 
 	studentController.Register(students)
 
-	InstuctorRegister(&[]model.Instructor{}, deserializer, instructorController)
-			// for _, student := range students {
-			// 	controller.Insert(student)
-			// }
+	//InstuctorRegister(&[]model.Instructor{}, deserializer, instructorController)
+	// for _, student := range students {
+	// 	controller.Insert(student)
+	// }
 
 	//retrieved, err := controller.GetAll()
-			// retrieved, err := controller.List(nil)
+	// retrieved, err := controller.List(nil)
 
 	// if err != nil {
 	// 	panic(err)
@@ -84,17 +83,13 @@ func main() {
 		fmt.Printf("%s\n", i.FirstName)
 	}
 
-	fmt.Printf("1")
-
-	if err := studentController.TruncateStudents(); err != nil {
-		panic(err)
-	}
+	fmt.Println("✔️ Student data updated successfully.")
 }
 
 // **TODO when BaseController is fully functional or the truncate is no longer needed**
 // A unified and reusable register function
 func GenericRegister[T any]() {
-	
+
 }
 
 func InstuctorRegister(instructors *[]model.Instructor, d *deserializer.FileDeserializer, iController *controller.InstructorController) {
