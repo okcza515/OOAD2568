@@ -8,7 +8,7 @@ import (
 
 type InternStudent struct {
 	gorm.Model
-	InternshipApplicationId uint                  `gorm:"primaryKey autoIncrement:true"`
+	InternshipApplicationId uint                  `gorm:"index"`
 	InternshipApplication   InternshipApplication `gorm:"foreignKey:InternshipApplicationId;references:ID"`
 	InternStatus            InternStatus          `gorm:"type:varchar(20)"`
 	StudentCode             string                `gorm:"not null"`
