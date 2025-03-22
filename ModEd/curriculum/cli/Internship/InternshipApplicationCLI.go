@@ -37,4 +37,10 @@ func main() {
 		panic("err: migration failed")
 	}
 
+	companyDataController := controller.NewCompanyDataController(db)
+	err = companyDataController.ImportCompaniesFromCSV(path)
+	if err != nil {
+		panic("err: failed to import companies")
+	}
+
 }
