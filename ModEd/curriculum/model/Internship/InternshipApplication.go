@@ -22,4 +22,6 @@ type InternshipApplication struct {
 	SupervisorReview      SupervisorReview             `gorm:"foreignKey:SupervisorReviewId;references:ID"`
 	InternshipScheduleId  uint                         `gorm:"not null"`
 	InternshipSchedule    InternshipSchedule           `gorm:"foreignKey:InternshipScheduleId;references:ID"`
+	StudentCode           uint                         `gorm:"not null"`
+	Student               InternStudent                `gorm:"foreignKey:StudentCode;references:StudentCode"`
 }
