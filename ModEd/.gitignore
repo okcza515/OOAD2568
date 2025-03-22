@@ -1,2 +1,6 @@
 data/ModEd.bin
 data/*/*.bin
+
+# for db files
+data/curriculum.db
+data/*/*.db
