@@ -31,16 +31,21 @@ func main() {
 	}
 
 	migrationController := controller.MigrationController{Db: db}
-
 	err = migrationController.MigrateToDB()
 	if err != nil {
 		panic("err: migration failed")
 	}
 
 	companyDataController := controller.NewCompanyDataController(db)
-	err = companyDataController.ImportCompaniesFromCSV(path)
+	err = companyDataController.ImportCompaniesFromCSV("C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/Company.csv")
 	if err != nil {
 		panic("err: failed to import companies")
+	}
+
+	internStudentController := controller.InternStudentController{Connector: db}
+	err = internStudentController.RegisterInternStudentsFromFile("C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/StudentList.csv")
+	if err != nil {
+		panic("err: failed to import students")
 	}
 
 }
