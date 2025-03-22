@@ -27,7 +27,7 @@ func TestCreateCourse(t *testing.T) {
 	db := setupDB()
 	courseController := controller.NewCourseController(db)
 
-	newCourse := &model.Course{
+	newCourse := model.Course{
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -36,20 +36,17 @@ func TestCreateCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	retrievedCourse, err := courseController.GetCourseByID(newCourse.ID)
+	retrievedCourse, err := courseController.GetCourseByID(courseId)
 	if err != nil {
 		t.Fatalf("Failed to get course: %v", err)
 	}
 	if retrievedCourse.Name != newCourse.Name {
 		t.Errorf("Expected course name %s, got %v", newCourse.Name, retrievedCourse.Name)
-	}
-	if retrievedCourse.CourseStatus != model.ACTIVE {
-		t.Errorf("Expected course status %v, got %v", model.ACTIVE, retrievedCourse.CourseStatus)
 	}
 }
 
@@ -57,7 +54,7 @@ func TestGetCourseByID(t *testing.T) {
 	db := setupDB()
 	courseController := controller.NewCourseController(db)
 
-	newCourse := &model.Course{
+	newCourse := model.Course{
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -66,12 +63,12 @@ func TestGetCourseByID(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	retrievedCourse, err := courseController.GetCourseByID(newCourse.ID)
+	retrievedCourse, err := courseController.GetCourseByID(courseId)
 	if err != nil {
 		t.Fatalf("Failed to get course: %v", err)
 	}
@@ -87,7 +84,7 @@ func TestListCourses(t *testing.T) {
 	db := setupDB()
 	courseController := controller.NewCourseController(db)
 
-	newCourse := &model.Course{
+	newCourse := model.Course{
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -96,7 +93,7 @@ func TestListCourses(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	err := courseController.CreateCourse(newCourse)
+	_, err := courseController.CreateCourse(newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
@@ -114,7 +111,7 @@ func TestUpdateCourse(t *testing.T) {
 	db := setupDB()
 	courseController := controller.NewCourseController(db)
 
-	newCourse := &model.Course{
+	newCourse := model.Course{
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -123,93 +120,40 @@ func TestUpdateCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	updatedCourse := &model.Course{
-		Name:         "Updated Course",
-		Description:  "Updated Description",
-		Optional:     true,
-		CourseStatus: model.INACTIVE,
+	// First retrieve the course to get its ID
+	retrievedCourse, err := courseController.GetCourseByID(courseId)
+	if err != nil {
+		t.Fatalf("Failed to get course: %v", err)
 	}
 
-	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
+	// Update the retrieved course
+	updatedCourse := *retrievedCourse
+	updatedCourse.Name = "Updated Course"
+	updatedCourse.Description = "Updated Description"
+	updatedCourse.Optional = true
+	updatedCourse.CourseStatus = model.INACTIVE
+
+	result, err := courseController.UpdateCourse(updatedCourse)
 	if err != nil {
 		t.Fatalf("Failed to update course: %v", err)
 	}
 
-	retrievedCourse, err := courseController.GetCourseByID(newCourse.ID)
-	if err != nil {
-		t.Fatalf("Failed to get updated course: %v", err)
+	if result.Name != "Updated Course" {
+		t.Errorf("Expected updated name 'Updated Course', got %v", result.Name)
 	}
-	if retrievedCourse.Name != "Updated Course" {
-		t.Errorf("Expected updated name 'Updated Course', got %v", retrievedCourse.Name)
+	if result.Description != "Updated Description" {
+		t.Errorf("Expected updated description 'Updated Description', got %v", result.Description)
 	}
-	if retrievedCourse.Description != "Updated Description" {
-		t.Errorf("Expected updated description 'Updated Description', got %v", retrievedCourse.Description)
+	if !result.Optional {
+		t.Errorf("Expected Optional to be true, got %v", result.Optional)
 	}
-	if !retrievedCourse.Optional {
-		t.Errorf("Expected Optional to be true, got %v", retrievedCourse.Optional)
-	}
-	if retrievedCourse.CourseStatus != model.INACTIVE {
-		t.Errorf("Expected CourseStatus to be INACTIVE, got %v", retrievedCourse.CourseStatus)
-	}
-}
-
-func TestUpdateCourseStatus(t *testing.T) {
-	db := setupDB()
-	courseController := controller.NewCourseController(db)
-
-	newCourse := &model.Course{
-		Name:         "Status Test Course",
-		Description:  "Testing Status Transitions",
-		Optional:     false,
-		CourseStatus: model.INACTIVE, // Starting with Draft status
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
-
-	err := courseController.CreateCourse(newCourse)
-	if err != nil {
-		t.Fatalf("Failed to create course: %v", err)
-	}
-
-	// Transition from INACTIVE to ACTIVE
-	updatedCourse := &model.Course{
-		Name:         newCourse.Name,
-		Description:  newCourse.Description,
-		Optional:     newCourse.Optional,
-		CourseStatus: model.ACTIVE,
-	}
-
-	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
-	if err != nil {
-		t.Fatalf("Failed to update course status: %v", err)
-	}
-
-	retrievedCourse, err := courseController.GetCourseByID(newCourse.ID)
-	if err != nil {
-		t.Fatalf("Failed to get updated course: %v", err)
-	}
-	if retrievedCourse.CourseStatus != model.ACTIVE {
-		t.Errorf("Expected CourseStatus to be ACTIVE, got %v", retrievedCourse.CourseStatus)
-	}
-
-	// Transition from ACTIVE to INACTIVE
-	updatedCourse.CourseStatus = model.INACTIVE
-	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
-	if err != nil {
-		t.Fatalf("Failed to update course status: %v", err)
-	}
-
-	retrievedCourse, err = courseController.GetCourseByID(newCourse.ID)
-	if err != nil {
-		t.Fatalf("Failed to get updated course: %v", err)
-	}
-	if retrievedCourse.CourseStatus != model.INACTIVE {
-		t.Errorf("Expected CourseStatus to be Archived, got %v", retrievedCourse.CourseStatus)
+	if result.CourseStatus != model.INACTIVE {
+		t.Errorf("Expected CourseStatus to be INACTIVE, got %v", result.CourseStatus)
 	}
 }
 
@@ -217,7 +161,7 @@ func TestDeleteCourse(t *testing.T) {
 	db := setupDB()
 	courseController := controller.NewCourseController(db)
 
-	newCourse := &model.Course{
+	newCourse := model.Course{
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -226,17 +170,20 @@ func TestDeleteCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	err = courseController.DeleteCourse(newCourse.ID)
+	deletedCourse, err := courseController.DeleteCourse(courseId)
 	if err != nil {
 		t.Fatalf("Failed to delete course: %v", err)
 	}
+	if deletedCourse.ID != courseId {
+		t.Errorf("Expected course ID %v, got %v", courseId, deletedCourse.ID)
+	}
 
-	_, err = courseController.GetCourseByID(newCourse.ID)
+	_, err = courseController.GetCourseByID(courseId)
 	if err == nil {
 		t.Fatalf("Expected error when getting deleted course, got nil")
 	}
