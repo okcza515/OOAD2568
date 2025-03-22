@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	commonModel "ModEd/common/model"
-	controller "ModEd/curriculum/controller"
+	controller "ModEd/curriculum/controller/curriculum"
 	model "ModEd/curriculum/model"
 )
 
@@ -33,7 +33,7 @@ func TestCreateCurriculum(t *testing.T) {
 		StartYear:      2023,
 		EndYear:        2027,
 		DepartmentName: "CS Dept",
-		ProgramType:    commonModel.ProgramType("International"),
+		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
 	curriculumId, err := curriculumController.CreateCurriculum(newCurriculum)
@@ -60,7 +60,7 @@ func TestGetCurriculum(t *testing.T) {
 		StartYear:      2022,
 		EndYear:        2026,
 		DepartmentName: "SE Dept",
-		ProgramType:    commonModel.ProgramType("International"),
+		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(curriculum)
@@ -87,7 +87,7 @@ func TestGetCurriculums(t *testing.T) {
 		StartYear:      2021,
 		EndYear:        2025,
 		DepartmentName: "DS Dept",
-		ProgramType:    commonModel.ProgramType("master"),
+		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
 	_, err := curriculumController.CreateCurriculum(curriculum)
@@ -114,7 +114,7 @@ func TestUpdateCurriculum(t *testing.T) {
 		StartYear:      2024,
 		EndYear:        2028,
 		DepartmentName: "Cyber Dept",
-		ProgramType:    commonModel.ProgramType("bachelor"),
+		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(curriculum)
@@ -147,7 +147,7 @@ func TestDeleteCurriculum(t *testing.T) {
 		StartYear:      2023,
 		EndYear:        2027,
 		DepartmentName: "AI Dept",
-		ProgramType:    commonModel.ProgramType("phd"),
+		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(curriculum)
