@@ -19,7 +19,6 @@ func (c *MigrationController) MigrateToDB() error {
 		&asset.Category{},
 		&asset.Instrument{},
 		&asset.InstrumentLog{},
-		&asset.ReturnInstrument{},
 		&asset.Supply{},
 		&asset.SupplyLog{},
 	)
