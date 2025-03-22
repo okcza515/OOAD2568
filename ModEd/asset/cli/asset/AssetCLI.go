@@ -38,7 +38,6 @@ func main() {
 	}
 
 	instrumentLogController := asset2.InstrumentLogController{Db: db}
-	supplyController := asset2.SupplyController{Db: db}
 	migrationController := asset2.MigrationController{Db: db}
 
 	err = migrationController.MigrateToDB()
@@ -60,37 +59,6 @@ func main() {
 	}
 
 	db.Create(exampleLog)
-
-	exampleSupply := asset.Supply{
-		SupplyID:    uuid.New(),
-		SupplyLabel: "New supply",
-		Description: nil,
-		RoomID:      uuid.New(),
-		Location:    nil,
-		CategoryID:  nil,
-		Quantity:    100,
-		DeletedAt:   gorm.DeletedAt{},
-	}
-
-	supplyController.Create(&exampleSupply)
-
-	supplys, err := supplyController.GetAll()
-
-	if err != nil {
-		panic("err: query supply failed")
-	}
-
-	for _, supplyLog := range *supplys {
-		util.PrintStruct(supplyLog)
-	}
-
-	supply, err := supplyController.GetByID((*supplys)[len((*supplys))-1].SupplyID)
-
-	if err != nil {
-		panic("err: query supply deleted")
-	}
-
-	util.PrintStruct(*supply)
 
 	logs, err := instrumentLogController.GetAll()
 	if err != nil {
