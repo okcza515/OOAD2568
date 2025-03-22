@@ -7,19 +7,19 @@ import (
 )
 
 type InstrumentLogController struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 func (c *InstrumentLogController) getAll() (*[]model.InstrumentLog, error) {
 	logs := new([]model.InstrumentLog)
-	result := c.Db.Find(&logs)
+	result := c.db.Find(&logs)
 
 	return logs, result.Error
 }
 
 func (c *InstrumentLogController) ListAll() ([]string, error) {
 	logs := new([]model.InstrumentLog)
-	result := c.Db.Find(&logs)
+	result := c.db.Find(&logs)
 
 	if result.Error != nil {
 		return nil, result.Error

@@ -8,11 +8,11 @@ import (
 )
 
 type MigrationController struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 func (c *MigrationController) MigrateToDB() error {
-	err := c.Db.AutoMigrate(
+	err := c.db.AutoMigrate(
 		&model.InstrumentLog{},
 		&model.Instrument{},
 		&model.BorrowInstrument{},

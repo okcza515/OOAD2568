@@ -6,11 +6,11 @@ import (
 )
 
 type InstrumentController struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 func (ins *InstrumentController) CreateNewInstrument(instrumentData *[]asset.Instrument) error {
-	result := ins.Db.Create(instrumentData)
+	result := ins.db.Create(instrumentData)
 
 	if result.Error != nil {
 		return result.Error
