@@ -4,27 +4,22 @@ import (
 	"testing"
 	"time"
 
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	controller "ModEd/curriculum/controller/class"
 	"ModEd/curriculum/model"
+	"ModEd/curriculum/utils"
 )
 
-func initDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("../../data/curriculum.db"), &gorm.Config{})
+func TestCreateClass(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	if err := db.AutoMigrate(&model.Class{}); err != nil {
-		panic(err)
-	}
-	return db
-}
-
-func TestCreateClass(t *testing.T) {
-	db := initDB()
 	classController := controller.NewClassController(db)
 
 	newClass := model.Class{
@@ -54,7 +49,14 @@ func TestCreateClass(t *testing.T) {
 }
 
 func TestGetClass(t *testing.T) {
-	db := initDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	classController := controller.NewClassController(db)
 
 	newClass := model.Class{
@@ -84,7 +86,14 @@ func TestGetClass(t *testing.T) {
 }
 
 func TestGetClasses(t *testing.T) {
-	db := initDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	classController := controller.NewClassController(db)
 
 	newClass := model.Class{
@@ -99,7 +108,7 @@ func TestGetClasses(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	_, err := classController.CreateClass(&newClass)
+	_, err = classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}
@@ -114,7 +123,14 @@ func TestGetClasses(t *testing.T) {
 }
 
 func TestUpdateClass(t *testing.T) {
-	db := initDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	classController := controller.NewClassController(db)
 
 	newClass := model.Class{
@@ -151,7 +167,14 @@ func TestUpdateClass(t *testing.T) {
 }
 
 func TestDeleteClass(t *testing.T) {
-	db := initDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	classController := controller.NewClassController(db)
 
 	newClass := model.Class{

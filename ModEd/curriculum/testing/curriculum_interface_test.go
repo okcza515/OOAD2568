@@ -3,28 +3,23 @@ package test
 import (
 	"testing"
 
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	commonModel "ModEd/common/model"
 	controller "ModEd/curriculum/controller/curriculum"
 	model "ModEd/curriculum/model"
+	"ModEd/curriculum/utils"
 )
 
-func initCurriculumDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("../../data/curriculum.db"), &gorm.Config{})
+func TestCreateCurriculum(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	if err := db.AutoMigrate(&model.Curriculum{}); err != nil {
-		panic(err)
-	}
-	return db
-}
-
-func TestCreateCurriculum(t *testing.T) {
-	db := initCurriculumDB()
 	curriculumController := controller.NewCurriculumController(db)
 
 	newCurriculum := model.Curriculum{
@@ -51,7 +46,14 @@ func TestCreateCurriculum(t *testing.T) {
 }
 
 func TestGetCurriculum(t *testing.T) {
-	db := initCurriculumDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
@@ -78,7 +80,14 @@ func TestGetCurriculum(t *testing.T) {
 }
 
 func TestGetCurriculums(t *testing.T) {
-	db := initCurriculumDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
@@ -90,7 +99,7 @@ func TestGetCurriculums(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	_, err := curriculumController.CreateCurriculum(&curriculum)
+	_, err = curriculumController.CreateCurriculum(&curriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}
@@ -105,7 +114,14 @@ func TestGetCurriculums(t *testing.T) {
 }
 
 func TestUpdateCurriculum(t *testing.T) {
-	db := initCurriculumDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
@@ -138,7 +154,14 @@ func TestUpdateCurriculum(t *testing.T) {
 }
 
 func TestDeleteCurriculum(t *testing.T) {
-	db := initCurriculumDB()
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
