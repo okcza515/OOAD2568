@@ -7,7 +7,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"ModEd/curriculum/controller"
+	controller "ModEd/curriculum/controller/course"
 	"ModEd/curriculum/model"
 )
 
@@ -31,7 +31,7 @@ func TestCreateCourse(t *testing.T) {
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -48,8 +48,8 @@ func TestCreateCourse(t *testing.T) {
 	if retrievedCourse.Name != newCourse.Name {
 		t.Errorf("Expected course name %s, got %v", newCourse.Name, retrievedCourse.Name)
 	}
-	if retrievedCourse.CourseStatus != model.Active {
-		t.Errorf("Expected course status %v, got %v", model.Active, retrievedCourse.CourseStatus)
+	if retrievedCourse.CourseStatus != model.ACTIVE {
+		t.Errorf("Expected course status %v, got %v", model.ACTIVE, retrievedCourse.CourseStatus)
 	}
 }
 
@@ -61,7 +61,7 @@ func TestGetCourseByID(t *testing.T) {
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -78,8 +78,8 @@ func TestGetCourseByID(t *testing.T) {
 	if retrievedCourse.Name != newCourse.Name {
 		t.Errorf("Expected course name %s, got %v", newCourse.Name, retrievedCourse.Name)
 	}
-	if retrievedCourse.CourseStatus != model.Active {
-		t.Errorf("Expected course status %v, got %v", model.Active, retrievedCourse.CourseStatus)
+	if retrievedCourse.CourseStatus != model.ACTIVE {
+		t.Errorf("Expected course status %v, got %v", model.ACTIVE, retrievedCourse.CourseStatus)
 	}
 }
 
@@ -91,7 +91,7 @@ func TestListCourses(t *testing.T) {
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -118,7 +118,7 @@ func TestUpdateCourse(t *testing.T) {
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -132,7 +132,7 @@ func TestUpdateCourse(t *testing.T) {
 		Name:         "Updated Course",
 		Description:  "Updated Description",
 		Optional:     true,
-		CourseStatus: model.Inactive,
+		CourseStatus: model.INACTIVE,
 	}
 
 	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
@@ -153,8 +153,8 @@ func TestUpdateCourse(t *testing.T) {
 	if !retrievedCourse.Optional {
 		t.Errorf("Expected Optional to be true, got %v", retrievedCourse.Optional)
 	}
-	if retrievedCourse.CourseStatus != model.Inactive {
-		t.Errorf("Expected CourseStatus to be Inactive, got %v", retrievedCourse.CourseStatus)
+	if retrievedCourse.CourseStatus != model.INACTIVE {
+		t.Errorf("Expected CourseStatus to be INACTIVE, got %v", retrievedCourse.CourseStatus)
 	}
 }
 
@@ -166,7 +166,7 @@ func TestUpdateCourseStatus(t *testing.T) {
 		Name:         "Status Test Course",
 		Description:  "Testing Status Transitions",
 		Optional:     false,
-		CourseStatus: model.Draft, // Starting with Draft status
+		CourseStatus: model.INACTIVE, // Starting with Draft status
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
@@ -176,12 +176,12 @@ func TestUpdateCourseStatus(t *testing.T) {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	// Transition from Draft to Active
+	// Transition from INACTIVE to ACTIVE
 	updatedCourse := &model.Course{
 		Name:         newCourse.Name,
 		Description:  newCourse.Description,
 		Optional:     newCourse.Optional,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 	}
 
 	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
@@ -193,12 +193,12 @@ func TestUpdateCourseStatus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get updated course: %v", err)
 	}
-	if retrievedCourse.CourseStatus != model.Active {
-		t.Errorf("Expected CourseStatus to be Active, got %v", retrievedCourse.CourseStatus)
+	if retrievedCourse.CourseStatus != model.ACTIVE {
+		t.Errorf("Expected CourseStatus to be ACTIVE, got %v", retrievedCourse.CourseStatus)
 	}
 
-	// Transition from Active to Archived
-	updatedCourse.CourseStatus = model.Archived
+	// Transition from ACTIVE to INACTIVE
+	updatedCourse.CourseStatus = model.INACTIVE
 	err = courseController.UpdateCourse(newCourse.ID, updatedCourse)
 	if err != nil {
 		t.Fatalf("Failed to update course status: %v", err)
@@ -208,7 +208,7 @@ func TestUpdateCourseStatus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get updated course: %v", err)
 	}
-	if retrievedCourse.CourseStatus != model.Archived {
+	if retrievedCourse.CourseStatus != model.INACTIVE {
 		t.Errorf("Expected CourseStatus to be Archived, got %v", retrievedCourse.CourseStatus)
 	}
 }
@@ -221,7 +221,7 @@ func TestDeleteCourse(t *testing.T) {
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
-		CourseStatus: model.Active,
+		CourseStatus: model.ACTIVE,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
