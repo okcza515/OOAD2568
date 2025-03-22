@@ -6,10 +6,10 @@ import (
 
 type SupplyLog struct {
 	gorm.Model
-	RefUserID   *string
-	StaffUserID string          `gorm:"not null"`
+	RefUserID   *uint
+	StaffUserID uint            `gorm:"not null"`
 	Action      SupplyLogAction `gorm:"not null"`
-	SupplyID    string          `gorm:"not null"`
+	SupplyID    uint            `gorm:"not null"`
 	Description *string
-	Quantity    int `gorm:"not null;"`
+	Quantity    uint `gorm:"not null;"`
 }
