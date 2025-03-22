@@ -1,56 +1,29 @@
 package controller
 
 import (
-<<<<<<< Updated upstream
-	modelCommon "ModEd/common/model"
-	model "ModEd/curriculum/model/Internship"
-	modelWorkload "ModEd/curriculum/model/instructor-workload"
-	"errors"
-
-	"gorm.io/gorm"
-=======
 	"gorm.io/gorm"
 
-	modelCurriculum "ModEd/curriculum/model"
->>>>>>> Stashed changes
+	"ModEd/curriculum/model"
 )
 
 type ICurriculumController interface {
-	CreateCurriculum(curriculum modelCurriculum.Curriculum) (curriculumId uint, err error)
-	GetCurriculum(curriculumId uint) (curriculum *modelCurriculum.Curriculum, err error)
-	GetCurriculums() (curriculums []*modelCurriculum.Curriculum, err error)
-	UpdateCurriculum(updatedCurriculum modelCurriculum.Curriculum) (curriculum *modelCurriculum.Curriculum, err error)
-	DeleteCurriculum(curriculumId uint) (curriculum *modelCurriculum.Curriculum, err error)
+	CreateCurriculum(curriculum model.Curriculum) (curriculumId uint, err error)
+	GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
+	GetCurriculums() (curriculums []*model.Curriculum, err error)
+	UpdateCurriculum(updatedCurriculum model.Curriculum) (curriculum *model.Curriculum, err error)
+	DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
 }
 
 type CurriculumController struct {
-	Db *gorm.DB
+	db *gorm.DB
 }
 
 func NewCurriculumController(db *gorm.DB) ICurriculumController {
-	return &CurriculumController{Db: db}
-}
-
-func (c *CurriculumController) MigrateToDB() error {
-	err := c.Db.AutoMigrate(
-		&model.InternStudent{},
-		&model.Company{},
-		&model.InternshipSchedule{},
-		&model.SupervisorReview{},
-		&modelCommon.Student{},
-		&model.InternshipReport{},
-		&model.InternshipApplication{},
-		&modelWorkload.StudentAdvisor{},
-	)
-	if err != nil {
-		return errors.New("err: migration failed")
-	}
-
-	return nil
+	return &CurriculumController{db: db}
 }
 
 // Create
-func (c *CurriculumController) CreateCurriculum(curriculum modelCurriculum.Curriculum) (curriculumId uint, err error) {
+func (c *CurriculumController) CreateCurriculum(curriculum model.Curriculum) (curriculumId uint, err error) {
 	if err := c.db.Create(&curriculum).Error; err != nil {
 		return 0, err
 	}
@@ -58,8 +31,8 @@ func (c *CurriculumController) CreateCurriculum(curriculum modelCurriculum.Curri
 }
 
 // Read one
-func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *modelCurriculum.Curriculum, err error) {
-	curriculum = &modelCurriculum.Curriculum{}
+func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
+	curriculum = &model.Curriculum{}
 	if err := c.db.First(curriculum, curriculumId).Error; err != nil {
 		return nil, err
 	}
@@ -67,7 +40,7 @@ func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *mod
 }
 
 // Read all
-func (c *CurriculumController) GetCurriculums() (curriculums []*modelCurriculum.Curriculum, err error) {
+func (c *CurriculumController) GetCurriculums() (curriculums []*model.Curriculum, err error) {
 	if err := c.db.Find(&curriculums).Error; err != nil {
 		return nil, err
 	}
@@ -75,8 +48,8 @@ func (c *CurriculumController) GetCurriculums() (curriculums []*modelCurriculum.
 }
 
 // Update
-func (c *CurriculumController) UpdateCurriculum(updated modelCurriculum.Curriculum) (curriculum *modelCurriculum.Curriculum, err error) {
-	curriculum = &modelCurriculum.Curriculum{}
+func (c *CurriculumController) UpdateCurriculum(updated model.Curriculum) (curriculum *model.Curriculum, err error) {
+	curriculum = &model.Curriculum{}
 	if err := c.db.First(curriculum, updated.ID).Error; err != nil {
 		return nil, err
 	}
@@ -96,8 +69,8 @@ func (c *CurriculumController) UpdateCurriculum(updated modelCurriculum.Curricul
 }
 
 // Delete
-func (c *CurriculumController) DeleteCurriculum(curriculumId uint) (curriculum *modelCurriculum.Curriculum, err error) {
-	curriculum = &modelCurriculum.Curriculum{}
+func (c *CurriculumController) DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
+	curriculum = &model.Curriculum{}
 	if err := c.db.First(curriculum, curriculumId).Error; err != nil {
 		return nil, err
 	}
