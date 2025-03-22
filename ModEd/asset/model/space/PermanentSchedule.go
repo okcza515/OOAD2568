@@ -1,4 +1,4 @@
-package model
+package space
 
 import (
 	master "ModEd/common/model"

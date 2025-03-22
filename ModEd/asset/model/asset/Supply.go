@@ -1,4 +1,4 @@
-package model
+package asset
 
 import (
 	"github.com/google/uuid"

@@ -1,4 +1,4 @@
-package model
+package space
 
 type Role string
 

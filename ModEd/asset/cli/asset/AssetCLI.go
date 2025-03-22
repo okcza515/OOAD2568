@@ -1,8 +1,8 @@
 package main
 
 import (
-	controller "ModEd/asset/controller"
-	model "ModEd/asset/model"
+	asset2 "ModEd/asset/controller/asset"
+	"ModEd/asset/model/asset"
 	util "ModEd/asset/util"
 
 	"errors"
@@ -37,9 +37,9 @@ func main() {
 		panic("*** Error: " + path + " does not exist.\n")
 	}
 
-	instrumentLogController := controller.InstrumentLogController{Db: db}
-	supplyController := controller.SupplyController{Db: db}
-	migrationController := controller.MigrationController{Db: db}
+	instrumentLogController := asset2.InstrumentLogController{Db: db}
+	supplyController := asset2.SupplyController{Db: db}
+	migrationController := asset2.MigrationController{Db: db}
 
 	err = migrationController.MigrateToDB()
 	if err != nil {
@@ -48,12 +48,12 @@ func main() {
 
 	util.PrintBanner()
 
-	exampleLog := model.InstrumentLog{
+	exampleLog := asset.InstrumentLog{
 		LogID:        uuid.New(),
 		Timestamp:    time.Now(),
 		RefUserID:    nil,
 		StaffUserID:  uuid.New(),
-		Action:       model.INS_LOG_REPAIR,
+		Action:       asset.INS_LOG_REPAIR,
 		InstrumentID: uuid.New(),
 		Description:  "Do something",
 		RefBorrowID:  nil,
@@ -61,15 +61,15 @@ func main() {
 
 	db.Create(exampleLog)
 
-	exampleSupply := model.Supply{
-		SupplyID: uuid.New(),
+	exampleSupply := asset.Supply{
+		SupplyID:    uuid.New(),
 		SupplyLabel: "New supply",
 		Description: nil,
-		RoomID: uuid.New(),
-		Location: nil,
-		CategoryID: nil,
-		Quantity: 100,
-		DeletedAt: gorm.DeletedAt{},
+		RoomID:      uuid.New(),
+		Location:    nil,
+		CategoryID:  nil,
+		Quantity:    100,
+		DeletedAt:   gorm.DeletedAt{},
 	}
 
 	supplyController.Create(&exampleSupply)

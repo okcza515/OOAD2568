@@ -1,4 +1,4 @@
-package model
+package asset
 
 type InstrumentStatusEnum string
 
