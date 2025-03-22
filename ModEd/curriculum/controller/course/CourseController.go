@@ -7,9 +7,9 @@ import (
 )
 
 type ICourseController interface {
-	CreateCourse(course model.Course) (courseId uint, err error)
+	CreateCourse(course *model.Course) (courseId uint, err error)
 	GetCourseByID(courseId uint) (course *model.Course, err error)
-	UpdateCourse(updatedCourse model.Course) (course *model.Course, err error)
+	UpdateCourse(updatedCourse *model.Course) (course *model.Course, err error)
 	DeleteCourse(courseId uint) (course *model.Course, err error)
 	ListCourses() (courses []*model.Course, err error)
 }
@@ -22,7 +22,7 @@ func NewCourseController(db *gorm.DB) ICourseController {
 	return &CourseController{db: db}
 }
 
-func (c *CourseController) CreateCourse(course model.Course) (courseId uint, err error) {
+func (c *CourseController) CreateCourse(course *model.Course) (courseId uint, err error) {
 	if err := c.db.Create(&course).Error; err != nil {
 		return 0, err
 	}
@@ -37,18 +37,21 @@ func (c *CourseController) GetCourseByID(courseId uint) (course *model.Course, e
 	return course, nil
 }
 
-func (c *CourseController) UpdateCourse(updatedCourse model.Course) (course *model.Course, err error) {
-	course = &model.Course{}
+func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (*model.Course, error) {
+	course := &model.Course{}
 	if err := c.db.First(course, updatedCourse.ID).Error; err != nil {
 		return nil, err
 	}
+
 	// Update fields
 	course.Name = updatedCourse.Name
 	course.Description = updatedCourse.Description
 	course.Optional = updatedCourse.Optional
 	course.CourseStatus = updatedCourse.CourseStatus
+	// course.Prerequisite = updatedCourse.Prerequisite
+	// course.ClassList = updatedCourse.ClassList
 
-	if err := c.db.Save(course).Error; err != nil {
+	if err := c.db.Updates(course).Error; err != nil {
 		return nil, err
 	}
 	return course, nil

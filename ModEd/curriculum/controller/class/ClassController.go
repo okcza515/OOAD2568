@@ -7,10 +7,10 @@ import (
 )
 
 type IClassController interface {
-	CreateClass(class model.Class) (classId uint, err error)
+	CreateClass(class *model.Class) (classId uint, err error)
 	GetClass(classId uint) (class *model.Class, err error)
 	GetClasses() (classes []*model.Class, err error)
-	UpdateClass(updatedClass model.Class) (class *model.Class, err error)
+	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
 	DeleteClass(classId uint) (class *model.Class, err error)
 }
 
@@ -22,7 +22,7 @@ func NewClassController(db *gorm.DB) IClassController {
 	return &ClassController{db: db}
 }
 
-func (c *ClassController) CreateClass(class model.Class) (classId uint, err error) {
+func (c *ClassController) CreateClass(class *model.Class) (classId uint, err error) {
 	if err := c.db.Create(&class).Error; err != nil {
 		return 0, err
 	}
@@ -44,7 +44,7 @@ func (c *ClassController) GetClasses() (classes []*model.Class, err error) {
 	return classes, nil
 }
 
-func (c *ClassController) UpdateClass(updatedClass model.Class) (class *model.Class, err error) {
+func (c *ClassController) UpdateClass(updatedClass *model.Class) (class *model.Class, err error) {
 	class = &model.Class{}
 	if err := c.db.First(class, updatedClass.ID).Error; err != nil {
 		return nil, err
@@ -53,7 +53,8 @@ func (c *ClassController) UpdateClass(updatedClass model.Class) (class *model.Cl
 	class.ClassId = updatedClass.ClassId
 	class.Schedule = updatedClass.Schedule
 	class.Section = updatedClass.Section
-	if err := c.db.Save(class).Error; err != nil {
+
+	if err := c.db.Updates(class).Error; err != nil {
 		return nil, err
 	}
 	return class, nil
