@@ -1,6 +1,13 @@
 package controller
 
-import "gorm.io/gorm"
+import (
+	modelCommon "ModEd/common/model"
+	model "ModEd/curriculum/model/Internship"
+	modelWorkload "ModEd/curriculum/model/instructor-workload"
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type ICurriculumController interface {
 	// Put methods here
@@ -8,9 +15,27 @@ type ICurriculumController interface {
 }
 
 type CurriculumController struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
 func NewCurriculumController(db *gorm.DB) ICurriculumController {
-	return &CurriculumController{db: db}
+	return &CurriculumController{Db: db}
+}
+
+func (c *CurriculumController) MigrateToDB() error {
+	err := c.Db.AutoMigrate(
+		&model.InternStudent{},
+		&model.Company{},
+		&model.InternshipSchedule{},
+		&model.SupervisorReview{},
+		&modelCommon.Student{},
+		&model.InternshipReport{},
+		&model.InternshipApplication{},
+		&modelWorkload.StudentAdvisor{},
+	)
+	if err != nil {
+		return errors.New("err: migration failed")
+	}
+
+	return nil
 }

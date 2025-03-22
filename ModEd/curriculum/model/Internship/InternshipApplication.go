@@ -12,8 +12,8 @@ type InternshipApplication struct {
 	TurninDate            time.Time                    `gorm:"not null"`
 	ApprovalAdvisorStatus bool                         `gorm:"not null"`
 	ApprovalCompanyStatus bool                         `gorm:"not null"`
-	AdvisorId             uint                         `gorm:"not null"`
-	Advisor               modelWorkload.StudentAdvisor `gorm:"foreignKey:AdvisorId;references:ID"`
+	AdvisorCode           uint                         `gorm:"not null"`
+	Advisor               modelWorkload.StudentAdvisor `gorm:"foreignKey:AdvisorCode;references:ID"`
 	CompanyId             uint                         `gorm:"not null"`
 	Company               Company                      `gorm:"foreignKey:CompanyId;references:ID"`
 	InternshipReportId    uint                         `gorm:"not null"`
