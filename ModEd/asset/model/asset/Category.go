@@ -10,6 +10,6 @@ type Category struct {
 	Description  *string `gorm:"type:varchar(255)"`
 	UpdatedBy    *uint
 	DeletedBy    *uint
-	Instrument   []Instrument `gorm:"foreignKey:CategoryID;references:CategoryID;constraint:OnUpdate:CASCADE;"`
-	Supply       []Supply     `gorm:"foreignKey:CategoryID;references:CategoryID;constraint:OnUpdate:CASCADE;"`
+	Instrument   []Instrument `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE;"`
+	Supply       []Supply     `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE;"`
 }

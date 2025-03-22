@@ -19,5 +19,5 @@ type Instrument struct {
 	BudgetSource       *string              `gorm:"type:text" json:"budget_source" csv:"budget_source"`
 	InstrumentBrand    *string              `gorm:"type:text" json:"brand" csv:"brand"`
 	InstrumentModel    *string              `gorm:"type:text" json:"model" csv:"model"`
-	InstrumentLog      []InstrumentLog      `gorm:"foreignKey:InstrumentID;references:InstrumentID;constraint:OnUpdate:CASCADE;"`
+	InstrumentLog      []InstrumentLog      `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE;"`
 }
