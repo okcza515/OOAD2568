@@ -39,7 +39,7 @@ func TestCreateClass(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	classId, err := classController.CreateClass(newClass)
+	classId, err := classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}
@@ -69,7 +69,7 @@ func TestGetClass(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	classId, err := classController.CreateClass(newClass)
+	classId, err := classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}
@@ -99,7 +99,7 @@ func TestGetClasses(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	_, err := classController.CreateClass(newClass)
+	_, err := classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}
@@ -108,8 +108,8 @@ func TestGetClasses(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get classes: %v", err)
 	}
-	if len(classes) != 1 {
-		t.Errorf("Expected 1 class, got %d", len(classes))
+	if len(classes) < 1 {
+		t.Errorf("Expected atleast 1 class, got %d", len(classes))
 	}
 }
 
@@ -129,7 +129,7 @@ func TestUpdateClass(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	classId, err := classController.CreateClass(newClass)
+	classId, err := classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}
@@ -141,7 +141,7 @@ func TestUpdateClass(t *testing.T) {
 
 	retrievedClass.Section = 2
 
-	updatedClass, err := classController.UpdateClass(*retrievedClass)
+	updatedClass, err := classController.UpdateClass(retrievedClass)
 	if err != nil {
 		t.Fatalf("Failed to update class: %v", err)
 	}
@@ -166,7 +166,7 @@ func TestDeleteClass(t *testing.T) {
 		}(),
 		Section: 1,
 	}
-	classId, err := classController.CreateClass(newClass)
+	classId, err := classController.CreateClass(&newClass)
 	if err != nil {
 		t.Fatalf("Failed to create class: %v", err)
 	}

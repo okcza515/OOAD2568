@@ -36,7 +36,7 @@ func TestCreateCurriculum(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	curriculumId, err := curriculumController.CreateCurriculum(newCurriculum)
+	curriculumId, err := curriculumController.CreateCurriculum(&newCurriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestGetCurriculum(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	id, err := curriculumController.CreateCurriculum(curriculum)
+	id, err := curriculumController.CreateCurriculum(&curriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestGetCurriculums(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	_, err := curriculumController.CreateCurriculum(curriculum)
+	_, err := curriculumController.CreateCurriculum(&curriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestUpdateCurriculum(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	id, err := curriculumController.CreateCurriculum(curriculum)
+	id, err := curriculumController.CreateCurriculum(&curriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}
@@ -128,7 +128,7 @@ func TestUpdateCurriculum(t *testing.T) {
 	}
 
 	retrieved.Name = "Cybersecurity & Digital Forensics"
-	updated, err := curriculumController.UpdateCurriculum(*retrieved)
+	updated, err := curriculumController.UpdateCurriculum(retrieved)
 	if err != nil {
 		t.Fatalf("Failed to update curriculum: %v", err)
 	}
@@ -150,7 +150,7 @@ func TestDeleteCurriculum(t *testing.T) {
 		ProgramType:    commonModel.INTERNATIONAL,
 	}
 
-	id, err := curriculumController.CreateCurriculum(curriculum)
+	id, err := curriculumController.CreateCurriculum(&curriculum)
 	if err != nil {
 		t.Fatalf("Failed to create curriculum: %v", err)
 	}

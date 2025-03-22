@@ -36,7 +36,7 @@ func TestCreateCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	courseId, err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(&newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestGetCourseByID(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	courseId, err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(&newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
@@ -93,7 +93,7 @@ func TestListCourses(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	_, err := courseController.CreateCourse(newCourse)
+	_, err := courseController.CreateCourse(&newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
@@ -120,7 +120,7 @@ func TestUpdateCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	courseId, err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(&newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
@@ -132,13 +132,13 @@ func TestUpdateCourse(t *testing.T) {
 	}
 
 	// Update the retrieved course
-	updatedCourse := *retrievedCourse
-	updatedCourse.Name = "Updated Course"
-	updatedCourse.Description = "Updated Description"
-	updatedCourse.Optional = true
-	updatedCourse.CourseStatus = model.INACTIVE
+	retrievedCourse.Name = "Updated Course"
+	retrievedCourse.Description = "Updated Description"
+	retrievedCourse.Optional = true
+	retrievedCourse.CourseStatus = model.INACTIVE
+	retrievedCourse.UpdatedAt = time.Now()
 
-	result, err := courseController.UpdateCourse(updatedCourse)
+	result, err := courseController.UpdateCourse(retrievedCourse)
 	if err != nil {
 		t.Fatalf("Failed to update course: %v", err)
 	}
@@ -170,7 +170,7 @@ func TestDeleteCourse(t *testing.T) {
 		UpdatedAt:    time.Now(),
 	}
 
-	courseId, err := courseController.CreateCourse(newCourse)
+	courseId, err := courseController.CreateCourse(&newCourse)
 	if err != nil {
 		t.Fatalf("Failed to create course: %v", err)
 	}
