@@ -3,15 +3,15 @@ package controller
 import (
 	"gorm.io/gorm"
 
-	modelCurriculum "ModEd/curriculum/model"
+	"ModEd/curriculum/model"
 )
 
 type IClassController interface {
-	CreateClass(class modelCurriculum.Class) (classId uint, err error)
-	GetClass(classId uint) (class *modelCurriculum.Class, err error)
-	GetClasses() (classes []*modelCurriculum.Class, err error)
-	UpdateClass(updatedClass modelCurriculum.Class) (class *modelCurriculum.Class, err error)
-	DeleteClass(classId uint) (class *modelCurriculum.Class, err error)
+	CreateClass(class model.Class) (classId uint, err error)
+	GetClass(classId uint) (class *model.Class, err error)
+	GetClasses() (classes []*model.Class, err error)
+	UpdateClass(updatedClass model.Class) (class *model.Class, err error)
+	DeleteClass(classId uint) (class *model.Class, err error)
 }
 
 type ClassController struct {
@@ -22,30 +22,30 @@ func NewClassController(db *gorm.DB) IClassController {
 	return &ClassController{db: db}
 }
 
-func (c *ClassController) CreateClass(class modelCurriculum.Class) (classId uint, err error) {
+func (c *ClassController) CreateClass(class model.Class) (classId uint, err error) {
 	if err := c.db.Create(&class).Error; err != nil {
 		return 0, err
 	}
 	return class.ID, nil
 }
 
-func (c *ClassController) GetClass(classId uint) (class *modelCurriculum.Class, err error) {
-	class = &modelCurriculum.Class{}
+func (c *ClassController) GetClass(classId uint) (class *model.Class, err error) {
+	class = &model.Class{}
 	if err := c.db.First(class, classId).Error; err != nil {
 		return nil, err
 	}
 	return class, nil
 }
 
-func (c *ClassController) GetClasses() (classes []*modelCurriculum.Class, err error) {
+func (c *ClassController) GetClasses() (classes []*model.Class, err error) {
 	if err := c.db.Find(&classes).Error; err != nil {
 		return nil, err
 	}
 	return classes, nil
 }
 
-func (c *ClassController) UpdateClass(updatedClass modelCurriculum.Class) (class *modelCurriculum.Class, err error) {
-	class = &modelCurriculum.Class{}
+func (c *ClassController) UpdateClass(updatedClass model.Class) (class *model.Class, err error) {
+	class = &model.Class{}
 	if err := c.db.First(class, updatedClass.ID).Error; err != nil {
 		return nil, err
 	}
@@ -59,8 +59,8 @@ func (c *ClassController) UpdateClass(updatedClass modelCurriculum.Class) (class
 	return class, nil
 }
 
-func (c *ClassController) DeleteClass(classId uint) (class *modelCurriculum.Class, err error) {
-	class = &modelCurriculum.Class{}
+func (c *ClassController) DeleteClass(classId uint) (class *model.Class, err error) {
+	class = &model.Class{}
 	if err := c.db.First(class, classId).Error; err != nil {
 		return nil, err
 	}

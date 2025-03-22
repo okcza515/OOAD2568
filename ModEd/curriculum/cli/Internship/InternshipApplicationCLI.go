@@ -1,7 +1,7 @@
 package main
 
 import (
-	controller "ModEd/curriculum/controller/curriculum"
+	controller "ModEd/curriculum/controller/Internship"
 
 	"errors"
 	"flag"
@@ -30,7 +30,7 @@ func main() {
 		panic("*** Error: " + path + " does not exist.\n")
 	}
 
-	migrationController := controller.CurriculumController{Db: db}
+	migrationController := controller.MigrationController{Db: db}
 
 	err = migrationController.MigrateToDB()
 	if err != nil {

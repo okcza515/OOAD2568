@@ -8,7 +8,6 @@ import (
 
 type BorrowInstrument struct {
 	gorm.Model
-	BorrowID           uint       `gorm:"primaryKey;not null;unique"`
 	StaffUserID        uint       `gorm:"not null"`
 	BorrowUserID       uint       `gorm:"not null"`
 	ExpectedReturnDate *time.Time `gorm:"type:timestamp"`

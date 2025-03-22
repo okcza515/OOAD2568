@@ -10,7 +10,7 @@ type InstrumentLogController struct {
 	Db *gorm.DB
 }
 
-func (c *InstrumentLogController) GetAll() (*[]asset.InstrumentLog, error) {
+func (c *InstrumentLogController) getAll() (*[]asset.InstrumentLog, error) {
 	logs := new([]asset.InstrumentLog)
 	result := c.Db.Find(&logs)
 

@@ -1,7 +1,7 @@
 package asset
 
 import (
-	"ModEd/asset/model/asset"
+	model "ModEd/asset/model/asset"
 	"errors"
 
 	"gorm.io/gorm"
@@ -13,14 +13,14 @@ type MigrationController struct {
 
 func (c *MigrationController) MigrateToDB() error {
 	err := c.Db.AutoMigrate(
-		&asset.InstrumentLog{},
-		&asset.Instrument{},
-		&asset.BorrowInstrument{},
-		&asset.Category{},
-		&asset.Instrument{},
-		&asset.InstrumentLog{},
-		&asset.Supply{},
-		&asset.SupplyLog{},
+		&model.InstrumentLog{},
+		&model.Instrument{},
+		&model.BorrowInstrument{},
+		&model.Category{},
+		&model.Instrument{},
+		&model.InstrumentLog{},
+		&model.Supply{},
+		&model.SupplyLog{},
 	)
 	if err != nil {
 		return errors.New("err: migration failed")
