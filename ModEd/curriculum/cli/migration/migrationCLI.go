@@ -11,7 +11,7 @@ import (
 // TODO: folder migration might be remove, waiting for WIT to do something with it
 func main() {
 	db, err := utils.NewGormSqlite(&utils.GormConfig{
-		DBPath: "test.db",
+		DBPath: "../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
 	if err != nil {
