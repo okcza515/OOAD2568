@@ -1,6 +1,0 @@
-instructor_id,first_name,last_name,email,start_date,faculty,department,course_id
-INS123,John,Doe,johndoe@example.com,2020-08-15,Engineering,Computer Science,ecc11d19-5ccd-4a5e-a19a-967f7459239f
-INS124,Jane,Smith,janesmith@example.com,2019-06-22,Business,Marketing,2b9c4bbb-ec85-4f06-b584-31cdeb53fe40
-INS125,Alice,Johnson,alicejohnson@example.com,2021-09-10,Arts,Design,d860fa58-842b-4d1a-b39d-c10e65c6e8ce
-INS126,Bob,Brown,bobbrown@example.com,2018-03-05,Science,Physics,66b767ea-45d5-475e-ab04-2d51c0fb2471
-INS127,Emma,Wilson,emmawilson@example.com,2022-01-11,Engineering,Electrical Engineering,54e72265-3343-4f0f-962d-35e347d5bbe9

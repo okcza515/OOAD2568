@@ -2,7 +2,7 @@
 package controller
 
 import (
-	"ModEd/asset/model"
+	model "ModEd/asset/model/Procurement"
 
 	"gorm.io/gorm"
 )
@@ -13,19 +13,20 @@ type ProcurementController struct {
 
 func CreateProcurementController(connector *gorm.DB) *ProcurementController {
 	procurement := ProcurementController{Connector: connector}
-	//TODO connector.AutoMigrate(&model.Procurement{})
+	connector.AutoMigrate(&model.Procurement{})
 	return &procurement
 }
 
 func (procurement ProcurementController) ListAll() ([]model.Procurement, error) {
-	Approval := []*model.ItemApprovalWorkFlow{}
-	result := procurement.Connector.Find(&Approval)
-	return Approval, result.Error
+	procurements := []model.Procurement{}
+	result := procurement.Connector.
+		Select("ProcurementApprovalWorkflowID").Find(&procurements)
+	return procurements, result.Error
 }
 
-func (procurement ProcurementController) GetByApprovalId(ItemApprovalStatusID string) (*model.Procurement, error) {
+func (procurement ProcurementController) GetByApprovalId(ProcurementApprovalWorkflowID string) (*model.Procurement, error) {
 	i := &model.Procurement{}
-	result := procurement.Connector.Where("ItemApprovalStatusID = ?", ItemApprovalStatusID).First(i)
+	result := procurement.Connector.Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).First(i)
 	return i, result.Error
 }
 
@@ -33,12 +34,12 @@ func (procurement ProcurementController) Create(i *model.Procurement) error {
 	return procurement.Connector.Create(i).Error
 }
 
-func (procurement ProcurementController) Update(ItemApprovalStatusID string, updatedData map[string]any) error {
+func (procurement ProcurementController) Update(ProcurementApprovalWorkflowID string, updatedData map[string]any) error {
 	return procurement.Connector.Model(&model.Procurement{}).
-		Where("ItemApprovalStatusID = ?", ItemApprovalStatusID).
+		Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).
 		Updates(updatedData).Error
 }
 
-func (procurement ProcurementController) DeleteByInstructorId(ItemApprovalStatusID string) error {
-	return procurement.Connector.Where("ItemApprovalStatusID = ?", ItemApprovalStatusID).Delete(&model.Procurement{}).Error
+func (procurement ProcurementController) DeleteByInstructorId(ProcurementApprovalWorkflowID string) error {
+	return procurement.Connector.Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).Delete(&model.Procurement{}).Error
 }

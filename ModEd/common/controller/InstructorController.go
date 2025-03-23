@@ -28,8 +28,10 @@ func (instructor InstructorController) GetByInstructorId(instructorId string) (*
 	return i, result.Error
 }
 
-func (instructor InstructorController) Create(i *model.Instructor) error {
-	return instructor.Connector.Create(i).Error
+func (instructor InstructorController) Register(instructors *[]model.Instructor) {
+	for _, i := range *instructors {
+		instructor.Connector.Create(i)
+	}
 }
 
 func (instructor InstructorController) Update(instructorId string, updatedData map[string]any) error {

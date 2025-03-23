@@ -8,12 +8,12 @@ import (
 
 type Student struct {
 	gorm.Model
-	SID       string        `csv:"SID" gorm:"primarykey;size:16"`
-	FirstName string        `csv:"FirstName"`
-	LastName  string        `csv:"LastName"`
-	Email     string        `csv:"Email"`
-	StartDate time.Time     `csv:"-"`
-	BirthDate time.Time     `csv:"-"`
-	Program   ProgramType   `csv:"-"`
-	Status    StudentStatus `csv:"-"`
+	StudentCode string        `gorm:"not null;unique" csv:"student_code"`
+	FirstName 	string        `csv:"first_name"`
+	LastName  	string        `csv:"last_name"`
+	Email     	string        `csv:"email"`
+	StartDate 	time.Time     `csv:"start_date"`
+	BirthDate 	time.Time     `csv:"birth_date"`
+	Program   	ProgramType   `csv:"program"`
+	Status    	StudentStatus `csv:"status"`
 }

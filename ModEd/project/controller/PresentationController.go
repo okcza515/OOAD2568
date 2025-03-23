@@ -1,49 +1,40 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 
 	"gorm.io/gorm"
 )
 
-type IPresentationController interface {
-	ListAllPresentations() ([]model.Presentation, error)
-	RetrievePresentation(id uint) (*model.Presentation, error)
-	InsertPresentation(presentation *model.Presentation) error
-	UpdatePresentation(presentation *model.Presentation) error
-	DeletePresentation(id uint) error
-}
-
 type PresentationController struct {
-	db *gorm.DB
+    *core.BaseController[model.Presentation]
+    db *gorm.DB
 }
 
-func NewPresentationController(db *gorm.DB) IPresentationController {
-	return &PresentationController{db: db}
+func NewPresentationController(db *gorm.DB) *PresentationController {
+    return &PresentationController{
+        db:             db,
+        BaseController: core.NewBaseController[model.Presentation](db),
+    }
 }
 
 func (c *PresentationController) ListAllPresentations() ([]model.Presentation, error) {
-	var presentations []model.Presentation
-	err := c.db.Find(&presentations).Error
-	return presentations, err
+    return c.List(map[string]interface{}{})
 }
 
 func (c *PresentationController) RetrievePresentation(id uint) (*model.Presentation, error) {
-	var presentation model.Presentation
-	if err := c.db.Where("id = ?", id).First(&presentation).Error; err != nil {
-		return nil, err
-	}
-	return &presentation, nil
+    return c.RetrieveByID(id)
 }
 
-func (c *PresentationController) InsertPresentation(presentation *model.Presentation) error {
-	return c.db.Create(presentation).Error
+func (c *PresentationController) InsertPresentation(presentation model.Presentation) error {
+    return c.Insert(presentation)
 }
 
-func (c *PresentationController) UpdatePresentation(presentation *model.Presentation) error {
-	return c.db.Save(presentation).Error
+func (c *PresentationController) UpdatePresentation(id uint, presentation *model.Presentation) error {
+    return c.UpdateByID(id, presentation)
 }
 
 func (c *PresentationController) DeletePresentation(id uint) error {
-	return c.db.Where("id = ?", id).Delete(&model.Presentation{}).Error
+    return c.DeleteByID(id)
 }
