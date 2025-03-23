@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -52,7 +51,6 @@ func (ctrl *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath st
 		roundName := row[0]
 
 		newRound := model.ApplicationRound{
-			RoundID:   uuid.New(),
 			RoundName: roundName,
 		}
 		if err := ctrl.DB.Create(&newRound).Error; err != nil {

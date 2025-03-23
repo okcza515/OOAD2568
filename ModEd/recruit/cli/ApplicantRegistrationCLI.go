@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-
-	"github.com/google/uuid"
 )
 
 func RegisterApplicantCLI(
@@ -95,14 +93,14 @@ func RegisterApplicantCLI(
 	tpat5 = float32(parsedTpat5)
 
 	applicant := model.Applicant{
-		ApplicantID: uuid.New(),
+		ApplicantID: 0,
 		FirstName:   firstName,
 		LastName:    lastName,
 		Email:       email,
 		Address:     address,
 		Phonenumber: phone,
 		GPAX:        gpax,
-		HS_Program:  hsProgram,
+		HighSchool_Program:  hsProgram,
 		TGAT1:       tgat1,
 		TGAT2:       tgat2,
 		TGAT3:       tgat3,
@@ -196,11 +194,11 @@ func RegisterApplicantCLI(
 	fmt.Printf("You have selected the Department of %s.\n", selectedDepartment.Name)
 
 	applicationReport := model.ApplicationReport{
-		ApplicationReportID: uuid.New(),
+		ApplicationReportID: 0,
 		ApplicantID:         applicant.ApplicantID, // ใช้ ApplicantID
 		ApplicationRoundsID: selectedRound.RoundID, // ใช้ RoundID
-		FacultyID:           selectedFaculty.FacultyID,
-		DepartmentID:        selectedDepartment.DepartmentID,
+		FacultyID:           uint(selectedFaculty.FacultyID),
+		DepartmentID:        uint(selectedDepartment.DepartmentID),
 		ApplicationStatuses: model.Pending,
 	}
 

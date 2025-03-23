@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
+	
 	"gorm.io/gorm"
 )
 
@@ -29,7 +29,7 @@ func (fc *FacultyController) GetAllFaculties() ([]model.Faculty, error) {
 }
 
 // GetFacultyByID retrieves a faculty by ID
-func (fc *FacultyController) GetFacultyByID(id uuid.UUID) (*model.Faculty, error) {
+func (fc *FacultyController) GetFacultyByID(id uint) (*model.Faculty, error) {
 	var faculty model.Faculty
 	if err := fc.DB.Preload("Departments").First(&faculty, id).Error; err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (ctrl *FacultyController) ReadFacultyFromCSV(filePath string) error {
 
 		// สร้าง Faculty ใหม่
 		newFaculty := model.Faculty{
-			FacultyID: uuid.New(),
+			FacultyID: 0,
 			Name:      facultyName,
 		}
 
