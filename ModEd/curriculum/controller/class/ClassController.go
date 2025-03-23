@@ -26,7 +26,7 @@ func (c *ClassController) CreateClass(class *model.Class) (classId uint, err err
 	if err := c.db.Create(&class).Error; err != nil {
 		return 0, err
 	}
-	return class.ID, nil
+	return class.ClassId, nil
 }
 
 func (c *ClassController) GetClass(classId uint) (class *model.Class, err error) {
@@ -46,7 +46,7 @@ func (c *ClassController) GetClasses() (classes []*model.Class, err error) {
 
 func (c *ClassController) UpdateClass(updatedClass *model.Class) (class *model.Class, err error) {
 	class = &model.Class{}
-	if err := c.db.First(class, updatedClass.ID).Error; err != nil {
+	if err := c.db.First(class, updatedClass.ClassId).Error; err != nil {
 		return nil, err
 	}
 	class.CourseId = updatedClass.CourseId

@@ -1,12 +1,15 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"gorm.io/gorm"
 
 	controller "ModEd/curriculum/controller/course"
+	"ModEd/curriculum/controller/migration"
+	"ModEd/curriculum/controller/seed"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -23,6 +26,7 @@ func TestCreateCourse(t *testing.T) {
 	courseController := controller.NewCourseController(db)
 
 	newCourse := model.Course{
+		CourseId:     1001,
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -57,6 +61,7 @@ func TestGetCourseByID(t *testing.T) {
 	courseController := controller.NewCourseController(db)
 
 	newCourse := model.Course{
+		CourseId:     1002,
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -94,6 +99,7 @@ func TestListCourses(t *testing.T) {
 	courseController := controller.NewCourseController(db)
 
 	newCourse := model.Course{
+		CourseId:     1003,
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -128,6 +134,7 @@ func TestUpdateCourse(t *testing.T) {
 	courseController := controller.NewCourseController(db)
 
 	newCourse := model.Course{
+		CourseId:     1004,
 		Name:         "Test Course",
 		Description:  "Test Description",
 		Optional:     false,
@@ -202,12 +209,44 @@ func TestDeleteCourse(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to delete course: %v", err)
 	}
-	if deletedCourse.ID != courseId {
-		t.Errorf("Expected course ID %v, got %v", courseId, deletedCourse.ID)
+	if deletedCourse.CourseId != courseId {
+		t.Errorf("Expected course ID %v, got %v", courseId, deletedCourse.CourseId)
 	}
 
 	_, err = courseController.GetCourseByID(courseId)
 	if err == nil {
 		t.Fatalf("Expected error when getting deleted course, got nil")
 	}
+}
+
+func TestSeedCourse(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	migrationController := migration.NewMigrationController(db)
+	if err := migrationController.MigrateToDB(); err != nil {
+		t.Fatalf("Failed to migrate to db: %v", err)
+	}
+
+	courseController := controller.NewCourseController(db)
+	courses, err := seed.CreateCourseSeed(db, "../../data/curriculum/course.json")
+	if err != nil {
+		t.Fatalf("Failed to seed course: %v", err)
+	}
+	if len(courses) == 0 {
+		t.Errorf("Expected at least 1 course, got 0")
+	}
+
+	for _, course := range courses {
+		fmt.Printf("Course: %v\n", course.CourseId)
+		rcourse, err := courseController.GetCourseByID(course.CourseId)
+		if err != nil {
+			t.Fatalf("Failed to create course: %v", err)
+		}
+		if rcourse.CourseId != course.CourseId {
+			t.Errorf("Expected course ID %d, got %d", course.CourseId, rcourse.CourseId)
+		}
+	}
+
 }

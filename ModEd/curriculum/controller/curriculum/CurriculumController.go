@@ -27,7 +27,7 @@ func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (c
 	if err := c.db.Create(&curriculum).Error; err != nil {
 		return 0, err
 	}
-	return curriculum.ID, nil
+	return curriculum.CurriculumId, nil
 }
 
 // Read one
@@ -50,7 +50,7 @@ func (c *CurriculumController) GetCurriculums() (curriculums []*model.Curriculum
 // Update
 func (c *CurriculumController) UpdateCurriculum(updated *model.Curriculum) (curriculum *model.Curriculum, err error) {
 	curriculum = &model.Curriculum{}
-	if err := c.db.First(curriculum, updated.ID).Error; err != nil {
+	if err := c.db.First(curriculum, updated.CurriculumId).Error; err != nil {
 		return nil, err
 	}
 

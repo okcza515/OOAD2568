@@ -8,7 +8,6 @@ import (
 )
 
 type Class struct {
-	gorm.Model
 	ClassId     uint            `gorm:"primaryKey" csv:"class_id" json:"class_id"`
 	CourseId    uint            `gorm:"not null" csv:"course_id" json:"course_id"`
 	Course      Course          `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`

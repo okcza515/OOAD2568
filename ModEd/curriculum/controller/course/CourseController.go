@@ -26,7 +26,7 @@ func (c *CourseController) CreateCourse(course *model.Course) (courseId uint, er
 	if err := c.db.Create(&course).Error; err != nil {
 		return 0, err
 	}
-	return course.ID, nil
+	return course.CourseId, nil
 }
 
 func (c *CourseController) GetCourseByID(courseId uint) (course *model.Course, err error) {
@@ -39,7 +39,7 @@ func (c *CourseController) GetCourseByID(courseId uint) (course *model.Course, e
 
 func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (*model.Course, error) {
 	course := &model.Course{}
-	if err := c.db.First(course, updatedCourse.ID).Error; err != nil {
+	if err := c.db.First(course, updatedCourse.CourseId).Error; err != nil {
 		return nil, err
 	}
 

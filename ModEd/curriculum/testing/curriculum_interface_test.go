@@ -1,12 +1,15 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"gorm.io/gorm"
 
 	commonModel "ModEd/common/model"
 	controller "ModEd/curriculum/controller/curriculum"
+	"ModEd/curriculum/controller/migration"
+	"ModEd/curriculum/controller/seed"
 	model "ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -182,12 +185,44 @@ func TestDeleteCurriculum(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to delete curriculum: %v", err)
 	}
-	if deleted.ID != id {
-		t.Errorf("Expected deleted ID %v, got %v", id, deleted.ID)
+	if deleted.CurriculumId != id {
+		t.Errorf("Expected deleted ID %v, got %v", id, deleted.CurriculumId)
 	}
 
 	_, err = curriculumController.GetCurriculum(id)
 	if err == nil {
 		t.Fatalf("Expected error after deleting curriculum, got nil")
 	}
+}
+
+func TestSeedCurriculum(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	migrationController := migration.NewMigrationController(db)
+	if err := migrationController.MigrateToDB(); err != nil {
+		t.Fatalf("Failed to migrate to db: %v", err)
+	}
+
+	curriculumController := controller.NewCurriculumController(db)
+	curriculums, err := seed.CreateCurriculumSeed(db, "../../data/curriculum/curriculum.json")
+	if err != nil {
+		t.Fatalf("Failed to seed curriculum: %v", err)
+	}
+	if len(curriculums) == 0 {
+		t.Errorf("Expected at least 1 curriculum, got 0")
+	}
+
+	for _, curriculum := range curriculums {
+		fmt.Printf("Curriculum: %v\n", curriculum.CurriculumId)
+		curriculumId, err := curriculumController.GetCurriculum(curriculum.CurriculumId)
+		if err != nil {
+			t.Fatalf("Failed to create curriculum: %v", err)
+		}
+		if curriculumId.CurriculumId != curriculum.CurriculumId {
+			t.Errorf("Expected curriculum ID %d, got %d", curriculum.CurriculumId, curriculumId.CurriculumId)
+		}
+	}
+
 }
