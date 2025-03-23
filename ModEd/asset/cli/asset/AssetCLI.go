@@ -29,7 +29,7 @@ func main() {
 		case "2":
 			handler.InstrumentHandler(facade)
 		case "3":
-			fmt.Println("Not implemented yet...")
+			handler.SupplyHandler(facade)
 		case "4":
 			fmt.Println("Not implemented yet...")
 		case "5":
