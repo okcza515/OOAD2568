@@ -8,10 +8,11 @@ import (
 
 type InternshipApplication struct {
 	gorm.Model
-	Advisor               string             `gorm:"not null"`
 	TurninDate            time.Time          `gorm:"not null"`
 	ApprovalAdvisorStatus bool               `gorm:"not null"`
 	ApprovalCompanyStatus bool               `gorm:"not null"`
+	AdvisorCode           uint               `gorm:"not null"`
+	Advisor               Advisor            `gorm:"foreignKey:AdvisorCode;references:ID"`
 	CompanyId             uint               `gorm:"not null"`
 	Company               Company            `gorm:"foreignKey:CompanyId;references:ID"`
 	InternshipReportId    uint               `gorm:"not null"`
@@ -20,4 +21,6 @@ type InternshipApplication struct {
 	SupervisorReview      SupervisorReview   `gorm:"foreignKey:SupervisorReviewId;references:ID"`
 	InternshipScheduleId  uint               `gorm:"not null"`
 	InternshipSchedule    InternshipSchedule `gorm:"foreignKey:InternshipScheduleId;references:ID"`
+	StudentCode           string             `gorm:"type:varchar(255);not null;unique"`
+	Student               InternStudent      `gorm:"foreignKey:StudentCode;references:StudentCode"`
 }

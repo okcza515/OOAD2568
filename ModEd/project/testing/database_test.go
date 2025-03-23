@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init() (*gorm.DB, controller.IAssessmentController, controller.IAssignmentController, controller.IPresentationController, controller.IReportController, string) {
+func Init() (*gorm.DB, controller.IAssessmentController, controller.IAssignmentController, *controller.PresentationController, controller.IReportController, string) {
 	dbName := "test.db"
 	db, _ := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	db.Exec("PRAGMA foreign_keys = ON;")
@@ -196,7 +196,7 @@ func TestInsertPresentation(t *testing.T) {
 	t.Cleanup(func() { cleanup(dbName) })
 
 	presentation := model.Presentation{}
-	err := presentationCtrl.InsertPresentation(&presentation)
+	err := presentationCtrl.InsertPresentation(presentation)
 	if err != nil {
 		t.Errorf("Failed to insert presentation: %v", err)
 	}

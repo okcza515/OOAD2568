@@ -30,7 +30,7 @@ func NewArticleController(db *gorm.DB) *ArticleController {
 }
 
 func (c *ArticleController) ListAllArticles() ([]model.Article, error) {
-	return c.List(map[string]interface{})
+	return c.List(map[string]interface{}{})
 }
 
 func (c *ArticleController) ListArticlesWithPagination(page, pageSize int) ([]model.Article, int64, error) {
@@ -41,11 +41,17 @@ func (c *ArticleController) RetrieveArticle(id uint) (*model.Article, error) {
 	return c.RetrieveByID(id)
 }
 
+// RetrieveArticleWithPreloads demonstrates how to use preload to retrieve related fields
+// For example, if Article has a relation to "Author" and "Comments", we can eager load them.
+func (c *ArticleController) RetrieveArticleWithPreloads(id uint) (*model.Article, error) {
+	return c.RetrieveByID(id, "Author", "Comments")
+}
+
 func (c *ArticleController) InsertArticle(article model.Article) error {
 	return c.Insert(article)
 }
 
-func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error {
+func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error 
 	return c.UpdateByID(id, article)
 }
 
