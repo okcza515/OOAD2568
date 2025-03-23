@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"ModEd/eval/model"
+	model "ModEd/eval/model"
+	// "errors"
 	// "github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 )
@@ -20,6 +21,14 @@ func NewExaminationController(db *gorm.DB) *ExaminationController {
 
 func (c *ExaminationController) CreateExam(exam *model.Examination) error{
 	if err := c.db.Create(exam).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *ExaminationController) GetAllExam() error {
+	var exam []model.Examination
+	if err := c.db.Find(exam).Error; err != nil {
 		return err
 	}
 	return nil

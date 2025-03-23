@@ -13,7 +13,7 @@ type Examination struct {
 	ID          		uint 							`gorm:"primaryKey" csv:"id" json:"id"`
 	Exam_name   		string 							`gorm:"not null" csv:"exam_name" json:"exam_name"`
 	Instructor_id 		uint 							`gorm:"not null" csv:"instructor_id" json:"instructor_id"`
-	Instructor  		instructorModel.Instructor 		`gorm:"foreignKey:Instructor_id;references:InstructorID" csv:"-" json:"-"`
+	Instructor  		instructorModel.Instructor 		`gorm:"foreignKey:Instructor_id;references:ID" csv:"-" json:"-"`
 	CourseId    		uint            				`gorm:"not null" csv:"course_id" json:"course_id"`
 	Course      		curriculumModel.Course 			`gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
 	CurriculumId    	uint            				`gorm:"not null" csv:"curriculum_id" json:"curriculum_id"`
