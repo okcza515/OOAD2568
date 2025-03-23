@@ -30,7 +30,7 @@ func NewArticleController(db *gorm.DB) *ArticleController {
 }
 
 func (c *ArticleController) ListAllArticles() ([]model.Article, error) {
-	return c.List(map[string]interface{})
+	return c.List(map[string]interface{}{})
 }
 
 func (c *ArticleController) ListArticlesWithPagination(page, pageSize int) ([]model.Article, int64, error) {
@@ -45,7 +45,7 @@ func (c *ArticleController) InsertArticle(article model.Article) error {
 	return c.Insert(article)
 }
 
-func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error {
+func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error 
 	return c.UpdateByID(id, article)
 }
 
