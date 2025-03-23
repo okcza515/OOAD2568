@@ -1,20 +1,16 @@
 // MEP-1003 Student Recruitment
 package model
 
-import (
-	"github.com/google/uuid"
-)
-
 // Applicant defines an applicant's information.
 type Applicant struct {
-	ApplicantID uuid.UUID `gorm:"primaryKey"`
+	ApplicantID uint `gorm:"primaryKey"`
 	FirstName   string
 	LastName    string
 	Email       string
 	Address     string
 	Phonenumber string
 	GPAX        float32
-	HS_Program  string
+	HighSchool_Program  string
 
 	// TGAT Scores
 	TGAT1 float32 // การคิดอย่างมีเหตุผล

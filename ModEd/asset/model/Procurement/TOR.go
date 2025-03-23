@@ -1,15 +1,15 @@
-//MEP-1014
+// MEP-1014
 package model
 
 import (
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type TOR struct {
-	TORID         uuid.UUID          `gorm:"type:uuid;primaryKey"`
-	SupplierID    uuid.UUID          `gorm:"foreignKey:SupplierID"`
-	ProcurementID uuid.UUID          `gorm:"type:uuid;not null"`
-	Scope         string             `gorm:"type:text"`
-	Deliverables  AcceptanceCriteria `gorm:"type:text"` //to-do: make it work properly.
-	Timeline      string             `gorm:"type:text"`
+	TORID        uint               `gorm:"primaryKey"`
+	SupplierID   uint               `gorm:"foreignKey:SupplierID"`
+	Scope        string             `gorm:"type:text"`
+	Deliverables AcceptanceCriteria `gorm:"type:text"` //to-do: make it work properly.
+	Timeline     string             `gorm:"type:text"`
+	DeletedAt    gorm.DeletedAt     `gorm:"index"`
 }

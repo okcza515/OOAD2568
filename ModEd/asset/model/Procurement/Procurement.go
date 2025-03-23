@@ -2,14 +2,14 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Procurement struct {
 	gorm.Model
-	ProcurementID                 uuid.UUID   `gorm:"type:uuid;primaryKey"` // PK
-	TORcandidate                  []uuid.UUID `gorm:"foreignKey:TORID"`
-	ItemRequestID                 uuid.UUID   `gorm:"foreignKey:ItemRequestID"`
-	ProcurementApprovalWorkflowID uuid.UUID   `gorm:"type:uuid;ProcurementApprovalWorkflowID"`
+	ProcurementID         uint           `gorm:"primaryKey"` // PK
+	TORcandidate          uint           `gorm:"foreignKey:TORID"`
+	ItemRequestID         uint           `gorm:"foreignKey:ItemRequestID"`
+	ProcurementApprovalID uint           `gorm:"foreignKey:ProcurementApprovalID"`
+	DeletedAt             gorm.DeletedAt `gorm:"index"`
 }

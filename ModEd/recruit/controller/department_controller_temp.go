@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +18,7 @@ func NewDepartmentController(db *gorm.DB) *DepartmentController {
 	return &DepartmentController{DB: db}
 }
 
-func (dc *DepartmentController) GetDepartmentsByFacultyID(facultyID uuid.UUID) ([]model.Department, error) {
+func (dc *DepartmentController) GetDepartmentsByFacultyID(facultyID uint) ([]model.Department, error) {
 	var departments []model.Department
 	if err := dc.DB.Where("faculty_id = ?", facultyID).Find(&departments).Error; err != nil {
 		return nil, err
@@ -27,7 +26,7 @@ func (dc *DepartmentController) GetDepartmentsByFacultyID(facultyID uuid.UUID) (
 	return departments, nil
 }
 
-func (dc *DepartmentController) GetDepartmentByID(id uuid.UUID) (*model.Department, error) {
+func (dc *DepartmentController) GetDepartmentByID(id uint) (*model.Department, error) {
 	var department model.Department
 	if err := dc.DB.First(&department, id).Error; err != nil {
 		return nil, err
@@ -72,9 +71,8 @@ func (ctrl *DepartmentController) ReadDepartmentFromCSV(filePath string) error {
 		}
 
 		newDepartment := model.Department{
-			DepartmentID: uuid.New(),
-			Name:         departmentName,
-			FacultyID:    faculty.FacultyID,
+			Name:      departmentName,
+			FacultyID: faculty.FacultyID,
 		}
 
 		if err := ctrl.DB.Create(&newDepartment).Error; err != nil {

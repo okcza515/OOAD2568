@@ -1,5 +1,5 @@
 // MEP-1003 Student Recruitment
-package db
+package util
 
 import (
 	"ModEd/recruit/model"

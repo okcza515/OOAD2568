@@ -3,12 +3,9 @@ package controller
 
 import (
 	"ModEd/recruit/model"
-	"encoding/csv"
-	"fmt"
+	"ModEd/recruit/util"
 	"log"
-	"os"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -30,36 +27,13 @@ func (controller *ApplicationRoundController) CreateApplicationRound(round *mode
 	return result.Error
 }
 
-func (ctrl *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to open CSV file: %w", err)
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	rows, err := reader.ReadAll()
-	if err != nil {
-		return fmt.Errorf("failed to read CSV: %w", err)
+func (arc *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {
+	importer := util.CSVImporter{
+		DB:        arc.DB,
+		TableName: "application_rounds",
 	}
 
-	ctrl.DB.Exec("DELETE FROM application_rounds")
-
-	for _, row := range rows {
-		if len(row) < 1 {
-			continue
-		}
-		roundName := row[0]
-
-		newRound := model.ApplicationRound{
-			RoundID:   uuid.New(),
-			RoundName: roundName,
-		}
-		if err := ctrl.DB.Create(&newRound).Error; err != nil {
-			return fmt.Errorf("failed to insert application round: %w", err)
-		}
-	}
-	return nil
+	return importer.ReadFromCSV(filePath)
 }
 
 func (arc *ApplicationRoundController) GetAllRounds() ([]*model.ApplicationRound, error) {

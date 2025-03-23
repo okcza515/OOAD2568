@@ -1,13 +1,14 @@
-//MEP-1014
+// MEP-1014
 package model
 
 import (
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ItemRequest struct {
-	ItemRequestID          uuid.UUID   `gorm:"type:uuid;primaryKey"` // PK
-	ItemRequestDetailID    []uuid.UUID `gorm:"foreignKey:ItemRequestDetailID"`
-	ItemApprovalWorkflowID uuid.UUID   `gorm:"foreignKey:ItemApprovalWorkflowID"`
-	ItemBudgetAllocationID uuid.UUID   `gorm:"foreignKey:ItemBudgetAllocationID"`
+	ItemRequestID          uint           `gorm:"primaryKey"` // PK
+	ItemRequestDetailID    uint           `gorm:"foreignKey:ItemRequestDetailID"`
+	ItemApprovalID         uint           `gorm:"foreignKey:ItemApprovalID"`
+	ItemBudgetAllocationID uint           `gorm:"foreignKey:ItemBudgetAllocationID"`
+	DeletedAt              gorm.DeletedAt `gorm:"index"`
 }
