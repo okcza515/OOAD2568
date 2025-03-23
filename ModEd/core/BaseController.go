@@ -20,12 +20,19 @@ func (c *BaseController[T]) UpdateByID(id uint, data *T) error {
 	return c.db.Model(data).Where("id = ?", id).Updates(data).Error
 }
 
-func (c *BaseController[T]) RetrieveByID(id uint) (*T, error) {
-	var records T
-	if err := c.db.Where("id = ?", id).First(&records).Error; err != nil {
+func (c *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error) {
+	var record T
+
+	query := c.db
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+
+	if err := query.Where("id = ?", id).First(&record).Error; err != nil {
 		return nil, err
 	}
-	return &records, nil
+
+	return &record, nil
 }
 
 func (c *BaseController[T]) DeleteByID(id uint) error {

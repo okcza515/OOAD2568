@@ -41,6 +41,12 @@ func (c *ArticleController) RetrieveArticle(id uint) (*model.Article, error) {
 	return c.RetrieveByID(id)
 }
 
+// RetrieveArticleWithPreloads demonstrates how to use preload to retrieve related fields
+// For example, if Article has a relation to "Author" and "Comments", we can eager load them.
+func (c *ArticleController) RetrieveArticleWithPreloads(id uint) (*model.Article, error) {
+	return c.RetrieveByID(id, "Author", "Comments")
+}
+
 func (c *ArticleController) InsertArticle(article model.Article) error {
 	return c.Insert(article)
 }
