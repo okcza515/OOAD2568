@@ -2,7 +2,6 @@ package controller
 
 import (
 	modelCommon "ModEd/common/model"
-	modelWorkload "ModEd/curriculum/model/instructor-workload"
 	model "ModEd/curriculum/model/Internship"
 	"errors"
 
@@ -23,8 +22,7 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelCommon.Student{},
 		&model.InternshipReport{},
 		&model.InternshipApplication{},
-		&modelWorkload.StudentAdvisor{},
-
+		&model.Advisor{},
 	)
 	if err != nil {
 		return errors.New("err: migration failed")
