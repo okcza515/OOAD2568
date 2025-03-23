@@ -1,0 +1,102 @@
+[
+    {
+        "curriculum_id": 1,
+        "name": "Computer Engineering 2565",
+        "start_year": 2565,
+        "end_year": 2569,
+        "department_name": "Computer Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-01T08:00:00Z",
+        "updated_at": "2024-01-01T08:00:00Z"
+    },
+    {
+        "curriculum_id": 2,
+        "name": "Electrical Engineering 2564",
+        "start_year": 2564,
+        "end_year": 2568,
+        "department_name": "Electrical Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-02T09:15:00Z",
+        "updated_at": "2024-01-02T09:15:00Z"
+    },
+    {
+        "curriculum_id": 3,
+        "name": "Software Engineering 2566",
+        "start_year": 2566,
+        "end_year": 2570,
+        "department_name": "Computer Engineering",
+        "program_type": 1,
+        "created_at": "2024-01-03T10:30:00Z",
+        "updated_at": "2024-01-03T10:30:00Z"
+    },
+    {
+        "curriculum_id": 4,
+        "name": "Mechanical Engineering 2565",
+        "start_year": 2565,
+        "end_year": 2569,
+        "department_name": "Mechanical Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-04T11:45:00Z",
+        "updated_at": "2024-01-04T11:45:00Z"
+    },
+    {
+        "curriculum_id": 5,
+        "name": "Chemical Engineering 2563",
+        "start_year": 2563,
+        "end_year": 2567,
+        "department_name": "Chemical Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-05T13:00:00Z",
+        "updated_at": "2024-01-05T13:00:00Z"
+    },
+    {
+        "curriculum_id": 6,
+        "name": "Civil Engineering 2564",
+        "start_year": 2564,
+        "end_year": 2568,
+        "department_name": "Civil Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-06T14:15:00Z",
+        "updated_at": "2024-01-06T14:15:00Z"
+    },
+    {
+        "curriculum_id": 7,
+        "name": "Industrial Engineering 2565",
+        "start_year": 2565,
+        "end_year": 2569,
+        "department_name": "Industrial Engineering",
+        "program_type": 0,
+        "created_at": "2024-01-07T15:30:00Z",
+        "updated_at": "2024-01-07T15:30:00Z"
+    },
+    {
+        "curriculum_id": 8,
+        "name": "Computer Science 2566",
+        "start_year": 2566,
+        "end_year": 2570,
+        "department_name": "Computer Science",
+        "program_type": 1,
+        "created_at": "2024-01-08T16:45:00Z",
+        "updated_at": "2024-01-08T16:45:00Z"
+    },
+    {
+        "curriculum_id": 9,
+        "name": "Information Technology 2565",
+        "start_year": 2565,
+        "end_year": 2569,
+        "department_name": "Information Technology",
+        "program_type": 0,
+        "created_at": "2024-01-09T17:00:00Z",
+        "updated_at": "2024-01-09T17:00:00Z"
+    },
+    {
+        "curriculum_id": 10,
+        "name": "Data Science 2566",
+        "start_year": 2566,
+        "end_year": 2570,
+        "department_name": "Computer Science",
+        "program_type": 1,
+        "created_at": "2024-01-10T18:15:00Z",
+        "updated_at": "2024-01-10T18:15:00Z"
+    }
+]
