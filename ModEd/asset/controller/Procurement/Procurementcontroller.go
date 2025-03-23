@@ -20,13 +20,13 @@ func CreateProcurementController(connector *gorm.DB) *ProcurementController {
 func (procurement ProcurementController) ListAll() ([]model.Procurement, error) {
 	procurements := []model.Procurement{}
 	result := procurement.Connector.
-		Select("ProcurementApprovalWorkflowID").Find(&procurements)
+		Select("ProcurementApprovalID").Find(&procurements)
 	return procurements, result.Error
 }
 
-func (procurement ProcurementController) GetByApprovalId(ProcurementApprovalWorkflowID string) (*model.Procurement, error) {
+func (procurement ProcurementController) GetByID(ProcurementApprovalID uint) (*model.Procurement, error) {
 	i := &model.Procurement{}
-	result := procurement.Connector.Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).First(i)
+	result := procurement.Connector.Where("ProcurementApprovalID = ?", ProcurementApprovalID).First(i)
 	return i, result.Error
 }
 
@@ -34,12 +34,12 @@ func (procurement ProcurementController) Create(i *model.Procurement) error {
 	return procurement.Connector.Create(i).Error
 }
 
-func (procurement ProcurementController) Update(ProcurementApprovalWorkflowID string, updatedData map[string]any) error {
+func (procurement ProcurementController) Update(ProcurementApprovalID uint, updatedData map[string]any) error {
 	return procurement.Connector.Model(&model.Procurement{}).
-		Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).
+		Where("ProcurementApprovalID = ?", ProcurementApprovalID).
 		Updates(updatedData).Error
 }
 
-func (procurement ProcurementController) DeleteByInstructorId(ProcurementApprovalWorkflowID string) error {
-	return procurement.Connector.Where("ProcurementApprovalWorkflowID = ?", ProcurementApprovalWorkflowID).Delete(&model.Procurement{}).Error
+func (procurement ProcurementController) DeleteByInstructorID(ProcurementApprovalID uint) error {
+	return procurement.Connector.Where("ProcurementApprovalID = ?", ProcurementApprovalID).Delete(&model.Procurement{}).Error
 }
