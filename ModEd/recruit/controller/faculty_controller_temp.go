@@ -3,11 +3,8 @@ package controller
 
 import (
 	"ModEd/recruit/model"
-	"encoding/csv"
-	"fmt"
-	"os"
+	"ModEd/recruit/util"
 
-	
 	"gorm.io/gorm"
 )
 
@@ -41,44 +38,11 @@ func (fc *FacultyController) CreateFaculty(faculty *model.Faculty) error {
 	return fc.DB.Create(faculty).Error
 }
 
-func (ctrl *FacultyController) ReadFacultyFromCSV(filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return fmt.Errorf("Failed to open CSV file: %w", err)
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	rows, err := reader.ReadAll()
-	if err != nil {
-		return fmt.Errorf("Failed to read CSV: %w", err)
+func (fc *FacultyController) ReadFacultyFromCSV(filePath string) error {
+	importer := util.CSVImporter{
+		DB:        fc.DB,
+		TableName: "faculty",
 	}
 
-	for _, row := range rows {
-		if len(row) < 1 {
-			fmt.Println("Skipping row due to insufficient data:", row)
-			continue
-		}
-
-		facultyName := row[0]
-
-		// ตรวจสอบว่ามี Faculty ชื่อเดียวกันหรือไม่
-		var existingFaculty model.Faculty
-		err := ctrl.DB.Where("name = ?", facultyName).First(&existingFaculty).Error
-		if err == nil {
-			continue
-		}
-
-		// สร้าง Faculty ใหม่
-		newFaculty := model.Faculty{
-			FacultyID: 0,
-			Name:      facultyName,
-		}
-
-		if err := ctrl.DB.Create(&newFaculty).Error; err != nil {
-			return fmt.Errorf("Failed to insert faculty: %w", err)
-		}
-	}
-
-	return nil
+	return importer.ReadFromCSV(filePath)
 }

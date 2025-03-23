@@ -71,9 +71,8 @@ func (ctrl *DepartmentController) ReadDepartmentFromCSV(filePath string) error {
 		}
 
 		newDepartment := model.Department{
-			DepartmentID: 0,
-			Name:         departmentName,
-			FacultyID:    faculty.FacultyID,
+			Name:      departmentName,
+			FacultyID: faculty.FacultyID,
 		}
 
 		if err := ctrl.DB.Create(&newDepartment).Error; err != nil {
