@@ -4,13 +4,14 @@ package model
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AcceptanceApproval struct {
-	AcceptanceApprovalID uuid.UUID   `gorm:"type:uuid;primaryKey"`
-	ApproversID          []uuid.UUID `gorm:"foreignKey:InstructorId"` //TODO: Fix this data type
-	Status               string      `gorm:"type:varchar(50);not null"`
-	Description          string      `gorm:"type:text"`
-	ApprovalTime         time.Time   `gorm:"type:time;not null"`
+	AcceptanceApprovalID uint           `gorm:"primaryKey"`
+	Approver             Approver       `gorm:"foreignKey:ApproversID"`
+	Status               string         `gorm:"type:varchar(50);not null"`
+	Description          string         `gorm:"type:text"`
+	ApprovalTime         time.Time      `gorm:"type:time;not null"`
+	DeletedAt            gorm.DeletedAt `gorm:"index"`
 }

@@ -1,13 +1,14 @@
-//MEP-1014
+// MEP-1014
 package model
 
 import (
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ItemBudgetAllocation struct {
-	ItemBudgetAllocationID uuid.UUID `gorm:"type:uuid;primaryKey"`
-	TotalBudget            float64   `gorm:"not null"` //TO-DO: link this to the budget in department
-	AllocatedAmount        float64   `gorm:"not null"`
-	RemainingBalance       float64   `gorm:"not null"`
+	ItemBudgetAllocationID uint           `gorm:"primaryKey"`
+	TotalBudget            float64        `gorm:"not null"` //TO-DO: link this to the budget in department
+	AllocatedAmount        float64        `gorm:"not null"`
+	RemainingBalance       float64        `gorm:"not null"`
+	DeletedAt              gorm.DeletedAt `gorm:"index"`
 }

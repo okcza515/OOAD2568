@@ -2,12 +2,13 @@
 package model
 
 import (
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // refer from TOR
 type AcceptanceCriteria struct {
-	AcceptanceCriteriaID uuid.UUID `gorm:"type:uuid;primaryKey"` // PK
-	CriteriaName         string    `gorm:"type:varchar(255);not null"`
-	Description          string    `gorm:"type:text"`
+	AcceptanceCriteriaID uint           `gorm:"primaryKey"` // PK
+	CriteriaName         string         `gorm:"type:varchar(255);not null"`
+	Description          string         `gorm:"type:text"`
+	DeletedAt            gorm.DeletedAt `gorm:"index"`
 }

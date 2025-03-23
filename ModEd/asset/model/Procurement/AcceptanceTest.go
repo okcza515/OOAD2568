@@ -1,15 +1,16 @@
-//MEP-1014
+// MEP-1014
 package model
 
 import (
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AcceptanceTest struct {
-	AcceptanceTestID     uuid.UUID `gorm:"type:uuid;primaryKey"` // PK
-	ProcurementID        uuid.UUID `gorm:"foreignKey:ProcurementID"`
-	TORID                uuid.UUID `gorm:"type:uuid;not null"` // for connection
-	AcceptanceCriteriaID uuid.UUID `gorm:"foreignKey:AcceptanceCriteriaID"`
-	WorkflowID           uuid.UUID `gorm:"foreignKey:AcceptanceApprovalWorkflowID"`
-	Results              string    `gorm:"type:text"`
+	AcceptanceTestID     uint           `gorm:"primaryKey"` // PK
+	ProcurementID        uint           `gorm:"foreignKey:ProcurementID"`
+	TORID                uint           `gorm:"foreignKey:TORID"`
+	AcceptanceCriteriaID uint           `gorm:"foreignKey:AcceptanceCriteriaID"`
+	AcceptanceApprovalID uint           `gorm:"foreignKey:AcceptanceApprovalID"`
+	Results              string         `gorm:"type:text"`
+	DeletedAt            gorm.DeletedAt `gorm:"index"`
 }
