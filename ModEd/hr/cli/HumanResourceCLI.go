@@ -16,12 +16,11 @@ import (
 )
 
 var (
-	// Global flags
 	databasePath = flag.String("database", "data/ModEd.bin", "Path of SQLite Database")
 )
 
 func main() {
-	// Parse global flags first
+
 	flag.Parse()
 	args := flag.Args()
 
@@ -30,11 +29,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// First argument after global flags is the command
 	command := args[0]
 	commandArgs := args[1:]
 
-	// Execute the appropriate command
+
 	switch command {
 	case "list":
 		listStudents(commandArgs)
@@ -89,11 +87,7 @@ func updateStudent(args []string) {
 	emailStudent := fs.String("email", "", "New Email value")
 	fs.Parse(args)
 
-	if *studentID == "" {
-		fmt.Println("Error: Student ID is required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] update -id=<studentID> [options]")
-		os.Exit(1)
-	}
+	hrUtil.ValidateFlags(fs, []string{"id"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
@@ -103,7 +97,6 @@ func updateStudent(args []string) {
 		os.Exit(1)
 	}
 
-	// Update basic student information if provided
 	if *firstName != "" {
 		studentInfo.FirstName = *firstName
 	}
@@ -141,11 +134,7 @@ func addStudent(args []string) {
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	if *studentID == "" || *firstName == "" || *lastName == "" {
-		fmt.Println("Error: Student ID, First Name, and Last Name are required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] add -id=<studentID> -fname=<firstName> -lname=<lastName> [options]")
-		os.Exit(1)
-	}
+	hrUtil.ValidateFlags(fs, []string{"id", "fname", "lname"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
@@ -201,7 +190,7 @@ func updateStudentStatus(args []string) {
 		os.Exit(1)
 	}
 
-	// Convert the status string to enum
+
 	newStatus, err := hrUtil.StatusFromString(*status)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -211,7 +200,6 @@ func updateStudentStatus(args []string) {
 	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 
-	// Use the dedicated controller method for updating status
 	if err := studentController.UpdateStatus(*studentID, newStatus); err != nil {
 		fmt.Printf("Failed to update student status: %v\n", err)
 		os.Exit(1)
@@ -235,36 +223,31 @@ func importStudents(args []string) {
 		os.Exit(1)
 	}
 
-	// Use a mapper tailored for HR data. Assume you have an HR-specific mapper that reads into hrModel.HRInfo.
 	hrMapper, err := util.CreateMapper[hrModel.StudentInfo](*filePath)
 	if err != nil {
 		fmt.Printf("Failed to create HR mapper: %v\n", err)
 		os.Exit(1)
 	}
 
-	hrRecords := hrMapper.Map() // hrRecords is []*hrModel.HRInfo
+	hrRecords := hrMapper.Map() 
 
 	db := hrUtil.OpenDatabase(*databasePath)
 	hrController := controller.CreateStudentHRController(db)
 
 	for _, hrRec := range hrRecords {
-		// Create the common student controller.
 		commonStudentController := commonController.CreateStudentController(db)
-		// Retrieve common student data using the student's ID.
 		commonStudent, err := commonStudentController.GetByStudentId(hrRec.StudentCode)
 		if err != nil {
 			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
 			continue
 		}
 
-		// Merge the common student info with the HR-specific fields
 		newStudent := hrModel.StudentInfo{
-			Student: *commonStudent, // from the common Model
-			Gender:  hrRec.Gender,   // HR field from CSV
-			// Set additional HR fields from hrRec as needed.
+			Student: *commonStudent, 
+			Gender:  hrRec.Gender,   
+			
 		}
 
-		// Upsert (insert or update) so that duplicate records are not created.
 		if err := hrController.Upsert(&newStudent); err != nil {
 			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
 			continue

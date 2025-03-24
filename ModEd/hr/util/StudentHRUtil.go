@@ -44,7 +44,6 @@ func OpenDatabase(database string) *gorm.DB {
 		os.Exit(1)
 	}
 
-	// Migrate student data from the common Student table to the HR StudentInfo table.
 	if err := controller.MigrateStudentsToHR(db); err != nil {
 		fmt.Printf("Migration Failed: %v\n", err)
 		os.Exit(1)
