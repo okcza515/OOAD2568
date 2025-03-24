@@ -1,0 +1,11 @@
+room_id,room_name,room_type,description,floor,building,location,capacity,is_room_out_of_service,assets
+1,Conference Room A,MEETING,Spacious room with projector and whiteboard,2,Main Building,East Wing,20,false,
+2,Lecture Hall 101,LECTURE,Large hall with seating for 100,1,Science Block,West Side,100,false,
+3,Laboratory B,LAB,Chemistry lab with fume hood,3,Engineering Building,North Wing,30,true,
+4,Private Office 205,OFFICE,Executive office with attached restroom,2,Admin Block,South Tower,2,false,
+5,Auditorium,AUDITORIUM,Fully equipped for presentations,1,Convention Center,Main Entrance,500,false,
+6,Storage Room 12,STORAGE,Used for equipment storage,-1,Utility Block,Basement Level,5,true,
+7,IT Server Room,SERVER,Restricted access to IT personnel,1,Data Center,Secure Wing,10,false,
+8,Meeting Room Delta,MEETING,Small meeting room with video conferencing,3,Business Tower,East Section,8,false,
+9,Studio Room,STUDIO,Recording studio with soundproof walls,2,Media Center,West Side,15,false,
+10,Break Room,LOUNGE,Employee relaxation area,2,Headquarters,Near Lobby,10,false,
