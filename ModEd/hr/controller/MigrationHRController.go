@@ -33,8 +33,8 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 		}
 
 		// Use FirstOrCreate to avoid duplicate unique errors.
-		if err := db.Where("s_id = ?", s.SID).FirstOrCreate(&studentInfo).Error; err != nil {
-			return fmt.Errorf("Failed to migrate student %s: %w", s.SID, err)
+		if err := db.Where("s_id = ?", s.StudentCode).FirstOrCreate(&studentInfo).Error; err != nil {
+			return fmt.Errorf("Failed to migrate student %s: %w", s.StudentCode, err)
 		}
 		// fmt.Printf("Migrated student %s successfully\n", s.SID)
 	}
@@ -52,7 +52,7 @@ func SynchronizeStudents(db *gorm.DB) error {
 	}
 
 	for _, hrRec := range hrStudents {
-		sid := hrRec.Student.SID
+		sid := hrRec.Student.StudentCode
 
 		// Retrieve the common student record.
 		var commonStudent common.Student
@@ -86,7 +86,7 @@ func SynchronizeStudents(db *gorm.DB) error {
 // syncCreateCommonFromHR creates a new common.Student from HR student data
 func syncCreateCommonFromHR(hrStudent common.Student) common.Student {
 	return common.Student{
-		SID:       hrStudent.SID,
+		StudentCode:       hrStudent.StudentCode,
 		FirstName: hrStudent.FirstName,
 		LastName:  hrStudent.LastName,
 		Email:     hrStudent.Email,

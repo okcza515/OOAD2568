@@ -90,7 +90,7 @@ func listStudents(args []string) {
 	fmt.Println("Human Resource Student Info:")
 	for _, s := range studentInfos {
 		fmt.Printf("SID: %s | Name: %s %s | Gender: %s | CitizenID: %s | Phone: %s | Status: %s | Email: %s\n",
-			s.SID, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber, hrUtil.StatusToString(s.Status), s.Email)
+			s.StudentCode, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber, hrUtil.StatusToString(s.Status), s.Email)
 	}
 }
 
@@ -167,9 +167,9 @@ func addStudent(args []string) {
 	studentController := controller.CreateStudentHRController(db)
 	newStudent := hrModel.StudentInfo{
 		Student: commonModel.Student{
-			SID:       *studentID,
-			FirstName: *firstName,
-			LastName:  *lastName,
+			StudentCode: *studentID,
+			FirstName:   *firstName,
+			LastName:    *lastName,
 		},
 		Gender:      *gender,
 		CitizenID:   *citizenID,
@@ -267,9 +267,9 @@ func importStudents(args []string) {
 		// Create the common student controller.
 		commonStudentController := commonController.CreateStudentController(db)
 		// Retrieve common student data using the student's ID.
-		commonStudent, err := commonStudentController.GetByStudentId(hrRec.SID)
+		commonStudent, err := commonStudentController.GetByStudentId(hrRec.StudentCode)
 		if err != nil {
-			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.SID, err)
+			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
 			continue
 		}
 
@@ -282,7 +282,7 @@ func importStudents(args []string) {
 
 		// Upsert (insert or update) so that duplicate records are not created.
 		if err := hrController.Upsert(&newStudent); err != nil {
-			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.SID, err)
+			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
 			continue
 		}
 	}
