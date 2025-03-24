@@ -14,7 +14,8 @@ type MigrationController struct {
 
 func (c *MigrationController) MigrateToDB() error {
 	err := c.db.AutoMigrate(
-		&model.AssetManagement{},
+		&model.InstrumentManagement{},
+		&model.SupplyManagement{},
 		&model.Booking{},
 		&model.PermanentSchedule{},
 		&model.Room{},

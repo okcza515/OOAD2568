@@ -23,12 +23,14 @@ func main() {
 
 		switch input {
 		case "1":
-			handler.AssetManagementHandler(facade)
+			handler.InstrumentManagementHandler(facade)
 		case "2":
-			handler.BookingHandler(facade)
+			handler.SupplyManagementHandler(facade)
 		case "3":
-			handler.PermanentScheduleHandler(facade)
+			handler.BookingHandler(facade)
 		case "4":
+			handler.PermanentScheduleHandler(facade)
+		case "5":
 			handler.RoomHandler(facade)
 		}
 	}

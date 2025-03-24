@@ -9,11 +9,12 @@ import (
 )
 
 type SpaceManagementControllerFacade struct {
-	Db                *gorm.DB
-	AssetManagement   AssetManagementController
-	Booking           BookingController
-	PermanentSchedule PermanentScheduleController
-	Room              RoomController
+	Db                			*gorm.DB
+	InstrumentManagement   		InstrumentManagementController
+	SupplyManagementController 	SupplyManagementController
+	Booking           			BookingController
+	PermanentSchedule 			PermanentScheduleController
+	Room              			RoomController
 }
 
 func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
@@ -27,7 +28,8 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	if err != nil {
 		return nil, errors.New("Failed to migrate schema")
 	}
-	facade.AssetManagement = AssetManagementController{db: db}
+	facade.InstrumentManagement = InstrumentManagementController{db: db}
+	facade.SupplyManagementController = SupplyManagementController{db: db}
 	facade.Booking = BookingController{db: db}
 	facade.PermanentSchedule = PermanentScheduleController{db: db}
 	facade.Room = RoomController{db: db}
