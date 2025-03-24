@@ -2,11 +2,14 @@ package model
 
 import (
 	"ModEd/curriculum/model"
+
+	"gorm.io/gorm"
 )
 
 type ClassSchedule struct {
-	ScheduleId    int         `gorm:"primaryKey;autoIncrement"`
-	Class         model.Class `gorm:"foreignKey:ClassId;references:ClassId"`
-	StartDateTime string      `gorm:"type:timestamp;not null"`
-	EndDateTime   string      `gorm:"type:timestamp;not null"`
+	gorm.Model
+	ClassId   uint        `gorm:"index"`
+	Class     model.Class `gorm:"foreignKey:ClassId;references:ClassId"`
+	StartTime string      `gorm:"type:timestamp;not null"`
+	EndTime   string      `gorm:"type:timestamp;not null"`
 }
