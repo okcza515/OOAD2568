@@ -19,7 +19,7 @@ type PermanentScheduleController struct {
 func (c *PermanentScheduleController) CheckRoomInService(roomID uint) (*bool, error) {
 	var room model.Room
 
-	err := c.DB.First(&room, roomID).Error
+	err := c.db.First(&room, roomID).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("Room not found")
 	} else if err != nil {
@@ -68,7 +68,7 @@ func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.Perm
 		return errors.New("Room is unavailable for scheduled")
 	}
 
-	result := c.DB.Create(schedule)
+	result := c.db.Create(schedule)
 	if result.Error != nil {
 		return result.Error
 	}
