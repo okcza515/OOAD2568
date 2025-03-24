@@ -13,9 +13,6 @@ import (
 	"ModEd/hr/util"
 
 	hrUtil "ModEd/hr/util"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 var (
@@ -52,7 +49,7 @@ func main() {
 	case "import":
 		importStudents(commandArgs)
 	case "sync":
-		synchronizeStudents(commandArgs)
+		synchronizeStudents()
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
 		fmt.Println("Available commands: list, add, update, delete")
@@ -60,26 +57,13 @@ func main() {
 	}
 }
 
-func openDatabase(database string) *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
-	if err != nil {
-		fmt.Printf("Failed to connect to database: %v\n", err)
-		os.Exit(1)
-	}
 
-	// Migrate student data from the common Student table to the HR StudentInfo table.
-	if err := controller.MigrateStudentsToHR(db); err != nil {
-		fmt.Printf("Migration Failed: %v\n", err)
-		os.Exit(1)
-	}
-	return db
-}
 
 func listStudents(args []string) {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 	studentInfos, err := studentController.GetAll()
 	if err != nil {
@@ -111,7 +95,7 @@ func updateStudent(args []string) {
 		os.Exit(1)
 	}
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 	studentInfo, err := studentController.GetById(*studentID)
 	if err != nil {
@@ -163,7 +147,7 @@ func addStudent(args []string) {
 		os.Exit(1)
 	}
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 	newStudent := hrModel.StudentInfo{
 		Student: commonModel.Student{
@@ -195,7 +179,7 @@ func deleteStudent(args []string) {
 		os.Exit(1)
 	}
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 	if err := studentController.Delete(*studentID); err != nil {
 		fmt.Printf("Failed to delete student info: %v\n", err)
@@ -224,7 +208,7 @@ func updateStudentStatus(args []string) {
 		os.Exit(1)
 	}
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	studentController := controller.CreateStudentHRController(db)
 
 	// Use the dedicated controller method for updating status
@@ -260,7 +244,7 @@ func importStudents(args []string) {
 
 	hrRecords := hrMapper.Map() // hrRecords is []*hrModel.HRInfo
 
-	db := openDatabase(*databasePath)
+	db := hrUtil.OpenDatabase(*databasePath)
 	hrController := controller.CreateStudentHRController(db)
 
 	for _, hrRec := range hrRecords {
@@ -289,8 +273,8 @@ func importStudents(args []string) {
 	fmt.Println("Students imported successfully!")
 }
 
-func synchronizeStudents(args []string) {
-	db := openDatabase(*databasePath)
+func synchronizeStudents() {
+	db := hrUtil.OpenDatabase(*databasePath)
 
 	if err := controller.SynchronizeStudents(db); err != nil {
 		fmt.Printf("Failed to synchronize students: %v\n", err)
