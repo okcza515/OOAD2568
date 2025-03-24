@@ -9,6 +9,7 @@ import (
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
+
 	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
 
@@ -32,7 +33,6 @@ func main() {
 	command := args[0]
 	commandArgs := args[1:]
 
-
 	switch command {
 	case "list":
 		listStudents(commandArgs)
@@ -55,14 +55,12 @@ func main() {
 	}
 }
 
-
-
 func listStudents(args []string) {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.CreateStudentHRController(db)
+	studentController := controller.Student.CreateStudentHRController(db)
 	studentInfos, err := studentController.GetAll()
 	if err != nil {
 		fmt.Printf("Error listing students: %v\n", err)
@@ -90,7 +88,7 @@ func updateStudent(args []string) {
 	hrUtil.ValidateFlags(fs, []string{"id"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.CreateStudentHRController(db)
+	studentController := controller.Student.CreateStudentHRController(db)
 	studentInfo, err := studentController.GetById(*studentID)
 	if err != nil {
 		fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
@@ -190,7 +188,6 @@ func updateStudentStatus(args []string) {
 		os.Exit(1)
 	}
 
-
 	newStatus, err := hrUtil.StatusFromString(*status)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
@@ -229,7 +226,7 @@ func importStudents(args []string) {
 		os.Exit(1)
 	}
 
-	hrRecords := hrMapper.Map() 
+	hrRecords := hrMapper.Map()
 
 	db := hrUtil.OpenDatabase(*databasePath)
 	hrController := controller.CreateStudentHRController(db)
@@ -243,9 +240,8 @@ func importStudents(args []string) {
 		}
 
 		newStudent := hrModel.StudentInfo{
-			Student: *commonStudent, 
-			Gender:  hrRec.Gender,   
-			
+			Student: *commonStudent,
+			Gender:  hrRec.Gender,
 		}
 
 		if err := hrController.Upsert(&newStudent); err != nil {
@@ -259,7 +255,7 @@ func importStudents(args []string) {
 func synchronizeStudents() {
 	db := hrUtil.OpenDatabase(*databasePath)
 
-	if err := controller.SynchronizeStudents(db); err != nil {
+	if err := migrationController.SynchronizeStudents(db); err != nil {
 		fmt.Printf("Failed to synchronize students: %v\n", err)
 		os.Exit(1)
 	}

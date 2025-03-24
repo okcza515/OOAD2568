@@ -5,7 +5,7 @@ import (
 	"os"
 
 	commonModel "ModEd/common/model"
-	"ModEd/hr/controller"
+	controller "ModEd/hr/controller/Migration"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
