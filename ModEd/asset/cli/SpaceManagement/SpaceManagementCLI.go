@@ -1,1 +1,1 @@
-package spacemanagement
+package main
