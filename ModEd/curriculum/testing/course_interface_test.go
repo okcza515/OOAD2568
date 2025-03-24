@@ -7,7 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
-	controller "ModEd/curriculum/controller/course"
+	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/controller/migration"
 	"ModEd/curriculum/controller/seed"
 	"ModEd/curriculum/model"

@@ -1,7 +1,7 @@
 package seed
 
 import (
-	controller "ModEd/curriculum/controller/class"
+	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 	"fmt"

@@ -226,3 +226,16 @@ func TestSeedCurriculum(t *testing.T) {
 	}
 
 }
+func TestMigration(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	if err != nil {
+		panic(err)
+	}
+	migrationController := migration.NewMigrationController(db)
+	if err := migrationController.MigrateToDB(); err != nil {
+		t.Fatalf("Failed to migrate to db: %v", err)
+	}
+}
