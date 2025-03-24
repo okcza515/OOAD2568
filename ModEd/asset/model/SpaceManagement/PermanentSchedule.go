@@ -1,4 +1,4 @@
-package space
+package spacemanagement
 
 import (
 	master "ModEd/common/model"
