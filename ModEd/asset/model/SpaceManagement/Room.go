@@ -1,5 +1,5 @@
 // MEP-1013
-package space
+package spacemanagement
 
 import "gorm.io/gorm"
 
