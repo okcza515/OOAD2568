@@ -1,8 +1,7 @@
-// MEP-1013
 package spacemanagement
 
 import (
-	model "ModEd/asset/model/SpaceManagement"
+	model "ModEd/asset/model/spacemanagement"
 	"ModEd/utils/deserializer"
 	"errors"
 

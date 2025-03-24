@@ -2,7 +2,7 @@
 package spacemanagement
 
 import (
-	model "ModEd/asset/model/SpaceManagement"
+	model "ModEd/asset/model/spacemanagement"
 	//common "ModEd/common/model"
 	"errors"
 	"fmt"

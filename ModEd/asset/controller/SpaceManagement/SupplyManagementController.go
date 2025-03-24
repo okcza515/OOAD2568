@@ -1,23 +1,23 @@
-//MEP-1013
+// MEP-1013
 package spacemanagement
 
-import(
-	model "ModEd/asset/model/SpaceManagement"
-	"gorm.io/gorm"
+import (
+	model "ModEd/asset/model/spacemanagement"
 	"errors"
+	"gorm.io/gorm"
 )
 
 type SupplyManagementController struct {
 	db *gorm.DB
 }
 
-func (c* SupplyManagementController) getAllSupplyManagement() (*[]model.SupplyManagement, error) {
+func (c *SupplyManagementController) getAllSupplyManagement() (*[]model.SupplyManagement, error) {
 	assetInfo := new([]model.SupplyManagement)
 	result := c.db.Find(&assetInfo)
 	return assetInfo, result.Error
 }
 
-func (c* SupplyManagementController) getSupplyManagementById(Id uint) (*model.SupplyManagement, error) {
+func (c *SupplyManagementController) getSupplyManagementById(Id uint) (*model.SupplyManagement, error) {
 	if Id == 0 {
 		return nil, errors.New("No Id provide")
 	}
@@ -27,18 +27,17 @@ func (c* SupplyManagementController) getSupplyManagementById(Id uint) (*model.Su
 }
 
 func (c *SupplyManagementController) GetAssetManagementByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
-    if roomID == 0 {
-        return nil, errors.New("No RoomID provided")
-    }
-    
-    assetList := new([]model.SupplyManagement)
-    result := c.db.Where("room_id = ?", roomID).Find(&assetList)
-    
-    return assetList, result.Error
+	if roomID == 0 {
+		return nil, errors.New("No RoomID provided")
+	}
+
+	assetList := new([]model.SupplyManagement)
+	result := c.db.Where("room_id = ?", roomID).Find(&assetList)
+
+	return assetList, result.Error
 }
 
-
-func (c* SupplyManagementController) CreateAssetManagement(payload *model.SupplyManagement) error {
+func (c *SupplyManagementController) CreateAssetManagement(payload *model.SupplyManagement) error {
 	if payload == nil {
 		return errors.New("Invalid asset data")
 	}
@@ -46,7 +45,7 @@ func (c* SupplyManagementController) CreateAssetManagement(payload *model.Supply
 	return result.Error
 }
 
-func (c* SupplyManagementController) UpdateSupplyManagement(Id uint, payload *model.SupplyManagement) error {
+func (c *SupplyManagementController) UpdateSupplyManagement(Id uint, payload *model.SupplyManagement) error {
 	if payload == nil || Id == 0 {
 		return errors.New("Invalid info")
 	}
@@ -58,7 +57,7 @@ func (c* SupplyManagementController) UpdateSupplyManagement(Id uint, payload *mo
 	return result.Error
 }
 
-func (c* SupplyManagementController) DeleteSupplyManagement(Id uint) error {
+func (c *SupplyManagementController) DeleteSupplyManagement(Id uint) error {
 	if Id == 0 {
 		return errors.New("No Id provide")
 	}
