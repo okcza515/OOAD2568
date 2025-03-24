@@ -1,4 +1,4 @@
-instrument_id,instrument_label,instrument_code,description,instrument_status,room_id,location,category_id,cost,instrument_serial_id,add_year,budget_source,brand,model,deleted_at
+ID,InstrumentLabel,InstrumentCode,Description,InstrumentStatus,RoomID,Location,CategoryID,Cost,InstrumentSerialID,BudgetYear,BudgetSource,InstrumentBrand,InstrumentModel,DeletedAt
 1,Digital Oscilloscope,67DH01,A chinese oscilloscope,Available,CPE1119,Cabinet 14,1,44990.00,SN123456,2024,University Budget,RIGOL,DHO802,
 2,Digital Oscilloscope,67DH02,A chinese oscilloscope,Available,CPE1119,Cabinet 14,1,44990.00,SN789012,2024,Government Grant,RIGOL,DHO802,
 3,Digital Oscilloscope,67DH03,A chinese oscilloscope,Available,CPE1119,Cabinet 14,1,44990.00,SN345678,2024,Department Funding,RIGOL,DHO802,
