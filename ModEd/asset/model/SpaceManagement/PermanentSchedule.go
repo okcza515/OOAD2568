@@ -11,14 +11,14 @@ import (
 
 type PermanentSchedule struct {
 	gorm.Model
-	ScheduleID  uint               `gorm:"type:integer ;primaryKey" json:"schedule_id" csv:"schedule_id"`
-	StartDate   time.Time          `gorm:"type:timestamp" json:"start_date" csv:"start_date"`
-	EndDate     time.Time          `gorm:"type:timestamp" json:"end_date" csv:"end_date"`
-	IsAvailable bool               `gorm:"type:boolean" json:"is_available" csv:"is_available"`
-	Faculty     master.Faculty     `gorm:"foreignKey:Faculty;references:ID" json:"faculty" csv:"faculty"`
-	Department  master.Department  `gorm:"foreignKey:Department;references:ID" json:"department" csv:"department"`
-	ProgramType master.ProgramType `gorm:"foreignKey:ProgramType;references:ProgramType" json:"program_type" csv:"program_type"`
-	Classroom   Room               `gorm:"foreignKey:RoomID;references:RoomID" json:"classroom" csv:"classroom"`
-	Course      curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId" json:"course" csv:"course"`
-	Class       curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId" json:"class" csv:"class"`
+	ScheduleID  uint               `gorm:"type:integer ;primaryKey"`
+	StartDate   time.Time          `gorm:"type:timestamp"`
+	EndDate     time.Time          `gorm:"type:timestamp"`
+	IsAvailable bool               `gorm:"type:boolean"`
+	Faculty     master.Faculty     `gorm:"foreignKey:ID;references:ID"`
+	Department  master.Department  `gorm:"foreignKey:ID;references:ID"`
+	ProgramType master.ProgramType `gorm:"foreignKey:ProgramType;references:ProgramType"`
+	Classroom   Room               `gorm:"foreignKey:RoomID;references:RoomID"`
+	Course      curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId"`
+	Class       curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId"`
 }
