@@ -8,7 +8,8 @@ import (
 
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
-	"ModEd/hr/controller"
+	mController "ModEd/hr/controller/Migration"
+	sController "ModEd/hr/controller/Student"
 
 	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
@@ -60,7 +61,7 @@ func listStudents(args []string) {
 	fs.Parse(args)
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.Student.CreateStudentHRController(db)
+	studentController := sController.CreateStudentHRController(db)
 	studentInfos, err := studentController.GetAll()
 	if err != nil {
 		fmt.Printf("Error listing students: %v\n", err)
@@ -88,7 +89,7 @@ func updateStudent(args []string) {
 	hrUtil.ValidateFlags(fs, []string{"id"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.Student.CreateStudentHRController(db)
+	studentController := sController.CreateStudentHRController(db)
 	studentInfo, err := studentController.GetById(*studentID)
 	if err != nil {
 		fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
@@ -135,7 +136,7 @@ func addStudent(args []string) {
 	hrUtil.ValidateFlags(fs, []string{"id", "fname", "lname"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.CreateStudentHRController(db)
+	studentController := sController.CreateStudentHRController(db)
 	newStudent := hrModel.StudentInfo{
 		Student: commonModel.Student{
 			StudentCode: *studentID,
@@ -160,14 +161,10 @@ func deleteStudent(args []string) {
 	studentID := fs.String("id", "", "Student ID to delete")
 	fs.Parse(args)
 
-	if *studentID == "" {
-		fmt.Println("Error: Student ID is required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] delete -id=<studentID>")
-		os.Exit(1)
-	}
+	hrUtil.ValidateFlags(fs, []string{"id"})
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.CreateStudentHRController(db)
+	studentController := sController.CreateStudentHRController(db)
 	if err := studentController.Delete(*studentID); err != nil {
 		fmt.Printf("Failed to delete student info: %v\n", err)
 		os.Exit(1)
@@ -182,11 +179,7 @@ func updateStudentStatus(args []string) {
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
-	if *studentID == "" || *status == "" {
-		fmt.Println("Error: Student ID and Status are required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] updateStatus -id=<studentID> -status=<ACTIVE|GRADUATED|DROP>")
-		os.Exit(1)
-	}
+	hrUtil.ValidateFlags(fs, []string{"id"})
 
 	newStatus, err := hrUtil.StatusFromString(*status)
 	if err != nil {
@@ -195,7 +188,7 @@ func updateStudentStatus(args []string) {
 	}
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := controller.CreateStudentHRController(db)
+	studentController := sController.CreateStudentHRController(db)
 
 	if err := studentController.UpdateStatus(*studentID, newStatus); err != nil {
 		fmt.Printf("Failed to update student status: %v\n", err)
@@ -229,7 +222,7 @@ func importStudents(args []string) {
 	hrRecords := hrMapper.Map()
 
 	db := hrUtil.OpenDatabase(*databasePath)
-	hrController := controller.CreateStudentHRController(db)
+	hrController := sController.CreateStudentHRController(db)
 
 	for _, hrRec := range hrRecords {
 		commonStudentController := commonController.CreateStudentController(db)
@@ -255,7 +248,7 @@ func importStudents(args []string) {
 func synchronizeStudents() {
 	db := hrUtil.OpenDatabase(*databasePath)
 
-	if err := migrationController.SynchronizeStudents(db); err != nil {
+	if err := mController.SynchronizeStudents(db); err != nil {
 		fmt.Printf("Failed to synchronize students: %v\n", err)
 		os.Exit(1)
 	}
