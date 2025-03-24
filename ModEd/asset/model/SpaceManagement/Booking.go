@@ -10,7 +10,7 @@ import (
 type Booking struct {
 	gorm.Model
 	BookingID     uint      	`gorm:"type:integer" json:"booking_id" csv:"booking_id"`
-	Room          []Room        `gorm:"foreignKey:RoomID;references:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
+	Room          []Room        `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
 	UserID        uint      	`gorm:"type:integer;not null" json:"user_id" csv:"user_id"`
 	UserRole      Role      	`gorm:"type:text;not null" json:"user_role" csv:"user_role"`
 	StartDate     time.Time 	`gorm:"type:timestamp;not null" json:"start_date" csv:"start_date"`
