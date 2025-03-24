@@ -9,8 +9,8 @@ import (
 type InternshipApplication struct {
 	gorm.Model
 	TurninDate            time.Time          `gorm:"not null"`
-	ApprovalAdvisorStatus bool               `gorm:"not null"`
-	ApprovalCompanyStatus bool               `gorm:"not null"`
+	ApprovalAdvisorStatus ApprovedStatus     `gorm:"type:varchar(20)"`
+	ApprovalCompanyStatus ApprovedStatus     `gorm:"type:varchar(20)"`
 	AdvisorCode           uint               `gorm:"not null"`
 	Advisor               Advisor            `gorm:"foreignKey:AdvisorCode;references:ID"`
 	CompanyId             uint               `gorm:"not null"`

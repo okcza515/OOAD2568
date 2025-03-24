@@ -2,6 +2,9 @@ package main
 
 import (
 	controller "ModEd/curriculum/controller/Internship"
+	"bufio"
+	"fmt"
+	"strings"
 
 	"errors"
 	"flag"
@@ -9,6 +12,10 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	model "ModEd/curriculum/model/Internship"
+
+	"time"
 )
 
 func main() {
@@ -37,15 +44,62 @@ func main() {
 	}
 
 	companyDataController := controller.NewCompanyDataController(db)
-	err = companyDataController.ImportCompaniesFromCSV("C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/Intership/Company.csv")
+	err = companyDataController.ImportCompaniesFromCSV("")
 	if err != nil {
 		panic("err: failed to import companies")
 	}
 
 	internStudentController := controller.InternStudentController{Connector: db}
-	err = internStudentController.RegisterInternStudentsFromFile("C:/Users/bigza/Desktop/code/OOAD2568/ModEd/data/StudentList.csv")
+	err = internStudentController.RegisterInternStudentsFromFile("")
 	if err != nil {
 		panic("err: failed to import students")
 	}
 
+	applicationController := controller.CreateInternshipApplicationController(db)
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Println("\n==== Create Internship Application ====")
+		fmt.Print("Enter StudentCode (or type 'exit' to quit): ")
+		scanner.Scan()
+		studentCode := strings.TrimSpace(scanner.Text())
+		if strings.ToLower(studentCode) == "exit" {
+			break
+		}
+
+		var student model.InternStudent
+		if err := db.Where("student_code = ?", studentCode).First(&student).Error; err != nil {
+			fmt.Printf("Error: Student with code '%s' not found.\n", studentCode)
+			continue
+		}
+
+		advisorCode := student.ID
+
+		fmt.Print("Enter CompanyName: ")
+		scanner.Scan()
+		companyName := strings.TrimSpace(scanner.Text())
+
+		var company model.Company
+		if err := db.Where("company_name = ?", companyName).First(&company).Error; err != nil {
+			fmt.Printf("Error: Company with name '%s' not found.\n", companyName)
+			continue
+		}
+
+		application := &model.InternshipApplication{
+			TurninDate:            time.Now(),
+			ApprovalAdvisorStatus: model.WAIT,
+			ApprovalCompanyStatus: model.WAIT,
+			AdvisorCode:           advisorCode,
+			CompanyId:             company.ID,
+			StudentCode:           studentCode,
+		}
+
+		err = applicationController.RegisterInternshipApplications([]*model.InternshipApplication{application})
+		if err != nil {
+			fmt.Printf("Failed to register internship application: %v\n", err)
+		} else {
+			fmt.Println("InternshipApplication created successfully!")
+		}
+	}
 }
