@@ -4,14 +4,12 @@ import (
 	"ModEd/asset/cli/asset/handler"
 	controller "ModEd/asset/controller/asset"
 	util "ModEd/asset/util"
+	"flag"
 	"fmt"
 )
 
 func main() {
-	facade, err := controller.CreateAssetControllerFacade()
-	if err != nil {
-		panic("err: initialize controllers failed")
-	}
+	facade := initProgram()
 
 	inputBuffer := ""
 
@@ -40,6 +38,32 @@ func main() {
 	}
 
 	util.PrintByeBye()
+}
+
+func initProgram() *controller.AssetControllerFacade {
+	resetFlag := flag.Bool("reset", false, "Reset database")
+	blankFlag := flag.Bool("blank", false, "Load seed data to database")
+
+	flag.Parse()
+
+	facade, err := controller.CreateAssetControllerFacade()
+	if err != nil {
+		panic(err)
+	}
+
+	if *blankFlag {
+		err = facade.ResetDB()
+		if err != nil {
+			panic(err)
+		}
+	} else if *resetFlag {
+		err = facade.ResetAndLoadDB()
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return facade
 }
 
 func printOption() {

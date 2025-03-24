@@ -1,14 +1,17 @@
 package asset
 
 import (
+	model "ModEd/asset/model/asset"
+	"ModEd/utils/deserializer"
 	"errors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 type AssetControllerFacade struct {
-	Db *gorm.DB
+	db *gorm.DB
 
+	migration        MigrationController
 	BorrowInstrument BorrowInstrumentController
 	Category         CategoryController
 	Instrument       InstrumentController
@@ -25,15 +28,9 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 		return nil, errors.New("err: failed to connect database")
 	}
 
-	facade := AssetControllerFacade{Db: db}
+	facade := AssetControllerFacade{db: db}
 
-	migrationController := MigrationController{db: db}
-
-	err = migrationController.MigrateToDB()
-	if err != nil {
-		return nil, errors.New("err: failed to migrate schema")
-	}
-
+	facade.migration = MigrationController{db: db}
 	facade.BorrowInstrument = BorrowInstrumentController{db: db}
 	facade.Category = CategoryController{db: db}
 	facade.Instrument = InstrumentController{db: db}
@@ -41,5 +38,63 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade.Supply = SupplyController{db: db}
 	facade.SupplyLog = SupplyLogController{db: db}
 
+	err = facade.migration.migrateToDB()
+	if err != nil {
+		return nil, errors.New("err: failed to migrate schema")
+	}
+
 	return &facade, nil
+}
+
+func (facade *AssetControllerFacade) loadSeedData() error {
+	seedData := map[string]interface{}{
+		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
+		"Category":       &[]model.Category{},
+		"InstrumentList": &[]model.Instrument{},
+		//"InstrumentLog":  &[]model.InstrumentLog{},
+		//"SupplyList":     &[]model.Supply{},
+		//"SupplyLog":      &[]model.SupplyLog{},
+	}
+
+	for filename, m := range seedData {
+		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".csv")
+		if err != nil {
+			return err
+		}
+
+		err = fd.Deserialize(m)
+		if err != nil {
+			return err
+		}
+
+		result := facade.db.Create(m)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+
+	return nil
+}
+
+func (facade *AssetControllerFacade) ResetDB() error {
+	err := facade.migration.resetDB()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (facade *AssetControllerFacade) ResetAndLoadDB() error {
+	err := facade.migration.resetDB()
+	if err != nil {
+		return err
+	}
+
+	err = facade.loadSeedData()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
