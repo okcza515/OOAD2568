@@ -8,8 +8,8 @@ import (
 
 type AssetManagement struct {
 	gorm.Model
-	AssetManagementID  uint                   `gorm:"type:int;primaryKey"`
-	RoomID             uint                   `gorm:"type:int;not null;index" json:"room_id" csv:"room_id"`
+	AssetManagementID  uint                   `gorm:"type:integer" json:"asset_management_id" csv:"asset_management_id"`
+	RoomID             uint                   `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id"`
 	Room               Room                   `gorm:"foreignKey:RoomID;references:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
 	InstrumentID       uint                   `gorm:"type:text;not null;index" json:"instrument_id" csv:"instrument_id"`
 	Instrument         asset.Instrument       `gorm:"foreignKey:InstrumentID;references:InstrumentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"instrument"`
