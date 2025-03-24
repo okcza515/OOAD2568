@@ -44,13 +44,13 @@ func main() {
 	}
 
 	companyDataController := controller.NewCompanyDataController(db)
-	err = companyDataController.ImportCompaniesFromCSV("/Users/mickieee/OOAD2568/ModEd/data/Intership/Company.csv")
+	err = companyDataController.ImportCompaniesFromCSV("")
 	if err != nil {
 		panic("err: failed to import companies")
 	}
 
 	internStudentController := controller.InternStudentController{Connector: db}
-	err = internStudentController.RegisterInternStudentsFromFile("/Users/mickieee/OOAD2568/ModEd/data/StudentList.csv")
+	err = internStudentController.RegisterInternStudentsFromFile("")
 	if err != nil {
 		panic("err: failed to import students")
 	}
