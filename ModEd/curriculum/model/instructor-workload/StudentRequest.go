@@ -8,9 +8,9 @@ import (
 
 type StudentRequest struct {
 	gorm.Model
-	StudentId   int                      `gorm:"not null;index"`
-	RequestType StudentRequestTypeEnum   `gorm:"type:ENUM('SickLeave', 'PersonalLeave', 'ExtraCourseEnrollment');not null"`
-	Remark      string                   `gorm:"type:text"`
-	Status      StudentRequestStatusEnum `gorm:"type:ENUM('Pending', 'Approved', 'Rejected');not null"`
-	Student     commonModel.Student      `gorm:"foreignKey:StudentId;references:ID"`
+	StudentId   int                 `gorm:"not null;index"`
+	RequestType string              `gorm:"type:varchar(20);not null"`
+	Remark      string              `gorm:"type:text"`
+	Status      string              `gorm:"type:varchar(20);not null"`
+	Student     commonModel.Student `gorm:"foreignKey:StudentId;references:ID"`
 }

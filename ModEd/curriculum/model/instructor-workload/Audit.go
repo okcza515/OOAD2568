@@ -1,11 +1,7 @@
 package model
 
-import (
-	commonModel "ModEd/common/model"
-)
-
 type Audit struct {
-	CreatedBy commonModel.Instructor `gorm:"foreignKey:CreatedBy; not null"`
-	UpdatedBy commonModel.Instructor `gorm:"foreignKey:UpdatedBy; not null"`
-	DeletedBy commonModel.Instructor `gorm:"foreignKey:DeletedBy"`
+	CreatedBy uint `gorm:"foreignKey:CreatedByID;references:ID;not null"`
+	UpdatedBy uint `gorm:"foreignKey:UpdatedByID;references:ID;not null"`
+	DeletedBy uint `gorm:"foreignKey:DeletedByID;references:ID"`
 }
