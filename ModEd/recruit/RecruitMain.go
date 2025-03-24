@@ -14,7 +14,7 @@ import (
 
 	"runtime"
 
-	"github.com/google/uuid"
+	"strconv"
 )
 
 func clearScreen() {
@@ -109,11 +109,20 @@ func main() {
 		case 3:
 			cli.InterviewCLI(interviewController)
 		case 4:
-			var applicantID uuid.UUID // Change to uint type
+			var applicantID uint
 			fmt.Print("Enter Applicant ID: ")
 			scanner.Scan()
-			applicantID, _ = uuid.Parse(scanner.Text())
-			cli.ReportInterviewDetails(db.DB, applicantID) // Pass db.DB and applicantID (as uint)
+			applicantIDInput := scanner.Text()
+		
+			convApplicantID, err := strconv.ParseUint(applicantIDInput, 10, 32)
+			if err != nil {
+				fmt.Println("Invalid Applicant ID. Please enter a valid number.")
+				continue
+			}
+			applicantID = uint(convApplicantID)
+		
+			cli.ReportInterviewDetails(db.DB, applicantID) // Pass db.DB and applicantID (uint)
+		
 		case 5:
 			rounds, err := applicationRoundCtrl.GetAllRounds()
 			if err != nil {
@@ -127,7 +136,7 @@ func main() {
 		case 6:
 			statuses, err := applicationReportCtrl.GetApplicantStatus()
 			if err != nil {
-				fmt.Println("Error fetching applicant statuses: %v", err)
+				fmt.Printf("error fetching applicant statuses: %v\n", err)
 			}
 
 			// Print the fetched statuses

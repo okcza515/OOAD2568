@@ -1,4 +1,3 @@
-// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -7,60 +6,50 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func InterviewCLI(interviewCtrl *controller.InterviewController) {
-	for {
-		fmt.Println("\nInterview Management")
-		fmt.Println("1. Schedule Interview")
-		fmt.Println("2. Delete Interview")
-		fmt.Println("3. Exit")
-		fmt.Print("Select an option: ")
-
-		var choice int
-		fmt.Scan(&choice)
-
-		switch choice {
-		case 1:
-			InterviewManage(interviewCtrl) // Function for scheduling an interview
-		case 2:
-			DeleteInterviewCLI(interviewCtrl) // Function for deleting an interview
-		case 3:
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid choice. Please try again.")
-		}
-	}
-}
-
-func InterviewManage(interviewCtrl *controller.InterviewController) {
-	var applicantID uuid.UUID
 	var instructorID string
 	var con_int_instrucID uint
+	var int_ApplicantID uint
 	var interviewScore float64
 	var scoreInput string
 	var Status string
 
 	scanner := bufio.NewScanner(os.Stdin)
 
+	// Get Instructor ID
 	fmt.Print("Enter Instructor ID: ")
 	scanner.Scan()
 	instructorID = scanner.Text()
-	fmt.Sscanf(instructorID, "%d", &con_int_instrucID)
+	convInstructorID, err := strconv.ParseUint(instructorID, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid Instructor ID. Please enter a valid number.")
+		return
+	}
+	con_int_instrucID = uint(convInstructorID)
 
+	// Get Applicant ID
 	fmt.Print("Enter Applicant ID: ")
 	scanner.Scan()
-	applicantID, _ = uuid.Parse(scanner.Text()) // Parse UUID from input
+	applicantID := scanner.Text()
+	convApplicantID, err := strconv.ParseUint(applicantID, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid Applicant ID. Please enter a valid number.")
+		return
+	}
+	int_ApplicantID = uint(convApplicantID)
 
+	// Get Status
 	fmt.Print("Enter Status: ")
 	scanner.Scan()
 	Status = scanner.Text()
 
+	// Get Scheduled Appointment
 	fmt.Print("Enter Scheduled Appointment (YYYY-MM-DD HH:MM:SS): ")
 	scanner.Scan()
 	scheduledTime := scanner.Text()
@@ -71,6 +60,7 @@ func InterviewManage(interviewCtrl *controller.InterviewController) {
 		return
 	}
 
+	// Get Interview Score (optional)
 	fmt.Print("Enter Interview Score (or press Enter to skip): ")
 	scanner.Scan()
 	scoreInput = scanner.Text()
@@ -78,19 +68,21 @@ func InterviewManage(interviewCtrl *controller.InterviewController) {
 	var interview *model.Interview
 	if scoreInput == "" {
 		interview = &model.Interview{
-			ID:                   uuid.New(),
 			InstructorID:         con_int_instrucID,
-			ApplicantID:          applicantID,
+			ApplicantID:          int_ApplicantID,
 			ScheduledAppointment: scheduledTimeParsed,
 			InterviewScore:       nil,
 			InterviewStatus:      Status,
 		}
 	} else {
-		fmt.Sscanf(scoreInput, "%f", &interviewScore)
+		interviewScore, err = strconv.ParseFloat(scoreInput, 64)
+		if err != nil {
+			fmt.Println("Invalid interview score. Please enter a valid number.")
+			return
+		}
 		interview = &model.Interview{
-			ID:                   uuid.New(),
 			InstructorID:         con_int_instrucID,
-			ApplicantID:          applicantID,
+			ApplicantID:          int_ApplicantID,
 			ScheduledAppointment: scheduledTimeParsed,
 			InterviewScore:       &interviewScore,
 			InterviewStatus:      Status,
@@ -107,15 +99,21 @@ func InterviewManage(interviewCtrl *controller.InterviewController) {
 }
 
 func DeleteInterviewCLI(interviewCtrl *controller.InterviewController) {
-	var interviewID uuid.UUID
+	var interviewID uint
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("Enter Interview ID to delete: ")
 	scanner.Scan()
-	interviewID, _ = uuid.Parse(scanner.Text())
+	inputID := scanner.Text()
+	convInterviewID, err := strconv.ParseUint(inputID, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid Interview ID. Please enter a valid number.")
+		return
+	}
+	interviewID = uint(convInterviewID)
 
-	err := interviewCtrl.DeleteInterview(interviewID)
+	err = interviewCtrl.DeleteInterview(interviewID)
 	if err != nil {
 		fmt.Println("Failed to delete interview:", err)
 		return
@@ -125,7 +123,7 @@ func DeleteInterviewCLI(interviewCtrl *controller.InterviewController) {
 }
 
 // ReportInterviewDetails แสดงข้อมูลสัมภาษณ์
-func ReportInterviewDetails(db *gorm.DB, applicantID uuid.UUID) {
+func ReportInterviewDetails(db *gorm.DB, applicantID uint) {
 	// ดึงสถานะจาก interview_status
 	status, err := controller.GetApplicationStatus(db, applicantID)
 	if err != nil {

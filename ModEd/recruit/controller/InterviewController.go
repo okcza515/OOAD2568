@@ -6,10 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
 
 type InterviewController struct {
 	DB *gorm.DB
@@ -29,11 +27,11 @@ func (c *InterviewController) CreateInterview(interview *model.Interview) error 
 	return c.DB.Create(interview).Error
 }
 
-func (c *InterviewController) DeleteInterview(id uuid.UUID) error {
+func (c *InterviewController) DeleteInterview(id uint) error {
 	return c.DB.Delete(&model.Interview{}, id).Error
 }
 
-func GetApplicationStatus(db *gorm.DB, applicantID uuid.UUID) (string, error) {
+func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 	var interview model.Interview
 
 	err := db.Where("applicant_id = ?", applicantID).First(&interview).Error
@@ -48,7 +46,7 @@ func GetApplicationStatus(db *gorm.DB, applicantID uuid.UUID) (string, error) {
 	return interview.InterviewStatus, nil
 }
 
-func GetInterviewDetails(db *gorm.DB, applicantID uuid.UUID) (*model.Interview, error) {
+func GetInterviewDetails(db *gorm.DB, applicantID uint) (*model.Interview, error) {
 	var interview model.Interview
 
 	err := db.Where("applicant_id = ?", applicantID).First(&interview).Error
