@@ -1,11 +1,10 @@
 package space
 
-import (
-
-)
+import "gorm.io/gorm"
 
 type Room struct {
-	RoomID             uint         `gorm:"type:text;primaryKey" json:"room_id" csv:"room_id"`
+	gorm.Model
+	RoomID             uint              `gorm:"type:text;primaryKey" json:"room_id" csv:"room_id"`
 	RoomName           string            `gorm:"type:varchar(255);not null" json:"room_name" csv:"room_name"`
 	RoomType           RoomTypeEnum      `gorm:"type:text;not null" json:"room_type" csv:"room_type"`
 	Description        *string           `gorm:"type:text" json:"description,omitempty" csv:"description,omitempty"`
