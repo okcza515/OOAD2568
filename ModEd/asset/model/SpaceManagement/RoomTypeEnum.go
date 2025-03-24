@@ -1,9 +1,10 @@
+// MEP-1013
 package space
 
 type RoomTypeEnum string
 
 const (
-	LectureRoom RoomTypeEnum = "Lecture Room"
-	LabRoom     RoomTypeEnum = "Lab Room"
-	MeetingRoom RoomTypeEnum = "Meeting Room"
+	ROOM_LECTURE_ROOM RoomTypeEnum = "Lecture Room"
+	ROOM_LAB_ROOM     RoomTypeEnum = "Lab Room"
+	ROOM_MEETING_ROOM RoomTypeEnum = "Meeting Room"
 )

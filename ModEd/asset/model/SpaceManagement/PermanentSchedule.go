@@ -1,3 +1,4 @@
+// MEP-1013
 package space
 
 import (
@@ -10,7 +11,7 @@ import (
 
 type PermanentSchedule struct {
 	gorm.Model
-	ScheduleID  uint               `gorm:"type:text;primaryKey" json:"schedule_id" csv:"schedule_id"`
+	ScheduleID  uint               `gorm:"type:integer ;primaryKey" json:"schedule_id" csv:"schedule_id"`
 	StartDate   time.Time          `gorm:"type:timestamp" json:"start_date" csv:"start_date"`
 	EndDate     time.Time          `gorm:"type:timestamp" json:"end_date" csv:"end_date"`
 	IsAvailable bool               `gorm:"type:boolean" json:"is_available" csv:"is_available"`

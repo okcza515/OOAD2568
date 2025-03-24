@@ -1,8 +1,10 @@
+// MEP-1013
 package space
 
 type Role string
 
 const (
-	Student Role = "Student"
-	Advisor Role = "Advisor"
+	ROLE_STUDENT Role = "Student"
+	ROLE_ADVISOR Role = "Advisor"
+	ROLE_ADMIN   Role = "Admin"
 )

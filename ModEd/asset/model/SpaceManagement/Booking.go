@@ -1,3 +1,4 @@
+// MEP-1013
 package space
 
 import (
@@ -8,10 +9,10 @@ import (
 
 type Booking struct {
 	gorm.Model
-	BookingID     uint      `gorm:"type:text;primaryKey" json:"booking_id" csv:"booking_id"`
-	RoomID        uint      `gorm:"type:text;not null;index" json:"room_id" csv:"room_id"`
+	BookingID     uint      `gorm:"type:integer;primaryKey" json:"booking_id" csv:"booking_id"`
+	RoomID        uint      `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id"`
 	Room          Room      `gorm:"foreignKey:RoomID;references:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
-	UserID        uint      `gorm:"type:text;not null" json:"user_id" csv:"user_id"`
+	UserID        uint      `gorm:"type:integer;not null" json:"user_id" csv:"user_id"`
 	UserRole      Role      `gorm:"type:text;not null" json:"user_role" csv:"user_role"`
 	StartDate     time.Time `gorm:"type:timestamp;not null" json:"start_date" csv:"start_date"`
 	EndDate       time.Time `gorm:"type:timestamp;not null" json:"end_date" csv:"end_date"`
