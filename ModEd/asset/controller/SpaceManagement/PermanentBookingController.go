@@ -6,14 +6,14 @@ import (
 	//common "ModEd/common/model"
 	"errors"
 	"fmt"
-	"time"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type PermanentScheduleController struct {
-	DB *gorm.DB
+	db *gorm.DB
 }
 
 func (c *PermanentScheduleController) CheckRoomInService(roomID uint) (*bool, error) {
