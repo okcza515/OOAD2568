@@ -9,7 +9,6 @@ import (
 
 type Answer struct {
 	gorm.Model
-	ID         uint                `gorm:"primaryKey"`
 	QuestionID uint                `gorm:"not null"`
 	Question   Question            `gorm:"foreignKey:QuestionID"`
 	StudentID  uint                `gorm:"not null"`

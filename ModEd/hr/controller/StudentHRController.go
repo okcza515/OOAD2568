@@ -28,7 +28,7 @@ func (c *StudentHRController) GetAll() ([]model.StudentInfo, error) {
 // GetById retrieves a student's HR information by SID.
 func (c *StudentHRController) GetById(sid string) (*model.StudentInfo, error) {
 	var studentInfo model.StudentInfo
-	if err := c.db.Where("s_id = ?", sid).First(&studentInfo).Error; err != nil {
+	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
 		return nil, err
 	}
 	return &studentInfo, nil
@@ -46,14 +46,14 @@ func (c *StudentHRController) Update(info *model.StudentInfo) error {
 
 // Delete deletes a student's HR information by SID.
 func (c *StudentHRController) Delete(sid string) error {
-	return c.db.Where("s_id = ?", sid).Delete(&model.StudentInfo{}).Error
+	return c.db.Where("student_code = ?", sid).Delete(&model.StudentInfo{}).Error
 }
 
 // UpdateStatus updates the status of a student by SID.
 func (c *StudentHRController) UpdateStatus(sid string, status commonModel.StudentStatus) error {
 	// First retrieve the student record
 	var studentInfo model.StudentInfo
-	if err := c.db.Where("s_id = ?", sid).First(&studentInfo).Error; err != nil {
+	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
 		return err
 	}
 

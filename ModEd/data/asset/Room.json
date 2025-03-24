@@ -9,7 +9,8 @@
     "location": "East Wing",
     "capacity": 20,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 2,
@@ -21,7 +22,8 @@
     "location": "West Side",
     "capacity": 100,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 3,
@@ -33,7 +35,8 @@
     "location": "North Wing",
     "capacity": 30,
     "is_room_out_of_service": true,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 4,
@@ -45,7 +48,8 @@
     "location": "South Tower",
     "capacity": 2,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 5,
@@ -57,7 +61,8 @@
     "location": "Main Entrance",
     "capacity": 500,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 6,
@@ -69,7 +74,8 @@
     "location": "Basement Level",
     "capacity": 5,
     "is_room_out_of_service": true,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 7,
@@ -81,7 +87,8 @@
     "location": "Secure Wing",
     "capacity": 10,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 8,
@@ -93,7 +100,8 @@
     "location": "East Section",
     "capacity": 8,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 9,
@@ -105,7 +113,8 @@
     "location": "West Side",
     "capacity": 15,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   },
   {
     "room_id": 10,
@@ -117,6 +126,7 @@
     "location": "Near Lobby",
     "capacity": 10,
     "is_room_out_of_service": false,
-    "assets": []
+    "instrument": [],
+    "supply": []
   }
 ]

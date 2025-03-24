@@ -1,23 +1,23 @@
-//MEP-1013
+// MEP-1013
 package spacemanagement
 
-import(
-	model "ModEd/asset/model/SpaceManagement"
-	"gorm.io/gorm"
+import (
+	model "ModEd/asset/model/spacemanagement"
 	"errors"
+	"gorm.io/gorm"
 )
 
 type InstrumentManagementController struct {
 	db *gorm.DB
 }
 
-func (c* InstrumentManagementController) getAllInstrumentManagement() (*[]model.InstrumentManagement, error) {
+func (c *InstrumentManagementController) getAllInstrumentManagement() (*[]model.InstrumentManagement, error) {
 	assetInfo := new([]model.InstrumentManagement)
 	result := c.db.Find(&assetInfo)
 	return assetInfo, result.Error
 }
 
-func (c* InstrumentManagementController) getInstrumentManagementById(Id uint) (*model.InstrumentManagement, error) {
+func (c *InstrumentManagementController) getInstrumentManagementById(Id uint) (*model.InstrumentManagement, error) {
 	if Id == 0 {
 		return nil, errors.New("No Id provide")
 	}
@@ -27,18 +27,17 @@ func (c* InstrumentManagementController) getInstrumentManagementById(Id uint) (*
 }
 
 func (c *InstrumentManagementController) GetInstrumentManagementByRoomId(roomID uint) (*[]model.InstrumentManagement, error) {
-    if roomID == 0 {
-        return nil, errors.New("No RoomID provided")
-    }
-    
-    assetList := new([]model.InstrumentManagement)
-    result := c.db.Where("room_id = ?", roomID).Find(&assetList)
-    
-    return assetList, result.Error
+	if roomID == 0 {
+		return nil, errors.New("No RoomID provided")
+	}
+
+	assetList := new([]model.InstrumentManagement)
+	result := c.db.Where("room_id = ?", roomID).Find(&assetList)
+
+	return assetList, result.Error
 }
 
-
-func (c* InstrumentManagementController) CreateInstrumentManagement(payload *model.InstrumentManagement) error {
+func (c *InstrumentManagementController) CreateInstrumentManagement(payload *model.InstrumentManagement) error {
 	if payload == nil {
 		return errors.New("Invalid asset data")
 	}
@@ -46,7 +45,7 @@ func (c* InstrumentManagementController) CreateInstrumentManagement(payload *mod
 	return result.Error
 }
 
-func (c* InstrumentManagementController) UpdateInstrumentManagement(Id uint, payload *model.InstrumentManagement) error {
+func (c *InstrumentManagementController) UpdateInstrumentManagement(Id uint, payload *model.InstrumentManagement) error {
 	if payload == nil || Id == 0 {
 		return errors.New("Invalid info")
 	}
@@ -58,7 +57,7 @@ func (c* InstrumentManagementController) UpdateInstrumentManagement(Id uint, pay
 	return result.Error
 }
 
-func (c* InstrumentManagementController) DeleteInstrumentManagement(Id uint) error {
+func (c *InstrumentManagementController) DeleteInstrumentManagement(Id uint) error {
 	if Id == 0 {
 		return errors.New("No Id provide")
 	}
