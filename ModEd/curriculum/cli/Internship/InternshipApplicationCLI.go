@@ -88,8 +88,8 @@ func main() {
 
 		application := &model.InternshipApplication{
 			TurninDate:            time.Now(),
-			ApprovalAdvisorStatus: false,
-			ApprovalCompanyStatus: false,
+			ApprovalAdvisorStatus: model.WAIT,
+			ApprovalCompanyStatus: model.WAIT,
 			AdvisorCode:           advisorCode,
 			CompanyId:             company.ID,
 			StudentCode:           studentCode,
