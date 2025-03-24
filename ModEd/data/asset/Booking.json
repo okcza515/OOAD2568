@@ -1,0 +1,212 @@
+[
+  {
+    "booking_id": 1,
+    "room": {
+      "room_id": 1,
+      "room_name": "Conference Room A",
+      "room_type": "MEETING",
+      "description": "Spacious room with projector and whiteboard",
+      "floor": 2,
+      "building": "Main Building",
+      "location": "East Wing",
+      "capacity": 20,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1001,
+    "user_role": "Admin",
+    "start_date": "2025-04-01T09:00:00Z",
+    "end_date": "2025-04-01T11:00:00Z",
+    "is_available": true,
+    "event_name": "Annual Strategy Meeting"
+  },
+  {
+    "booking_id": 2,
+    "room": {
+      "room_id": 2,
+      "room_name": "Lecture Hall 101",
+      "room_type": "LECTURE",
+      "description": "Large hall with seating for 100",
+      "floor": 1,
+      "building": "Science Block",
+      "location": "West Side",
+      "capacity": 100,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1002,
+    "user_role": "Faculty",
+    "start_date": "2025-04-02T14:00:00Z",
+    "end_date": "2025-04-02T16:00:00Z",
+    "is_available": true,
+    "event_name": "Introduction to Physics"
+  },
+  {
+    "booking_id": 3,
+    "room": {
+      "room_id": 3,
+      "room_name": "Laboratory B",
+      "room_type": "LAB",
+      "description": "Chemistry lab with fume hood",
+      "floor": 3,
+      "building": "Engineering Building",
+      "location": "North Wing",
+      "capacity": 30,
+      "is_room_out_of_service": true,
+      "assets": []
+    },
+    "user_id": 1003,
+    "user_role": "Lab Instructor",
+    "start_date": "2025-04-03T09:00:00Z",
+    "end_date": "2025-04-03T11:00:00Z",
+    "is_available": false,
+    "event_name": "Advanced Chemistry Lab"
+  },
+  {
+    "booking_id": 4,
+    "room": {
+      "room_id": 4,
+      "room_name": "Private Office 205",
+      "room_type": "OFFICE",
+      "description": "Executive office with attached restroom",
+      "floor": 2,
+      "building": "Admin Block",
+      "location": "South Tower",
+      "capacity": 2,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1004,
+    "user_role": "Manager",
+    "start_date": "2025-04-04T08:00:00Z",
+    "end_date": "2025-04-04T12:00:00Z",
+    "is_available": true,
+    "event_name": "Team One-on-One"
+  },
+  {
+    "booking_id": 5,
+    "room": {
+      "room_id": 5,
+      "room_name": "Auditorium",
+      "room_type": "AUDITORIUM",
+      "description": "Fully equipped for presentations",
+      "floor": 1,
+      "building": "Convention Center",
+      "location": "Main Entrance",
+      "capacity": 500,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1005,
+    "user_role": "Event Coordinator",
+    "start_date": "2025-04-05T10:00:00Z",
+    "end_date": "2025-04-05T16:00:00Z",
+    "is_available": true,
+    "event_name": "Annual Tech Conference"
+  },
+  {
+    "booking_id": 6,
+    "room": {
+      "room_id": 6,
+      "room_name": "Storage Room 12",
+      "room_type": "STORAGE",
+      "description": "Used for equipment storage",
+      "floor": -1,
+      "building": "Utility Block",
+      "location": "Basement Level",
+      "capacity": 5,
+      "is_room_out_of_service": true,
+      "assets": []
+    },
+    "user_id": 1006,
+    "user_role": "Technician",
+    "start_date": "2025-04-06T09:00:00Z",
+    "end_date": "2025-04-06T11:00:00Z",
+    "is_available": false,
+    "event_name": "Equipment Maintenance"
+  },
+  {
+    "booking_id": 7,
+    "room": {
+      "room_id": 7,
+      "room_name": "IT Server Room",
+      "room_type": "SERVER",
+      "description": "Restricted access to IT personnel",
+      "floor": 1,
+      "building": "Data Center",
+      "location": "Secure Wing",
+      "capacity": 10,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1007,
+    "user_role": "System Admin",
+    "start_date": "2025-04-07T08:00:00Z",
+    "end_date": "2025-04-07T12:00:00Z",
+    "is_available": true,
+    "event_name": "Server Maintenance"
+  },
+  {
+    "booking_id": 8,
+    "room": {
+      "room_id": 8,
+      "room_name": "Meeting Room Delta",
+      "room_type": "MEETING",
+      "description": "Small meeting room with video conferencing",
+      "floor": 3,
+      "building": "Business Tower",
+      "location": "East Section",
+      "capacity": 8,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1008,
+    "user_role": "Team Lead",
+    "start_date": "2025-04-08T13:00:00Z",
+    "end_date": "2025-04-08T15:00:00Z",
+    "is_available": true,
+    "event_name": "Project Review"
+  },
+  {
+    "booking_id": 9,
+    "room": {
+      "room_id": 9,
+      "room_name": "Studio Room",
+      "room_type": "STUDIO",
+      "description": "Recording studio with soundproof walls",
+      "floor": 2,
+      "building": "Media Center",
+      "location": "West Side",
+      "capacity": 15,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1009,
+    "user_role": "Sound Engineer",
+    "start_date": "2025-04-09T09:00:00Z",
+    "end_date": "2025-04-09T11:00:00Z",
+    "is_available": true,
+    "event_name": "Audio Recording"
+  },
+  {
+    "booking_id": 10,
+    "room": {
+      "room_id": 10,
+      "room_name": "Break Room",
+      "room_type": "LOUNGE",
+      "description": "Employee relaxation area",
+      "floor": 2,
+      "building": "Headquarters",
+      "location": "Near Lobby",
+      "capacity": 10,
+      "is_room_out_of_service": false,
+      "assets": []
+    },
+    "user_id": 1010,
+    "user_role": "Employee",
+    "start_date": "2025-04-10T10:00:00Z",
+    "end_date": "2025-04-10T12:00:00Z",
+    "is_available": true,
+    "event_name": "Team Bonding Session"
+  }
+]

@@ -1,0 +1,11 @@
+booking_id,room_id,room_name,room_type,description,floor,building,location,capacity,is_room_out_of_service,assets,user_id,user_role,start_date,end_date,is_available,event_name
+1,1,Conference Room A,MEETING,Spacious room with projector and whiteboard,2,Main Building,East Wing,20,false,[],1001,Admin,2025-04-01T09:00:00Z,2025-04-01T11:00:00Z,true,Annual Strategy Meeting
+2,2,Lecture Hall 101,LECTURE,Large hall with seating for 100,1,Science Block,West Side,100,false,[],1002,Faculty,2025-04-02T14:00:00Z,2025-04-02T16:00:00Z,true,Introduction to Physics
+3,3,Laboratory B,LAB,Chemistry lab with fume hood,3,Engineering Building,North Wing,30,true,[],1003,Lab Instructor,2025-04-03T09:00:00Z,2025-04-03T11:00:00Z,false,Advanced Chemistry Lab
+4,4,Private Office 205,OFFICE,Executive office with attached restroom,2,Admin Block,South Tower,2,false,[],1004,Manager,2025-04-04T08:00:00Z,2025-04-04T12:00:00Z,true,Team One-on-One
+5,5,Auditorium,AUDITORIUM,Fully equipped for presentations,1,Convention Center,Main Entrance,500,false,[],1005,Event Coordinator,2025-04-05T10:00:00Z,2025-04-05T16:00:00Z,true,Annual Tech Conference
+6,6,Storage Room 12,STORAGE,Used for equipment storage,-1,Utility Block,Basement Level,5,true,[],1006,Technician,2025-04-06T09:00:00Z,2025-04-06T11:00:00Z,false,Equipment Maintenance
+7,7,IT Server Room,SERVER,Restricted access to IT personnel,1,Data Center,Secure Wing,10,false,[],1007,System Admin,2025-04-07T08:00:00Z,2025-04-07T12:00:00Z,true,Server Maintenance
+8,8,Meeting Room Delta,MEETING,Small meeting room with video conferencing,3,Business Tower,East Section,8,false,[],1008,Team Lead,2025-04-08T13:00:00Z,2025-04-08T15:00:00Z,true,Project Review
+9,9,Studio Room,STUDIO,Recording studio with soundproof walls,2,Media Center,West Side,15,false,[],1009,Sound Engineer,2025-04-09T09:00:00Z,2025-04-09T11:00:00Z,true,Audio Recording
+10,10,Break Room,LOUNGE,Employee relaxation area,2,Headquarters,Near Lobby,10,false,[],1010,Employee,2025-04-10T10:00:00Z,2025-04-10T12:00:00Z,true,Team Bonding Session
