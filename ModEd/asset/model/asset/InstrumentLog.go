@@ -12,6 +12,6 @@ type InstrumentLog struct {
 	InstrumentID     uint                    `gorm:"type:integer;not null"`
 	Description      string                  `gorm:"not null"`
 	RefBorrowID      *uint                   `gorm:"type:integer"`
-	BorrowInstrument BorrowInstrument        `gorm:"foreignKey:RefBorrowID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Instrument       Instrument              `gorm:"foreignKey:InstrumentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	BorrowInstrument BorrowInstrument        `gorm:"foreignKey:RefBorrowID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Instrument       Instrument              `gorm:"foreignKey:InstrumentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
