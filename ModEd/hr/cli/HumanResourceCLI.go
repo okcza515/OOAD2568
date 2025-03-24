@@ -1,19 +1,11 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 
-	commonController "ModEd/common/controller"
-	commonModel "ModEd/common/model"
-	mController "ModEd/hr/controller/Migration"
-	sController "ModEd/hr/controller/Student"
-
-	hrModel "ModEd/hr/model"
-	"ModEd/hr/util"
-
+	"ModEd/hr/controller"
 	hrUtil "ModEd/hr/util"
 )
 
@@ -22,60 +14,65 @@ var (
 )
 
 func main() {
-
 	flag.Parse()
 	args := flag.Args()
 
 	if len(args) < 1 {
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|add|update|delete} [options]")
+		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|add|update|delete|updateStatus|import|sync} [options]")
 		os.Exit(1)
 	}
 
 	command := args[0]
 	commandArgs := args[1:]
 
+	db := hrUtil.OpenDatabase(*databasePath)
+	hrController := controller.NewHRController(db)
+
 	switch command {
 	case "list":
-		listStudents(commandArgs)
+		listStudents(hrController, commandArgs)
 	case "update":
-		updateStudent(commandArgs)
+		updateStudent(hrController, commandArgs)
 	case "add":
-		addStudent(commandArgs)
+		addStudent(hrController, commandArgs)
 	case "delete":
-		deleteStudent(commandArgs)
+		deleteStudent(hrController, commandArgs)
 	case "updateStatus":
-		updateStudentStatus(commandArgs)
+		updateStudentStatus(hrController, commandArgs)
 	case "import":
-		importStudents(commandArgs)
+		importStudents(hrController, commandArgs)
 	case "sync":
-		synchronizeStudents()
+		synchronizeStudents(hrController)
 	default:
 		fmt.Printf("Unknown command: %s\n", command)
-		fmt.Println("Available commands: list, add, update, delete")
+		fmt.Println("Available commands: list, add, update, delete, updateStatus, import, sync")
 		os.Exit(1)
 	}
 }
 
-func listStudents(args []string) {
+// Functions now only handle CLI concerns like argument parsing and output formatting
+
+func listStudents(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := sController.CreateStudentHRController(db)
-	studentInfos, err := studentController.GetAll()
+	// Business logic moved to controller
+	studentInfos, err := hrController.ListStudents()
 	if err != nil {
 		fmt.Printf("Error listing students: %v\n", err)
 		os.Exit(1)
 	}
 
+	// CLI-specific output formatting
 	fmt.Println("Human Resource Student Info:")
 	for _, s := range studentInfos {
 		fmt.Printf("SID: %s | Name: %s %s | Gender: %s | CitizenID: %s | Phone: %s | Status: %s | Email: %s\n",
-			s.StudentCode, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber, hrUtil.StatusToString(s.Status), s.Email)
+			s.StudentCode, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber,
+			hrUtil.StatusToString(s.Status), s.Email)
 	}
 }
 
-func updateStudent(args []string) {
+func updateStudent(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("update", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
 	firstName := fs.String("fname", "", "New First Name value")
@@ -88,34 +85,9 @@ func updateStudent(args []string) {
 
 	hrUtil.ValidateFlags(fs, []string{"id"})
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := sController.CreateStudentHRController(db)
-	studentInfo, err := studentController.GetById(*studentID)
-	if err != nil {
-		fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
-		os.Exit(1)
-	}
-
-	if *firstName != "" {
-		studentInfo.FirstName = *firstName
-	}
-	if *lastName != "" {
-		studentInfo.LastName = *lastName
-	}
-	if *gender != "" {
-		studentInfo.Gender = *gender
-	}
-	if *citizenID != "" {
-		studentInfo.CitizenID = *citizenID
-	}
-	if *phoneNumber != "" {
-		studentInfo.PhoneNumber = *phoneNumber
-	}
-	if *emailStudent != "" {
-		studentInfo.Email = *emailStudent
-	}
-
-	if err := studentController.Update(studentInfo); err != nil {
+	// Business logic moved to controller
+	if err := hrController.UpdateStudent(*studentID, *firstName, *lastName, *gender,
+		*citizenID, *phoneNumber, *emailStudent); err != nil {
 		fmt.Printf("Failed to update student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -123,7 +95,7 @@ func updateStudent(args []string) {
 	fmt.Println("Student updated successfully!")
 }
 
-func addStudent(args []string) {
+func addStudent(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("add", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
 	firstName := fs.String("fname", "", "First Name")
@@ -135,20 +107,8 @@ func addStudent(args []string) {
 
 	hrUtil.ValidateFlags(fs, []string{"id", "fname", "lname"})
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := sController.CreateStudentHRController(db)
-	newStudent := hrModel.StudentInfo{
-		Student: commonModel.Student{
-			StudentCode: *studentID,
-			FirstName:   *firstName,
-			LastName:    *lastName,
-		},
-		Gender:      *gender,
-		CitizenID:   *citizenID,
-		PhoneNumber: *phoneNumber,
-	}
-
-	if err := studentController.Insert(&newStudent); err != nil {
+	// Business logic moved to controller
+	if err := hrController.CreateStudent(*studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber); err != nil {
 		fmt.Printf("Failed to add student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -156,16 +116,15 @@ func addStudent(args []string) {
 	fmt.Println("Student added successfully!")
 }
 
-func deleteStudent(args []string) {
+func deleteStudent(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("delete", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to delete")
 	fs.Parse(args)
 
 	hrUtil.ValidateFlags(fs, []string{"id"})
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := sController.CreateStudentHRController(db)
-	if err := studentController.Delete(*studentID); err != nil {
+	// Business logic in controller
+	if err := hrController.StudentController.Delete(*studentID); err != nil {
 		fmt.Printf("Failed to delete student info: %v\n", err)
 		os.Exit(1)
 	}
@@ -173,13 +132,13 @@ func deleteStudent(args []string) {
 	fmt.Println("Student deleted successfully!")
 }
 
-func updateStudentStatus(args []string) {
+func updateStudentStatus(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("updateStatus", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update status")
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
-	hrUtil.ValidateFlags(fs, []string{"id"})
+	hrUtil.ValidateFlags(fs, []string{"id", "status"})
 
 	newStatus, err := hrUtil.StatusFromString(*status)
 	if err != nil {
@@ -187,19 +146,18 @@ func updateStudentStatus(args []string) {
 		os.Exit(1)
 	}
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	studentController := sController.CreateStudentHRController(db)
-
-	if err := studentController.UpdateStatus(*studentID, newStatus); err != nil {
+	// Business logic in controller
+	if err := hrController.StudentController.UpdateStatus(*studentID, newStatus); err != nil {
 		fmt.Printf("Failed to update student status: %v\n", err)
 		os.Exit(1)
 	}
 
 	fmt.Printf("Student %s status successfully updated to %s!\n", *studentID, *status)
 }
-func importStudents(args []string) {
+
+func importStudents(hrController *controller.HRController, args []string) {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
-	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
+	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info")
 	fs.Parse(args)
 
 	if *filePath == "" {
@@ -208,47 +166,18 @@ func importStudents(args []string) {
 		os.Exit(1)
 	}
 
-	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("*** Error: File %s does not exist.\n", *filePath)
+	// Business logic moved to controller
+	if err := hrController.ImportStudents(*filePath); err != nil {
+		fmt.Printf("Import failed: %v\n", err)
 		os.Exit(1)
 	}
 
-	hrMapper, err := util.CreateMapper[hrModel.StudentInfo](*filePath)
-	if err != nil {
-		fmt.Printf("Failed to create HR mapper: %v\n", err)
-		os.Exit(1)
-	}
-
-	hrRecords := hrMapper.Map()
-
-	db := hrUtil.OpenDatabase(*databasePath)
-	hrController := sController.CreateStudentHRController(db)
-
-	for _, hrRec := range hrRecords {
-		commonStudentController := commonController.CreateStudentController(db)
-		commonStudent, err := commonStudentController.GetByStudentId(hrRec.StudentCode)
-		if err != nil {
-			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
-			continue
-		}
-
-		newStudent := hrModel.StudentInfo{
-			Student: *commonStudent,
-			Gender:  hrRec.Gender,
-		}
-
-		if err := hrController.Upsert(&newStudent); err != nil {
-			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
-			continue
-		}
-	}
 	fmt.Println("Students imported successfully!")
 }
 
-func synchronizeStudents() {
-	db := hrUtil.OpenDatabase(*databasePath)
-
-	if err := mController.SynchronizeStudents(db); err != nil {
+func synchronizeStudents(hrController *controller.HRController) {
+	// Business logic in controller
+	if err := hrController.SynchronizeStudents(); err != nil {
 		fmt.Printf("Failed to synchronize students: %v\n", err)
 		os.Exit(1)
 	}
