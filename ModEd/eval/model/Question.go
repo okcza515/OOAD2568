@@ -10,6 +10,7 @@ const (
 	MULTIPLECHOICE QuestionType = "Multiple_choice"
 	SHORTANSWER    QuestionType = "Short_answer"
 	TRUEFALSE      QuestionType = "True_false"
+	SUBJECTIVE     QuestionType = "Subjective"
 )
 
 type Question struct {
