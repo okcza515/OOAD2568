@@ -2,7 +2,9 @@ package spacemanagement
 
 import (
 	model "ModEd/asset/model/SpaceManagement"
+	"ModEd/utils/deserializer"
 	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -10,13 +12,30 @@ type RoomController struct {
 	db *gorm.DB
 }
 
-func (c *RoomController) getAll() (*[]model.Room, error) {
+func (c *RoomController) CreateSeedRooms(path string) (rooms []*model.Room, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.New("failed to create file deserializer")
+	}
+	if err := deserializer.Deserialize(&rooms); err != nil {
+		return nil, errors.New("failed to deserialize curriculums")
+	}
+	for _, room := range rooms {
+		err := c.CreateRoom(room)
+		if err != nil {
+			return nil, errors.New("Failed to seed Room DB")
+		}
+	}
+	return rooms, nil
+}
+
+func (c *RoomController) GetAll() (*[]model.Room, error) {
 	roomInfo := new([]model.Room)
 	result := c.db.Find(&roomInfo)
 	return roomInfo, result.Error
 }
 
-func (c *RoomController) getById(Id uint) (*model.Room, error) {
+func (c *RoomController) GetById(Id uint) (*model.Room, error) {
 	if Id == 0 {
 		return nil, errors.New("No Id provide")
 	}
@@ -25,7 +44,7 @@ func (c *RoomController) getById(Id uint) (*model.Room, error) {
 	return roomInfo, result.Error
 }
 
-func (c *RoomController) Create(payload *model.Room) error {
+func (c *RoomController) CreateRoom(payload *model.Room) error {
 	if payload == nil {
 		return errors.New("Invalid room data")
 	}
@@ -33,7 +52,7 @@ func (c *RoomController) Create(payload *model.Room) error {
 	return result.Error
 }
 
-func (c *RoomController) Update(Id uint, payload *model.Room) error {
+func (c *RoomController) UpdateRoom(Id uint, payload *model.Room) error {
 	if payload == nil || Id == 0 {
 		return errors.New("Invalid info")
 	}
@@ -45,7 +64,7 @@ func (c *RoomController) Update(Id uint, payload *model.Room) error {
 	return result.Error
 }
 
-func (c *RoomController) Delete(Id uint) error {
+func (c *RoomController) DeleteRoom(Id uint) error {
 	if Id == 0 {
 		return errors.New("No ID provides")
 	}
