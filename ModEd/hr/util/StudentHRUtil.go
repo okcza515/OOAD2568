@@ -2,13 +2,8 @@ package util
 
 import (
 	"fmt"
-	"os"
 
 	commonModel "ModEd/common/model"
-	controller "ModEd/hr/controller/Migration"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func StatusToString(status commonModel.StudentStatus) string {
@@ -35,18 +30,4 @@ func StatusFromString(status string) (commonModel.StudentStatus, error) {
 	default:
 		return commonModel.ACTIVE, fmt.Errorf("invalid status: %s (must be ACTIVE, GRADUATED, or DROP)", status)
 	}
-}
-
-func OpenDatabase(database string) *gorm.DB {
-	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
-	if err != nil {
-		fmt.Printf("Failed to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-
-	if err := controller.MigrateStudentsToHR(db); err != nil {
-		fmt.Printf("Migration Failed: %v\n", err)
-		os.Exit(1)
-	}
-	return db
 }
