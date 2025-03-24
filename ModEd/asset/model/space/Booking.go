@@ -4,9 +4,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Booking struct {
+	gorm.Model
 	BookingID     uuid.UUID `gorm:"type:text;primaryKey" json:"booking_id" csv:"booking_id"`
 	RoomID        uuid.UUID `gorm:"type:text;not null;index" json:"room_id" csv:"room_id"`
 	Room          Room      `gorm:"foreignKey:RoomID;references:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`

@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AssetManagement struct {
+	gorm.Model
 	AssetManagementID  uuid.UUID              `gorm:"type:text;primaryKey"`
 	RoomID             uuid.UUID              `gorm:"type:text;not null;index" json:"room_id" csv:"room_id"`
 	Room               Room                   `gorm:"foreignKey:RoomID;references:RoomID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`

@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type PermanentSchedule struct {
+	gorm.Model
 	ScheduleID  uuid.UUID          `gorm:"type:text;primaryKey" json:"schedule_id" csv:"schedule_id"`
 	StartDate   time.Time          `gorm:"type:timestamp" json:"start_date" csv:"start_date"`
 	EndDate     time.Time          `gorm:"type:timestamp" json:"end_date" csv:"end_date"`

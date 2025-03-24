@@ -2,9 +2,11 @@ package space
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Room struct {
+	gorm.Model
 	RoomID             uuid.UUID         `gorm:"type:text;primaryKey" json:"room_id" csv:"room_id"`
 	RoomName           string            `gorm:"type:varchar(255);not null" json:"room_name" csv:"room_name"`
 	RoomType           RoomTypeEnum      `gorm:"type:text;not null" json:"room_type" csv:"room_type"`
