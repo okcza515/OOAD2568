@@ -15,8 +15,8 @@ type PermanentSchedule struct {
 	StartDate   time.Time          `gorm:"type:timestamp" json:"start_date" csv:"start_date"`
 	EndDate     time.Time          `gorm:"type:timestamp" json:"end_date" csv:"end_date"`
 	IsAvailable bool               `gorm:"type:boolean" json:"is_available" csv:"is_available"`
-	Faculty     master.Faculty     `gorm:"foreignKey:Faculty;references:Name" json:"faculty" csv:"faculty"`
-	Department  master.Department  `gorm:"foreignKey:Department;references:Name" json:"department" csv:"department"`
+	Faculty     master.Faculty     `gorm:"foreignKey:Faculty;references:ID" json:"faculty" csv:"faculty"`
+	Department  master.Department  `gorm:"foreignKey:Department;references:ID" json:"department" csv:"department"`
 	ProgramType master.ProgramType `gorm:"foreignKey:ProgramType;references:ProgramType" json:"program_type" csv:"program_type"`
 	Classroom   Room               `gorm:"foreignKey:RoomID;references:RoomID" json:"classroom" csv:"classroom"`
 	Course      curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId" json:"course" csv:"course"`
