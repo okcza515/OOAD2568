@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -46,7 +47,7 @@ func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.Perm
 	if schedule.Department.Name == "" {
 		return errors.New("Department name is required")
 	}
-	if string(schedule.ProgramType) == "" {
+	if strconv.Itoa(int(schedule.ProgramType)) == "" {
 		return errors.New("Program type is required")
 	}
 	if schedule.Classroom.RoomID == 0 {
