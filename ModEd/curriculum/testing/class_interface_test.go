@@ -9,7 +9,6 @@ import (
 
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/controller/migration"
-	"ModEd/curriculum/controller/seed"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -227,7 +226,7 @@ func TestSeedClass(t *testing.T) {
 	}
 
 	classController := controller.NewClassController(db)
-	classes, err := seed.CreateClassSeed(db, "../../data/curriculum/class.json")
+	classes, err := classController.CreateSeedClass("../../data/curriculum/class.json")
 	if err != nil {
 		t.Fatalf("Failed to seed class: %v", err)
 	}

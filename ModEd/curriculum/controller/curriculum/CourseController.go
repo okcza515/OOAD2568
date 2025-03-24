@@ -2,12 +2,16 @@ package controller
 
 import (
 	"ModEd/curriculum/model"
+	"ModEd/utils/deserializer"
+	"fmt"
 
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 type ICourseController interface {
 	CreateCourse(course *model.Course) (courseId uint, err error)
+	CreateSeedCourse(path string) (courses []*model.Course, err error)
 	GetCourseByID(courseId uint) (course *model.Course, err error)
 	UpdateCourse(updatedCourse *model.Course) (course *model.Course, err error)
 	DeleteCourse(courseId uint) (course *model.Course, err error)
@@ -73,4 +77,25 @@ func (c *CourseController) ListCourses() (courses []*model.Course, err error) {
 		return nil, err
 	}
 	return courses, nil
+}
+
+func (c *CourseController) CreateSeedCourse(path string) (courses []*model.Course, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create file deserializer")
+	}
+
+	if err := deserializer.Deserialize(&courses); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize courses")
+	}
+
+	for _, course := range courses {
+		_, err := c.CreateCourse(course)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create course")
+		}
+	}
+	fmt.Println("Create Course Seed Successfully")
+	return courses, nil
+
 }

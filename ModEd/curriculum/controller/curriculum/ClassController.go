@@ -1,13 +1,18 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"ModEd/curriculum/model"
+	"ModEd/utils/deserializer"
 )
 
 type IClassController interface {
 	CreateClass(class *model.Class) (classId uint, err error)
+	CreateSeedClass(path string) (classes []*model.Class, err error)
 	GetClass(classId uint) (class *model.Class, err error)
 	GetClasses() (classes []*model.Class, err error)
 	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
@@ -69,4 +74,24 @@ func (c *ClassController) DeleteClass(classId uint) (class *model.Class, err err
 		return nil, err
 	}
 	return class, nil
+}
+
+func (c *ClassController) CreateSeedClass(path string) (classes []*model.Class, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create file deserializer")
+	}
+
+	if err := deserializer.Deserialize(&classes); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize classes")
+	}
+
+	for _, class := range classes {
+		_, err := c.CreateClass(class)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create class")
+		}
+	}
+	fmt.Println("Create Class Seed Successfully")
+	return classes, nil
 }

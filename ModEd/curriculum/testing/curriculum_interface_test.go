@@ -9,7 +9,6 @@ import (
 	commonModel "ModEd/common/model"
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/controller/migration"
-	"ModEd/curriculum/controller/seed"
 	model "ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -206,7 +205,7 @@ func TestSeedCurriculum(t *testing.T) {
 	}
 
 	curriculumController := controller.NewCurriculumController(db)
-	curriculums, err := seed.CreateCurriculumSeed(db, "../../data/curriculum/curriculum.json")
+	curriculums, err := curriculumController.CreateSeedCurriculum("../../data/curriculum/curriculum.json")
 	if err != nil {
 		t.Fatalf("Failed to seed curriculum: %v", err)
 	}
@@ -226,6 +225,7 @@ func TestSeedCurriculum(t *testing.T) {
 	}
 
 }
+
 func TestMigration(t *testing.T) {
 	db, err := utils.NewGormSqlite(&utils.GormConfig{
 		DBPath: "../../data/curriculum.db",
