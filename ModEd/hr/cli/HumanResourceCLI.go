@@ -68,7 +68,7 @@ func listStudents(hrController *controller.HRController, args []string) {
 	for _, s := range studentInfos {
 		fmt.Printf("SID: %s | Name: %s %s | Gender: %s | CitizenID: %s | Phone: %s | Status: %s | Email: %s\n",
 			s.StudentCode, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber,
-			hrUtil.StatusToString(s.Status), s.Email)
+			hrUtil.StatusToString(*s.Status), s.Email)
 	}
 }
 
