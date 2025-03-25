@@ -58,7 +58,7 @@ func (c *StudentHRController) UpdateStatus(sid string, status commonModel.Studen
 	}
 
 	// Update the status field
-	studentInfo.Status = status
+	studentInfo.Status = &status
 
 	// Save the updated record
 	return c.db.Save(&studentInfo).Error
