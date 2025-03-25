@@ -49,7 +49,7 @@ func main() {
 			fmt.Printf("*** File %s is readable\n", path)
 		}
 
-	case REGISTER:
+	case REGISTER: // Not generic yet
 		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 			fmt.Printf("*** Error: %s does not exist.\n", path)
 			return
@@ -60,46 +60,34 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		var students []*model.Student
+		//var students []*model.Student
+		var students *model.Student
 		if err := deserializer.Deserialize(&students); err != nil {
 			panic(err)
 		}
 
-		studentController.Register(students)
+		studentController.Create(students)
 		fmt.Println("Student data updated successfully.")
 
 	case DELETE:
 		
-	case CLEAR_DB:
-		
+	case CLEAR_DB: 
+		studentController := controller.CreateStudentController(connector)
+		studentController.TruncateStudents()
+
+		fmt.Println("Student table has been cleared.")
 	}
 
 	
 	instructorController := controller.CreateInstructorController(connector)
 	// controller := core.NewBaseController[*model.Student](connector)
 
-	// mapper, err := util.CreateMapper(path)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// students := mapper.Map()
-	// controller.Register(students)
-
 	//InstuctorRegister(&[]model.Instructor{}, deserializer, instructorController)
 	// for _, student := range students {
 	// 	controller.Insert(student)
 	// }
 
-	//retrieved, err := controller.GetAll()
 	// retrieved, err := controller.List(nil)
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// for _, student := range retrieved {
-	// 	fmt.Printf("%s\n", student.StudentCode)
-	// }
 
 	retrievedI, err := instructorController.GetAll()
 	if err != nil {
