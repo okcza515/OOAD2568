@@ -2,7 +2,6 @@ package main
 
 import (
 	"ModEd/hr/controller"
-	hrUtil "ModEd/hr/util"
 	"flag"
 	"fmt"
 	"os"
@@ -25,8 +24,7 @@ func main() {
 	command := args[1]
 	commandArgs := args[2:]
 
-	db := hrUtil.OpenDatabase(*databasePath)
-	hrController := controller.NewHRController(db)
+	hrController := controller.NewHRController(*databasePath)
 
 	switch entity {
 	case "student":
