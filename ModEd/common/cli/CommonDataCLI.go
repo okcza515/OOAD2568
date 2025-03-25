@@ -15,6 +15,15 @@ import (
 	"gorm.io/gorm"
 )
 
+type MenusChoices int
+
+const (
+	READFILE MenusChoices = iota
+	REGISTER
+	DELETE
+	CLEAR_DB
+)
+
 func main() {
 	var (
 		database string
@@ -27,17 +36,45 @@ func main() {
 	args := flag.Args()
 	fmt.Printf("args: %v\n", args)
 
-	connector, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
+	connector := ConnectDB()
+
+	choice := Menus()
+
+	switch choice {
+	case READFILE:
+		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+			fmt.Printf("*** Error: %s does not exist.\n", path)
+			return
+		} else {
+			fmt.Printf("*** File %s is readable\n", path)
+		}
+
+	case REGISTER:
+		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+			fmt.Printf("*** Error: %s does not exist.\n", path)
+			return
+		}
+
+		studentController := controller.CreateStudentController(connector)
+		deserializer, err := deserializer.NewFileDeserializer(path)
+		if err != nil {
+			panic(err)
+		}
+		var students []*model.Student
+		if err := deserializer.Deserialize(&students); err != nil {
+			panic(err)
+		}
+
+		studentController.Register(students)
+		fmt.Println("Student data updated successfully.")
+
+	case DELETE:
+		
+	case CLEAR_DB:
+		
 	}
 
-	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		fmt.Printf("*** Error: %s does not exist.\n", path)
-		return
-	}
-
-	studentController := controller.CreateStudentController(connector)
+	
 	instructorController := controller.CreateInstructorController(connector)
 	// controller := core.NewBaseController[*model.Student](connector)
 
@@ -48,17 +85,6 @@ func main() {
 
 	// students := mapper.Map()
 	// controller.Register(students)
-
-	deserializer, err := deserializer.NewFileDeserializer(path)
-	if err != nil {
-		panic(err)
-	}
-	var students []*model.Student
-	if err := deserializer.Deserialize(&students); err != nil {
-		panic(err)
-	}
-
-	studentController.Register(students)
 
 	//InstuctorRegister(&[]model.Instructor{}, deserializer, instructorController)
 	// for _, student := range students {
@@ -83,7 +109,21 @@ func main() {
 		fmt.Printf("%s\n", i.FirstName)
 	}
 
-	fmt.Println("✔️ Student data updated successfully.")
+}
+
+func ConnectDB() *gorm.DB {
+	connector, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	return connector
+}
+
+func Menus() MenusChoices {
+	var choice MenusChoices
+	fmt.Print("Select an option:\n0. Read file\n1. Register\n2. Delete\n3. Clear DB\nchoice: ")
+	fmt.Scan(&choice)
+	return choice
 }
 
 // **TODO when BaseController is fully functional or the truncate is no longer needed**
