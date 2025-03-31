@@ -17,12 +17,12 @@ func NewBaseController(modelName string, db *gorm.DB) *BaseController {
 	return controller
 }
 
-func (controller *BaseController) Insert(data *RecordInterface) error {
+func (controller *BaseController) Insert(data RecordInterface) error {
 	return controller.db.Create(&data).Error
 }
 
-func (controller *BaseController) UpdateByID(data *RecordInterface) error {
-	return controller.db.Model(data).Where("id = ?", (*data).GetID()).Updates(data).Error
+func (controller *BaseController) UpdateByID(data RecordInterface) error {
+	return controller.db.Model(data).Where("id = ?", (data).GetID()).Updates(data).Error
 }
 
 func (controller *BaseController) RetrieveByID(id uint, preloads ...string) (*RecordInterface, error) {
