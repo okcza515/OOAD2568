@@ -1,0 +1,6 @@
+AssessmentCriteriaId,CreatedAt,UpdatedAt,DeletedAt,CriteriaName
+1,2023-07-01T08:00:00Z,2023-07-01T08:00:00Z,,Technical Knowledge
+2,2023-07-02T09:30:00Z,2023-07-02T09:30:00Z,,Presentation Skills
+3,2023-07-03T10:45:00Z,2023-07-03T10:45:00Z,,Team Collaboration
+4,2023-07-04T12:15:00Z,2023-07-04T12:15:00Z,,Project Planning
+5,2023-07-05T14:00:00Z,2023-07-05T14:00:00Z,,Problem Solving
