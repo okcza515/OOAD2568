@@ -18,7 +18,7 @@ func NewBaseController(modelName string, db *gorm.DB) *BaseController {
 }
 
 func (controller *BaseController) Insert(data RecordInterface) error {
-	return controller.db.Create(&data).Error
+	return controller.db.Create(data).Error
 }
 
 func (controller *BaseController) UpdateByID(data RecordInterface) error {
