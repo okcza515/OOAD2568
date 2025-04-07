@@ -1,5 +1,10 @@
 package model
 
+import (
+	"database/sql/driver"
+	"fmt"
+)
+
 type ReportType string
 
 const (
@@ -19,7 +24,6 @@ func ValidReportTypes() []ReportType {
 		ReportTypeFinal,
 	}
 }
-
 func (rt ReportType) IsValid() bool {
 	for _, validType := range ValidReportTypes() {
 		if rt == validType {
@@ -27,4 +31,17 @@ func (rt ReportType) IsValid() bool {
 		}
 	}
 	return false
+}
+
+func (rt ReportType) Value() (driver.Value, error) {
+	return string(rt), nil
+}
+
+func (rt *ReportType) Scan(value interface{}) error {
+	str, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("failed to scan ReportType: %v", value)
+	}
+	*rt = ReportType(str)
+	return nil
 }
