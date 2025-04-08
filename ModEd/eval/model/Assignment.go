@@ -13,16 +13,16 @@ import (
 type Assignment struct {
 	// Instructor_Name  model.Instructor
 	gorm.Model
-	Title       string                 //หัวข้อ
-	Description string                 //คำอธิบาย
-	StartDate   time.Time              //วันที่ assign
-	DueDate     time.Time              //วัน deadline
-	Submission  []AssignmentSubmission //รายละเอียดการส่ง
+	Title       string               
+	Description string                
+	StartDate   time.Time             
+	DueDate     time.Time              
+	Submission  []AssignmentSubmission 
 }
 
-type AssignmentSubmission struct { //รายละเอียดการส่ง
+type AssignmentSubmission struct { 
 	gorm.Model
-	SID         model.Student //เลขนักศึกษา
-	Content     string        //ส่งอะไร
-	SubmittedAt string        //เวลาที่ส่ง
+	StudentCode model.Student 
+	Content     string       
+	SubmittedAt string       
 }
