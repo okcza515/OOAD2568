@@ -27,5 +27,5 @@ type AssignmentSubmission struct {
 	gorm.Model
 	StudentCode model.Student
 	Content     string
-	SubmittedAt string
+	SubmittedAt time.Time
 }
