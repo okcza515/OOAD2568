@@ -3,9 +3,9 @@ package model
 import (
 	"time"
 
-	"ModEd/common/model"
+	commonModel "ModEd/common/model"
 
-	"ModEd/curriculum/model"
+	curriculumModel "ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
@@ -15,8 +15,8 @@ type Quiz struct {
 	ID           uint
 	Title        string
 	Description  string
-	CourseId     model.Course
-	InstructorId model.Instructor
+	CourseId     curriculumModel.Course
+	InstructorId commonModel.Instructor
 	Released     bool
 	QuizStart    time.Time
 	QuizEnd      time.Time
@@ -26,10 +26,10 @@ type Quiz struct {
 
 type QuizSubmission struct {
 	gorm.Model
-	SID        model.Student
-	FirstName  model.Student
-	LastName   model.Student
-	Email      model.Student
+	SID        commonModel.Student
+	FirstName  commonModel.Student
+	LastName   commonModel.Student
+	Email      commonModel.Student
 	Answers    string
 	Submitted  bool
 	SubmitTime time.Time

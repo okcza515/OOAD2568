@@ -3,18 +3,18 @@ package model
 import (
 	"time"
 
-	"ModEd/common/model"
+	commonModel "ModEd/common/model"
 
-	"ModEd/curriculum/model"
+	curriculumModel "ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
 
 type Assignment struct {
 	gorm.Model
-	FirstName    model.Instructor
-	LastName     model.Instructor
-	CourseId     model.Course
+	FirstName    commonModel.Instructor
+	LastName     commonModel.Instructor
+	CourseId     curriculumModel.Course
 	AssignmentId uint
 	Title        string
 	Description  string
@@ -25,7 +25,7 @@ type Assignment struct {
 
 type AssignmentSubmission struct {
 	gorm.Model
-	StudentCode model.Student
+	StudentCode commonModel.Student
 	Content     string
 	SubmittedAt time.Time
 }
