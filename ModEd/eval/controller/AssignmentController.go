@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/project/model"
+	"ModEd/eval/model"
 
 	"gorm.io/gorm"
 )
