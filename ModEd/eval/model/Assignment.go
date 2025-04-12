@@ -5,12 +5,17 @@ import (
 
 	"ModEd/common/model"
 
+	"ModEd/curriculum/model"
+
 	"gorm.io/gorm"
 )
 
 type Assignment struct {
 	gorm.Model
-	InstructorId model.Instructor
+	FirstName    model.Instructor
+	LastName     model.Instructor
+	CourseId     model.Course
+	AssignmentId uint
 	Title        string
 	Description  string
 	StartDate    time.Time

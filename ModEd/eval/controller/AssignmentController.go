@@ -24,13 +24,14 @@ func NewAssignmentController(db *gorm.DB) IAssignmentController {
 
 func (c *AssignmentController) ListAllAssignments() ([]model.Assignment, error) {
 	var assignments []model.Assignment
-	err := c.db.Find(&assignments).Error
+	err := c.db.Preload("Submission").Find(&assignments).Error
 	return assignments, err
 }
 
 func (c *AssignmentController) RetrieveAssignment(id uint) (*model.Assignment, error) {
 	var assignment model.Assignment
-	if err := c.db.Where("id = ?", id).First(&assignment).Error; err != nil {
+	err := c.db.Preload("Submission").First(&assignment, id).Error
+	if err != nil {
 		return nil, err
 	}
 	return &assignment, nil
@@ -45,5 +46,5 @@ func (c *AssignmentController) UpdateAssignment(assignment *model.Assignment) er
 }
 
 func (c *AssignmentController) DeleteAssignment(id uint) error {
-	return c.db.Where("id = ?", id).Delete(&model.Assignment{}).Error
+	return c.db.Delete(&model.Assignment{}, id).Error
 }
