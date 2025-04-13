@@ -4,17 +4,14 @@ package spacemanagement
 import (
 	master "ModEd/common/model"
 	curriculum "ModEd/curriculum/model"
-	"time"
 
 	"gorm.io/gorm"
 )
 
 type PermanentSchedule struct {
 	gorm.Model
-	ScheduleID  uint               `gorm:"type:integer ;primaryKey"`
-	StartDate   time.Time          `gorm:"type:timestamp"`
-	EndDate     time.Time          `gorm:"type:timestamp"`
-	IsAvailable bool               `gorm:"type:boolean"`
+	TimeTableID uint       		   `gorm:"type:integer" json:"time_table_id" csv:"time_table_id"` 
+	TimeTable   TimeTable  		   `gorm:"foreignKey:ID;references:ID" json:"time_table"`
 	Faculty     master.Faculty     `gorm:"foreignKey:ID;references:ID"`
 	Department  master.Department  `gorm:"foreignKey:ID;references:ID"`
 	ProgramType master.ProgramType `gorm:"foreignKey:ProgramType;references:ProgramType"`

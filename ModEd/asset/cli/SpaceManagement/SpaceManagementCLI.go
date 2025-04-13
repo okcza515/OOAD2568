@@ -24,9 +24,9 @@ func main() {
 		// case "1":
 		// 	handler.AssetManagementHandler(facade)
 		// case "2":
-		// 	handler.BookingHandler(facade)
-		// case "3":
-		// 	handler.PermanentScheduleHandler(facade)
+		// 	handler.SupplyManagementHandler(facade)
+		case "3":
+			handler.BookingHandler(facade)
 		// case "4":
 		// 	handler.PermanentScheduleHandler(facade)
 		case "5":

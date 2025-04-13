@@ -12,8 +12,8 @@ type TimeTable struct {
 	StartDate   time.Time `gorm:"type:timestamp"`
 	EndDate     time.Time `gorm:"type:timestamp"`
 	RoomID      uint      `gorm:"type:integer"`
+	Room        Room      `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	IsAvailable bool      `gorm:"type:boolean"`
-	Room        Room      `gorm:"foreignKey:RoomID;references:RoomID"`
 	BookingID   *uint     `gorm:"type:integer"`
 	ScheduleID  *uint     `gorm:"type:integer"`
 }

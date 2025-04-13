@@ -4,7 +4,6 @@ package spacemanagement
 import (
 	model "ModEd/asset/model/spacemanagement"
 	"fmt"
-	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,7 +19,7 @@ func NewBookingController(db *gorm.DB) *BookingController {
 	}
 }
 
-func (controller *BookingController) CheckRoomAvailability(roomID uint) (bool, error) {
+func (controller *BookingController) CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error) {
 	var room model.Room
 	if err := controller.db.First(&room, roomID).Error; err != nil {
 		return false, fmt.Errorf("unable to find room with ID %d: %w", roomID, err)
@@ -30,119 +29,243 @@ func (controller *BookingController) CheckRoomAvailability(roomID uint) (bool, e
 		return false, fmt.Errorf("room with ID %d is out of service", roomID)
 	}
 
+	var bookingCount int64
+	if err := controller.db.Model(&model.TimeTable{}).
+		Where("room_id = ? AND is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
+			roomID, false, startDate, startDate, endDate, endDate, startDate, endDate).
+		Count(&bookingCount).Error; err != nil {
+		return false, fmt.Errorf("error checking for existing bookings: %w", err)
+	}
+
+	if bookingCount > 0 {
+		return false, nil
+	}
+
 	return true, nil
 }
 
-func (controller *BookingController) ResetTimeSlots() {
-	resetTime := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour)
-
-	go func() {
-		for {
-			now := time.Now()
-			if now.After(resetTime) {
-				if err := controller.resetAllBookings(); err != nil {
-					log.Printf("Failed to reset bookings: %v", err)
-				}
-				resetTime = resetTime.Add(24 * time.Hour)
-			}
-			time.Sleep(time.Minute)
-		}
-	}()
-}
-
-func (controller *BookingController) resetAllBookings() error {
-	var schedules []model.PermanentSchedule
-	if err := controller.db.Where("is_available = ?", true).Find(&schedules).Error; err != nil {
-		return fmt.Errorf("unable to fetch schedules: %w", err)
+func (controller *BookingController) ResetTimeSlots(roomID uint) error {
+	if err := controller.db.Model(&model.TimeTable{}).
+		Where("room_id = ? AND booking_id IS NOT NULL", roomID).
+		Update("is_available", true).Error; err != nil {
+		return fmt.Errorf("unable to reset time slots for room %d: %w", roomID, err)
 	}
 
-	for _, schedule := range schedules {
-		schedule.IsAvailable = true
-		if err := controller.db.Save(&schedule).Error; err != nil {
-			log.Printf("Failed to reset schedule ID %d: %v", schedule.ScheduleID, err)
-		}
-	}
-
-	log.Println("Time slots successfully reset.")
+	fmt.Printf("Successfully reset time slots for room %d\n", roomID)
 	return nil
 }
 
-func (controller *BookingController) BookRoom(roomID uint, startDate, endDate time.Time) error {
-	isAvailable, err := controller.CheckRoomAvailability(roomID)
-	if err != nil || !isAvailable {
-		return fmt.Errorf("room with ID %d is not available for booking: %w", roomID, err)
+func (controller *BookingController) ResetAllBookings() error {
+	if err := controller.db.Model(&model.TimeTable{}).
+		Where("booking_id IS NOT NULL").
+		Update("is_available", true).Error; err != nil {
+		return fmt.Errorf("unable to reset all bookings: %w", err)
 	}
 
-	var room model.Room
-	if err := controller.db.First(&room, roomID).Error; err != nil {
-		return fmt.Errorf("unable to find room with ID %d: %w", roomID, err)
+	fmt.Println("Successfully reset all bookings")
+	return nil
+}
+
+func (controller *BookingController) BookRoom(roomID uint, userID uint, userRole model.Role, eventName string, startDate, endDate time.Time) (*model.Booking, error) {
+	isAvailable, err := controller.CheckRoomAvailability(roomID, startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	if !isAvailable {
+		return nil, fmt.Errorf("room with ID %d is not available during the specified time period", roomID)
 	}
 
-	newBooking := model.PermanentSchedule{
-		Classroom:   room,
+	tx := controller.db.Begin()
+
+	timeTable := model.TimeTable{
 		StartDate:   startDate,
 		EndDate:     endDate,
+		RoomID:      roomID,
 		IsAvailable: false,
 	}
 
-	if err := controller.db.Create(&newBooking).Error; err != nil {
-		return fmt.Errorf("unable to create new booking: %w", err)
+	if err := tx.Create(&timeTable).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("unable to create time table entry: %w", err)
 	}
 
-	log.Printf("Room %d successfully booked from %v to %v.", roomID, startDate, endDate)
-	return nil
+	booking := model.Booking{
+		TimeTableID: timeTable.ID,
+		UserID:      userID,
+		UserRole:    userRole,
+		EventName:   eventName,
+	}
+
+	if err := tx.Create(&booking).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("unable to create booking: %w", err)
+	}
+
+	bookingID := booking.ID
+	timeTable.BookingID = &bookingID
+	if err := tx.Save(&timeTable).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("unable to update time table with booking ID: %w", err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, fmt.Errorf("transaction failed: %w", err)
+	}
+
+	fmt.Printf("Room %d successfully booked for event '%s' from %v to %v\n", roomID, eventName, startDate, endDate)
+	return &booking, nil
 }
 
 func (controller *BookingController) CancelBooking(bookingID uint) error {
-	var booking model.PermanentSchedule
+	var booking model.Booking
 	if err := controller.db.First(&booking, bookingID).Error; err != nil {
 		return fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
 	}
 
-	booking.IsAvailable = true
-	if err := controller.db.Save(&booking).Error; err != nil {
+	var timeTable model.TimeTable
+	if err := controller.db.First(&timeTable, booking.TimeTableID).Error; err != nil {
+		return fmt.Errorf("unable to find time table for booking %d: %w", bookingID, err)
+	}
+
+	tx := controller.db.Begin()
+
+	timeTable.IsAvailable = true
+	if err := tx.Save(&timeTable).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("unable to update time table: %w", err)
+	}
+
+	if err := tx.Delete(&booking).Error; err != nil {
+		tx.Rollback()
 		return fmt.Errorf("unable to cancel booking: %w", err)
 	}
 
-	log.Printf("Booking with ID %d successfully canceled.", bookingID)
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+
+	fmt.Printf("Successfully canceled booking with ID %d\n", bookingID)
 	return nil
 }
 
-func (controller *BookingController) UpdateBooking(bookingID uint, newStartDate, newEndDate time.Time) error {
-	var booking model.PermanentSchedule
+func (controller *BookingController) UpdateBooking(bookingID uint, eventName *string, newStartDate, newEndDate *time.Time) error {
+	var booking model.Booking
 	if err := controller.db.First(&booking, bookingID).Error; err != nil {
 		return fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
 	}
 
-	booking.StartDate = newStartDate
-	booking.EndDate = newEndDate
-	if err := controller.db.Save(&booking).Error; err != nil {
-		return fmt.Errorf("unable to update booking: %w", err)
+	var timeTable model.TimeTable
+	if err := controller.db.First(&timeTable, booking.TimeTableID).Error; err != nil {
+		return fmt.Errorf("unable to find time table for booking %d: %w", bookingID, err)
 	}
 
-	log.Printf("Booking with ID %d successfully updated.", bookingID)
+	if (newStartDate != nil && !timeTable.StartDate.Equal(*newStartDate)) || (newEndDate != nil && !timeTable.EndDate.Equal(*newEndDate)) {
+		
+		startDate := timeTable.StartDate
+		if newStartDate != nil {
+			startDate = *newStartDate
+		}
+		
+		endDate := timeTable.EndDate
+		if newEndDate != nil {
+			endDate = *newEndDate
+		}
+
+		originalIsAvailable := timeTable.IsAvailable
+		timeTable.IsAvailable = true
+		if err := controller.db.Save(&timeTable).Error; err != nil {
+			return fmt.Errorf("unable to temporarily update time table: %w", err)
+		}
+
+		isAvailable, err := controller.CheckRoomAvailability(timeTable.RoomID, startDate, endDate)
+		
+		timeTable.IsAvailable = originalIsAvailable
+		if err := controller.db.Save(&timeTable).Error; err != nil {
+			return fmt.Errorf("unable to restore time table status: %w", err)
+		}
+
+		if err != nil {
+			return err
+		}
+		if !isAvailable {
+			return fmt.Errorf("requested time slot is already booked")
+		}
+	}
+
+	tx := controller.db.Begin()
+
+	if eventName != nil {
+		booking.EventName = *eventName
+		if err := tx.Save(&booking).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("unable to update booking details: %w", err)
+		}
+	}
+
+	if newStartDate != nil {
+		timeTable.StartDate = *newStartDate
+	}
+	if newEndDate != nil {
+		timeTable.EndDate = *newEndDate
+	}
+	
+	if newStartDate != nil || newEndDate != nil {
+		if err := tx.Save(&timeTable).Error; err != nil {
+			tx.Rollback()
+			return fmt.Errorf("unable to update booking dates: %w", err)
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+
+	fmt.Printf("Successfully updated booking with ID %d\n", bookingID)
 	return nil
 }
 
-func (controller *BookingController) GetRoomBookings(roomID uint) ([]model.PermanentSchedule, error) {
-	var bookings []model.PermanentSchedule
-	if err := controller.db.Where("room_id = ?", roomID).Find(&bookings).Error; err != nil {
-		return nil, fmt.Errorf("unable to find bookings for room %d: %w", roomID, err)
+func (controller *BookingController) GetRoomBookings(roomID uint) ([]model.Booking, error) {
+	var bookings []model.Booking
+	if err := controller.db.Joins("JOIN time_tables ON bookings.time_table_id = time_tables.id").
+		Where("time_tables.room_id = ?", roomID).
+		Preload("TimeTable").
+		Find(&bookings).Error; err != nil {
+		return nil, fmt.Errorf("unable to retrieve bookings for room %d: %w", roomID, err)
 	}
 	return bookings, nil
 }
 
-func (controller *BookingController) GetAvailableRooms(startDate, endDate time.Time) ([]model.Room, error) {
+func (controller *BookingController) GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error) {
+	subQuery := controller.db.Table("time_tables").
+		Select("room_id").
+		Where("is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
+			false, startDate, startDate, endDate, endDate, startDate, endDate).
+		Group("room_id")
+
+	query := controller.db.Where("is_room_out_of_service = ?", false).
+		Where("room_id NOT IN (?)", subQuery)
+
+	if roomType != nil {
+		query = query.Where("room_type = ?", *roomType)
+	}
+
+	if capacity != nil {
+		query = query.Where("capacity >= ?", *capacity)
+	}
+
 	var rooms []model.Room
-	if err := controller.db.Where("room_id NOT IN (SELECT room_id FROM permanent_schedules WHERE start_date < ? AND end_date > ?)", endDate, startDate).Find(&rooms).Error; err != nil {
+	if err := query.Find(&rooms).Error; err != nil {
 		return nil, fmt.Errorf("unable to find available rooms: %w", err)
 	}
+
 	return rooms, nil
 }
 
-func (controller *BookingController) GetBookingDetails(bookingID uint) (*model.PermanentSchedule, error) {
-	var booking model.PermanentSchedule
-	if err := controller.db.First(&booking, bookingID).Error; err != nil {
+func (controller *BookingController) GetBookingDetails(bookingID uint) (*model.Booking, error) {
+	var booking model.Booking
+	if err := controller.db.Preload("TimeTable").
+		Preload("TimeTable.Room").
+		First(&booking, bookingID).Error; err != nil {
 		return nil, fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
 	}
 	return &booking, nil
