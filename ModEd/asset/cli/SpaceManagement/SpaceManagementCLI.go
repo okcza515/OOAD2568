@@ -42,9 +42,9 @@ func printOption() {
 	fmt.Println("Here is the list of page you can use, choose wisely!")
 	fmt.Println("  1:\tInstrument Management Page")
 	fmt.Println("  2:\tSupply Management Page")
-	fmt.Println("  2:\tBooking Page")
-	fmt.Println("  3:\tPermanent Schedule Page")
-	fmt.Println("  4:\tRoom Page")
+	fmt.Println("  3:\tBooking Page")
+	fmt.Println("  4:\tPermanent Schedule Page")
+	fmt.Println("  5:\tRoom Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
