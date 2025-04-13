@@ -1,3 +1,4 @@
+// MEP-1013
 package handler
 
 import (
@@ -234,7 +235,7 @@ func handleGetBookingDetails(facade *controller.SpaceManagementControllerFacade)
 	if err != nil {
 		fmt.Println("Error retrieving booking details:", err)
 	} else {
-		fmt.Printf("Booking ID: %d\nEvent: %s\nRoom: %s\nStart: %s\nEnd: %s\n", booking.ID, booking.EventName, booking.TimeTable.Room.RoomName, booking.TimeTable.StartDate, booking.TimeTable.EndDate)
+		fmt.Printf("Booking ID: %d\nEvent: %s\nRoom: %s\nStart: %s\nEnd: %s\n", booking.ID, booking.EventName, booking.TimeTable.Room.RoomType, booking.TimeTable.StartDate, booking.TimeTable.EndDate)
 	}
 	util.PressEnterToContinue()
 }
@@ -304,7 +305,7 @@ func handleGetAvailableRooms(facade *controller.SpaceManagementControllerFacade)
 	} else {
 		fmt.Println("Available Rooms:")
 		for _, room := range rooms {
-			fmt.Println("Room ID:", room.ID, "Name:", room.RoomName)
+			fmt.Println("Room ID:", room.ID, "Room:", room.RoomType)
 		}
 	}
 	util.PressEnterToContinue()
