@@ -23,7 +23,7 @@ func (c *RoomController) CreateSeedRooms(path string) (rooms []*model.Room, err 
 	for _, room := range rooms {
 		err := c.CreateRoom(room)
 		if err != nil {
-			return nil, errors.New("Failed to seed Room DB")
+			return nil, errors.New("failed to seed Room DB")
 		}
 	}
 	return rooms, nil
@@ -37,7 +37,7 @@ func (c *RoomController) GetAll() (*[]model.Room, error) {
 
 func (c *RoomController) GetById(Id uint) (*model.Room, error) {
 	if Id == 0 {
-		return nil, errors.New("No Id provide")
+		return nil, errors.New("no Id provide")
 	}
 	roomInfo := new(model.Room)
 	result := c.db.First(&roomInfo, "ID = ?", Id)
@@ -46,7 +46,7 @@ func (c *RoomController) GetById(Id uint) (*model.Room, error) {
 
 func (c *RoomController) CreateRoom(payload *model.Room) error {
 	if payload == nil {
-		return errors.New("Invalid room data")
+		return errors.New("invalid room data")
 	}
 	result := c.db.Create(payload)
 	return result.Error
@@ -54,7 +54,7 @@ func (c *RoomController) CreateRoom(payload *model.Room) error {
 
 func (c *RoomController) UpdateRoom(Id uint, payload *model.Room) error {
 	if payload == nil || Id == 0 {
-		return errors.New("Invalid info")
+		return errors.New("invalid info")
 	}
 	existingRoom := new(model.Room)
 	if err := c.db.First(existingRoom, Id).Error; err != nil {
