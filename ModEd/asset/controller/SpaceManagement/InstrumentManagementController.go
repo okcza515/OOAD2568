@@ -19,7 +19,7 @@ func (c *InstrumentManagementController) getAllInstrumentManagement() (*[]model.
 
 func (c *InstrumentManagementController) getInstrumentManagementById(Id uint) (*model.InstrumentManagement, error) {
 	if Id == 0 {
-		return nil, errors.New("No Id provide")
+		return nil, errors.New("no ID provided")
 	}
 	assetInfo := new(model.InstrumentManagement)
 	result := c.db.First(&assetInfo, "ID = ?", Id)
@@ -28,7 +28,7 @@ func (c *InstrumentManagementController) getInstrumentManagementById(Id uint) (*
 
 func (c *InstrumentManagementController) GetInstrumentManagementByRoomId(roomID uint) (*[]model.InstrumentManagement, error) {
 	if roomID == 0 {
-		return nil, errors.New("No RoomID provided")
+		return nil, errors.New("no RoomID provided")
 	}
 
 	assetList := new([]model.InstrumentManagement)
@@ -39,7 +39,7 @@ func (c *InstrumentManagementController) GetInstrumentManagementByRoomId(roomID 
 
 func (c *InstrumentManagementController) CreateInstrumentManagement(payload *model.InstrumentManagement) error {
 	if payload == nil {
-		return errors.New("Invalid asset data")
+		return errors.New("invalid asset data")
 	}
 	result := c.db.Create(payload)
 	return result.Error
@@ -47,7 +47,7 @@ func (c *InstrumentManagementController) CreateInstrumentManagement(payload *mod
 
 func (c *InstrumentManagementController) UpdateInstrumentManagement(Id uint, payload *model.InstrumentManagement) error {
 	if payload == nil || Id == 0 {
-		return errors.New("Invalid info")
+		return errors.New("invalid info")
 	}
 	existingAsset := new(model.InstrumentManagement)
 	if err := c.db.First(existingAsset, Id).Error; err != nil {
@@ -59,7 +59,7 @@ func (c *InstrumentManagementController) UpdateInstrumentManagement(Id uint, pay
 
 func (c *InstrumentManagementController) DeleteInstrumentManagement(Id uint) error {
 	if Id == 0 {
-		return errors.New("No Id provide")
+		return errors.New("no Id provide")
 	}
 	assetInfo := new(model.InstrumentManagement)
 	result := c.db.Delete(&assetInfo, Id)

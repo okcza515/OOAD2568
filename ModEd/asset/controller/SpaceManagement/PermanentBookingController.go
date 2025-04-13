@@ -21,13 +21,13 @@ func (c *PermanentScheduleController) CheckRoomInService(roomID uint) (*bool, er
 
 	err := c.db.First(&room, roomID).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.New("Room not found")
+		return nil, errors.New("room not found")
 	} else if err != nil {
 		return nil, err
 	}
 
 	if room.IsRoomOutOfService {
-		return nil, errors.New("Room is out of service")
+		return nil, errors.New("room is out of service")
 	}
 
 	isInService := !room.IsRoomOutOfService
@@ -36,28 +36,28 @@ func (c *PermanentScheduleController) CheckRoomInService(roomID uint) (*bool, er
 
 func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.PermanentSchedule) error {
 	if schedule.StartDate.IsZero() || schedule.EndDate.IsZero() {
-		return errors.New("Start date & end date are required")
+		return errors.New("start date & end date are required")
 	}
 	if schedule.StartDate.After(schedule.EndDate) {
-		return errors.New("Start date can't be after end date")
+		return errors.New("start date can't be after end date")
 	}
 	if schedule.Faculty.Name == "" {
-		return errors.New("Faculty name is required")
+		return errors.New("faculty name is required")
 	}
 	if schedule.Department.Name == "" {
-		return errors.New("Department name is required")
+		return errors.New("department name is required")
 	}
 	if strconv.Itoa(int(schedule.ProgramType)) == "" {
-		return errors.New("Program type is required")
+		return errors.New("program type is required")
 	}
 	if schedule.Classroom.RoomID == 0 {
-		return errors.New("Classroom is required")
+		return errors.New("classroom is required")
 	}
 	if schedule.Course.CourseId == 0 {
-		return errors.New("Course is required")
+		return errors.New("course is required")
 	}
 	if schedule.Class.ClassId == 0 {
-		return errors.New("Class is required")
+		return errors.New("class is required")
 	}
 
 	isInService, err := c.CheckRoomInService(schedule.Classroom.RoomID)
@@ -65,7 +65,7 @@ func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.Perm
 		return err
 	}
 	if !*isInService {
-		return errors.New("Room is unavailable for scheduled")
+		return errors.New("room is unavailable for scheduled")
 	}
 
 	result := c.db.Create(schedule)
@@ -79,7 +79,7 @@ func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.Perm
 
 func (c *PermanentScheduleController) ScheduleRecurringSubject(baseSchedule *model.PermanentSchedule, recurringDays []string) error {
 	if len(recurringDays) == 0 {
-		return errors.New("Recurring days are required")
+		return errors.New("recurring days are required")
 	}
 
 	dayToInt := map[string]time.Weekday{

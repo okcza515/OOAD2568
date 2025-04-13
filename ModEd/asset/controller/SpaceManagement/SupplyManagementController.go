@@ -19,7 +19,7 @@ func (c *SupplyManagementController) getAllSupplyManagement() (*[]model.SupplyMa
 
 func (c *SupplyManagementController) getSupplyManagementById(Id uint) (*model.SupplyManagement, error) {
 	if Id == 0 {
-		return nil, errors.New("No Id provide")
+		return nil, errors.New("no Id provide")
 	}
 	assetInfo := new(model.SupplyManagement)
 	result := c.db.First(&assetInfo, "ID = ?", Id)
@@ -28,7 +28,7 @@ func (c *SupplyManagementController) getSupplyManagementById(Id uint) (*model.Su
 
 func (c *SupplyManagementController) GetAssetManagementByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
 	if roomID == 0 {
-		return nil, errors.New("No RoomID provided")
+		return nil, errors.New("no RoomID provided")
 	}
 
 	assetList := new([]model.SupplyManagement)
@@ -39,7 +39,7 @@ func (c *SupplyManagementController) GetAssetManagementByRoomId(roomID uint) (*[
 
 func (c *SupplyManagementController) CreateAssetManagement(payload *model.SupplyManagement) error {
 	if payload == nil {
-		return errors.New("Invalid asset data")
+		return errors.New("invalid asset data")
 	}
 	result := c.db.Create(payload)
 	return result.Error
@@ -47,7 +47,7 @@ func (c *SupplyManagementController) CreateAssetManagement(payload *model.Supply
 
 func (c *SupplyManagementController) UpdateSupplyManagement(Id uint, payload *model.SupplyManagement) error {
 	if payload == nil || Id == 0 {
-		return errors.New("Invalid info")
+		return errors.New("invalid info")
 	}
 	existingAsset := new(model.SupplyManagement)
 	if err := c.db.First(existingAsset, Id).Error; err != nil {
@@ -59,7 +59,7 @@ func (c *SupplyManagementController) UpdateSupplyManagement(Id uint, payload *mo
 
 func (c *SupplyManagementController) DeleteSupplyManagement(Id uint) error {
 	if Id == 0 {
-		return errors.New("No Id provide")
+		return errors.New("no Id provide")
 	}
 	assetInfo := new(model.SupplyManagement)
 	result := c.db.Delete(&assetInfo, Id)

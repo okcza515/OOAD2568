@@ -30,8 +30,9 @@ func (controller *BookingController) CheckRoomAvailability(roomID uint) (bool, e
 		return false, fmt.Errorf("room with ID %d is out of service", roomID)
 	}
 
-	return room.IsRoomOutOfService == false, nil
+	return true, nil
 }
+
 
 func (controller *BookingController) ResetTimeSlots() {
 	resetTime := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour)

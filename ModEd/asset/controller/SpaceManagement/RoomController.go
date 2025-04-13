@@ -66,7 +66,7 @@ func (c *RoomController) UpdateRoom(Id uint, payload *model.Room) error {
 
 func (c *RoomController) DeleteRoom(Id uint) error {
 	if Id == 0 {
-		return errors.New("No ID provides")
+		return errors.New("no ID provides")
 	}
 	existingRoom := new(model.Room)
 	if err := c.db.First(existingRoom, Id).Error; err != nil {

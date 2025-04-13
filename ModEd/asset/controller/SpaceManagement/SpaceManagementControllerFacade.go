@@ -26,7 +26,7 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	migrationController := MigrationController{db: db}
 	err = migrationController.MigrateToDB()
 	if err != nil {
-		return nil, errors.New("Failed to migrate schema")
+		return nil, errors.New("failed to migrate schema")
 	}
 	facade.InstrumentManagement = InstrumentManagementController{db: db}
 	facade.SupplyManagementController = SupplyManagementController{db: db}

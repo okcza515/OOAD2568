@@ -21,7 +21,7 @@ func (c *MigrationController) MigrateToDB() error {
 		&model.Room{},
 	)
 	if err != nil {
-		return errors.New("Migration failed")
+		return errors.New("migration failed")
 	}
 	return nil
 }
