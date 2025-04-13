@@ -3,8 +3,10 @@ package handler
 
 import (
 	controller "ModEd/asset/controller/spacemanagement"
+	model "ModEd/asset/model/spacemanagement"
 	"ModEd/asset/util"
 	"fmt"
+	"strconv"
 )
 
 func printOption() {
@@ -30,6 +32,63 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Add new Room")
+			fmt.Println("Please enter the name of the new Room:")
+			roomName := util.GetCommandInput()
+
+			fmt.Println("Please enter the room type: (Lecture, Laboratory, Office)")
+			roomTypeStr := util.GetCommandInput()
+			var roomType model.RoomTypeEnum
+			switch roomTypeStr {
+			case "Lecture":
+				roomType = "ROOM_LECTURE_ROOM"
+			case "Laboratory":
+				roomType = "ROOM_LAB_ROOM"
+			case "Office":
+				roomType = "ROOM_MEETING_ROOM"
+			default:
+				fmt.Println("Invalid room type. Using default type.")
+				roomType = "ROOM_LECTURE_ROOM"
+			}
+
+			fmt.Println("Please enter the description:")
+			description := util.GetCommandInput()
+
+			fmt.Println("Please enter the floor number:")
+			floor, errFloor := strconv.Atoi(util.GetCommandInput())
+
+			fmt.Println("Please enter the building name:")
+			building := util.GetCommandInput()
+
+			fmt.Println("Please enter the location:")
+			location := util.GetCommandInput()
+
+			fmt.Println("Please enter the capacity:")
+			capacity, errCapacity := strconv.Atoi(util.GetCommandInput())
+
+			fmt.Println("Is the room out of service? (true/false):")
+			isOutOfServiceStr := util.GetCommandInput()
+			isOutOfService := isOutOfServiceStr == "true"
+
+			room := &model.Room{
+				RoomName:           roomName,
+				RoomType:           roomType,
+				Description:        description,
+				Floor:              floor,
+				Building:           building,
+				Location:           location,
+				Capacity:           capacity,
+				IsRoomOutOfService: isOutOfService,
+				Instrument:         nil,
+				Supply:             nil,
+			}
+			err := facade.Room.CreateRoom(room)
+			if errFloor != nil || err != nil || errCapacity != nil {
+				fmt.Println("Failed to create Room", err, errFloor, errCapacity)
+				util.PressEnterToContinue()
+				break
+			}
+			fmt.Println("Room created successfully")
+			util.PressEnterToContinue()
 		case "2":
 			fmt.Println("List all Room")
 			data, err := facade.Room.GetAll()
