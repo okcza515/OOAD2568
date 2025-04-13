@@ -13,7 +13,7 @@ import (
 
 type Progress struct {
 	gorm.Model
-	StudentCode model.Student `gorm:"foreignKey:SID"`
+	StudentCode model.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
 	Title       Assignment
 	Status      string
 	LastUpdate  time.Time `gorm:"autoUpdateTime"`
