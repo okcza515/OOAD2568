@@ -33,7 +33,6 @@ func (controller *BookingController) CheckRoomAvailability(roomID uint) (bool, e
 	return true, nil
 }
 
-
 func (controller *BookingController) ResetTimeSlots() {
 	resetTime := time.Now().Truncate(24 * time.Hour).Add(24 * time.Hour)
 

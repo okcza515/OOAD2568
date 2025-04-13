@@ -1,4 +1,4 @@
-//MEP-1013
+// MEP-1013
 package handler
 
 import (
@@ -32,6 +32,20 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 			fmt.Println("Add new Room")
 		case "2":
 			fmt.Println("List all Room")
+			data, err := facade.Room.GetAll()
+			if err != nil {
+				panic(err)
+			}
+			if len(*data) == 0 {
+				fmt.Println("No Room available")
+				util.PressEnterToContinue()
+				break
+			}
+			for _, room := range *data {
+				fmt.Println(room)
+			}
+			util.PressEnterToContinue()
+
 		case "3":
 			fmt.Println("Get detail of a Room")
 		case "4":
