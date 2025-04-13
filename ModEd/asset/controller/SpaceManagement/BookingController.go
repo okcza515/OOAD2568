@@ -2,7 +2,7 @@
 package spacemanagement
 
 import (
-	model "ModEd/asset/model/spacemanagement"
+	model "ModEd/asset/model/SpaceManagement"
 	"fmt"
 	"log"
 	"time"
