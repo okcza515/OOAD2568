@@ -161,7 +161,6 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 			capacity, errCapacity := strconv.Atoi(util.GetCommandInput())
 			fmt.Println("Is the room out of service? (true/false):")
 			isOutOfServiceStr := util.GetCommandInput()
-
 			isOutOfService := isOutOfServiceStr == "true"
 			room := &model.Room{
 				RoomName:           roomName,
@@ -180,7 +179,6 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 				fmt.Println("Failed to update Room", err, errFloor, errCapacity)
 				util.PressEnterToContinue()
 				break
-
 			}
 			fmt.Println("Room updated successfully")
 			util.PressEnterToContinue()
