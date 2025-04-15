@@ -6,19 +6,22 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type SpaceManagementControllerFacade struct {
-	Db                			*gorm.DB
-	InstrumentManagement   		InstrumentManagementController
-	SupplyManagementController 	SupplyManagementController
-	Booking           			BookingController
-	PermanentSchedule 			PermanentScheduleController
-	Room              			RoomController
+	Db                         *gorm.DB
+	InstrumentManagement       InstrumentManagementController
+	SupplyManagementController SupplyManagementController
+	Booking                    BookingController
+	PermanentSchedule          PermanentScheduleController
+	Room                       RoomController
 }
 
 func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
-	db, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent), // Or logger.Error for only errors
+	})
 	if err != nil {
 		return nil, err
 	}

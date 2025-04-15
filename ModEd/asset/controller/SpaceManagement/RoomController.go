@@ -41,7 +41,16 @@ func (c *RoomController) GetById(Id uint) (*model.Room, error) {
 	}
 	roomInfo := new(model.Room)
 	result := c.db.First(&roomInfo, "ID = ?", Id)
-	return roomInfo, result.Error
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, errors.New("room not found, please check the ID")
+		}
+		return nil, result.Error
+	}
+	if roomInfo.IsRoomOutOfService {
+		return nil, errors.New("room is out of service")
+	}
+	return roomInfo, nil
 }
 
 func (c *RoomController) CreateRoom(payload *model.Room) error {

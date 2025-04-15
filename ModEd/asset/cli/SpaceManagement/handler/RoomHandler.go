@@ -35,7 +35,7 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 			fmt.Println("Please enter the name of the new Room:")
 			roomName := util.GetCommandInput()
 
-			fmt.Println("Please enter the room type: (Lecture, Laboratory, Office)")
+			fmt.Println("Please enter the room type: (Lecture / Laboratory / Office)")
 			roomTypeStr := util.GetCommandInput()
 			var roomType model.RoomTypeEnum
 			switch roomTypeStr {
@@ -107,6 +107,22 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 
 		case "3":
 			fmt.Println("Get detail of a Room")
+			fmt.Println("Please enter the ID of the Room:")
+			roomIdStr := util.GetCommandInput()
+			roomId, err := strconv.Atoi(roomIdStr)
+			if err != nil {
+				fmt.Println("Invalid ID")
+				util.PressEnterToContinue()
+				break
+			}
+			data, err := facade.Room.GetById(uint(roomId))
+			if err != nil {
+				fmt.Println("Failed to get Room detail", err)
+				util.PressEnterToContinue()
+				break
+			}
+			fmt.Println("Room detail: ", data)
+			util.PressEnterToContinue()
 		case "4":
 			fmt.Println("Update a Room")
 		case "5":
