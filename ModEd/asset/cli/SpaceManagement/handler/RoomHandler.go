@@ -184,6 +184,25 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 			util.PressEnterToContinue()
 		case "5":
 			fmt.Println("Delete a Room")
+			fmt.Println("Please enter the ID of the Room:")
+			roomIdStr := util.GetCommandInput()
+			roomId, err := strconv.Atoi(roomIdStr)
+			if err != nil {
+				fmt.Println("Invalid ID / Room not found")
+				util.PressEnterToContinue()
+				break
+			}
+			err = facade.Room.DeleteRoom(uint(roomId))
+			if err != nil {
+				fmt.Println("Failed to delete Room, Room not found")
+				util.PressEnterToContinue()
+			} else {
+				fmt.Println("Room deleted successfully")
+				util.PressEnterToContinue()
+			}
+		default:
+			fmt.Println("Invalid Command")
+			util.PressEnterToContinue()
 		}
 
 		util.ClearScreen()
