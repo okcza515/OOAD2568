@@ -11,8 +11,8 @@ import (
 
 type SpaceManagementControllerFacade struct {
 	Db                         *gorm.DB
-	InstrumentManagement       InstrumentManagementController
-	SupplyManagementController SupplyManagementController
+	InstrumentManagement       InstrumentManagementAdapter
+	SupplyManagementController SupplyManagementAdapter
 	Booking                    BookingController
 	PermanentSchedule          PermanentScheduleController
 	Room                       RoomController
@@ -31,8 +31,8 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	if err != nil {
 		return nil, errors.New("failed to migrate schema")
 	}
-	facade.InstrumentManagement = InstrumentManagementController{db: db}
-	facade.SupplyManagementController = SupplyManagementController{db: db}
+	facade.InstrumentManagement = InstrumentManagementAdapter{db: db}
+	facade.SupplyManagementController = SupplyManagementAdapter{db: db}
 	facade.Booking = BookingController{db: db}
 	facade.PermanentSchedule = PermanentScheduleController{db: db}
 	facade.Room = RoomController{db: db}
