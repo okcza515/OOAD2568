@@ -21,8 +21,8 @@ func main() {
 		input = util.GetCommandInput()
 
 		switch input {
-		// case "1":
-		// 	handler.AssetManagementHandler(facade)
+		case "1":
+			handler.AssetManagementHandler(facade)
 		case "2":
 			handler.BookingHandler(facade)
 		// case "3":
