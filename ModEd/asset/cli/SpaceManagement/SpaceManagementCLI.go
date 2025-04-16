@@ -31,6 +31,9 @@ func main() {
 			handler.RoomHandler(facade)
 		}
 	}
+	if input == "exit" {
+		util.PrintByeBye()
+	}
 }
 
 func printOption() {
