@@ -11,6 +11,10 @@ type SupplyManagementAdapter struct {
 	db *gorm.DB
 }
 
+func NewSupplyManagementAdapter(db *gorm.DB) *SupplyManagementAdapter {
+    return &SupplyManagementAdapter{db: db}
+}
+
 func (a *SupplyManagementAdapter) getAllSupplyManagement() (*[]model.SupplyManagement, error) {
 	assetInfo := new([]model.SupplyManagement)
 	result := a.db.Find(&assetInfo)

@@ -2,6 +2,8 @@
 package handler
 
 import("fmt"
+controller "ModEd/asset/controller/spacemanagement"
+model "ModEd/asset/model/spacemanagement"
 "ModEd/asset/util")
 
 func printAssetManagementOption(){
@@ -11,7 +13,7 @@ func printAssetManagementOption(){
 	fmt.Println("2. Supply Management")
 }
 
-func AssetManagementHandler(){
+func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
 	inputBuffer := ""
 	util.ClearScreen()
 	util.PrintBanner()

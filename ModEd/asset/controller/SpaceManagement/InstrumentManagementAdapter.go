@@ -12,6 +12,10 @@ type InstrumentManagementAdapter struct {
 	db *gorm.DB
 }
 
+func NewInstrumentManagementAdapter(db *gorm.DB) *InstrumentManagementAdapter {
+    return &InstrumentManagementAdapter{db: db}
+}
+
 func (a *InstrumentManagementAdapter) getAllInstrumentManagement() (*[]model.InstrumentManagement, error) {
 	assetInfo := new([]model.InstrumentManagement)
 	result := a.db.Find(&assetInfo)
