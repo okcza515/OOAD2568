@@ -59,7 +59,7 @@ func main() {
 	db.InitDB(database)
 
 	applicationReportCtrl := controller.CreateApplicationReportController(db.DB)
-	applicantController := controller.CreateApplicantController(db.DB)
+	applicantController := controller.NewApplicantController(db.DB)
 	applicationRoundCtrl := controller.CreateApplicationRoundController(db.DB)
 
 	//temp
@@ -113,16 +113,16 @@ func main() {
 			fmt.Print("Enter Applicant ID: ")
 			scanner.Scan()
 			applicantIDInput := scanner.Text()
-		
+
 			convApplicantID, err := strconv.ParseUint(applicantIDInput, 10, 32)
 			if err != nil {
 				fmt.Println("Invalid Applicant ID. Please enter a valid number.")
 				continue
 			}
 			applicantID = uint(convApplicantID)
-		
+
 			cli.ReportInterviewDetails(db.DB, applicantID) // Pass db.DB and applicantID (uint)
-		
+
 		case 5:
 			rounds, err := applicationRoundCtrl.GetAllRounds()
 			if err != nil {
