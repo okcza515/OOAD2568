@@ -2,13 +2,12 @@
 package controller
 
 import (
+	model "ModEd/asset/model/Procurement"
+
+	"gorm.io/gorm"
 	"net/http"
 	"time"
-
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-
-	"your_project_path/model"
 )
 
 type ProcurementApprovalController struct {
