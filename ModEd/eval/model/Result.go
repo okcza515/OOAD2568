@@ -7,31 +7,20 @@ import (
 )
 
 type StatusResult string
-const (
-	PENDING				StatusResult="Pending"
-	SUCCESS				StatusResult="Success"
-)
 
-type GradeResult string
 const (
-	APLUS				GradeResult="A+"
-	A					GradeResult="A"
-	BPLUS				GradeResult="B+"
-	B					GradeResult="B"
-	CPLUS				GradeResult="C+"
-	C					GradeResult="C"
-	DPLUS				GradeResult="D+"
-	D					GradeResult="D"
-	F					GradeResult="F"
+	PENDING StatusResult = "Pending"
+	SUCCESS StatusResult = "Success"
 )
 
 type Result struct {
 	gorm.Model
-	ID 				uint 					`gorm:"primaryKey"`
-	Examination		Examination
-	Student			commonModel.Student
-	Status			StatusResult
-	Grade			GradeResult
-	Feedback		string
-	Student_score	uint
+	ID            uint                `gorm:"primaryKey"`
+	ExaminationID uint                `gorm:"not null"`
+	Examination   Examination         `gorm:"foreignKey:ExaminationID"`
+	StudentID     uint                `gorm:"not null"`
+	Student       commonModel.Student `gorm:"foreignKey:StudentID"`
+	Status        StatusResult        
+	Feedback      string              
+	Score         uint                
 }

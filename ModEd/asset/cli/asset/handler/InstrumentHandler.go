@@ -23,13 +23,13 @@ func InstrumentHandler(facade *asset.AssetControllerFacade) {
 			fmt.Println("List all Instrument")
 
 			// ok wavie this is for testing you can remove this in the morning it's 4:00 am and I need to sleep
-			logList, err := facade.InstrumentLog.ListAll()
+			instList, err := facade.Instrument.ListAll()
 			if err != nil {
 				panic(err)
 			}
 
-			for _, log := range logList {
-				fmt.Println(log)
+			for _, inst := range instList {
+				fmt.Println(inst)
 			}
 
 			util.PressEnterToContinue()

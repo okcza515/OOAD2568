@@ -1,13 +1,18 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"ModEd/curriculum/model"
+	"ModEd/utils/deserializer"
 )
 
 type ICurriculumController interface {
 	CreateCurriculum(curriculum *model.Curriculum) (curriculumId uint, err error)
+	CreateSeedCurriculum(path string) (curriculums []*model.Curriculum, err error)
 	GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
 	GetCurriculums() (curriculums []*model.Curriculum, err error)
 	UpdateCurriculum(updatedCurriculum *model.Curriculum) (curriculum *model.Curriculum, err error)
@@ -27,7 +32,7 @@ func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (c
 	if err := c.db.Create(&curriculum).Error; err != nil {
 		return 0, err
 	}
-	return curriculum.ID, nil
+	return curriculum.CurriculumId, nil
 }
 
 // Read one
@@ -50,7 +55,7 @@ func (c *CurriculumController) GetCurriculums() (curriculums []*model.Curriculum
 // Update
 func (c *CurriculumController) UpdateCurriculum(updated *model.Curriculum) (curriculum *model.Curriculum, err error) {
 	curriculum = &model.Curriculum{}
-	if err := c.db.First(curriculum, updated.ID).Error; err != nil {
+	if err := c.db.First(curriculum, updated.CurriculumId).Error; err != nil {
 		return nil, err
 	}
 
@@ -78,4 +83,24 @@ func (c *CurriculumController) DeleteCurriculum(curriculumId uint) (curriculum *
 		return nil, err
 	}
 	return curriculum, nil
+}
+
+func (c *CurriculumController) CreateSeedCurriculum(path string) (curriculums []*model.Curriculum, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create file deserializer")
+	}
+
+	if err := deserializer.Deserialize(&curriculums); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize curriculums")
+	}
+
+	for _, curriculum := range curriculums {
+		_, err := c.CreateCurriculum(curriculum)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create curriculum")
+		}
+	}
+	fmt.Println("Create Curriculum Seed Successfully")
+	return curriculums, nil
 }

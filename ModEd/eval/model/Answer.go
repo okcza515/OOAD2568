@@ -1,14 +1,17 @@
+// MEP-1007
 package model
 
 import (
-	"gorm.io/gorm"
 	commonModel "ModEd/common/model"
+
+	"gorm.io/gorm"
 )
 
 type Answer struct {
 	gorm.Model
-	ID 				uint					`gorm:"primaryKey"`
-	Question		Question
-	Student			commonModel.Student
-	TheAnswer		string
+	QuestionID uint                `gorm:"not null"`
+	Question   Question            `gorm:"foreignKey:QuestionID"`
+	StudentID  uint                `gorm:"not null"`
+	Student    commonModel.Student `gorm:"foreignKey:StudentID"`
+	Answer     string
 }

@@ -6,18 +6,18 @@ import (
 
 type Instrument struct {
 	gorm.Model
-	InstrumentLabel    string               `gorm:"not null" json:"instrument_label" csv:"instrument_label"`
-	InstrumentCode     string               `gorm:"type:text; not null; uniqueIndex" json:"instrument_code" csv:"instrument_code"`
-	Description        *string              `gorm:"type:text" json:"description" csv:"description"`
-	InstrumentStatus   InstrumentStatusEnum `gorm:"type:text;not null" json:"instrument_status" csv:"instrument_status"`
-	RoomID             string               `gorm:"type:text;not null" json:"room_id" csv:"room_id"`
-	Location           string               `gorm:"type:text;not null" json:"location" csv:"location"`
-	CategoryID         uint                 `gorm:"type:text;not null" json:"category_id" csv:"category_id"`
-	Cost               float64              `gorm:"type:real;not null" json:"cost" csv:"cost"`
-	InstrumentSerialID *string              `gorm:"type:text" json:"instrument_serial_id" csv:"instrument_serial_id"`
-	BudgetYear         int                  `gorm:"type:integer;not null" json:"add_year" csv:"add_year"`
-	BudgetSource       *string              `gorm:"type:text" json:"budget_source" csv:"budget_source"`
-	InstrumentBrand    *string              `gorm:"type:text" json:"brand" csv:"brand"`
-	InstrumentModel    *string              `gorm:"type:text" json:"model" csv:"model"`
-	InstrumentLog      []InstrumentLog      `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE;"`
+	InstrumentLabel    string               `gorm:"not null"`
+	InstrumentCode     string               `gorm:"type:text; not null; uniqueIndex"`
+	Description        *string              `gorm:"type:text"`
+	InstrumentStatus   InstrumentStatusEnum `gorm:"type:text;not null"`
+	RoomID             string               `gorm:"type:text;not null"`
+	Location           string               `gorm:"type:text;not null"`
+	CategoryID         uint                 `gorm:"type:text;not null"`
+	Cost               float64              `gorm:"type:real;not null"`
+	InstrumentSerialID *string              `gorm:"type:text"`
+	BudgetYear         int                  `gorm:"type:integer;not null"`
+	BudgetSource       *string              `gorm:"type:text"`
+	InstrumentBrand    *string              `gorm:"type:text"`
+	InstrumentModel    *string              `gorm:"type:text"`
+	Category           Category             `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE;"`
 }

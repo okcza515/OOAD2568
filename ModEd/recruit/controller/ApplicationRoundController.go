@@ -1,43 +1,55 @@
-// MEP-1003 Student Recruitment
 package controller
 
 import (
+	"ModEd/recruit/controller/SQL"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
-	"log"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type ApplicationRoundController struct {
-	DB *gorm.DB
+	sqlCtrl SQL.SQLController[model.ApplicationRound]
 }
 
 func CreateApplicationRoundController(db *gorm.DB) *ApplicationRoundController {
-	err := db.AutoMigrate(&model.ApplicationRound{})
-	if err != nil {
-		log.Fatalf("Failed to migrate database: %v\n", err)
+	return &ApplicationRoundController{
+		sqlCtrl: SQL.NewGormSQLController[model.ApplicationRound](db),
 	}
-	return &ApplicationRoundController{DB: db}
-
 }
 
 func (controller *ApplicationRoundController) CreateApplicationRound(round *model.ApplicationRound) error {
-	result := controller.DB.Create(round)
-	return result.Error
+	return controller.sqlCtrl.Create(round)
 }
 
-func (arc *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {
-	importer := util.CSVImporter{
-		DB:        arc.DB,
-		TableName: "application_rounds",
+func (c *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {
+	gormDB := c.sqlCtrl.(*SQL.GormSQLController[model.ApplicationRound]).GetDB()
+
+	if err := c.sqlCtrl.ClearTable("application_rounds"); err != nil {
+		fmt.Println("Error clearing table:", err)
+		return err
 	}
 
-	return importer.ReadFromCSV(filePath)
+	rounds, err := util.InsertFromCSVOrJSON[model.ApplicationRound](filePath, gormDB)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Inserted %d application rounds from file.\n", len(rounds))
+	return nil
 }
 
-func (arc *ApplicationRoundController) GetAllRounds() ([]*model.ApplicationRound, error) {
+func (c *ApplicationRoundController) GetAllRounds() ([]*model.ApplicationRound, error) {
+	models, err := c.sqlCtrl.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
 	var rounds []*model.ApplicationRound
-	result := arc.DB.Find(&rounds)
-	return rounds, result.Error
+	for _, model := range models {
+		rounds = append(rounds, &model)
+	}
+
+	return rounds, nil
 }

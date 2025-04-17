@@ -1,12 +1,14 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"gorm.io/gorm"
 
-	controller "ModEd/curriculum/controller/class"
+	controller "ModEd/curriculum/controller/curriculum"
+	"ModEd/curriculum/controller/migration"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -199,16 +201,48 @@ func TestDeleteClass(t *testing.T) {
 		t.Fatalf("Failed to get class: %v", err)
 	}
 
-	deletedClass, err := classController.DeleteClass(retrievedClass.ID)
+	deletedClass, err := classController.DeleteClass(retrievedClass.ClassId)
 	if err != nil {
 		t.Fatalf("Failed to delete class: %v", err)
 	}
-	if deletedClass.ID != retrievedClass.ID {
-		t.Errorf("Expected class ID %v, got %v", retrievedClass.ID, deletedClass.ID)
+	if deletedClass.ClassId != retrievedClass.ClassId {
+		t.Errorf("Expected class ID %v, got %v", retrievedClass.ClassId, deletedClass.ClassId)
 	}
 
-	_, err = classController.GetClass(retrievedClass.ID)
+	_, err = classController.GetClass(retrievedClass.ClassId)
 	if err == nil {
 		t.Fatalf("Expected error when getting deleted class, got nil")
 	}
+}
+
+func TestSeedClass(t *testing.T) {
+	db, err := utils.NewGormSqlite(&utils.GormConfig{
+		DBPath: "../../data/curriculum.db",
+		Config: &gorm.Config{},
+	})
+	migrationController := migration.NewMigrationController(db)
+	if err := migrationController.MigrateToDB(); err != nil {
+		t.Fatalf("Failed to migrate to db: %v", err)
+	}
+
+	classController := controller.NewClassController(db)
+	classes, err := classController.CreateSeedClass("../../data/curriculum/class.json")
+	if err != nil {
+		t.Fatalf("Failed to seed class: %v", err)
+	}
+	if len(classes) == 0 {
+		t.Errorf("Expected at least 1 class, got 0")
+	}
+
+	for _, class := range classes {
+		fmt.Printf("Class: %v\n", class.ClassId)
+		rclass, err := classController.GetClass(class.ClassId)
+		if err != nil {
+			t.Fatalf("Failed to create class: %v", err)
+		}
+		if rclass.ClassId != class.ClassId {
+			t.Errorf("Expected class ID %d, got %d", class.ClassId, rclass.ClassId)
+		}
+	}
+
 }

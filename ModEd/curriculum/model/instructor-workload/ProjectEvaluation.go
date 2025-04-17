@@ -1,10 +1,13 @@
 package model
 
+import "gorm.io/gorm"
+
 type ProjectEvaluation struct {
-	EvaluationId   int                       `gorm:"primaryKey;autoIncrement"`
-	TaskId         int                       `gorm:"not null;index"`
-	GroupId        int                       `gorm:"not null;index"`
-	AssignmentType ProjectEvaluationTypeEnum `gorm:"type:float6;not null"`
-	Score          float64                   `gorm:"type:decimal(5,2);not null"`
-	Comment        string                    `gorm:"type:text;not null"`
+	gorm.Model
+	GroupId        int     `gorm:"not null;index"`
+	AssignmentId   int     `gorm:"not null;index"`
+	AssignmentType string  `gorm:"type:varchar(20);not null"`
+	Score          float64 `gorm:"type:decimal(5,2);not null"`
+	Comment        string  `gorm:"type:text;not null"`
+	Audit
 }

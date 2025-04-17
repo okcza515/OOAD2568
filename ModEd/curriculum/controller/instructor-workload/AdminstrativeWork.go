@@ -18,7 +18,7 @@ func CreateAdminstrativeWorkController(connector *gorm.DB) *AdminstrativeWorkCon
 
 func (a AdminstrativeWorkController) GetAllStudentRequest(StudentAdvisor *model.StudentAdvisor) ([]model.StudentRequest, error) {
 	studentRequests := []model.StudentRequest{}
-	result := a.Connector.Find(&studentRequests, "advisor_id = ?", StudentAdvisor.AdvisorId)
+	result := a.Connector.Find(&studentRequests, "advisor_id = ?", StudentAdvisor.ID)
 	return studentRequests, result.Error
 }
 

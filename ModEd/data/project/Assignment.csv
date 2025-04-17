@@ -1,0 +1,6 @@
+ID,CreatedAt,UpdatedAt,DeletedAt,SeniorProjectId,Name,Description,SubmissionDate,DueDate
+1,2023-10-01T09:00:00Z,2023-10-01T09:00:00Z,,101,Proposal,Initial project proposal,2023-10-10,2023-10-10
+2,2023-10-05T10:30:00Z,2023-10-05T10:30:00Z,,102,Design Doc,Submit system design,,2023-10-20
+3,2023-10-08T11:45:00Z,2023-10-08T11:45:00Z,,103,Midterm Report,Progress report at midterm,2023-11-01,2023-11-01
+4,2023-10-10T13:15:00Z,2023-10-10T13:15:00Z,,104,Prototype Demo,Demonstrate early prototype,,2023-11-15
+5,2023-10-15T14:00:00Z,2023-10-15T14:00:00Z,,105,Final Report,Complete final documentation,2023-12-01,2023-12-01

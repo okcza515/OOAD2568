@@ -8,7 +8,6 @@ import (
 )
 
 type Curriculum struct {
-	gorm.Model
 	CurriculumId uint   `gorm:"primaryKey;unique" csv:"curriculum_id" json:"curriculum_id"`
 	Name         string `gorm:"not null" csv:"name" json:"name"`
 	StartYear    int    `gorm:"not null" csv:"start_year" json:"start_year"`

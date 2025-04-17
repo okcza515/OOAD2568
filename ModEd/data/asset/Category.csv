@@ -1,6 +1,6 @@
-category_id,category_name,description,timestamp,updated_by,deleted_at,deleted_by
-1,Electronics Measuring Instrument,Measuring something that you can't do with your tongue,2025-03-16T10:15:30Z,a1d2c3e4-f5b6-47a8-9c12-d7e8f9b0c1d2,,
-2,Source Generation Instrument,Instrument that give electric signal or power,2025-03-16T10:20:45Z,b2c3d4e5-f6a7-48b9-8c12-e7d8f9a0b1c2,,
-3,Office Stationary,Something to write or do with paper,2025-03-16T10:25:00Z,c3d4e5f6-a7b8-49c9-8d12-f7e8a9b0c1d2,,
-4,Laboratory Electronics Component,Stuff that can put on breadboard,2025-03-16T10:30:15Z,d4e5f6a7-b8c9-40d1-8e12-a7f8b9c0d1e2,,
-5,Office Furniture,"Furniture for office e.g. chair, desk etc.",2025-03-16T10:35:30Z,e5f6a7b8-c9d0-41e2-8f12-b7a8c9d0e1f2,,
+ID,CategoryName,Description,UpdatedAt,UpdatedBy,DeletedAt,DeletedBy
+1,Electronics Measuring Instrument,Measuring something that you can't do with your tongue,2025-03-16T10:15:30Z,1,,
+2,Source Generation Instrument,Instrument that give electric signal or power,2025-03-16T10:20:45Z,1,,
+3,Office Stationary,Something to write or do with paper,2025-03-16T10:25:00Z,1,,
+4,Laboratory Electronics Component,Stuff that can put on breadboard,2025-03-16T10:30:15Z,1,,
+5,Office Furniture,"Furniture for office e.g. desk etc.",2025-03-16T10:35:30Z,1,,

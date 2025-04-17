@@ -3,7 +3,16 @@ package model
 type StudentRequestStatusEnum string
 
 const (
-	REQUEST_PENDING  StudentRequestStatusEnum = "Pending"
-	REQUEST_APPROVED StudentRequestStatusEnum = "Approved"
-	REQUEST_REJECTED StudentRequestStatusEnum = "Rejected"
+	PENDING  StudentRequestStatusEnum = "Pending"
+	APPROVED StudentRequestStatusEnum = "Approved"
+	REJECTED StudentRequestStatusEnum = "Rejected"
 )
+
+func IsValidRequestStatus(requestType string) bool {
+	switch StudentRequestStatusEnum(requestType) {
+	case PENDING, APPROVED, REJECTED:
+		return true
+	default:
+		return false
+	}
+}
