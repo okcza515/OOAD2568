@@ -1,43 +1,70 @@
 // MEP-1014
-package procurement
+package controller
 
 import (
 	model "ModEd/asset/model/Procurement"
-	
+
 	"gorm.io/gorm"
 )
 
 type ItemRequestController struct {
-	Connector *gorm.DB
+	db *gorm.DB
 }
 
-func CreateItemRequestController(connector *gorm.DB) *ItemRequestController {
-	itemRequest := ItemRequestController{Connector: connector}
-	connector.AutoMigrate(&model.ItemRequest{})
-	return &itemRequest
+func CreateItemRequestController(db *gorm.DB) *ItemRequestController {
+	return &ItemRequestController{db: db}
 }
 
-func (itemRequest ItemRequestController) ListAll() ([]model.ItemRequest, error) {
-	requests := []model.ItemRequest{}
-	result := itemRequest.Connector.
-		Select("ItemRequestID").Find(&requests)
-	return requests, result.Error
+func (c *ItemRequestController) CreateItemRequest(body *model.ItemRequest) error {
+	result := c.db.Create(body)
+	return result.Error
 }
 
-func (itemRequest ItemRequestController) GetByID(ItemRequestID uint) (*model.ItemRequest, error) {
-	r := &model.ItemRequest{}
-	result := itemRequest.Connector.Where("ItemRequestID = ?", ItemRequestID).First(r)
-	return r, result.Error
+func (c *ItemRequestController) AddItemToRequest(itemRequestID uint, detail *model.ItemDetail) error {
+	detail.ItemRequestID = itemRequestID
+	result := c.db.Create(detail)
+	return result.Error
 }
 
-func (itemRequest ItemRequestController) Create(r *model.ItemRequest) error {
-	return itemRequest.Connector.Create(r).Error
+func (c *ItemRequestController) GetItemRequestByID(id uint) (*model.ItemRequest, error) {
+	var request model.ItemRequest
+	err := c.db.First(&request, id).Error
+	return &request, err
 }
 
-func (itemRequest ItemRequestController) Update(ItemRequestID uint, updatedData map[string]interface{}) error {
-	return itemRequest.Connector.Model(&model.ItemRequest{}).Where("ItemRequestID = ?", ItemRequestID).Updates(updatedData).Error
+func (c *ItemRequestController) ListAllItemRequests() (*[]model.ItemRequest, error) {
+	var requests []model.ItemRequest
+	err := c.db.Find(&requests).Error
+	return &requests, err
 }
 
-func (itemRequest ItemRequestController) DeleteByID(ItemRequestID uint) error {
-	return itemRequest.Connector.Where("ItemRequestID = ?", ItemRequestID).Delete(&model.ItemRequest{}).Error
+func (c *ItemRequestController) GetItemRequestWithDetails(id uint) (*model.ItemRequest, error) {
+	var request model.ItemRequest
+	err := c.db.Preload("ItemDetails").
+		Preload("BudgetApproval").
+		First(&request, id).Error
+	return &request, err
+}
+
+func (c *ItemRequestController) UpdateItemRequest(id uint, updated *model.ItemRequest) error {
+	updated.ID = id
+	result := c.db.Model(&model.ItemRequest{}).Where("id = ?", id).Updates(updated)
+	return result.Error
+}
+
+func (c *ItemRequestController) SubmitForApproval(id uint) error {
+	result := c.db.Model(&model.ItemRequest{}).
+		Where("id = ?", id).
+		Update("status", "Pending")
+	return result.Error
+}
+
+func (c *ItemRequestController) DeleteItemRequest(id uint) error {
+	result := c.db.Delete(&model.ItemRequest{}, id)
+	return result.Error
+}
+
+func (c *ItemRequestController) RemoveItemFromRequest(detailID uint) error {
+	result := c.db.Delete(&model.ItemDetail{}, detailID)
+	return result.Error
 }
