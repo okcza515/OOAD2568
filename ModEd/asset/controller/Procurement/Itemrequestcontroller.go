@@ -1,5 +1,5 @@
 // MEP-1014
-package controller
+package procurement
 
 import (
 	model "ModEd/asset/model/Procurement"
@@ -40,7 +40,7 @@ func (c *ItemRequestController) ListAllItemRequests() (*[]model.ItemRequest, err
 
 func (c *ItemRequestController) GetItemRequestWithDetails(id uint) (*model.ItemRequest, error) {
 	var request model.ItemRequest
-	err := c.db.Preload("ItemDetails").
+	err := c.db.Preload("Items").
 		Preload("BudgetApproval").
 		First(&request, id).Error
 	return &request, err
