@@ -23,15 +23,7 @@ func (c *MigrationController) MigrateToDB() error {
 		// &modelCurriculum.Class{},
 		// &modelCurriculum.Course{},
 		// Instructor Workload
-		&modelInstructureWorkLoad.AssignedCourse{},
-		&modelInstructureWorkLoad.ClassMaterial{},
-		&modelInstructureWorkLoad.ClassSchedule{},
-		&modelInstructureWorkLoad.CourseUpdateRequest{},
-		&modelInstructureWorkLoad.CourseNameUpdate{},
-		&modelInstructureWorkLoad.CoursePrerequisiteUpdate{},
 		&modelInstructureWorkLoad.ProjectEvaluation{},
-		&modelInstructureWorkLoad.StudentAdvisor{},
-		&modelInstructureWorkLoad.StudentRequest{},
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
