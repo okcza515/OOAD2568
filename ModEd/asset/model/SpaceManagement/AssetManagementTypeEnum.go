@@ -1,5 +1,5 @@
 // MEP-1013
-
+//not sure if needed
 package spacemanagement
 
 type AssetManagementTypeEnum string
