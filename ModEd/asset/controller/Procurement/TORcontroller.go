@@ -1,43 +1,37 @@
 // MEP-1014
-package controller
+package procurement
 
 import (
 	model "ModEd/asset/model/Procurement"
-	
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type TORController struct {
-	Connector *gorm.DB
+	db *gorm.DB
 }
 
-func CreateTORController(connector *gorm.DB) *TORController {
-	tor := TORController{Connector: connector}
-	connector.AutoMigrate(&model.TOR{})
-	return &tor
+// CreateTOR creates a new TOR linked to an approved ItemRequest
+func (c *TORController) CreateTOR(tor *model.TOR) error {
+	return c.db.Create(tor).Error
 }
 
-func (tor TORController) ListAll() ([]model.TOR, error) {
-	tors := []model.TOR{}
-	result := tor.Connector.
-		Select("TORID").Find(&tors)
-	return tors, result.Error
+// GetAllTORs retrieves all TOR records
+func (c *TORController) GetAllTORs() (*[]model.TOR, error) {
+	var tors []model.TOR
+	err := c.db.Find(&tors).Error
+	return &tors, err
 }
 
-func (tor TORController) GetByID(TORID uint) (*model.TOR, error) {
-	t := &model.TOR{}
-	result := tor.Connector.Where("TORID = ?", TORID).First(t)
-	return t, result.Error
+// GetTORByID retrieves a TOR by its ID, including its related ItemRequest
+func (c *TORController) GetTORByID(id uint) (*model.TOR, error) {
+	tor := new(model.TOR)
+	err := c.db.Preload("ItemRequest").First(&tor, "tor_id = ?", id).Error
+	return tor, err
 }
 
-func (tor TORController) Create(t *model.TOR) error {
-	return tor.Connector.Create(t).Error
-}
-
-func (tor TORController) Update(TORID uint, updatedData map[string]interface{}) error {
-	return tor.Connector.Model(&model.TOR{}).Where("TORID = ?", TORID).Updates(updatedData).Error
-}
-
-func (tor TORController) DeleteByID(TORID uint) error {
-	return tor.Connector.Where("TORID = ?", TORID).Delete(&model.TOR{}).Error
+// DeleteTOR performs a soft delete on the TOR
+func (c *TORController) DeleteTOR(id uint) error {
+	return c.db.Model(&model.TOR{}).Where("tor_id = ?", id).Update("deleted_at", time.Now()).Error
 }
