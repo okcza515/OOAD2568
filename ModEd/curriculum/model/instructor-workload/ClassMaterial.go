@@ -8,8 +8,8 @@ import (
 
 type ClassMaterial struct {
 	gorm.Model
+	ActionTracker
 	ClassId   uint        `gorm:"index"`
 	Class     model.Class `gorm:"foreignKey:ClassId;references:ClassId"`
 	SourceUrl string      `gorm:"type:text;not null"`
-	Audit
 }

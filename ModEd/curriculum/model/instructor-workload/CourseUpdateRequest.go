@@ -8,23 +8,23 @@ import (
 
 type CourseUpdateRequest struct {
 	gorm.Model
+	ActionTracker
 	CourseId    int                         `gorm:"not null;index"`
 	Course      model.Course                `gorm:"foreignKey:CourseId;references:CourseId"`
 	RequestType CourseUpdateRequestTypeEnum `gorm:"type:string;not null"`
-	Audit
 }
 
 type CourseNameUpdate struct {
 	gorm.Model
+	ActionTracker
 	CourseId int          `gorm:"not null;index"`
 	Course   model.Course `gorm:"foreignKey:CourseId;references:CourseId"`
 	NewName  string       `gorm:"type:string;not null"`
-	Audit
 }
 
 type CoursePrerequisiteUpdate struct {
 	gorm.Model
+	ActionTracker
 	CourseId int          `gorm:"not null;index"`
 	Course   model.Course `gorm:"foreignKey:CourseId;references:CourseId"`
-	Audit
 }
