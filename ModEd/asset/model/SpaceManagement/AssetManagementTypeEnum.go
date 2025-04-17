@@ -4,9 +4,9 @@ package spacemanagement
 
 type AssetManagementTypeEnum string
 
-const(
+const (
 	INSTRUMENT_MANAGEMENT AssetManagementTypeEnum = "Instrument Management"
-	SUPPLY_MANAGEMENT AssetManagementTypeEnum = "Supply Management"
+	SUPPLY_MANAGEMENT     AssetManagementTypeEnum = "Supply Management"
 )
 
 func (r AssetManagementTypeEnum) TypeAssetManagementString() string {

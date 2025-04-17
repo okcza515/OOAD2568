@@ -4,11 +4,12 @@ package handler
 import (
 	controller "ModEd/asset/controller/spacemanagement"
 	"fmt"
+
 	// model "ModEd/asset/model/spacemanagement"
 	"ModEd/asset/util"
 )
 
-func printAssetManagementOption(){
+func printAssetManagementOption() {
 	fmt.Println("========== Asset Management ==========")
 	fmt.Println("Please select your asset management type")
 	fmt.Println("1. Instrument Management")
@@ -17,17 +18,17 @@ func printAssetManagementOption(){
 	fmt.Println("========================================")
 }
 
-func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
+func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade) {
 	inputBuffer := ""
 	assetType := ""
 
-	for inputBuffer != "back"{
+	for inputBuffer != "back" {
 		util.ClearScreen()
 		util.PrintBanner()
 		printAssetManagementOption()
 		inputBuffer = util.GetCommandInput()
 
-		switch inputBuffer{
+		switch inputBuffer {
 		case "1":
 			assetType = "Instrument"
 			fmt.Println("You have selected Instrument Management")
@@ -40,7 +41,7 @@ func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
 			fmt.Println("6. Delete the Instrument Management")
 			choice := util.GetCommandInput()
 
-			switch choice{
+			switch choice {
 			case "1":
 				handleGetAll(facade, assetType)
 			case "2":
@@ -55,7 +56,6 @@ func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
 				handleDelete(facade, assetType)
 			}
 
-
 		case "2":
 			assetType = "Supply"
 			fmt.Println("Supply Management")
@@ -68,7 +68,7 @@ func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
 			fmt.Println("6. Delete the Supply Management")
 			choice := util.GetCommandInput()
 
-			switch choice{
+			switch choice {
 			case "1":
 				handleGetAll(facade, assetType)
 			case "2":
@@ -86,26 +86,26 @@ func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade){
 	}
 }
 
-func handleGetAll(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Get all the %s management \n",assetType)
+func handleGetAll(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Get all the %s management \n", assetType)
 }
 
-func handleGetByID(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Get the %s management by ID \n",assetType)
+func handleGetByID(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Get the %s management by ID \n", assetType)
 }
 
-func handleGetByRoomID(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Get the %s management by ID \n",assetType)
+func handleGetByRoomID(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Get the %s management by ID \n", assetType)
 }
 
-func handleCreate(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Create a new %s management \n",assetType)
+func handleCreate(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Create a new %s management \n", assetType)
 }
 
-func handleUpdate(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Update the %s management \n",assetType)
+func handleUpdate(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Update the %s management \n", assetType)
 }
 
-func handleDelete(facade *controller.SpaceManagementControllerFacade, assetType string){
-	fmt.Printf("Delete the %s management \n",assetType)
+func handleDelete(facade *controller.SpaceManagementControllerFacade, assetType string) {
+	fmt.Printf("Delete the %s management \n", assetType)
 }
