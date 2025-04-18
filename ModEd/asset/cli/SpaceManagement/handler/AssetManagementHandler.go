@@ -4,12 +4,8 @@ package handler
 import (
 	controller "ModEd/asset/controller/spacemanagement"
 	"fmt"
-<<<<<<< HEAD
-	model "ModEd/asset/model/spacemanagement"
-=======
 
-	// model "ModEd/asset/model/spacemanagement"
->>>>>>> 6c3a93631e59f87aef055f6a04dc389803ca4529
+	model "ModEd/asset/model/spacemanagement"
 	"ModEd/asset/util"
 )
 
@@ -90,47 +86,46 @@ func AssetManagementHandler(facade *controller.SpaceManagementControllerFacade) 
 	}
 }
 
-<<<<<<< HEAD
-func handleGetAll(facade *controller.SpaceManagementControllerFacade, assetType string){
+func handleGetAll(facade *controller.SpaceManagementControllerFacade, assetType string) {
 	fmt.Printf("Getting all %s management records...\n", assetType)
-    
-    var assetTypeEnum controller.AssetType
-    switch assetType {
-    case "Instrument":
-        assetTypeEnum = controller.Instrument
-    case "Supply":
-        assetTypeEnum = controller.Supply
-    default:
-        fmt.Println("Error: Invalid asset type")
-        return
-    }
 
-    // Get data through the facade
-    assets, err := facade.AssetManagement.GetAllAsset(assetTypeEnum)
-    if err != nil {
-        fmt.Printf("Error retrieving %s data: %v\n", assetType, err)
-        return
-    }
+	var assetTypeEnum controller.AssetType
+	switch assetType {
+	case "Instrument":
+		assetTypeEnum = controller.Instrument
+	case "Supply":
+		assetTypeEnum = controller.Supply
+	default:
+		fmt.Println("Error: Invalid asset type")
+		return
+	}
 
-    // Display results
-    fmt.Printf("\n=== %s Management List ===\n", assetType)
-    switch items := assets.(type) {
-    case []model.InstrumentManagement:
-        for _, item := range items {
-            fmt.Printf("ID: %d | Name: %s | Room: %d |\n",
-                item.ID, item.InstrumentLabel, item.RoomID,)
-        }
-    case []model.SupplyManagement:
-        for _, item := range items {
-            fmt.Printf("ID: %d | Name: %s | Room: %d | Quantity: %d\n",
-                item.ID, item.SupplyLabel, item.RoomID, item.Quantity)
-        }
-    default:
-        fmt.Println("Error: Unknown data type returned")
-    }
-    
-    fmt.Println("\nPress Enter to continue...")
-    util.GetCommandInput()
+	// Get data through the facade
+	assets, err := facade.AssetManagement.GetAllAsset(assetTypeEnum)
+	if err != nil {
+		fmt.Printf("Error retrieving %s data: %v\n", assetType, err)
+		return
+	}
+
+	// Display results
+	fmt.Printf("\n=== %s Management List ===\n", assetType)
+	switch items := assets.(type) {
+	case []model.InstrumentManagement:
+		for _, item := range items {
+			fmt.Printf("ID: %d | Name: %s | Room: %d |\n",
+				item.ID, item.InstrumentLabel, item.RoomID)
+		}
+	case []model.SupplyManagement:
+		for _, item := range items {
+			fmt.Printf("ID: %d | Name: %s | Room: %d | Quantity: %d\n",
+				item.ID, item.SupplyLabel, item.RoomID, item.Quantity)
+		}
+	default:
+		fmt.Println("Error: Unknown data type returned")
+	}
+
+	fmt.Println("\nPress Enter to continue...")
+	util.GetCommandInput()
 }
 
 func handleGetByID(facade *controller.SpaceManagementControllerFacade, assetType string) {

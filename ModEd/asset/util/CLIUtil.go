@@ -51,6 +51,10 @@ func PrintBanner() {
 `)
 }
 
+func PrintSapceManagementBanner() {
+	fmt.Print(`Space Management Service`)
+}
+
 func PrintByeBye() {
 	fmt.Println("+-------------------------------------------------+")
 	fmt.Println("|            Good bye, Have a Great Day !         |")
