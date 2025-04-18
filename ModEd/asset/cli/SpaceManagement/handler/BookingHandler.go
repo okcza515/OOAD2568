@@ -139,7 +139,6 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	util.PressEnterToContinue()
 }
 
-
 func handleCancelBooking(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Cancel Booking")
 	fmt.Print("Enter booking ID: ")
