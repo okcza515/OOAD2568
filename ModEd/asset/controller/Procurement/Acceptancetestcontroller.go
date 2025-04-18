@@ -1,6 +1,5 @@
 // MEP-1014
-package controller
-
+package procurement
 import (
 	model "ModEd/asset/model/Procurement"
 

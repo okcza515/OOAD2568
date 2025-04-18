@@ -2,13 +2,17 @@
 package model
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type ItemRequest struct {
-	ItemRequestID          uint           `gorm:"primaryKey"` // PK
-	ItemRequestDetailID    uint           `gorm:"foreignKey:ItemRequestDetailID"`
-	ItemApprovalID         uint           `gorm:"foreignKey:ItemApprovalID"`
-	ItemBudgetAllocationID uint           `gorm:"foreignKey:ItemBudgetAllocationID"`
-	DeletedAt              gorm.DeletedAt `gorm:"index"`
+	ItemRequestID uint              `gorm:"primaryKey"`                 // Auto-increment ID
+	DepartmentID  uint              `gorm:"type:varchar(255);not null"` // Foreign key (uint from gorm.Model)
+	Status        ItemRequestStatus `gorm:"type:varchar(50);default:'draft'"`
+	Items         []ItemDetail      `gorm:"foreignKey:ItemRequestID"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeleteAt      gorm.DeletedAt `gorm:"index"` // Soft delete
 }

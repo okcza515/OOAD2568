@@ -1,13 +1,14 @@
 // MEP-1014
-package controller
+package procurement
 
 import (
 	model "ModEd/asset/model/Procurement"
 
-	"gorm.io/gorm"
 	"net/http"
 	"time"
+
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ProcurementApprovalController struct {
@@ -28,7 +29,7 @@ func (ctrl *ProcurementApprovalController) ListApprovals(c *gin.Context) {
 			"procurement_approval_id": a.ProcurementApprovalID,
 			"description":             a.Description,
 			"status":                  a.Status,
-			"approvers_id":           a.ApproversID,
+			"approvers_id":            a.ApproversID,
 		}
 
 		if a.DeletedAt.Valid {
