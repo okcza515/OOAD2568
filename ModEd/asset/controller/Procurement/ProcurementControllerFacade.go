@@ -1,4 +1,4 @@
-package Procurement
+package procurement
 
 import (
 	"errors"
