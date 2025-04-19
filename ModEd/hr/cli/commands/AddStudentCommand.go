@@ -8,7 +8,8 @@ import (
 	"fmt"
 	"os"
 )
-
+// usage : go run hr/cli/HumanResourceCLI.go add -field="value"
+// required field : id, fname, lname !!
 func (c *AddStudentCommand) Run(args []string) {
 	fs := flag.NewFlagSet("add", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
