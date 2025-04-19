@@ -8,6 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var DatabasePath *string
+
 func OpenDatabase(database string) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
 	if err != nil {
