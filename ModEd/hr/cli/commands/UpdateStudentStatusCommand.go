@@ -14,11 +14,11 @@ func (c *UpdateStudentStatusCommand) Run(args []string){
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
-	if *studentID == "" || *status == "" {
-		fmt.Println("Error: Student ID and Status are required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] updateStatus -id=<studentID> -status=<ACTIVE|GRADUATED|DROP>")
-		os.Exit(1)
-	}
+	if err := util.ValidateRequiredFlags(fs, []string{"id", "status"}); err != nil {
+        fmt.Printf("Validation error: %v\n", err)
+        fs.Usage()
+        os.Exit(1)
+    }
 
 
 	newStatus, err := util.StatusFromString(*status)
