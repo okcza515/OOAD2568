@@ -9,8 +9,6 @@ import (
 	"ModEd/hr/util"
 )
 
-// ListStudentsCommand implements the Command interface for listing students.
-type ListStudentsCommand struct{}
 
 // Run executes the list command, using flags to parse arguments.
 func (c *ListStudentsCommand) Run(args []string) {

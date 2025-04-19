@@ -17,6 +17,7 @@ type Command interface {
 // Command registry using implementations from the commands package.
 var commandsRegistry = map[string]Command{
 	"list": &commands.ListStudentsCommand{},
+	"add":  &commands.AddStudentCommand{},
 	// ... other command registrations ...
 }
 
