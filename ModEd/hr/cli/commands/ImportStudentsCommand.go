@@ -13,7 +13,7 @@ import (
 	
 )
 
-func (c *ImportStudents) Run(args []string) {
+func (c *ImportStudentsCommand) Run(args []string) {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
@@ -37,7 +37,8 @@ func (c *ImportStudents) Run(args []string) {
 	hrRecords := hrMapper.Map() 
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	hrController := controller.CreateStudentHRController(db)
+	hrFacade := controller.NewHRFacade(db)
+
 
 	for _, hrRec := range hrRecords {
 		commonStudentController := commonController.CreateStudentController(db)
@@ -52,7 +53,7 @@ func (c *ImportStudents) Run(args []string) {
 			Gender:  hrRec.Gender,   	
 		}
 
-		if err := hrController.Upsert(&newStudent); err != nil {
+		if err := hrFacade.UpsertStudent(&newStudent); err != nil {
 			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
 			continue
 		}

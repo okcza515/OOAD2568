@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func (c *UpdateStudentStatus) Run(args []string){
+func (c *UpdateStudentStatusCommand) Run(args []string){
 	fs := flag.NewFlagSet("updateStatus", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update status")
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
@@ -28,9 +28,9 @@ func (c *UpdateStudentStatus) Run(args []string){
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	studentController := controller.CreateStudentHRController(db)
+	hrFacade := controller.NewHRFacade(db)
 
-	if err := studentController.UpdateStatus(*studentID, newStatus); err != nil {
+	if err := hrFacade.UpdateStudentStatus(*studentID, newStatus); err != nil {
 		fmt.Printf("Failed to update student status: %v\n", err)
 		os.Exit(1)
 	}
