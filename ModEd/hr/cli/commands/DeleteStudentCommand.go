@@ -13,9 +13,9 @@ func (c *DeleteStudentCommand) Run(args []string) {
     studentID := fs.String("id", "", "Student ID to delete")
     fs.Parse(args)
 
-    if *studentID == "" {
-        fmt.Println("Error: Student ID is required.")
-        fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] delete -id=<studentID>")
+    if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
+        fmt.Printf("Validation error: %v\n", err)
+        fs.Usage()
         os.Exit(1)
     }
 

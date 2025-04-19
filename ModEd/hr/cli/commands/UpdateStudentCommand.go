@@ -20,7 +20,11 @@ func (c *UpdateStudentCommand) Run(args []string) {
     emailStudent := fs.String("email", "", "New Email value")
     fs.Parse(args)
 
-    hrUtil.ValidateFlags(fs, []string{"id"})
+    if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
+        fmt.Printf("Validation error: %v\n", err)
+        fs.Usage()
+        os.Exit(1)
+    }
 
     db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
 
