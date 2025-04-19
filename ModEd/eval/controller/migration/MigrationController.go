@@ -1,4 +1,4 @@
-package mingration
+package migration
 
 import (
 	model "ModEd/eval/model"

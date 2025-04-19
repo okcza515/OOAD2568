@@ -3,7 +3,6 @@ package controller
 import (
 	modelCommon "ModEd/common/model"
 	model "ModEd/curriculum/model/Internship"
-	modelWorkload "ModEd/curriculum/model/instructor-workload"
 	"errors"
 
 	"gorm.io/gorm"
@@ -23,7 +22,7 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelCommon.Student{},
 		&model.InternshipReport{},
 		&model.InternshipApplication{},
-		&modelWorkload.StudentAdvisor{},
+		&model.Advisor{},
 	)
 	if err != nil {
 		return errors.New("err: migration failed")

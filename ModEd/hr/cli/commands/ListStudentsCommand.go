@@ -9,7 +9,6 @@ import (
 	"ModEd/hr/util"
 )
 
-
 // Run executes the list command, using flags to parse arguments.
 func (c *ListStudentsCommand) Run(args []string) {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
@@ -18,8 +17,9 @@ func (c *ListStudentsCommand) Run(args []string) {
 	// Using the databasePath flag defined in the main module.
 	// Adjust the variable reference or pass the flag value as needed.
 	db := util.OpenDatabase(*util.DatabasePath)
-	studentController := controller.CreateStudentHRController(db)
-	studentInfos, err := studentController.GetAll()
+
+	hrFacade := controller.NewHRFacade(db)
+	studentInfos, err := hrFacade.GetAllStudents()
 	if err != nil {
 		fmt.Printf("Error listing students: %v\n", err)
 		os.Exit(1)
