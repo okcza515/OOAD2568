@@ -8,6 +8,8 @@ import (
     hrUtil "ModEd/hr/util"
 
 )
+// usage : go run hr/cli/HumanResourceCLI.go delete -field="value"
+// required field : id !!"
 func (c *DeleteStudentCommand) Run(args []string) {
     fs := flag.NewFlagSet("delete", flag.ExitOnError)
     studentID := fs.String("id", "", "Student ID to delete")
