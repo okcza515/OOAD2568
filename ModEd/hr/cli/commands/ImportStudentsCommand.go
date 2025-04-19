@@ -1,16 +1,16 @@
 package commands
 
 import (
-	"ModEd/hr/controller"
-	"ModEd/hr/util"
-	"ModEd/hr/model" 
 	commonController "ModEd/common/controller"
-	
+	"ModEd/hr/controller"
+	"ModEd/hr/model"
+	hrModel "ModEd/hr/model"
+	"ModEd/hr/util"
+
+	"errors"
 	"flag"
 	"fmt"
 	"os"
-	"errors"
-	
 )
 
 func (c *ImportStudentsCommand) Run(args []string) {
@@ -28,17 +28,16 @@ func (c *ImportStudentsCommand) Run(args []string) {
 		fmt.Printf("*** Error: File %s does not exist.\n", *filePath)
 		os.Exit(1)
 	}
-	hrMapper, err := util.CreateMapper[model.StudentInfo](*filePath) 
+	hrMapper, err := util.CreateMapper[model.StudentInfo](*filePath)
 	if err != nil {
 		fmt.Printf("Failed to create HR mapper: %v\n", err)
 		os.Exit(1)
 	}
 
-	hrRecords := hrMapper.Map() 
+	hrRecords := hrMapper.Map()
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
-
 
 	for _, hrRec := range hrRecords {
 		commonStudentController := commonController.CreateStudentController(db)
@@ -48,12 +47,12 @@ func (c *ImportStudentsCommand) Run(args []string) {
 			continue
 		}
 
-		newStudent := model.StudentInfo{
-			Student: *commonStudent, 
-			Gender:  hrRec.Gender,   	
-		}
+		newStudent := hrModel.NewStudentInfoBuilder().
+			WithStudent(*commonStudent).
+			WithGender(hrRec.Gender).
+			Build()
 
-		if err := hrFacade.UpsertStudent(&newStudent); err != nil {
+		if err := hrFacade.UpsertStudent(newStudent); err != nil {
 			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
 			continue
 		}
