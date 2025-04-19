@@ -23,7 +23,7 @@ func (c *AddStudentCommand) Run(args []string) {
 	util.ValidateFlags(fs, []string{"id", "fname", "lname"})
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	studentController := controller.CreateStudentHRController(db)
+	hrFacade := controller.NewHRFacade(db)
 	newStudent := hrModel.StudentInfo{
 		Student: commonModel.Student{
 			StudentCode: *studentID,
@@ -35,7 +35,7 @@ func (c *AddStudentCommand) Run(args []string) {
 		PhoneNumber: *phoneNumber,
 	}
 
-	if err := studentController.Insert(&newStudent); err != nil {
+	if err := hrFacade.InsertStudent(&newStudent); err != nil {
 		fmt.Printf("Failed to add student info: %v\n", err)
 		os.Exit(1)
 	}

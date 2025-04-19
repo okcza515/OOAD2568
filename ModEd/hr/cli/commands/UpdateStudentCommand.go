@@ -23,8 +23,9 @@ func (c *UpdateStudentCommand) Run(args []string) {
     hrUtil.ValidateFlags(fs, []string{"id"})
 
     db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
-    studentController := controller.CreateStudentHRController(db)
-    studentInfo, err := studentController.GetById(*studentID)
+
+	hrFacade := controller.NewHRFacade(db)
+	studentInfo, err := hrFacade.GetStudentById(*studentID)
     if err != nil {
         fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
         os.Exit(1)
@@ -49,7 +50,7 @@ func (c *UpdateStudentCommand) Run(args []string) {
         studentInfo.Email = *emailStudent
     }
 
-    if err := studentController.Update(studentInfo); err != nil {
+	if err := hrFacade.UpdateStudent(studentInfo); err != nil {
         fmt.Printf("Failed to update student info: %v\n", err)
         os.Exit(1)
     }

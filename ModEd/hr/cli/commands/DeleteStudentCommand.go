@@ -20,11 +20,12 @@ func (c *DeleteStudentCommand) Run(args []string) {
     }
 
     db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
-    studentController := controller.CreateStudentHRController(db)
-    if err := studentController.Delete(*studentID); err != nil {
-        fmt.Printf("Failed to delete student info: %v\n", err)
-        os.Exit(1)
-    }
+
+	hrFacade := controller.NewHRFacade(db)
+	if err := hrFacade.DeleteStudent(*studentID); err != nil {
+    	fmt.Printf("Failed to delete student info: %v\n", err)
+    	os.Exit(1)
+}
 
     fmt.Println("Student deleted successfully!")
 }
