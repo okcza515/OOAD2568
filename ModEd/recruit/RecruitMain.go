@@ -97,7 +97,7 @@ func main() {
 		fmt.Print("Select an option: ")
 
 		var choice int
-		fmt.Scan(&choice)
+		fmt.Scanln(&choice)
 
 		scanner := bufio.NewScanner(os.Stdin)
 
