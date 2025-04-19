@@ -19,8 +19,8 @@ func CreateStudentHRController(db *gorm.DB) *StudentHRController {
 }
 
 // GetAll returns all StudentInfo records.
-func (c *StudentHRController) GetAll() ([]model.StudentInfo, error) {
-	var infos []model.StudentInfo
+func (c *StudentHRController) GetAll() ([]*model.StudentInfo, error) {
+	var infos []*model.StudentInfo
 	err := c.db.Find(&infos).Error
 	return infos, err
 }
