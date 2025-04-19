@@ -9,12 +9,12 @@ import (
 )
 
 type ItemRequest struct {
-	ItemRequestID uint              `gorm:"primaryKey"` // Auto-increment ID
+	ItemRequestID uint              `gorm:"primaryKey"`
+	DepartmentID  uint              `gorm:"type:varchar(255);not null"`
 	Status        ItemRequestStatus `gorm:"type:varchar(50);default:'draft'"`
 	Items         []ItemDetail      `gorm:"foreignKey:ItemRequestID"`
+	DeleteAt      gorm.DeletedAt    `gorm:"index"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
-	DeleteAt      gorm.DeletedAt `gorm:"index"`                      // Soft delete
-	DepartmentID  uint           `gorm:"type:varchar(255);not null"` // Foreign key (uint from gorm.Model)
 	Departments   master.Department
 }

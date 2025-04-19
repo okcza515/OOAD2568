@@ -8,11 +8,11 @@ import (
 )
 
 type ItemDetail struct {
-	ItemDetailID  uint   `gorm:"primaryKey"` // Auto-increment ID
-	ItemRequestID uint   `gorm:"not null"`   // Foreign key to ItemRequest
-	Name          string `gorm:"type:varchar(255);not null"`
-	Quantity      int    `gorm:"not null"`
+	ItemDetailID  uint           `gorm:"primaryKey"`
+	ItemRequestID uint           `gorm:"not null"`
+	Name          string         `gorm:"type:varchar(255);not null"`
+	Quantity      int            `gorm:"not null"`
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt `gorm:"index"` // Soft delete
 }
