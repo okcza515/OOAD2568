@@ -2,6 +2,7 @@
 package cli
 
 import (
+	"ModEd/asset/util"
 	"ModEd/recruit/controller"
 	"bufio"
 	"fmt"
@@ -11,15 +12,19 @@ import (
 )
 
 func InstructorCLI(instructorCtrl *controller.InstructorController) {
+
+	util.ClearScreen()
+
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scan(&instructorID)
 
 	for {
+		util.ClearScreen()
 		fmt.Println("\n==== Instructor Menu ====")
 		fmt.Println("1. View Interview Details")
 		fmt.Println("2. Evaluate an Applicant")
-		fmt.Println("3. Exit")
+		fmt.Println("3. back")
 		fmt.Print("Select an option: ")
 
 		var choice int
@@ -31,7 +36,6 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 		case 2:
 			EvaluateApplicant(instructorCtrl)
 		case 3:
-			fmt.Println("Exiting...")
 			return
 		default:
 			fmt.Println("Invalid option. Try again.")
