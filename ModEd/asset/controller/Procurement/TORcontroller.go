@@ -2,8 +2,9 @@
 package procurement
 
 import (
-	model "ModEd/asset/model/Procurement"
 	"time"
+
+	model "ModEd/asset/model/Procurement"
 
 	"gorm.io/gorm"
 )
@@ -23,10 +24,15 @@ func (c *TORController) GetAllTORs() (*[]model.TOR, error) {
 }
 
 func (c *TORController) GetTORByID(id uint) (*model.TOR, error) {
-	tor := new(model.TOR)
-	err := c.db.Preload("ItemRequest").First(&tor, "tor_id = ?", id).Error
-	return tor, err
+	var tor model.TOR
+	err := c.db.
+		Preload("InstrumentRequest.Instruments.Category").
+		Preload("InstrumentRequest.Departments").
+		First(&tor, "tor_id = ?", id).Error
+
+	return &tor, err
 }
+
 
 func (c *TORController) DeleteTOR(id uint) error {
 	return c.db.Model(&model.TOR{}).Where("tor_id = ?", id).Update("deleted_at", time.Now()).Error
