@@ -13,6 +13,9 @@ import (
 	"os"
 )
 
+// usage : go run hr/cli/HumanResourceCLI.go import -path=<path>
+// required field : path !!
+
 func (c *ImportStudentsCommand) Run(args []string) {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
@@ -23,7 +26,6 @@ func (c *ImportStudentsCommand) Run(args []string) {
         fs.Usage()
         os.Exit(1)
     }
-	// fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] import -path=<path>")
 
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
