@@ -1,60 +1,70 @@
 package controller
 
 import (
+	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
-	"ModEd/hr/service"
-	"fmt"
+
+	"gorm.io/gorm"
 )
 
-// HRController handles student operations for the CLI.
-type HRController struct {
-	service *service.HRService
+type StudentHRController struct {
+	db *gorm.DB
 }
 
-// NewHRController initializes a new HRController.
-func NewHRController(dbPath string) *HRController {
-	hrService := service.NewHRService(dbPath)
-	return &HRController{service: hrService}
+// CreateStudentHRController creates a new instance of StudentHRController
+// and automigrates the StudentInfo model.
+func CreateStudentHRController(db *gorm.DB) *StudentHRController {
+	db.AutoMigrate(&model.StudentInfo{})
+	return &StudentHRController{db: db}
 }
 
-// ListStudents fetches all students.
-func (c *HRController) ListStudents() ([]model.StudentInfo, error) {
-	return c.service.ListStudents()
+// GetAll returns all StudentInfo records.
+func (c *StudentHRController) GetAll() ([]model.StudentInfo, error) {
+	var infos []model.StudentInfo
+	err := c.db.Find(&infos).Error
+	return infos, err
 }
 
-// GetStudent fetches a student by ID.
-func (c *HRController) GetStudent(studentID string) (*model.StudentInfo, error) {
-	return c.service.GetStudent(studentID)
-}
-
-// CreateStudent adds a new student.
-func (c *HRController) CreateStudent(student model.StudentInfo) error {
-	if err := c.service.CreateStudent(student); err != nil {
-		return fmt.Errorf("failed to create student: %w", err)
+// GetById retrieves a student's HR information by SID.
+func (c *StudentHRController) GetById(sid string) (*model.StudentInfo, error) {
+	var studentInfo model.StudentInfo
+	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return &studentInfo, nil
 }
 
-// UpdateStudent modifies an existing student.
-func (c *HRController) UpdateStudent(studentID string, updatedStudent model.StudentInfo) error {
-	return c.service.UpdateStudent(studentID, updatedStudent)
+// Insert inserts a new StudentInfo record.
+func (c *StudentHRController) Insert(info *model.StudentInfo) error {
+	return c.db.Create(info).Error
 }
 
-// DeleteStudent removes a student.
-func (c *HRController) DeleteStudent(studentID string) error {
-	return c.service.DeleteStudent(studentID)
+// Update updates an existing StudentInfo record.
+func (c *StudentHRController) Update(info *model.StudentInfo) error {
+	return c.db.Save(info).Error
 }
 
-// func (c *HRController) UpdateStudentStatus(studentID string, newStatus string) error {
-
-// }
-
-// ImportStudents processes student data from a file.
-func (c *HRController) ImportStudents(filePath string) error {
-	return c.service.ImportStudents(filePath)
+// Delete deletes a student's HR information by SID.
+func (c *StudentHRController) Delete(sid string) error {
+	return c.db.Where("student_code = ?", sid).Delete(&model.StudentInfo{}).Error
 }
 
-// SynchronizeStudents syncs students from external sources.
-func (c *HRController) SynchronizeStudents() error {
-	return c.service.SynchronizeStudents()
+// UpdateStatus updates the status of a student by SID.
+func (c *StudentHRController) UpdateStatus(sid string, status commonModel.StudentStatus) error {
+	// First retrieve the student record
+	var studentInfo model.StudentInfo
+	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
+		return err
+	}
+
+	// Update the status field
+	studentInfo.Status = &status
+
+	// Save the updated record
+	return c.db.Save(&studentInfo).Error
+}
+
+// Upsert inserts or updates a StudentInfo record.
+func (c *StudentHRController) Upsert(info *model.StudentInfo) error {
+	return c.db.FirstOrCreate(info).Error
 }

@@ -32,10 +32,11 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 			PhoneNumber: "", // default value; update as needed
 		}
 
-		// Use Save to avoid duplicate unique errors.
-		if err := db.Save(&studentInfo).Error; err != nil {
+		// Use FirstOrCreate to avoid duplicate unique errors.
+		if err := db.Where("student_code = ?", s.StudentCode).FirstOrCreate(&studentInfo).Error; err != nil {
 			return fmt.Errorf("Failed to migrate student %s: %w", s.StudentCode, err)
 		}
+		// fmt.Printf("Migrated student %s successfully\n", s.SID)
 	}
 
 	fmt.Println("Migration completed successfully.")
@@ -43,7 +44,6 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 	return nil
 }
 
-// SynchronizeStudents synchronizes student data from common model to HR.
 func SynchronizeStudents(db *gorm.DB) error {
 	// Retrieve all HR student records.
 	var hrStudents []hr.StudentInfo
@@ -57,12 +57,7 @@ func SynchronizeStudents(db *gorm.DB) error {
 		// Retrieve the common student record.
 		var commonStudent common.Student
 		err := db.Where("student_code = ?", sid).First(&commonStudent).Error
-		if err != nil && err != gorm.ErrRecordNotFound {
-			// If an error occurs other than record not found, return the error
-			return fmt.Errorf("failed to retrieve common student %s: %w", sid, err)
-		}
-
-		if err == gorm.ErrRecordNotFound {
+		if err != nil {
 			// If common student not found, create it using HR data
 			commonStudent = syncCreateCommonFromHR(hrRec.Student)
 			if err := db.Create(&commonStudent).Error; err != nil {
@@ -91,14 +86,14 @@ func SynchronizeStudents(db *gorm.DB) error {
 // syncCreateCommonFromHR creates a new common.Student from HR student data
 func syncCreateCommonFromHR(hrStudent common.Student) common.Student {
 	return common.Student{
-		StudentCode: hrStudent.StudentCode,
-		FirstName:   hrStudent.FirstName,
-		LastName:    hrStudent.LastName,
-		Email:       hrStudent.Email,
-		StartDate:   hrStudent.StartDate,
-		BirthDate:   hrStudent.BirthDate,
-		Program:     hrStudent.Program,
-		Status:      hrStudent.Status,
+		StudentCode:       hrStudent.StudentCode,
+		FirstName: hrStudent.FirstName,
+		LastName:  hrStudent.LastName,
+		Email:     hrStudent.Email,
+		StartDate: hrStudent.StartDate,
+		BirthDate: hrStudent.BirthDate,
+		Program:   hrStudent.Program,
+		Status:    hrStudent.Status,
 		// Add new fields here when they're added to the model
 	}
 }
@@ -140,7 +135,6 @@ func syncUpdateCommonFromHR(common *common.Student, hr common.Student) bool {
 		common.StartDate = hr.StartDate
 		updated = true
 	}
-
 	if !common.BirthDate.Equal(hr.BirthDate) {
 		common.BirthDate = hr.BirthDate
 		updated = true
@@ -186,7 +180,6 @@ func syncUpdateHRFromCommon(hr *hr.StudentInfo, common common.Student) bool {
 		hr.Student.StartDate = common.StartDate
 		updated = true
 	}
-
 	if !hr.Student.BirthDate.Equal(common.BirthDate) {
 		hr.Student.BirthDate = common.BirthDate
 		updated = true
