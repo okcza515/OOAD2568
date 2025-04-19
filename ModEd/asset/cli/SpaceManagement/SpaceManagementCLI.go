@@ -16,7 +16,7 @@ func main() {
 	input := ""
 	for input != "exit" {
 		util.ClearScreen()
-		util.PrintBanner()
+		util.PrintSpaceManagementBanner()
 		printOption()
 		input = util.GetCommandInput()
 
@@ -37,7 +37,7 @@ func main() {
 }
 
 func printOption() {
-	fmt.Println(":/SpaceManagement")
+	fmt.Println("\n===============================")
 	fmt.Println()
 	fmt.Println("Welcome to ModEd Space Management Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")

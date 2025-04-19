@@ -1,4 +1,3 @@
-// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -6,14 +5,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-
-	"github.com/google/uuid"
 )
 
 func InstructorCLI(instructorCtrl *controller.InstructorController) {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
-	fmt.Scan(&instructorID)
+	fmt.Scanln(&instructorID)
+
+	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
 		fmt.Println("\n==== Instructor Menu ====")
@@ -23,7 +22,12 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 		fmt.Print("Select an option: ")
 
 		var choice int
-		fmt.Scan(&choice)
+		scanner.Scan()
+		_, err := fmt.Sscan(scanner.Text(), &choice)
+		if err != nil {
+			fmt.Println("Invalid input, please try again.")
+			continue
+		}
 
 		switch choice {
 		case 1:
@@ -61,19 +65,28 @@ func ViewInterviewDetails(instructorCtrl *controller.InstructorController, instr
 }
 
 func EvaluateApplicant(instructorCtrl *controller.InstructorController) {
-	var interviewID uuid.UUID
+	var interviewID uint
 	var score float64
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("Enter Interview ID: ")
 	scanner.Scan()
-	interviewID, _ = uuid.Parse(scanner.Text())
+	_, err := fmt.Sscan(scanner.Text(), &interviewID)
+	if err != nil {
+		fmt.Println("Invalid Interview ID.")
+		return
+	}
 
 	fmt.Print("Enter Interview Score: ")
-	fmt.Scan(&score)
+	scanner.Scan()
+	_, err = fmt.Sscan(scanner.Text(), &score)
+	if err != nil {
+		fmt.Println("Invalid score.")
+		return
+	}
 
-	err := instructorCtrl.EvaluateApplicant(interviewID, score)
+	err = instructorCtrl.EvaluateApplicant(interviewID, score)
 	if err != nil {
 		fmt.Println("Error updating interview score:", err)
 	} else {

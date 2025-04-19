@@ -2,112 +2,52 @@
 package spacemanagement
 
 import (
-
-	//common "ModEd/common/model"
+	model "ModEd/asset/model/spacemanagement"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
 
-type PermanentScheduleController struct {
+type PermanentBookingController struct {
 	db *gorm.DB
 }
 
-// func (c *PermanentScheduleController) CheckRoomInService(roomID uint) (*bool, error) {
-// 	var room model.Room
+func NewPermanentBookingController(db *gorm.DB) *PermanentBookingController {
+	return &PermanentBookingController{
+		db: db,
+	}
+}
 
-// 	err := c.db.First(&room, roomID).Error
-// 	if errors.Is(err, gorm.ErrRecordNotFound) {
-// 		return nil, errors.New("room not found")
-// 	} else if err != nil {
-// 		return nil, err
-// 	}
+func (controller * PermanentBookingController) CheckRoomInService(RoomID uint) (bool, error) {
+	var room model.Room
+	if err := controller.db.First(&room, RoomID).Error; err != nil {
+		return false, fmt.Errorf("Room %d is out of service: %w", RoomID, err)
+	}
+	return !room.IsRoomOutOfService, nil
+}
 
-// 	if room.IsRoomOutOfService {
-// 		return nil, errors.New("room is out of service")
-// 	}
+func (controller *PermanentBookingController) CreatePermanentSchedule(RoomID uint, Faculty string, Department string, Programtype string, CourseId string, ClassId string, StartDate, EndDate time.Time ) (*model.PermanentSchedule, error) {
+	schedule := &model.PermanentSchedule{
+		RoomID:      RoomID,
+		Faculty:     Faculty,
+		Department:  Department,
+		ProgramType: Programtype,
+		CourseId:    CourseId,
+		ClassId:     ClassId,
+	}
+	if err := controller.db.Create(schedule).Error; err != nil {
+		return nil, fmt.Errorf("failed to create schedule: %w", err)
+	}
+	return schedule, nil
+}
 
-// 	isInService := !room.IsRoomOutOfService
-// 	return &isInService, nil
-// }
+func (controller *PermanentBookingController) 
 
-// func (c *PermanentScheduleController) CreateSubjectSchedule(schedule *model.PermanentSchedule) error {
-// 	if schedule.StartDate.IsZero() || schedule.EndDate.IsZero() {
-// 		return errors.New("start date & end date are required")
-// 	}
-// 	if schedule.StartDate.After(schedule.EndDate) {
-// 		return errors.New("start date can't be after end date")
-// 	}
-// 	if schedule.Faculty.Name == "" {
-// 		return errors.New("faculty name is required")
-// 	}
-// 	if schedule.Department.Name == "" {
-// 		return errors.New("department name is required")
-// 	}
-// 	if strconv.Itoa(int(schedule.ProgramType)) == "" {
-// 		return errors.New("program type is required")
-// 	}
-// 	if schedule.Classroom.RoomID == 0 {
-// 		return errors.New("classroom is required")
-// 	}
-// 	if schedule.Course.CourseId == 0 {
-// 		return errors.New("course is required")
-// 	}
-// 	if schedule.Class.ClassId == 0 {
-// 		return errors.New("class is required")
-// 	}
-
-// 	isInService, err := c.CheckRoomInService(schedule.Classroom.RoomID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if !*isInService {
-// 		return errors.New("room is unavailable for scheduled")
-// 	}
-
-// 	result := c.db.Create(schedule)
-// 	if result.Error != nil {
-// 		return result.Error
-// 	}
-
-// 	fmt.Println("Schedule created successfully")
-// 	return nil
-// }
-
-// func (c *PermanentScheduleController) ScheduleRecurringSubject(baseSchedule *model.PermanentSchedule, recurringDays []string) error {
-// 	if len(recurringDays) == 0 {
-// 		return errors.New("recurring days are required")
-// 	}
-
-// 	dayToInt := map[string]time.Weekday{
-// 		"Sunday":    time.Sunday,
-// 		"Monday":    time.Monday,
-// 		"Tuesday":   time.Tuesday,
-// 		"Wednesday": time.Wednesday,
-// 		"Thursday":  time.Thursday,
-// 		"Friday":    time.Friday,
-// 		"Saturday":  time.Saturday,
-// 	}
-
-// 	for _, day := range recurringDays {
-// 		weekday, valid := dayToInt[day]
-// 		if !valid {
-// 			return errors.New("Invalid recurring day: " + day)
-// 		}
-
-// 		for baseSchedule.StartDate.Weekday() != weekday {
-// 			baseSchedule.StartDate = baseSchedule.StartDate.AddDate(0, 0, 1)
-// 			baseSchedule.EndDate = baseSchedule.EndDate.AddDate(0, 0, 1)
-// 		}
-
-// 		newSchedule := *baseSchedule
-// 		err := c.CreateSubjectSchedule(&newSchedule)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		baseSchedule.StartDate = baseSchedule.StartDate.AddDate(0, 0, 7)
-// 		baseSchedule.EndDate = baseSchedule.EndDate.AddDate(0, 0, 7)
-
-// 	}
-// 	return nil
-// }
+func (controller *PermanentBookingController) GetAll() (*[]model.PermanentSchedule, error) {
+	schedules := new([]model.PermanentSchedule)
+	if err := controller.db.Find(&schedules).Error; err != nil {
+		return nil, fmt.Errorf("failed to get all schedules: %w", err)
+	}
+	return schedules, nil
+}
