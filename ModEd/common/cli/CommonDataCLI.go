@@ -60,13 +60,13 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		//var students []*model.Student
-		var students *model.Student
+		var students []*model.Student
+		//var students *model.Student
 		if err := deserializer.Deserialize(&students); err != nil {
 			panic(err)
 		}
-
-		studentController.Create(students)
+		studentController.Register(students)
+		//studentController.Create(students)
 		fmt.Println("Student data updated successfully.")
 
 	case DELETE:
