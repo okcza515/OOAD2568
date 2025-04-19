@@ -2,7 +2,7 @@ package commands
 
 type ListStudentsCommand struct{}
 type AddStudentCommand struct{}
-type UpdateStudentStatus struct{}
-type ImportStudents struct{}
+type UpdateStudentStatusCommand struct{}
+type ImportStudentsCommand struct{}
 type DeleteStudentCommand struct{}
 type UpdateStudentCommand struct{}
