@@ -59,7 +59,7 @@ func main() {
 			}
 
 			companyDataController := controller.NewCompanyDataController(db)
-			err = companyDataController.ImportCompaniesFromCSV("D:/Bangmod/(Year_3)_2.2567/CPE(326) OOAD/OOAD2568/ModEd/data/Intership/Company.csv")
+			err = companyDataController.ImportCompaniesFromCSV("")
 			if err != nil {
 				fmt.Printf("Error: Failed to import companies: %v\n", err)
 			} else {
@@ -67,7 +67,7 @@ func main() {
 			}
 
 			internStudentController := controller.InternStudentController{Connector: db}
-			err = internStudentController.RegisterInternStudentsFromFile("D:/Bangmod/(Year_3)_2.2567/CPE(326) OOAD/OOAD2568/ModEd/data/StudentList.csv")
+			err = internStudentController.RegisterInternStudentsFromFile("")
 			if err != nil {
 				fmt.Printf("Error: Failed to import students: %v\n", err)
 			} else {
