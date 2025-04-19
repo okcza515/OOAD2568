@@ -44,6 +44,7 @@ func main() {
 
 	applicationReportCtrl := controller.CreateApplicationReportController(db.DB)
 	applicantController := controller.NewApplicantController(db.DB)
+	interviewController := controller.CreateInterviewController(db.DB)
 	applicationRoundCtrl := controller.CreateApplicationRoundController(db.DB)
 
 	facultyCtrl := controller.NewFacultyController(db.DB)
@@ -71,7 +72,7 @@ func main() {
 			fmt.Println("1. User")
 			fmt.Println("2. Admin")
 			fmt.Println("3. Instructor")
-			fmt.Println("4. Exist")
+			fmt.Println("4. Exit")
 			fmt.Print("Select role: ")
 
 			var roleChoice int
@@ -81,7 +82,7 @@ func main() {
 			case 1:
 				cli.UserCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
 			case 2:
-				cli.AdminCLI(applicantController, applicationReportCtrl)
+				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController)
 			case 3:
 				cli.InstructorCLI(instructorController)
 			case 4:
