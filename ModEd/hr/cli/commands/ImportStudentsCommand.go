@@ -18,11 +18,13 @@ func (c *ImportStudentsCommand) Run(args []string) {
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
 
-	if *filePath == "" {
-		fmt.Println("Error: File path for HR student data is required.")
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] import -path=<path>")
-		os.Exit(1)
-	}
+	if err := util.ValidateRequiredFlags(fs, []string{"filePath"}); err != nil {
+        fmt.Printf("Validation error: %v\n", err)
+        fs.Usage()
+        os.Exit(1)
+    }
+	// fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] import -path=<path>")
+
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
 		fmt.Printf("*** Error: File %s does not exist.\n", *filePath)
