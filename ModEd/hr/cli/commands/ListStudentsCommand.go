@@ -9,6 +9,8 @@ import (
 	"ModEd/hr/util"
 )
 
+// usage : go run hr/cli/HumanResourceCLI.go list
+// no required fields !!
 // Run executes the list command, using flags to parse arguments.
 func (c *ListStudentsCommand) Run(args []string) {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
