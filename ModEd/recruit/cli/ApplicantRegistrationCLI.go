@@ -4,6 +4,7 @@ import (
 	"ModEd/recruit/controller"
 	form "ModEd/recruit/controller/FormRound"
 	"ModEd/recruit/model"
+	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
@@ -18,6 +19,7 @@ func RegisterApplicantCLI(
 	departmentCtrl *controller.DepartmentController,
 ) {
 	scanner := bufio.NewScanner(os.Stdin)
+	util.ClearScreen()
 
 	fmt.Println("==== Applicant Registration ====")
 	fmt.Println("1. Register manually")
