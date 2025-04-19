@@ -1,7 +1,6 @@
 package commands
 
 import (
-	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
 	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
@@ -20,22 +19,26 @@ func (c *AddStudentCommand) Run(args []string) {
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	util.ValidateFlags(fs, []string{"id", "fname", "lname"})
+    if err := util.ValidateRequiredFlags(fs, []string{"id", "fname", "lname"}); err != nil {
+        fmt.Printf("Validation error: %v\n", err)
+        fs.Usage()
+        os.Exit(1)
+    }
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	studentController := controller.CreateStudentHRController(db)
-	newStudent := hrModel.StudentInfo{
-		Student: commonModel.Student{
-			StudentCode: *studentID,
-			FirstName:   *firstName,
-			LastName:    *lastName,
-		},
-		Gender:      *gender,
-		CitizenID:   *citizenID,
-		PhoneNumber: *phoneNumber,
-	}
 
-	if err := studentController.Insert(&newStudent); err != nil {
+	hrFacade := controller.NewHRFacade(db)
+
+	newStudent := hrModel.NewStudentInfoBuilder().
+		WithStudentCode(*studentID).
+		WithFirstName(*firstName).
+		WithLastName(*lastName).
+		WithGender(*gender).
+		WithCitizenID(*citizenID).
+		WithPhoneNumber(*phoneNumber).
+		Build()
+
+	if err := hrFacade.InsertStudent(newStudent); err != nil {
 		fmt.Printf("Failed to add student info: %v\n", err)
 		os.Exit(1)
 	}

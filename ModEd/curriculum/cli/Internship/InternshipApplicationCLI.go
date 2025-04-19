@@ -41,7 +41,8 @@ func main() {
 		fmt.Println("3. Clear Database")
 		fmt.Println("4. Evaluation Student Performance")
 		fmt.Println("5. Evaluation Student Report")
-		fmt.Println("6. Exit")
+		fmt.Println("6. Update Approval Status")
+		fmt.Println("7. Exit")
 		fmt.Print("Enter your choice: ")
 
 		scanner.Scan()
@@ -58,7 +59,7 @@ func main() {
 			}
 
 			companyDataController := controller.NewCompanyDataController(db)
-			err = companyDataController.ImportCompaniesFromCSV("")
+			err = companyDataController.ImportCompaniesFromCSV("D:/Bangmod/(Year_3)_2.2567/CPE(326) OOAD/OOAD2568/ModEd/data/Intership/Company.csv")
 			if err != nil {
 				fmt.Printf("Error: Failed to import companies: %v\n", err)
 			} else {
@@ -66,7 +67,7 @@ func main() {
 			}
 
 			internStudentController := controller.InternStudentController{Connector: db}
-			err = internStudentController.RegisterInternStudentsFromFile("")
+			err = internStudentController.RegisterInternStudentsFromFile("D:/Bangmod/(Year_3)_2.2567/CPE(326) OOAD/OOAD2568/ModEd/data/StudentList.csv")
 			if err != nil {
 				fmt.Printf("Error: Failed to import students: %v\n", err)
 			} else {
@@ -185,6 +186,62 @@ func main() {
 			Report.UpdateReportScore(studentCode, score)
 
 		case "6":
+			approvedController := controller.NewApprovedController(db)
+
+			fmt.Print("Enter StudentCode: ")
+			scanner.Scan()
+			studentCode := strings.TrimSpace(scanner.Text())
+
+			var application model.InternshipApplication
+			if err := db.Where("student_code = ?", studentCode).First(&application).Error; err != nil {
+				fmt.Printf("Error: Internship application for StudentCode '%s' not found.\n", studentCode)
+				continue
+			}
+
+			fmt.Print("Enter Advisor Approval Status (APPROVED/REJECT): ")
+			scanner.Scan()
+			advisorStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
+			if advisorStatus != string(model.APPROVED) && advisorStatus != string(model.REJECT) {
+				fmt.Println("Invalid status. Please enter 'APPROVED' or 'REJECT'.")
+				continue
+			}
+			err = approvedController.UpdateAdvisorApprovalStatus(application.ID, model.ApprovedStatus(advisorStatus))
+			if err != nil {
+				fmt.Printf("Failed to update advisor approval status: %v\n", err)
+				continue
+			} else {
+				fmt.Println("Advisor approval status updated successfully!")
+			}
+
+			fmt.Print("Enter Company Approval Status (APPROVED/REJECT): ")
+			scanner.Scan()
+			companyStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
+			if companyStatus != string(model.APPROVED) && companyStatus != string(model.REJECT) {
+				fmt.Println("Invalid status. Please enter 'APPROVED' or 'REJECT'.")
+				continue
+			}
+			err = approvedController.UpdateCompanyApprovalStatus(application.ID, model.ApprovedStatus(companyStatus))
+			if err != nil {
+				fmt.Printf("Failed to update company approval status: %v\n", err)
+			} else {
+				fmt.Println("Company approval status updated successfully!")
+			}
+
+			if advisorStatus == string(model.APPROVED) && companyStatus == string(model.APPROVED) {
+				var student model.InternStudent
+				if err := db.Where("student_code = ?", studentCode).First(&student).Error; err != nil {
+					fmt.Printf("Error: Student with code '%s' not found.\n", studentCode)
+					continue
+				}
+				student.InternStatus = model.ACTIVE
+				if err := db.Save(&student).Error; err != nil {
+					fmt.Printf("Error: Failed to update intern status: %v\n", err)
+				} else {
+					fmt.Println("Intern status updated to ACTIVE.")
+				}
+			}
+
+		case "7":
 			fmt.Println("Exiting the system. Goodbye!")
 			return
 

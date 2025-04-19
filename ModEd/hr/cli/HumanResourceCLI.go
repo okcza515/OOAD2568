@@ -18,8 +18,8 @@ type Command interface {
 var commandsRegistry = map[string]Command{
 	"list": &commands.ListStudentsCommand{},
 	"add":  &commands.AddStudentCommand{},
-	"updateStatus": &commands.UpdateStudentStatus{},
-	"import": &commands.ImportStudents{},
+	"updateStatus": &commands.UpdateStudentStatusCommand{},
+	"import": &commands.ImportStudentsCommand{},
 	// ... other command registrations ...
 }
 
