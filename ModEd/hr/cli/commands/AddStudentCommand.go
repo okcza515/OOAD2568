@@ -1,7 +1,6 @@
 package commands
 
 import (
-	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
 	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
@@ -24,18 +23,17 @@ func (c *AddStudentCommand) Run(args []string) {
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	studentController := controller.CreateStudentHRController(db)
-	newStudent := hrModel.StudentInfo{
-		Student: commonModel.Student{
-			StudentCode: *studentID,
-			FirstName:   *firstName,
-			LastName:    *lastName,
-		},
-		Gender:      *gender,
-		CitizenID:   *citizenID,
-		PhoneNumber: *phoneNumber,
-	}
 
-	if err := studentController.Insert(&newStudent); err != nil {
+	newStudent := hrModel.NewStudentInfoBuilder().
+		WithStudentCode(*studentID).
+		WithFirstName(*firstName).
+		WithLastName(*lastName).
+		WithGender(*gender).
+		WithCitizenID(*citizenID).
+		WithPhoneNumber(*phoneNumber).
+		Build()
+
+	if err := studentController.Insert(newStudent); err != nil {
 		fmt.Printf("Failed to add student info: %v\n", err)
 		os.Exit(1)
 	}
