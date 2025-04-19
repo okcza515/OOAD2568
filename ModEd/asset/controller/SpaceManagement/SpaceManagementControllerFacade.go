@@ -10,11 +10,11 @@ import (
 )
 
 type SpaceManagementControllerFacade struct {
-	Db                         *gorm.DB
-	AssetManagement 		   *AssetManagementController
-	Booking                    BookingController
-	PermanentSchedule          PermanentScheduleController
-	Room                       RoomController
+	Db                *gorm.DB
+	AssetManagement   *AssetManagementController
+	Booking           BookingController
+	PermanentSchedule PermanentBookingController
+	Room              RoomController
 }
 
 func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
@@ -24,9 +24,9 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	InstrumentManagementAdapter := NewInstrumentManagementAdapter(db)
-    SupplyManagementAdapter := NewSupplyManagementAdapter(db)
+	SupplyManagementAdapter := NewSupplyManagementAdapter(db)
 
 	AssetManagementController := NewAssetManagementController(InstrumentManagementAdapter, SupplyManagementAdapter)
 
@@ -38,7 +38,7 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	}
 	facade.AssetManagement = AssetManagementController
 	facade.Booking = BookingController{db: db}
-	facade.PermanentSchedule = PermanentScheduleController{db: db}
+	facade.PermanentSchedule = PermanentBookingController{db: db}
 	facade.Room = RoomController{db: db}
 	return &facade, nil
 

@@ -5,6 +5,7 @@ package spacemanagement
 import (
 	model "ModEd/asset/model/spacemanagement"
 	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -13,7 +14,7 @@ type InstrumentManagementAdapter struct {
 }
 
 func NewInstrumentManagementAdapter(db *gorm.DB) *InstrumentManagementAdapter {
-    return &InstrumentManagementAdapter{db: db}
+	return &InstrumentManagementAdapter{db: db}
 }
 
 func (a *InstrumentManagementAdapter) getAllInstrumentManagement() (*[]model.InstrumentManagement, error) {

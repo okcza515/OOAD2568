@@ -160,12 +160,12 @@ func (controller *BookingController) UpdateBooking(bookingID uint, eventName *st
 	}
 
 	if (newStartDate != nil && !timeTable.StartDate.Equal(*newStartDate)) || (newEndDate != nil && !timeTable.EndDate.Equal(*newEndDate)) {
-		
+
 		startDate := timeTable.StartDate
 		if newStartDate != nil {
 			startDate = *newStartDate
 		}
-		
+
 		endDate := timeTable.EndDate
 		if newEndDate != nil {
 			endDate = *newEndDate
@@ -178,7 +178,7 @@ func (controller *BookingController) UpdateBooking(bookingID uint, eventName *st
 		}
 
 		isAvailable, err := controller.CheckRoomAvailability(timeTable.RoomID, startDate, endDate)
-		
+
 		timeTable.IsAvailable = originalIsAvailable
 		if err := controller.db.Save(&timeTable).Error; err != nil {
 			return fmt.Errorf("unable to restore time table status: %w", err)
@@ -208,7 +208,7 @@ func (controller *BookingController) UpdateBooking(bookingID uint, eventName *st
 	if newEndDate != nil {
 		timeTable.EndDate = *newEndDate
 	}
-	
+
 	if newStartDate != nil || newEndDate != nil {
 		if err := tx.Save(&timeTable).Error; err != nil {
 			tx.Rollback()
