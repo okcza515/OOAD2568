@@ -8,8 +8,8 @@ import (
 	// "flag"
 	"fmt"
 	// "os"
-	"time"
 	"log"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -17,10 +17,10 @@ import (
 
 func main() {
 	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-    if err != nil {
-        log.Fatal("Connection failed:", err)
-    }
-	
+	if err != nil {
+		log.Fatal("Connection failed:", err)
+	}
+
 	migrationController := migration_controller.NewMigrationController(db)
 	err = migrationController.MigrateToDB()
 	if err != nil {
@@ -35,7 +35,9 @@ func main() {
 		fmt.Println("\nExamination CLI")
 		fmt.Println("1. Create Examination")
 		fmt.Println("2. Display All Examination")
-		fmt.Println("3. Exit")
+		fmt.Println("3. Insert Examination")
+		fmt.Println("4. Update Examination")
+		fmt.Println("5. Exit")
 		fmt.Print("Enter your choice: ")
 		var choice int
 		fmt.Scan(&choice)
@@ -75,6 +77,15 @@ func main() {
 		case 2:
 			DisplayAllExams(db)
 		case 3:
+			TestCreateExamination(db)
+			fmt.Println("Examination inserted successfully!")
+		case 4:
+			var examID uint
+			fmt.Print("Enter Examination ID to update: ")
+			fmt.Scan(&examID)
+			UpdateExam(db ,examID)
+			fmt.Println("Examination updated successfully!")
+		case 5:
 			fmt.Println("Exiting...")
 			return
 
@@ -106,5 +117,43 @@ func DisplayAllExams(db *gorm.DB) {
 		fmt.Printf("%-5d | %-20s | %-10d | %-10d | %-10d | %-15s | %-20s | %-10s\n",
 			exam.ID, exam.Exam_name, exam.Instructor_id, exam.CourseId, exam.CurriculumId,
 			exam.Criteria, exam.Description, exam.Exam_date.Format("2006-01-02"))
+	}
+}
+
+func TestCreateExamination(db *gorm.DB) {
+
+	exam := model.Examination{
+		Exam_name:     "Midterm Exam",
+		Instructor_id: 1,
+		CourseId:      101,
+		CurriculumId:  202,
+		Criteria:      "Midterm",
+		Description:   "Midterm examination for the course",
+		Exam_date:     time.Now(),
+	}
+	err := db.Create(&exam).Error
+	if err != nil {
+		fmt.Println("Error creating examination:", err)
+	} else {
+		fmt.Println("Examination created successfully!")
+	}
+}
+
+func UpdateExam(db *gorm.DB , ID uint) {
+	examController := controllerExamination.NewExaminationController(db)
+
+	exam := model.Examination{
+		Exam_name:     "Final Exam",
+		Instructor_id: 123,
+		CourseId:      202,
+		CurriculumId:  202,
+		Criteria:      "Final",
+		Description:   "Final examination for the course",
+		Exam_date:     time.Now(),
+	}
+
+	err := examController.UpdateExam(ID, &exam) 
+	if err != nil {
+		fmt.Println("Error updating examination:", err)
 	}
 }

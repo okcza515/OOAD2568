@@ -33,3 +33,11 @@ func (c *ExaminationController) GetAllExam() error {
 	}
 	return nil
 }
+
+func (c *ExaminationController) UpdateExam(id uint , exam *model.Examination)  error {
+
+if err := c.db.Model(&exam).Where("id = ?", id).Updates(exam).Error; err != nil {
+	return err
+}
+	return nil ;
+}
