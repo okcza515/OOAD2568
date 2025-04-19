@@ -6,7 +6,7 @@ import (
 )
 
 type AcceptanceTest struct {
-	AcceptanceTestID     uint           `gorm:"primaryKey"` // PK
+	AcceptanceTestID     uint           `gorm:"primaryKey"`
 	ProcurementID        uint           `gorm:"foreignKey:ProcurementID"`
 	TORID                uint           `gorm:"foreignKey:TORID"`
 	AcceptanceCriteriaID uint           `gorm:"foreignKey:AcceptanceCriteriaID"`

@@ -47,7 +47,7 @@ func (c *ItemRequestController) GetItemRequestWithDetails(id uint) (*model.ItemR
 }
 
 func (c *ItemRequestController) UpdateItemRequest(id uint, updated *model.ItemRequest) error {
-	updated.ID = id
+	updated.ItemRequestID = id
 	result := c.db.Model(&model.ItemRequest{}).Where("id = ?", id).Updates(updated)
 	return result.Error
 }

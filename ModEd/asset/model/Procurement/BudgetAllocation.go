@@ -8,11 +8,11 @@ import (
 )
 
 type BudgetAllocation struct {
-	BudgetAllocationID uint    `gorm:"primaryKey"`
-	ItemRequestID      uint    `gorm:"not null"`
-	Amount             float64 `gorm:"not null"` // Approved budget
-	ApproverName       string  `gorm:"type:varchar(255)"`
+	BudgetAllocationID uint           `gorm:"primaryKey"`
+	ItemRequestID      uint           `gorm:"not null"`
+	Amount             float64        `gorm:"not null"`
+	ApproverName       string         `gorm:"type:varchar(255)"`
+	DeletedAt          gorm.DeletedAt `gorm:"index"`
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
-	DeletedAt          gorm.DeletedAt `gorm:"index"` // Soft delete
 }

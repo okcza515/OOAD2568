@@ -9,7 +9,6 @@ const (
 	BudgetStatusRejected BudgetApprovalStatus = "rejected"
 )
 
-// Optional: Validation helper
 func (s BudgetApprovalStatus) IsValid() bool {
 	switch s {
 	case BudgetStatusPending, BudgetStatusApproved, BudgetStatusRejected:

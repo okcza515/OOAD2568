@@ -187,44 +187,27 @@ func main() {
 
 		case "6":
 			approvedController := controller.NewApprovedController(db)
-
+	
 			fmt.Print("Enter StudentCode: ")
 			scanner.Scan()
 			studentCode := strings.TrimSpace(scanner.Text())
-
-			var application model.InternshipApplication
-			if err := db.Where("student_code = ?", studentCode).First(&application).Error; err != nil {
-				fmt.Printf("Error: Internship application for StudentCode '%s' not found.\n", studentCode)
-				continue
-			}
-
+	
 			fmt.Print("Enter Advisor Approval Status (APPROVED/REJECT): ")
 			scanner.Scan()
 			advisorStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
-			if advisorStatus != string(model.APPROVED) && advisorStatus != string(model.REJECT) {
-				fmt.Println("Invalid status. Please enter 'APPROVED' or 'REJECT'.")
-				continue
-			}
-			err = approvedController.UpdateAdvisorApprovalStatus(application.ID, model.ApprovedStatus(advisorStatus))
-			if err != nil {
-				fmt.Printf("Failed to update advisor approval status: %v\n", err)
-				continue
-			} else {
-				fmt.Println("Advisor approval status updated successfully!")
-			}
-
+	
 			fmt.Print("Enter Company Approval Status (APPROVED/REJECT): ")
 			scanner.Scan()
 			companyStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
-			if companyStatus != string(model.APPROVED) && companyStatus != string(model.REJECT) {
-				fmt.Println("Invalid status. Please enter 'APPROVED' or 'REJECT'.")
-				continue
-			}
-			err = approvedController.UpdateCompanyApprovalStatus(application.ID, model.ApprovedStatus(companyStatus))
+	
+			err := approvedController.UpdateApprovalStatuses(studentCode, model.ApprovedStatus(advisorStatus), model.ApprovedStatus(companyStatus))
 			if err != nil {
-				fmt.Printf("Failed to update company approval status: %v\n", err)
+					fmt.Printf("Error: %v\n", err)
 			} else {
-				fmt.Println("Company approval status updated successfully!")
+					fmt.Println("Approval statuses updated successfully!")
+					if advisorStatus == string(model.APPROVED) && companyStatus == string(model.APPROVED) {
+							fmt.Println("Intern status updated to ACTIVE.")
+					}
 			}
 
 		case "7":
