@@ -9,6 +9,9 @@ import (
 	"os"
 )
 
+// usage : go run hr/cli/HumanResourceCLI.go update -field="value"
+// required field : id !!
+
 func (c *UpdateStudentCommand) Run(args []string) {
 	fs := flag.NewFlagSet("update", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
