@@ -10,7 +10,7 @@ type EvaluationContext struct {
 	Strategy model.EvaluationStrategy
 }
 
-func NewEvaluationContextWith(strategyType string) *EvaluationContext {
+func NewEvaluationContext(strategyType string) *EvaluationContext {
 	return &EvaluationContext{
 		Strategy: GetEvaluationStrategy(strategyType),
 	}
