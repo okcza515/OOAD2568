@@ -68,5 +68,18 @@ func (c *StudentHRController) UpdateStatus(sid string, status commonModel.Studen
 
 // Upsert inserts or updates a StudentInfo record.
 func (c *StudentHRController) Upsert(info *model.StudentInfo) error {
-	return c.db.FirstOrCreate(info).Error
+    var existingInfo model.StudentInfo
+
+    // Check if the record exists
+    if err := c.db.Where("student_code = ?", info.StudentCode).First(&existingInfo).Error; err != nil {
+        if err == gorm.ErrRecordNotFound {
+            // If the record does not exist, create it
+            return c.db.Create(info).Error
+        }
+        // Return other errors
+        return err
+    }
+
+    // If the record exists, update it
+    return c.db.Model(&existingInfo).Updates(info).Error
 }
