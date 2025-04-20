@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"ModEd/recruit/controller/SQL"
+	"ModEd/core"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"fmt"
@@ -10,28 +10,44 @@ import (
 )
 
 type AdminController struct {
-	sqlCtrl SQL.SQLController[model.Admin]
+	Base *core.BaseController
+	DB   *gorm.DB
 }
 
+// สร้าง AdminController
 func CreateAdminController(db *gorm.DB) *AdminController {
 	return &AdminController{
-		sqlCtrl: SQL.NewGormSQLController[model.Admin](db),
+		Base: core.NewBaseController("Admin", db),
+		DB:   db,
 	}
 }
 
+// Insert Admin ธรรมดา
 func (controller *AdminController) CreateAdmin(admin *model.Admin) error {
-	return controller.sqlCtrl.Create(admin)
+	return controller.Base.Insert(admin)
 }
 
-func (c *AdminController) ReadAdminsFromCSV(filePath string) error {
-	gormDB := c.sqlCtrl.(*SQL.GormSQLController[model.Admin]).GetDB()
+// ดึง Admin ทั้งหมด
+func (c *AdminController) GetAllAdmins() ([]*model.Admin, error) {
+	var admins []*model.Admin
 
-	if err := c.sqlCtrl.ClearTable("admins"); err != nil {
+	if err := c.DB.Find(&admins).Error; err != nil {
+		return nil, fmt.Errorf("failed to query admins: %w", err)
+	}
+
+	return admins, nil
+}
+
+// อ่าน CSV แล้ว Insert
+func (c *AdminController) ReadAdminsFromCSV(filePath string) error {
+	// Clear table ก่อน
+	if err := c.DB.Exec("DELETE FROM admins").Error; err != nil {
 		fmt.Println("Error clearing table:", err)
 		return err
 	}
 
-	admins, err := util.InsertFromCSVOrJSON[model.Admin](filePath, gormDB)
+	// Insert ข้อมูลจาก CSV
+	admins, err := util.InsertFromCSVOrJSON[model.Admin](filePath, c.DB)
 	if err != nil {
 		return err
 	}
