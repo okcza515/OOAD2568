@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package util
 
 import (
@@ -16,7 +17,6 @@ type CSVImporter struct {
 	TableName string
 }
 
-// MapRowToModel แปลงข้อมูล CSV ตามประเภท table
 func (ci *CSVImporter) MapRowToModel(row []string) (interface{}, error) {
 	if len(row) < 1 {
 		return nil, fmt.Errorf("invalid row data")
@@ -65,8 +65,6 @@ func (ci *CSVImporter) ReadFromCSV(filePath string) error {
 	}
 	return nil
 }
-
-// ///////
 
 func ReadOnlyFromCSVOrJSON[T any](filePath string) ([]T, error) {
 	mapper, err := core.CreateMapper[T](filePath)

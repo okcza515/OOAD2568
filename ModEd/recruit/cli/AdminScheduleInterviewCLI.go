@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -19,7 +20,6 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Get Instructor ID
 	fmt.Print("Enter Instructor ID: ")
 	scanner.Scan()
 	instructorID = scanner.Text()
@@ -30,7 +30,6 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 	}
 	con_int_instrucID = uint(convInstructorID)
 
-	// Get Applicant ID
 	fmt.Print("Enter Applicant ID: ")
 	scanner.Scan()
 	applicantID := scanner.Text()
@@ -48,7 +47,6 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 	}
 	int_ApplicantID = uint(convApplicantID)
 
-	// Get Scheduled Appointment
 	fmt.Print("Enter Scheduled Appointment (YYYY-MM-DD HH:MM:SS): ")
 	scanner.Scan()
 	scheduledTime := scanner.Text()
@@ -59,7 +57,6 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 		return
 	}
 
-	// Get Interview Score (optional)
 	fmt.Print("Enter Interview Score (or press Enter to skip): ")
 	scanner.Scan()
 	scoreInput = scanner.Text()

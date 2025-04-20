@@ -1,4 +1,4 @@
-// model/applicant.go
+// MEP-1003 Student Recruitment
 package model
 
 type Applicant struct {

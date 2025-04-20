@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package criteria
 
 import "ModEd/recruit/model"

@@ -1,4 +1,4 @@
-// model/a.go
+// MEP-1003 Student Recruitment
 package model
 
 type Admin struct {
