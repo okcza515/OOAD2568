@@ -1,5 +1,6 @@
 package commands
 
+type UpdateCommand struct{}
 type ListStudentsCommand struct{}
 type AddStudentCommand struct{}
 type UpdateStudentStatusCommand struct{}

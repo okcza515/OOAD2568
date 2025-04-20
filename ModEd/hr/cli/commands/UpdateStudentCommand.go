@@ -85,10 +85,3 @@ func (c *UpdateStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	fmt.Println("Student updated successfully!")
 	return nil
 }
-
-func ifNotEmpty(newValue, fallbackValue string) string {
-	if newValue != "" {
-		return newValue
-	}
-	return fallbackValue
-}
