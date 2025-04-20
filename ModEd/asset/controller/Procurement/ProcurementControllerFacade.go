@@ -11,7 +11,7 @@ type ProcurementControllerFacade struct {
 	db *gorm.DB
 
 	migration     MigrationController
-	requestedItem ItemRequestController
+	requestedItem InstrumentRequestController
 }
 
 func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
@@ -24,9 +24,11 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 
 	facade := ProcurementControllerFacade{db: db}
 
-	facade.requestedItem = ItemRequestController{}
+	facade.migration = MigrationController{db: db}
+	facade.requestedItem = InstrumentRequestController{db: db}
 
-	err = facade.migration.MigrateToDB()
+	// fmt.Println("I'm In Facade yippie!")
+	err = facade.migration.migrateToDB()
 	if err != nil {
 		return nil, errors.New("err: failed to migrate schema")
 	}
