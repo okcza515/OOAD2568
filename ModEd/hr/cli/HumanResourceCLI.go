@@ -16,10 +16,13 @@ type Command interface {
 
 // Command registry using implementations from the commands package.
 var commandsRegistry = map[string]Command{
-	"list": &commands.ListStudentsCommand{},
-	"add":  &commands.AddStudentCommand{},
+	"list":         &commands.ListStudentsCommand{},
+	"add":          &commands.AddStudentCommand{},
+	"delete":       &commands.DeleteStudentCommand{},
+	"update":       &commands.UpdateStudentCommand{},
+	"status":       &commands.UpdateStudentStatusCommand{},
 	"updateStatus": &commands.UpdateStudentStatusCommand{},
-	"import": &commands.ImportStudentsCommand{},
+	"import":       &commands.ImportStudentsCommand{},
 	// ... other command registrations ...
 }
 
