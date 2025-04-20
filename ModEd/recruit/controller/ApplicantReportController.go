@@ -40,3 +40,14 @@ func (ctrl *ApplicationReportController) UpdateApplicationStatus(applicantID uin
 
 	return result.Error
 }
+
+func (ctrl *ApplicationReportController) GetApplicationStatusByID(applicantID uint) (model.ApplicationStatus, error) {
+	var status model.ApplicationStatus
+	err := ctrl.DB.
+		Model(&model.ApplicationReport{}).
+		Select("application_statuses").
+		Where("applicant_id = ?", applicantID).
+		Scan(&status).Error
+
+	return status, err
+}
