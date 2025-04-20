@@ -34,8 +34,8 @@ func main() {
 
 	fmt.Println("Migration successful")
 
-	ctx := controller.NewEvaluationContext("report")
-	score := ctx.Evaluate([]projectModel.AssessmentCriteria{
+	eval := controller.NewEvaluation("report")
+	score := eval.Evaluate([]projectModel.AssessmentCriteria{
 		{
 			AssessmentCriteriaId: 1,
 			CriteriaName:         "Report Quality",
