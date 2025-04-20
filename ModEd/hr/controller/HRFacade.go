@@ -67,9 +67,9 @@ func (f *HRFacade) InsertInstructor(info *model.InstructorInfo) error {
 	return f.Instructor.Insert(info)
 }
 
-// func (f *HRFacade) UpdateInstructor(info *model.InstructorInfo) error {
-// 	return f.Instructor.Update(info)
-// }
+func (f *HRFacade) UpdateInstructor(info *model.InstructorInfo) error {
+	return f.Instructor.Update(info)
+}
 
 func (f *HRFacade) DeleteInstructor(id string) error {
 	return f.Instructor.Delete(id)

@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type AcademicPosition int
 
 const (
@@ -8,3 +10,16 @@ const (
 	PROFESSOR
 	NONE
 )
+
+func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
+	switch posStr {
+	case "assistant", "ASSISTANT_PROF":
+		return ASSISTANT_PROF, nil
+	case "associate", "ASSOCIATE_PROF":
+		return ASSOCIATE_PROF, nil
+	case "professor", "PROFESSOR":
+		return PROFESSOR, nil
+	default:
+		return NONE, fmt.Errorf("invalid academic position: %s", posStr)
+	}
+}

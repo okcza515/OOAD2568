@@ -40,11 +40,11 @@ func (c *InstructorHRController) Insert(info *model.InstructorInfo) error {
 
 // Update updates an existing InstructorInfo record.
 // No Primary Key for InstructorInfo
-// func (c *InstructorHRController) Update(info *model.InstructorInfo) error {
-//     return c.db.Model(&model.InstructorInfo{}).
-//         Where("student_code = ?", info.StudentCode).
-//         Updates(info).Error
-// }
+func (c *InstructorHRController) Update(info *model.InstructorInfo) error {
+	return c.db.Model(&model.InstructorInfo{}).
+		Where("id = ?", info.ID).
+		Updates(info).Error
+}
 
 // Delete deletes an instructor's HR information by ID.
 func (c *InstructorHRController) Delete(id string) error {
