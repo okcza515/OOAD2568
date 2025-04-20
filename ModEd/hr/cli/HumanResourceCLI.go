@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"ModEd/hr/cli/commands"
+	"ModEd/hr/controller"
 	"ModEd/hr/util"
 )
 
@@ -34,7 +35,15 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
+	// Open the database
 	util.DatabasePath = databasePath
+	db := util.OpenDatabase(*databasePath)
+
+	// Auto-call migration before executing any command
+	if err := controller.MigrateStudentsToHR(db); err != nil {
+		fmt.Printf("Migration failed: %v\n", err)
+		os.Exit(1)
+	}
 
 	if len(args) < 1 {
 		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|...} [options]")

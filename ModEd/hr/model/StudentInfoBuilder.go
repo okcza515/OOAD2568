@@ -78,15 +78,15 @@ func (b *StudentInfoBuilder) WithPhoneNumber(phone string) *StudentInfoBuilder {
 	return b
 }
 
-func (b *StudentInfoBuilder) WithAdvisor(advisor commonModel.Instructor) *StudentInfoBuilder {
-	b.info.Advisor = advisor
-	return b
-}
+// func (b *StudentInfoBuilder) WithAdvisor(advisor commonModel.Instructor) *StudentInfoBuilder {
+// 	b.info.Advisor = advisor
+// 	return b
+// }
 
-func (b *StudentInfoBuilder) WithDepartment(department commonModel.Department) *StudentInfoBuilder {
-	b.info.Department = department
-	return b
-}
+// func (b *StudentInfoBuilder) WithDepartment(department commonModel.Department) *StudentInfoBuilder {
+// 	b.info.Department = department
+// 	return b
+// }
 
 func (b *StudentInfoBuilder) WithStudent(student commonModel.Student) *StudentInfoBuilder {
 	b.info.StudentCode = student.StudentCode

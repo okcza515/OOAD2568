@@ -9,6 +9,6 @@ type StudentInfo struct {
 	Gender      string           `csv:"Gender" json:"Gender"`
 	CitizenID   string           `csv:"CitizenID" json:"CitizenID"`
 	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber"`
-	Advisor     model.Instructor `csv:"Advisor" json:"Advisor"`
-	Department  model.Department `csv:"Department" json:"Department"`
+	// Advisor     model.Instructor `csv:"Advisor" json:"Advisor"`
+	// Department  model.Department `csv:"Department" json:"Department"`
 }
