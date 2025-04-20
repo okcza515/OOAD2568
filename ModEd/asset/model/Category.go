@@ -3,11 +3,11 @@ package model
 // MEP-1012 Asset
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type Category struct {
-	gorm.Model
+	core.BaseModel
 	CategoryName string  `gorm:"type:varchar(255);not null"`
 	Description  *string `gorm:"type:varchar(255)"`
 	UpdatedBy    *uint

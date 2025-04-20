@@ -4,6 +4,7 @@ package controller
 
 import (
 	"ModEd/asset/model"
+	"ModEd/core"
 	"time"
 
 	"gorm.io/gorm"
@@ -11,6 +12,14 @@ import (
 
 type CategoryController struct {
 	db *gorm.DB
+	*core.BaseController
+}
+
+type CategoryControllerInterface interface {
+	getAll() ([]model.InstrumentLog, error)
+	ListAll() ([]string, error)
+	Insert(data core.RecordInterface) error
+	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
 }
 
 func (c *CategoryController) GetAll() (*[]model.Category, error) {
