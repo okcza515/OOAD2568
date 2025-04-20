@@ -19,7 +19,7 @@ type AssetControllerFacade struct {
 	Instrument       InstrumentController
 	InstrumentLog    InstrumentLogControllerInterface
 	Supply           SupplyControllerInterface
-	SupplyLog        SupplyLogController
+	SupplyLog        SupplyLogControllerInterface
 }
 
 func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
@@ -38,7 +38,7 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade.Instrument = InstrumentController{db: db}
 	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
 	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
-	facade.SupplyLog = SupplyLogController{db: db}
+	facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
 
 	err = facade.migration.migrateToDB()
 	if err != nil {
@@ -54,8 +54,8 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 		"Category":       &[]model.Category{},
 		"InstrumentList": &[]model.Instrument{},
 		//"InstrumentLog":  &[]model.InstrumentLog{},
-		"SupplyList":     &[]model.Supply{},
-		//"SupplyLog":      &[]model.SupplyLog{},
+		"SupplyList": &[]model.Supply{},
+		"SupplyLog":  &[]model.SupplyLog{},
 	}
 
 	for filename, m := range seedData {

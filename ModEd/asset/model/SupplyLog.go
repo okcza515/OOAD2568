@@ -3,11 +3,11 @@ package model
 // MEP-1012 Asset
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type SupplyLog struct {
-	gorm.Model
+	core.BaseModel
 	RefUserID   *uint
 	StaffUserID uint            `gorm:"not null"`
 	Action      SupplyLogAction `gorm:"not null"`
