@@ -24,6 +24,7 @@ var commandsRegistry = map[string]Command{
 	"status":       &commands.UpdateStudentStatusCommand{},
 	"updateStatus": &commands.UpdateStudentStatusCommand{},
 	"import":       &commands.ImportStudentsCommand{},
+	"export":       &commands.ExportStudentsCommand{},
 	// ... other command registrations ...
 }
 

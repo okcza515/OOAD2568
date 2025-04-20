@@ -6,3 +6,4 @@ type UpdateStudentStatusCommand struct{}
 type ImportStudentsCommand struct{}
 type DeleteStudentCommand struct{}
 type UpdateStudentCommand struct{}
+type ExportStudentsCommand struct{}
