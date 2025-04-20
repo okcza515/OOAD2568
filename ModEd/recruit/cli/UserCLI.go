@@ -10,11 +10,14 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 
 	util.ClearScreen()
 
-	fmt.Println("==== User Menu ====")
-	fmt.Println("1. Register Applicant")
-	fmt.Println("2. View Application Status")
-	fmt.Println("3. back")
-	fmt.Print("Select an option: ")
+	fmt.Println("\n\033[1;35m╔════════════════════════════╗")
+	fmt.Println("║          User Menu         ║")
+	fmt.Println("╚════════════════════════════╝\033[0m")
+
+	fmt.Println("\n\033[1;36m[1]\033[0m  Register Applicant")
+	fmt.Println("\033[1;36m[2]\033[0m  View Application Status")
+	fmt.Println("\033[1;36m[3]\033[0m  Back")
+	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 
 	var choice int
 	fmt.Scanln(&choice)

@@ -38,8 +38,9 @@ func RegisterApplicantCLI(
 	default:
 		fmt.Println("Invalid option.")
 	}
-	fmt.Println("\nPlease Enter Something : ")
+	fmt.Println("\n-- Press Enter to continue... --")
 	scanner.Scan()
+
 }
 
 func registerFromFile(
@@ -91,7 +92,7 @@ func registerFromFile(
 		compositeCriteria := criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 		status := model.Pending
 		if compositeCriteria.IsSatisfiedBy(a) {
-			status = model.InterviewStage
+			status = model.Pending
 		} else {
 			status = model.Rejected
 		}
@@ -182,7 +183,7 @@ func registerManually(
 
 	status := model.Pending
 	if compositeCriteria.IsSatisfiedBy(applicant) {
-		status = model.InterviewStage
+		status = model.Pending
 	} else {
 		status = model.Rejected
 	}

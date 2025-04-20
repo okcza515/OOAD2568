@@ -68,12 +68,15 @@ func main() {
 		util.ClearScreen()
 
 		if role == "" {
-			fmt.Println("\n==== Student Recruitment System ====")
-			fmt.Println("1. User")
-			fmt.Println("2. Admin")
-			fmt.Println("3. Instructor")
-			fmt.Println("4. Exit")
-			fmt.Print("Select role: ")
+			fmt.Println("\n\033[1;34m╔══════════════════════════════════════╗")
+			fmt.Println("║       Moded Recruitment System     ║")
+			fmt.Println("╚══════════════════════════════════════╝\033[0m")
+
+			fmt.Println("\n\033[1;36m[1]\033[0m  User")
+			fmt.Println("\033[1;36m[2]\033[0m  Admin")
+			fmt.Println("\033[1;36m[3]\033[0m  Instructor")
+			fmt.Println("\033[1;36m[4]\033[0m  Exit")
+			fmt.Print("\n\033[1;33mSelect role:\033[0m ")
 
 			var roleChoice int
 			fmt.Scanln(&roleChoice)

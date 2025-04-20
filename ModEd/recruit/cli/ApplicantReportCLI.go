@@ -3,6 +3,7 @@ package cli
 import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
+	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
@@ -13,6 +14,7 @@ func ShowApplicantReportCLI(
 	applicantCtrl *controller.ApplicantController,
 	applicationReportCtrl *controller.ApplicationReportController,
 ) {
+	util.ClearScreen()
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("Enter Applicant ID to view the report: ")
@@ -39,7 +41,7 @@ func ShowApplicantReportCLI(
 
 	displayApplicantReport(&applicant, report)
 
-	fmt.Println("\nPlease Enter Something : ")
+	fmt.Println("\n-- Press Enter to continue... --")
 	scanner.Scan()
 }
 
@@ -66,6 +68,8 @@ func printStatus(status model.ApplicationStatus) {
 	case model.Pending:
 		fmt.Printf("\033[1;33mStatus: %s\033[0m\n", status)
 	case model.InterviewStage:
+		fmt.Printf("\033[1;36mStatus: %s\033[0m\n", status)
+	case model.Accepted:
 		fmt.Printf("\033[1;32mStatus: %s\033[0m\n", status)
 	case model.Rejected:
 		fmt.Printf("\033[1;31mStatus: %s\033[0m\n", status)
