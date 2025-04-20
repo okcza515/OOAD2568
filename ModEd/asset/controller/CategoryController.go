@@ -1,7 +1,7 @@
-package asset
+package controller
 
 import (
-	model "ModEd/asset/model/asset"
+	"ModEd/asset/model"
 	"time"
 
 	"gorm.io/gorm"

@@ -1,7 +1,7 @@
-package asset
+package controller
 
 import (
-	model "ModEd/asset/model/asset"
+	model2 "ModEd/asset/model"
 	"ModEd/utils/deserializer"
 	"errors"
 	"gorm.io/driver/sqlite"
@@ -49,8 +49,8 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 func (facade *AssetControllerFacade) loadSeedData() error {
 	seedData := map[string]interface{}{
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
-		"Category":       &[]model.Category{},
-		"InstrumentList": &[]model.Instrument{},
+		"Category":       &[]model2.Category{},
+		"InstrumentList": &[]model2.Instrument{},
 		//"InstrumentLog":  &[]model.InstrumentLog{},
 		//"SupplyList":     &[]model.Supply{},
 		//"SupplyLog":      &[]model.SupplyLog{},
