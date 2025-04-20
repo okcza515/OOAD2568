@@ -25,8 +25,8 @@ func (c *ImportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	fs.Parse(args)
 
 	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
-		return fmt.Errorf("Validation error: %v\n", err)
 		fs.Usage()
+		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
