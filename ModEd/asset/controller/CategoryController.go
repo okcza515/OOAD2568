@@ -5,7 +5,6 @@ package controller
 import (
 	"ModEd/asset/model"
 	"ModEd/core"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -16,18 +15,18 @@ type CategoryController struct {
 }
 
 type CategoryControllerInterface interface {
-	getAll() ([]model.InstrumentLog, error)
-	ListAll() ([]string, error)
+	getAll() (*[]model.Category, error)
 	Insert(data core.RecordInterface) error
 	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
 }
 
-func (c *CategoryController) GetAll() (*[]model.Category, error) {
+func (c *CategoryController) getAll() (*[]model.Category, error) {
 	categories := new([]model.Category)
 	result := c.db.Find(&categories)
 	return categories, result.Error
 }
 
+/*
 func (c *CategoryController) GetByID(supplyID uint) (*model.Category, error) {
 	categories := new(model.Category)
 	result := c.db.First(&categories, "ID = ?", supplyID)
@@ -49,3 +48,4 @@ func (c *CategoryController) Delete(categoryID uint) error {
 	result := c.db.Model(&model.Category{}).Where("ID = ?", categoryID).Update("deleted_at", time.Now())
 	return result.Error
 }
+*/
