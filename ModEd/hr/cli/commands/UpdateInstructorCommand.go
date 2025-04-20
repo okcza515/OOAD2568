@@ -12,52 +12,44 @@ import (
 	"gorm.io/gorm"
 )
 
-func (c *UpdateInstructorCommand) Execute(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("update", flag.ExitOnError)
-	instructorID := fs.String("id", "", "Instructor ID")
-	field := fs.String("field", "", "Field to update (position, department, etc.)")
+func updateInstructor(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("update instructor", flag.ExitOnError)
+	instructorID := fs.String("id", "", "Instructor ID to update")
+	field := fs.String("field", "", "Field to update (e.g., position, department)")
 	value := fs.String("value", "", "New value for the specified field")
 	fs.Parse(args)
 
 	if *instructorID == "" || *field == "" || *value == "" {
 		fs.Usage()
-		return fmt.Errorf("Instructor ID, field, and value are all required.")
+		return fmt.Errorf("instructor id, field, and value are required")
 	}
 
-	db := util.OpenDatabase(*util.DatabasePath)
-	tm := &util.TransactionManager{DB: db}
-	err := tm.Execute(func(tx *gorm.DB) error {
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 		instructorInfo, err := hrFacade.GetInstructorById(*instructorID)
 		if err != nil {
-			return fmt.Errorf("error retrieving instructor: %v", err)
+			return fmt.Errorf("error retrieving instructor with ID %s: %v", *instructorID, err)
 		}
 
-		// Determine which field to update based on the "field" flag.
 		switch strings.ToLower(*field) {
 		case "position", "academicposition", "academic_position":
-			// Convert string to AcademicPosition type.
 			parsedPos, err := model.ParseAcademicPosition(*value)
 			if err != nil {
 				return fmt.Errorf("invalid academic position: %v", err)
 			}
 			instructorInfo.AcademicPosition = parsedPos
 		case "department":
-			// Assume InstructorInfo has a Department field.
+			// Assuming InstructorInfo has a Department field.
 			// instructorInfo.Department = *value
-		// Add more cases as needed for additional fields.
 		default:
-			return fmt.Errorf("unknown field: %s", *field)
+			return fmt.Errorf("unknown field for instructor update: %s", *field)
 		}
 
 		if err := hrFacade.UpdateInstructor(instructorInfo); err != nil {
 			return fmt.Errorf("error updating instructor: %v", err)
 		}
+		fmt.Println("Instructor updated successfully!")
 		return nil
 	})
-	if err != nil {
-		return fmt.Errorf("Transaction failed: %v\n", err)
-	}
-	fmt.Printf("Instructor %s updated successfully: %s set to %s\n", *instructorID, *field, *value)
-	return nil
 }
