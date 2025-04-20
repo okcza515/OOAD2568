@@ -6,30 +6,49 @@ import (
 	"os"
 
 	"ModEd/hr/cli/commands"
-	"ModEd/hr/controller"
 	"ModEd/hr/util"
+
+	"gorm.io/gorm"
 )
 
-// Command interface can be defined here or in a shared package.
+// Command interface representing an executable command.
 type Command interface {
-	Run(args []string)
+	// Execute performs the command and returns an error if something goes wrong.
+	Execute(args []string, tx *gorm.DB) error
 }
 
-// Command registry using implementations from the commands package.
-var commandsRegistry = map[string]Command{
-	"list":         &commands.ListStudentsCommand{},
-	"add":          &commands.AddStudentCommand{},
-	"delete":       &commands.DeleteStudentCommand{},
-	"update":       &commands.UpdateStudentCommand{},
-	"status":       &commands.UpdateStudentStatusCommand{},
-	"updateStatus": &commands.UpdateStudentStatusCommand{},
-	"import":       &commands.ImportStudentsCommand{},
-	"migrate":      &commands.MigrateStudentsCommand{},
-	"export":       &commands.ExportStudentsCommand{},
-	"requestResignation": &commands.RequestResignationCommand{},
-	"answerResignation":  &commands.AnswerResignationCommand{},
+// Invoker holds a registry of commands.
+type Invoker struct {
+	commands map[string]Command
+}
 
-	// ... other command registrations ...
+// NewInvoker creates a new invoker with registered commands.
+func NewInvoker() *Invoker {
+	return &Invoker{
+		commands: map[string]Command{
+			"list":               &commands.ListStudentsCommand{},
+			"add":                &commands.AddStudentCommand{},
+			"delete":             &commands.DeleteStudentCommand{},
+			"update":             &commands.UpdateStudentCommand{},
+			"status":             &commands.UpdateStudentStatusCommand{},
+			"updateStatus":       &commands.UpdateStudentStatusCommand{},
+			"import":             &commands.ImportStudentsCommand{},
+			"migrate":            &commands.MigrateStudentsCommand{},
+			"export":             &commands.ExportStudentsCommand{},
+			"requestResignation": &commands.RequestResignationCommand{},
+			"answerResignation":  &commands.AnswerResignationCommand{},
+			// ... additional command registrations ...
+		},
+	}
+}
+
+// ExecuteCommand looks up and executes the command with the given arguments.
+func (inv *Invoker) ExecuteCommand(name string, args []string, tx *gorm.DB) error {
+	cmd, ok := inv.commands[name]
+	if !ok {
+		return fmt.Errorf("unknown command: %s", name)
+	}
+	return cmd.Execute(args, tx)
 }
 
 var (
@@ -44,23 +63,16 @@ func main() {
 	util.DatabasePath = databasePath
 	db := util.OpenDatabase(*databasePath)
 
-	// Auto-call migration before executing any command
-	if err := controller.MigrateStudentsToHR(db); err != nil {
-		fmt.Printf("Migration failed: %v\n", err)
-		os.Exit(1)
-	}
-
 	if len(args) < 1 {
 		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|...} [options]")
 		os.Exit(1)
 	}
 
 	commandName := args[0]
-	cmd, ok := commandsRegistry[commandName]
-	if !ok {
-		fmt.Printf("Unknown command: %s\n", commandName)
+	// Create an invoker and execute the command.
+	invoker := NewInvoker()
+	if err := invoker.ExecuteCommand(commandName, args[1:], db); err != nil {
+		fmt.Printf("Error executing command: %v\n", err)
 		os.Exit(1)
 	}
-
-	cmd.Run(args[1:])
 }

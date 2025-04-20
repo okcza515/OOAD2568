@@ -6,11 +6,12 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
+
+	"gorm.io/gorm"
 )
 
 // usage: go run hr/cli/HumanResourceCLI.go requestResignation -id="66050001" -reason="ย้ายคณะ"
-func (c *RequestResignationCommand) Run(args []string) {
+func (c *RequestResignationCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
 	instructorID := fs.String("_id", "", "Instructor ID")
@@ -20,9 +21,8 @@ func (c *RequestResignationCommand) Run(args []string) {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
 		if err = util.ValidateRequiredFlags(fs, []string{"_id", "reason", "role"}); err != nil {
-			fmt.Printf("Validation error: %v\n", err)
 			fs.Usage()
-			os.Exit(1)
+			return fmt.Errorf("Validation error: %v\n", err)
 		}
 	}
 
@@ -30,19 +30,16 @@ func (c *RequestResignationCommand) Run(args []string) {
 	switch *role {
 	case "Student":
 		if *studentID == "" {
-			fmt.Println("Student role requires -studentID")
-			os.Exit(1)
+			return fmt.Errorf("Student role requires -studentID")
 		}
 		requesterID = *studentID
 	case "Instructor":
 		if *instructorID == "" {
-			fmt.Println("Instructor role requires -id")
-			os.Exit(1)
+			return fmt.Errorf("Instructor role requires -id")
 		}
 		requesterID = *instructorID
 	default:
-		fmt.Println("Invalid role. Must be 'Student' or 'Instructor'")
-		os.Exit(1)
+		return fmt.Errorf("Invalid role. Must be 'Student' or 'Instructor'")
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
@@ -54,9 +51,9 @@ func (c *RequestResignationCommand) Run(args []string) {
 		Build()
 
 	if err := hrFacade.SubmitResignationRequest(request); err != nil {
-		fmt.Printf("Failed to submit resignation request: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Failed to submit resignation request: %v\n", err)
 	}
 
 	fmt.Println("Resignation request submitted successfully.")
+	return nil
 }

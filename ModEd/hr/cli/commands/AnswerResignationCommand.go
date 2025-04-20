@@ -5,11 +5,12 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
+
+	"gorm.io/gorm"
 )
 
 // usage : go run hr/cli/HumanResourceCLI.go answerResignation -id=3 -answer=approve
-func (c *AnswerResignationCommand) Run(args []string) {
+func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("answerResignation", flag.ExitOnError)
 	id := fs.String("id", "", "id")
 	answer := fs.String("answer", "", "approve or reject")
@@ -17,9 +18,8 @@ func (c *AnswerResignationCommand) Run(args []string) {
 	fs.Parse(args)
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "answer"}); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
 		fs.Usage()
-		os.Exit(1)
+		return fmt.Errorf("validation error: %w", err)
 	}
 
 	var status string
@@ -29,8 +29,7 @@ func (c *AnswerResignationCommand) Run(args []string) {
 	case "reject":
 		status = "Rejected"
 	default:
-		fmt.Println("Error: --answer must be either 'approve' or 'reject'")
-		os.Exit(1)
+		return fmt.Errorf("invalid answer: --answer must be either 'approve' or 'reject'")
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
@@ -38,9 +37,10 @@ func (c *AnswerResignationCommand) Run(args []string) {
 
 	err := hrFacade.UpdateResignationStatus(*id, status, *reason)
 	if err != nil {
-		fmt.Printf("Error updating resignation request: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("error updating resignation request: %w", err)
 	}
 
 	fmt.Printf("Resignation marked as '%s' for id %s\n", status, *id)
+
+	return nil
 }

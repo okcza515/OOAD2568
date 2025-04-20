@@ -6,22 +6,20 @@ import (
 	hrUtil "ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
 
 // usage : go run hr/cli/HumanResourceCLI.go delete -field="value"
 // required field : id !!"
-func (c *DeleteStudentCommand) Run(args []string) {
+func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("delete", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to delete")
 	fs.Parse(args)
 
 	if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
 		fs.Usage()
-		os.Exit(1)
+		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
 	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
@@ -51,9 +49,9 @@ func (c *DeleteStudentCommand) Run(args []string) {
 	})
 
 	if err != nil {
-		fmt.Printf("Failed to delete student: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Failed to delete student: %v\n", err)
 	}
 
 	fmt.Println("Student deleted successfully!")
+	return nil
 }

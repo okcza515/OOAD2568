@@ -3,16 +3,17 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"ModEd/hr/controller" // adjust the import paths as needed
 	"ModEd/hr/util"
+
+	"gorm.io/gorm"
 )
 
 // usage : go run hr/cli/HumanResourceCLI.go list
 // no required fields !!
 // Run executes the list command, using flags to parse arguments.
-func (c *ListStudentsCommand) Run(args []string) {
+func (c *ListStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
@@ -23,8 +24,7 @@ func (c *ListStudentsCommand) Run(args []string) {
 	hrFacade := controller.NewHRFacade(db)
 	studentInfos, err := hrFacade.GetAllStudents()
 	if err != nil {
-		fmt.Printf("Error listing students: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Error listing students: %v\n", err)
 	}
 
 	fmt.Println("Human Resource Student Info:")
@@ -32,4 +32,5 @@ func (c *ListStudentsCommand) Run(args []string) {
 		fmt.Printf("SID: %s | Name: %s %s | Gender: %s | CitizenID: %s | Phone: %s | Status: %s | Email: %s\n",
 			s.StudentCode, s.FirstName, s.LastName, s.Gender, s.CitizenID, s.PhoneNumber, util.StatusToString(*s.Status), s.Email)
 	}
+	return nil
 }

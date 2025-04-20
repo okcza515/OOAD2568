@@ -5,37 +5,35 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
+
+	"gorm.io/gorm"
 )
 
 // usage : go run hr/cli/HumanResourceCLI.go updateStatus -field="value"
 // required field : id, status !!
-func (c *UpdateStudentStatusCommand) Run(args []string){
+func (c *UpdateStudentStatusCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("updateStatus", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update status")
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "status"}); err != nil {
-        fmt.Printf("Validation error: %v\n", err)
-        fs.Usage()
-        os.Exit(1)
-    }
-
+		fs.Usage()
+		return fmt.Errorf("Validation error: %v\n", err)
+	}
 
 	newStatus, err := util.StatusFromString(*status)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Error: %v\n", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
 	if err := hrFacade.UpdateStudentStatus(*studentID, newStatus); err != nil {
-		fmt.Printf("Failed to update student status: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Failed to update student status: %v\n", err)
 	}
 
 	fmt.Printf("Student %s status successfully updated to %s!\n", *studentID, *status)
+	return nil
 }

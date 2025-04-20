@@ -6,12 +6,13 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // usage: go run hr/cli/HumanResourceCLI.go requestLeave -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
-func (c *RequsetLeaveCommand) Run(args []string) {
+func (c *RequsetLeaveCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestLeave", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
 	leaveType := fs.String("type", "", "Type of leave (e.g. sick, personal)")
@@ -20,16 +21,14 @@ func (c *RequsetLeaveCommand) Run(args []string) {
 	fs.Parse(args)
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "type", "reason", "date"}); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
 		fs.Usage()
-		os.Exit(1)
+		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
 	// แปลง string -> time.Time
 	leaveDate, err := time.Parse("2006-01-02", *leaveDateStr)
 	if err != nil {
-		fmt.Printf("Invalid date format: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Invalid date format: %v\n", err)
 	}
 
 	// เปิด database และเตรียม facade
@@ -44,11 +43,10 @@ func (c *RequsetLeaveCommand) Run(args []string) {
 		WithLeaveDate(leaveDate).
 		Build()
 
-	
 	if err := hrFacade.SubmitLeaveRequest(request); err != nil {
-		fmt.Printf("Failed to submit leave request: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Failed to submit leave request: %v\n", err)
 	}
 
 	fmt.Println("Leave request submitted successfully.")
+	return nil
 }

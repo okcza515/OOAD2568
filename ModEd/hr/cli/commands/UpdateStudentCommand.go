@@ -8,7 +8,6 @@ import (
 	hrUtil "ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
@@ -16,7 +15,7 @@ import (
 // usage : go run hr/cli/HumanResourceCLI.go update -field="value"
 // required field : id !!
 
-func (c *UpdateStudentCommand) Run(args []string) {
+func (c *UpdateStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("update", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
 	firstName := fs.String("fname", "", "New First Name value")
@@ -28,9 +27,8 @@ func (c *UpdateStudentCommand) Run(args []string) {
 	fs.Parse(args)
 
 	if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
 		fs.Usage()
-		os.Exit(1)
+		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
 	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
@@ -61,8 +59,7 @@ func (c *UpdateStudentCommand) Run(args []string) {
 		hrFacade := controller.NewHRFacade(tx)
 		studentInfo, err := hrFacade.GetStudentById(*studentID)
 		if err != nil {
-			fmt.Printf("Error retrieving student with ID %s: %v\n", *studentID, err)
-			os.Exit(1)
+			return fmt.Errorf("Error retrieving student with ID %s: %v\n", *studentID, err)
 		}
 
 		newStudent := hrModel.NewStudentInfoBuilder().
@@ -82,11 +79,11 @@ func (c *UpdateStudentCommand) Run(args []string) {
 	})
 
 	if err != nil {
-		fmt.Printf("Transaction failed: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Transaction failed: %v\n", err)
 	}
 
 	fmt.Println("Student updated successfully!")
+	return nil
 }
 
 func ifNotEmpty(newValue, fallbackValue string) string {

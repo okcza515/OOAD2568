@@ -1,19 +1,20 @@
 package commands
 
 import (
-    "ModEd/hr/controller"
-    "ModEd/hr/util"
-    "fmt"
-    "os"
+	"ModEd/hr/controller"
+	"ModEd/hr/util"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
-func (c *MigrateStudentsCommand) Run(args []string) {
-    db := util.OpenDatabase(*util.DatabasePath)
+func (c *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
+	db := util.OpenDatabase(*util.DatabasePath)
 
-    if err := controller.MigrateStudentsToHR(db); err != nil {
-        fmt.Printf("Migration failed: %v\n", err)
-        os.Exit(1)
-    }
+	if err := controller.MigrateStudentsToHR(db); err != nil {
+		return fmt.Errorf("Migration failed: %v\n", err)
+	}
 
-    fmt.Println("Migration completed successfully!")
+	fmt.Println("Migration completed successfully!")
+	return nil
 }

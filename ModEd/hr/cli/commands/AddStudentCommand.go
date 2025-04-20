@@ -8,12 +8,11 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
 
-func (c *AddStudentCommand) Run(args []string) {
+func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("add", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
 	firstName := fs.String("fname", "", "First Name")
@@ -24,9 +23,8 @@ func (c *AddStudentCommand) Run(args []string) {
 	fs.Parse(args)
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "fname", "lname"}); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
 		fs.Usage()
-		os.Exit(1)
+		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
@@ -71,9 +69,10 @@ func (c *AddStudentCommand) Run(args []string) {
 	})
 
 	if err != nil {
-		fmt.Printf("Transaction failed: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Transaction failed: %v\n", err)
 	}
 
 	fmt.Println("Student added and HR info updated successfully!")
+
+	return nil
 }
