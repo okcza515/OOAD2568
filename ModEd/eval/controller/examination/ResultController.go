@@ -67,9 +67,9 @@ func NewResultController(db *gorm.DB) *ResultController {
 // 	}
 // }
 
-func (c *ResultController) GetAllResults() ([]model.Result, error) {
+func (c *ResultController) GetResultByStudent(studentID uint) ([]model.Result, error) {
 	var results []model.Result
-	if err := c.db.Find(&results).Error; err != nil {
+	if err := c.db.Where("student_id = ?", studentID).Preload("Examination").Preload("Student").Find(&results).Error; err != nil {
 		return nil, err
 	}
 	return results, nil

@@ -25,8 +25,7 @@ func RunResultCLI() {
 	for {
 		fmt.Println("\nResult CLI")
 		fmt.Println("1. Create Result")
-		fmt.Println("2. Display All Results")
-		// Display by student
+		fmt.Println("2. Display All Results by StudentID")
 		fmt.Println("3. Update Result by ResultID")
 		fmt.Println("4. Delete Result by ResultID")
 		fmt.Println("5. Exit")
@@ -39,7 +38,10 @@ func RunResultCLI() {
 		// 	CreateResults(db, resultController)
 
 		case 2:
-			DisplayAllResults(db, resultController)
+			var studentID uint
+			fmt.Print("Enter Student ID: ")
+			fmt.Scan(&studentID)
+			DisplayResultsByStudentID(db, resultController, studentID)
 
 		case 3:
 			var resultID uint
@@ -72,8 +74,8 @@ func RunResultCLI() {
 // 	}
 // }
 
-func DisplayAllResults(db *gorm.DB, resultController *result_controller.ResultController) {
-	results, err := resultController.GetAllResults()
+func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.ResultController, studentID uint) {
+	results, err := resultController.GetResultByStudent(studentID)
 	if err != nil {
 		fmt.Println("Error fetching results", err)
 		return
