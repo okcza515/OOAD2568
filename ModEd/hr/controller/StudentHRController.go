@@ -41,7 +41,9 @@ func (c *StudentHRController) Insert(info *model.StudentInfo) error {
 
 // Update updates an existing StudentInfo record.
 func (c *StudentHRController) Update(info *model.StudentInfo) error {
-	return c.db.Save(info).Error
+    return c.db.Model(&model.StudentInfo{}).
+        Where("student_code = ?", info.StudentCode).
+        Updates(info).Error
 }
 
 // Delete deletes a student's HR information by SID.

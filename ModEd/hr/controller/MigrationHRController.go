@@ -25,12 +25,14 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 
 	// Migrate data to HR StudentInfo.
 	for _, s := range students {
-		studentInfo := hr.StudentInfo{
-			Student:     s,
-			Gender:      "", // default value; update as needed
-			CitizenID:   "", // default value; update as needed
-			PhoneNumber: "", // default value; update as needed
-		}
+		studentInfo := hr.NewStudentInfoBuilder().
+			WithStudent(s).
+			WithGender("").
+			WithCitizenID("").
+			WithPhoneNumber("").
+			// WithAdvisor(common.Instructor{}).
+			// WithDepartment(common.Department{}).
+			Build()
 
 		// Use FirstOrCreate to avoid duplicate unique errors.
 		if err := db.Where("student_code = ?", s.StudentCode).FirstOrCreate(&studentInfo).Error; err != nil {
