@@ -1,4 +1,4 @@
-package asset
+package model
 
 type InstrumentLogActionEnum string
 
