@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package controller
 
 import (
@@ -14,7 +15,6 @@ type AdminController struct {
 	DB   *gorm.DB
 }
 
-// สร้าง AdminController
 func CreateAdminController(db *gorm.DB) *AdminController {
 	return &AdminController{
 		Base: core.NewBaseController("Admin", db),
@@ -22,12 +22,10 @@ func CreateAdminController(db *gorm.DB) *AdminController {
 	}
 }
 
-// Insert Admin ธรรมดา
 func (controller *AdminController) CreateAdmin(admin *model.Admin) error {
 	return controller.Base.Insert(admin)
 }
 
-// ดึง Admin ทั้งหมด
 func (c *AdminController) GetAllAdmins() ([]*model.Admin, error) {
 	var admins []*model.Admin
 
@@ -38,15 +36,12 @@ func (c *AdminController) GetAllAdmins() ([]*model.Admin, error) {
 	return admins, nil
 }
 
-// อ่าน CSV แล้ว Insert
 func (c *AdminController) ReadAdminsFromCSV(filePath string) error {
-	// Clear table ก่อน
 	if err := c.DB.Exec("DELETE FROM admins").Error; err != nil {
 		fmt.Println("Error clearing table:", err)
 		return err
 	}
 
-	// Insert ข้อมูลจาก CSV
 	admins, err := util.InsertFromCSVOrJSON[model.Admin](filePath, c.DB)
 	if err != nil {
 		return err

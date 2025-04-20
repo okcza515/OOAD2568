@@ -1,10 +1,10 @@
+// MEP-1003 Student Recruitment
 package model
 
 import (
 	"time"
 )
 
-// Interview struct defines an interview object
 type Interview struct {
 	ID                   uint       `gorm:"primaryKey"`
 	InstructorID         uint       `gorm:"not null"` // Foreign key referencing Instructor

@@ -1,7 +1,6 @@
 // MEP-1003 Student Recruitment
 package model
 
-// ApplicationReport represents a report of an applicant's application status.
 type ApplicationReport struct {
 	ApplicationReportID uint              `gorm:"primaryKey"`
 	ApplicantID         uint              `gorm:"foreignKey:ApplicantID"`

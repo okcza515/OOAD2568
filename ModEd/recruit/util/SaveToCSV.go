@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package util
 
 import (
@@ -11,7 +12,6 @@ type CustomCSVMapper struct {
 	util.CSVMapper
 }
 
-// Overriding the Save function
 func (mapper *CustomCSVMapper) Save(data interface{}) error {
 	file, err := os.OpenFile(mapper.Path, os.O_RDWR|os.O_APPEND|os.O_CREATE, os.ModePerm)
 	if err != nil {

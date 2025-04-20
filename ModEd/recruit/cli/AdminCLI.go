@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -15,7 +16,6 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 	for {
 		util.ClearScreen()
 
-		// ฟังก์ชันเฉพาะสำหรับ admin
 		fmt.Println("==== Admin Menu ====")
 		fmt.Println("1. Manage Applicants")
 		fmt.Println("2. View Application Reports")
@@ -29,10 +29,8 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 
 		switch choice {
 		case 1:
-			// ฟังก์ชันจัดการผู้สมัคร
 			ManageApplicants(applicantController)
 		case 2:
-			// ฟังก์ชันดูรายงานการสมัคร
 			//ShowApplicationReports(applicationReportCtrl)
 		case 3:
 			AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
@@ -56,7 +54,6 @@ func Interview(interviewCtrl *controller.InterviewController) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Get Instructor ID
 	fmt.Print("Enter Instructor ID: ")
 	scanner.Scan()
 	instructorID = scanner.Text()
@@ -67,7 +64,6 @@ func Interview(interviewCtrl *controller.InterviewController) {
 	}
 	con_int_instrucID = uint(convInstructorID)
 
-	// Get Applicant ID
 	fmt.Print("Enter Applicant ID: ")
 	scanner.Scan()
 	applicantID := scanner.Text()
@@ -78,12 +74,10 @@ func Interview(interviewCtrl *controller.InterviewController) {
 	}
 	int_ApplicantID = uint(convApplicantID)
 
-	// Get Status
 	fmt.Print("Enter Status: ")
 	scanner.Scan()
 	// Status = scanner.Text()
 
-	// Get Scheduled Appointment
 	fmt.Print("Enter Scheduled Appointment (YYYY-MM-DD HH:MM:SS): ")
 	scanner.Scan()
 	scheduledTime := scanner.Text()
@@ -94,7 +88,6 @@ func Interview(interviewCtrl *controller.InterviewController) {
 		return
 	}
 
-	// Get Interview Score (optional)
 	fmt.Print("Enter Interview Score (or press Enter to skip): ")
 	scanner.Scan()
 	scoreInput = scanner.Text()
@@ -157,6 +150,5 @@ func DeleteInterview(interviewCtrl *controller.InterviewController) {
 }
 
 func ManageApplicants(applicantController *controller.ApplicantController) {
-	// ฟังก์ชันจัดการผู้สมัคร
 	fmt.Println("Managing Applicants...")
 }

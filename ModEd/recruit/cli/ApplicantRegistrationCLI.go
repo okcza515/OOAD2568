@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -9,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 func ApplicantRegistrationCLI(
@@ -188,6 +190,7 @@ func registerManually(
 
 	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
+	time.Sleep(8 * time.Second) 
 }
 
 func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController) *model.ApplicationRound {
