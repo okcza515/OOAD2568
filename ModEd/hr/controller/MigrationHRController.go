@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	common "ModEd/common/model"
+	"ModEd/core"
 	hr "ModEd/hr/model"
 
 	"gorm.io/gorm"
@@ -23,13 +24,25 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 		return fmt.Errorf("Failed to retrieve common students: %w", err)
 	}
 
+	mapper, err := core.CreateMapper[hr.StudentInfo]("data/hr/StudentInfo.csv")
+    if err != nil {
+        return fmt.Errorf("Failed to create mapper for StudentInfo.csv: %w", err)
+    }
+
+    studentInfoList := mapper.Deserialize()
+	studentInfoMap := make(map[string]hr.StudentInfo)
+    for _, info := range studentInfoList {
+        studentInfoMap[info.StudentCode] = *info
+    }
+
 	// Migrate data to HR StudentInfo.
 	for _, s := range students {
+		additionalInfo := studentInfoMap[s.StudentCode]
 		studentInfo := hr.NewStudentInfoBuilder().
 			WithStudent(s).
-			WithGender("").
-			WithCitizenID("").
-			WithPhoneNumber("").
+			WithGender(additionalInfo.Gender).
+			WithCitizenID(additionalInfo.CitizenID).
+			WithPhoneNumber(additionalInfo.PhoneNumber).
 			// WithAdvisor(common.Instructor{}).
 			// WithDepartment(common.Department{}).
 			Build()

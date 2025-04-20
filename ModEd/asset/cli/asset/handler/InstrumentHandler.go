@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"ModEd/asset/controller/asset"
+	"ModEd/asset/controller"
 	"ModEd/asset/util"
 	"fmt"
 )
 
-func InstrumentHandler(facade *asset.AssetControllerFacade) {
+func InstrumentHandler(facade *controller.AssetControllerFacade) {
 	inputBuffer := ""
 
 	for inputBuffer != "back" {
