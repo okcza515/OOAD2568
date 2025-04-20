@@ -54,7 +54,7 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 		"Category":       &[]model.Category{},
 		"InstrumentList": &[]model.Instrument{},
 		//"InstrumentLog":  &[]model.InstrumentLog{},
-		//"SupplyList":     &[]model.Supply{},
+		"SupplyList":     &[]model.Supply{},
 		//"SupplyLog":      &[]model.SupplyLog{},
 	}
 
