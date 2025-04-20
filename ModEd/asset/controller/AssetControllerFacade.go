@@ -1,7 +1,8 @@
 package controller
 
 import (
-	model2 "ModEd/asset/model"
+	model "ModEd/asset/model"
+	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
 	"gorm.io/driver/sqlite"
@@ -9,13 +10,13 @@ import (
 )
 
 type AssetControllerFacade struct {
-	db *gorm.DB
+	db        *gorm.DB
+	migration MigrationControllerInterface
 
-	migration        MigrationController
 	BorrowInstrument BorrowInstrumentController
 	Category         CategoryController
 	Instrument       InstrumentController
-	InstrumentLog    InstrumentLogController
+	InstrumentLog    InstrumentLogControllerInterface
 	Supply           SupplyController
 	SupplyLog        SupplyLogController
 }
@@ -30,11 +31,11 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 
 	facade := AssetControllerFacade{db: db}
 
-	facade.migration = MigrationController{db: db}
+	facade.migration = &MigrationController{db: db}
 	facade.BorrowInstrument = BorrowInstrumentController{db: db}
 	facade.Category = CategoryController{db: db}
 	facade.Instrument = InstrumentController{db: db}
-	facade.InstrumentLog = InstrumentLogController{db: db}
+	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
 	facade.Supply = SupplyController{db: db}
 	facade.SupplyLog = SupplyLogController{db: db}
 
@@ -49,8 +50,8 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 func (facade *AssetControllerFacade) loadSeedData() error {
 	seedData := map[string]interface{}{
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
-		"Category":       &[]model2.Category{},
-		"InstrumentList": &[]model2.Instrument{},
+		"Category":       &[]model.Category{},
+		"InstrumentList": &[]model.Instrument{},
 		//"InstrumentLog":  &[]model.InstrumentLog{},
 		//"SupplyList":     &[]model.Supply{},
 		//"SupplyLog":      &[]model.SupplyLog{},
