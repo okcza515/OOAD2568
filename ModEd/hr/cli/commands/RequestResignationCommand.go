@@ -9,7 +9,6 @@ import (
 	"os"
 )
 
-
 // usage: go run hr/cli/HumanResourceCLI.go requestResignation -id="66050001" -reason="ย้ายคณะ"
 func (c *RequestResignationCommand) Run(args []string) {
 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
@@ -19,10 +18,12 @@ func (c *RequestResignationCommand) Run(args []string) {
 	role := fs.String("role", "", "Role of the requester (e.g., Student, Instructor)")
 	fs.Parse(args)
 
-	if err := (util.ValidateRequiredFlags(fs, []string{"id","_id","reason", "role"})||util.ValidateRequiredFlags(fs, []string{"id","_id","reason", "role"})); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
-		fs.Usage()
-		os.Exit(1)
+	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
+		if err = util.ValidateRequiredFlags(fs, []string{"_id", "reason", "role"}); err != nil {
+			fmt.Printf("Validation error: %v\n", err)
+			fs.Usage()
+			os.Exit(1)
+		}
 	}
 
 	var requesterID string
@@ -48,7 +49,7 @@ func (c *RequestResignationCommand) Run(args []string) {
 	hrFacade := controller.NewHRFacade(db)
 
 	request := hrModel.NewRequestResignationBuilder().
-		WithStudentID(requesterID). 
+		WithStudentID(requesterID).
 		WithReason(*reason).
 		Build()
 
