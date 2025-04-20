@@ -10,20 +10,11 @@ import (
 	"ModEd/utils/deserializer"
 )
 
-type ICurriculumController interface {
-	CreateCurriculum(curriculum *model.Curriculum) (curriculumId uint, err error)
-	CreateSeedCurriculum(path string) (curriculums []*model.Curriculum, err error)
-	GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
-	GetCurriculums() (curriculums []*model.Curriculum, err error)
-	UpdateCurriculum(updatedCurriculum *model.Curriculum) (curriculum *model.Curriculum, err error)
-	DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
-}
-
 type CurriculumController struct {
 	db *gorm.DB
 }
 
-func NewCurriculumController(db *gorm.DB) ICurriculumController {
+func NewCurriculumController(db *gorm.DB) *CurriculumController {
 	return &CurriculumController{db: db}
 }
 

@@ -36,3 +36,23 @@ func (c *MigrationController) MigrateToDB() error {
 
 	return nil
 }
+
+func (c *MigrationController) DropAllTables() error {
+	err := c.Db.Migrator().DropTable(
+		&modelCurriculum.Curriculum{},
+		&modelCurriculum.Class{},
+		&modelCurriculum.Course{},
+		// &modelInternShip.InternStudent{},
+		// &modelInternShip.Company{},
+		// &modelInternShip.InternshipSchedule{},
+		// &modelInternShip.SupervisorReview{},
+		// &modelCommon.Student{},
+		// &modelInternShip.InternshipReport{},
+		// &modelInternShip.InternshipApplication{},
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

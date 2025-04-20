@@ -4,40 +4,13 @@ import (
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/utils"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 const (
 	defaultClassDataPath = "../../data/curriculum/class.json"
 )
 
-func RunClassCLI() {
-	database := utils.GetInputDatabasePath("class", defaultDBPath)
-
-	db, err := utils.NewGormSqlite(&utils.GormConfig{
-		DBPath: database,
-		Config: &gorm.Config{},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	classController := controller.NewClassController(db)
-
-	handleClassChoice(classController)
-	return
-}
-
-func printClassMenu() {
-	fmt.Println("\nClass Menu:")
-	fmt.Println("1. Create Seed Class")
-	fmt.Println("2. Not implemented yet...")
-	fmt.Println("3. Not implemented yet...")
-	fmt.Println("0. Exit")
-}
-
-func handleClassChoice(classController controller.IClassController) {
+func RunClassCLI(classController *controller.ClassController) {
 	for {
 		printClassMenu()
 		choice := utils.GetUserChoice()
@@ -61,4 +34,12 @@ func handleClassChoice(classController controller.IClassController) {
 			fmt.Println("Invalid option")
 		}
 	}
+}
+
+func printClassMenu() {
+	fmt.Println("\nClass Menu:")
+	fmt.Println("1. Create Seed Class")
+	fmt.Println("2. Not implemented yet...")
+	fmt.Println("3. Not implemented yet...")
+	fmt.Println("0. Exit")
 }

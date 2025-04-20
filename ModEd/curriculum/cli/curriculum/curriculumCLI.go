@@ -4,41 +4,13 @@ import (
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/utils"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 const (
-	defaultDBPath             = "../../data/curriculum.db"
 	defaultCurriculumDataPath = "../../data/curriculum/curriculum.json"
 )
 
-func RunCurriculumCLI() {
-	database := utils.GetInputDatabasePath("curriculum", defaultDBPath)
-
-	db, err := utils.NewGormSqlite(&utils.GormConfig{
-		DBPath: database,
-		Config: &gorm.Config{},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	curriculumController := controller.NewCurriculumController(db)
-
-	handleCurriculumChoice(curriculumController)
-	return
-}
-
-func printCurriculumMenu() {
-	fmt.Println("\nCurriculum Menu:")
-	fmt.Println("1. Create Seed Curriculum")
-	fmt.Println("2. Not implemented yet...")
-	fmt.Println("3. Not implemented yet...")
-	fmt.Println("0. Exit")
-}
-
-func handleCurriculumChoice(curriculumController controller.ICurriculumController) {
+func RunCurriculumCLI(curriculumController *controller.CurriculumController) {
 	for {
 		printCurriculumMenu()
 		choice := utils.GetUserChoice()
@@ -62,4 +34,12 @@ func handleCurriculumChoice(curriculumController controller.ICurriculumControlle
 			fmt.Println("Invalid option")
 		}
 	}
+}
+
+func printCurriculumMenu() {
+	fmt.Println("\nCurriculum Menu:")
+	fmt.Println("1. Create Seed Curriculum")
+	fmt.Println("2. Not implemented yet...")
+	fmt.Println("3. Not implemented yet...")
+	fmt.Println("0. Exit")
 }
