@@ -1,7 +1,9 @@
 package controller
 
+// MEP-1012 Asset
+
 import (
-	model "ModEd/asset/model"
+	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"

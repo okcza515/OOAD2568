@@ -1,5 +1,7 @@
 package model
 
+// MEP-1012 Asset
+
 type SupplyLogAction int
 
 const (
