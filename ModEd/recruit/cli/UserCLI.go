@@ -6,8 +6,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-
-	"gorm.io/gorm"
 )
 
 func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl *controller.ApplicationRoundController, applicationReportCtrl *controller.ApplicationReportController, facultyCtrl *controller.FacultyController, departmentCtrl *controller.DepartmentController) {
@@ -60,33 +58,4 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
 		util.ClearScreen()
 	}
-}
-
-func ReportInterviewDetails(db *gorm.DB, applicantID uint) {
-	status, err := controller.GetApplicationStatus(db, applicantID)
-	if err != nil {
-		fmt.Println("เกิดข้อผิดพลาดในการดึงสถานะการสมัคร:", err)
-		return
-	}
-
-	if status != "Pass" {
-		fmt.Println("คุณไม่มีสิทธิ์เข้าสัมภาษณ์ เนื่องจากสถานะของคุณคือ:", status)
-		return
-	}
-
-	interview, err := controller.GetInterviewDetails(db, applicantID)
-	if err != nil {
-		fmt.Println("เกิดข้อผิดพลาดในการดึงรายละเอียดการสัมภาษณ์:", err)
-		return
-	}
-
-	scoreText := "N/A"
-	if interview.InterviewScore != nil {
-		scoreText = fmt.Sprintf("%.2f", *interview.InterviewScore)
-	}
-
-	fmt.Println("--- รายละเอียดการสัมภาษณ์ ---")
-	fmt.Println("วันที่:", interview.ScheduledAppointment)
-	fmt.Println("คะแนนสัมภาษณ์:", scoreText)
-	fmt.Println("สถานะการสัมภาษณ์:", interview.InterviewStatus)
 }
