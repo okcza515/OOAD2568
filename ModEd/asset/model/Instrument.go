@@ -3,11 +3,11 @@ package model
 // MEP-1012 Asset
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type Instrument struct {
-	gorm.Model
+	core.BaseModel
 	InstrumentLabel    string               `gorm:"not null"`
 	InstrumentCode     string               `gorm:"type:text; not null; uniqueIndex"`
 	Description        *string              `gorm:"type:text"`

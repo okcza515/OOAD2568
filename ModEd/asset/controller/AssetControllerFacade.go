@@ -1,7 +1,7 @@
 package controller
 
 import (
-	model "ModEd/asset/model"
+	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
@@ -16,7 +16,7 @@ type AssetControllerFacade struct {
 
 	BorrowInstrument BorrowInstrumentControllerInterface
 	Category         CategoryController
-	Instrument       InstrumentController
+	Instrument       InstrumentControllerInterface
 	InstrumentLog    InstrumentLogControllerInterface
 	Supply           SupplyControllerInterface
 	SupplyLog        SupplyLogControllerInterface
@@ -35,7 +35,7 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade.migration = &MigrationController{db: db}
 	facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController("BorrowInstrument", db)}
 	facade.Category = CategoryController{db: db}
-	facade.Instrument = InstrumentController{db: db}
+	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController("Instrument", db)}
 	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
 	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
 	facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
@@ -53,9 +53,9 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
 		"Category":       &[]model.Category{},
 		"InstrumentList": &[]model.Instrument{},
-		//"InstrumentLog":  &[]model.InstrumentLog{},
-		"SupplyList": &[]model.Supply{},
-		"SupplyLog":  &[]model.SupplyLog{},
+		"InstrumentLog":  &[]model.InstrumentLog{},
+		"SupplyList":     &[]model.Supply{},
+		"SupplyLog":      &[]model.SupplyLog{},
 	}
 
 	for filename, m := range seedData {

@@ -4,27 +4,27 @@ package controller
 
 import (
 	"ModEd/asset/model"
+	"ModEd/core"
+	"fmt"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type InstrumentController struct {
 	db *gorm.DB
+	*core.BaseController
 }
 
-func (c *InstrumentController) Create(instrumentData *[]model.Instrument) error {
-	result := c.db.Create(instrumentData)
-
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
+type InstrumentControllerInterface interface {
+	ListAll() ([]string, error)
+	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	Insert(data core.RecordInterface) error
+	UpdateByID(data core.RecordInterface) error
+	DeleteByID(id uint) error
 }
 
 func (c *InstrumentController) ListAll() ([]string, error) {
-	inst := new([]model.Instrument)
-	result := c.db.Find(&inst)
+	instruments := new([]model.Instrument)
+	result := c.db.Find(&instruments)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -32,9 +32,8 @@ func (c *InstrumentController) ListAll() ([]string, error) {
 
 	var resultList []string
 
-	for _, i := range *inst {
-		list := strings.Join([]string{i.InstrumentCode, i.InstrumentLabel}, "\t")
-		resultList = append(resultList, list)
+	for _, instrument := range *instruments {
+		resultList = append(resultList, fmt.Sprintf("[%v] %v", instrument.InstrumentCode, instrument.InstrumentLabel))
 	}
 
 	return resultList, result.Error
