@@ -30,3 +30,12 @@ func (ctrl *ApplicationReportController) GetApplicantStatus() ([]string, error) 
 	fmt.Println(statuses)
 	return statuses, nil
 }
+
+func (ctrl *ApplicationReportController) GetApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
+	var report model.ApplicationReport
+	err := ctrl.DB.Where("applicant_id = ?", applicantID).First(&report).Error
+	if err != nil {
+		return nil, err
+	}
+	return &report, nil
+}

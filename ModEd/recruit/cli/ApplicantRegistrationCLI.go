@@ -38,6 +38,8 @@ func RegisterApplicantCLI(
 	default:
 		fmt.Println("Invalid option.")
 	}
+	fmt.Println("\nPlease Enter Something : ")
+	scanner.Scan()
 }
 
 func registerFromFile(
@@ -83,16 +85,19 @@ func registerFromFile(
 		faculty, department := selectFacultyAndDepartment(facultyCtrl, departmentCtrl)
 		if faculty == nil || department == nil {
 			fmt.Println("No valid faculty or department selected. Skipping applicant.")
-			continue
+			// continue
 		}
 
 		compositeCriteria := criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 		status := model.Pending
 		if compositeCriteria.IsSatisfiedBy(a) {
 			status = model.InterviewStage
+		} else {
+			status = model.Rejected
 		}
 
 		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
+		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
 }
 
@@ -178,6 +183,8 @@ func registerManually(
 	status := model.Pending
 	if compositeCriteria.IsSatisfiedBy(applicant) {
 		status = model.InterviewStage
+	} else {
+		status = model.Rejected
 	}
 
 	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
