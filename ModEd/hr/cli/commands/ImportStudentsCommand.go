@@ -2,6 +2,7 @@ package commands
 
 import (
 	commonController "ModEd/common/controller"
+	"ModEd/core"
 	"ModEd/hr/controller"
 	"ModEd/hr/model"
 	hrModel "ModEd/hr/model"
@@ -21,29 +22,37 @@ func (c *ImportStudentsCommand) Run(args []string) {
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"filePath"}); err != nil {
-        fmt.Printf("Validation error: %v\n", err)
-        fs.Usage()
-        os.Exit(1)
-    }
-
+	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
+		fmt.Printf("Validation error: %v\n", err)
+		fs.Usage()
+		os.Exit(1)
+	}
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
 		fmt.Printf("*** Error: File %s does not exist.\n", *filePath)
 		os.Exit(1)
 	}
-	hrMapper, err := util.CreateMapper[model.StudentInfo](*filePath)
+
+	hrMapper, err := core.CreateMapper[model.StudentInfo](*filePath)
 	if err != nil {
 		fmt.Printf("Failed to create HR mapper: %v\n", err)
 		os.Exit(1)
 	}
 
-	hrRecords := hrMapper.Map()
+	hrRecords := hrMapper.Deserialize()
+	hrRecordsMap := make(map[string]model.StudentInfo)
+	for _, hrRec := range hrRecords {
+		if _, exists := hrRecordsMap[hrRec.StudentCode]; exists {
+			fmt.Printf("Duplicate student code found: %s\n", hrRec.StudentCode)
+			os.Exit(1)
+		}
+		hrRecordsMap[hrRec.StudentCode] = *hrRec
+	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	for _, hrRec := range hrRecords {
+	for _, hrRec := range hrRecordsMap {
 		commonStudentController := commonController.CreateStudentController(db)
 		commonStudent, err := commonStudentController.GetByStudentId(hrRec.StudentCode)
 		if err != nil {
@@ -54,7 +63,11 @@ func (c *ImportStudentsCommand) Run(args []string) {
 		newStudent := hrModel.NewStudentInfoBuilder().
 			WithStudent(*commonStudent).
 			WithGender(hrRec.Gender).
+			WithCitizenID(hrRec.CitizenID).
+			WithPhoneNumber(hrRec.PhoneNumber).
 			Build()
+
+		fmt.Printf("Importing student %s, Gender %s CitizenID %s PNum %s\n", newStudent.StudentCode, newStudent.Gender, newStudent.CitizenID, newStudent.PhoneNumber)
 
 		if err := hrFacade.UpsertStudent(newStudent); err != nil {
 			fmt.Printf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
