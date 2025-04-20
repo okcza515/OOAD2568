@@ -2,7 +2,6 @@ package main
 
 import (
 	answer_controller "ModEd/eval/controller/examination"
-	"ModEd/eval/model"
 	"bufio"
 	"os"
 	"strings"
@@ -68,7 +67,7 @@ func main() {
 			var answerID uint
 			fmt.Print("Enter Answer ID to delete: ")
 			fmt.Scan(&answerID)
-			DeleteAnswer(db, answerID)
+			DeleteAnswer(db, answerController, answerID)
 
 		case 6:
 			fmt.Println("Exiting...")
@@ -143,10 +142,11 @@ func UpdateAnswer(db *gorm.DB, answerController *answer_controller.AnswerControl
 	}
 }
 
-func DeleteAnswer(db *gorm.DB, answerID uint) {
-	if err := db.Delete(&model.Answer{}, answerID).Error; err != nil {
-		fmt.Println("Failed to delete answer:", err)
-		return
+func DeleteAnswer(db *gorm.DB, answerController *answer_controller.AnswerController, answerID uint) {
+	err := answerController.DeleteAnswerByID(answerID)
+	if err != nil {
+		fmt.Println("Failed to update answer:", err)
+	} else {
+		fmt.Println("Answer updated successfully!")
 	}
-	fmt.Println("Answer deleted successfully!")
 }
