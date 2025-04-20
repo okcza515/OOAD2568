@@ -18,6 +18,7 @@ func main() {
 		roundsCSVPath     string
 		facultyCSVPath    string
 		departmentCSVPath string
+		adminCSVPath      string
 		role              string
 	)
 
@@ -32,11 +33,13 @@ func main() {
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
 	defaultfacultyPath := filepath.Join(parentDir, "recruit", "data", "fac.csv")
 	defaultdepartmentPath := filepath.Join(parentDir, "recruit", "data", "dp.csv")
+	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
 
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
 	flag.StringVar(&facultyCSVPath, "faculty", defaultfacultyPath, "")
 	flag.StringVar(&departmentCSVPath, "department", defaultdepartmentPath, "")
+	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
 	flag.StringVar(&role, "role", "", "Specify the role (user/admin/instructor)")
 	flag.Parse()
 
@@ -46,6 +49,11 @@ func main() {
 	applicantController := controller.NewApplicantController(db.DB)
 	interviewController := controller.CreateInterviewController(db.DB)
 	applicationRoundCtrl := controller.CreateApplicationRoundController(db.DB)
+
+	adminCtrl := controller.CreateAdminController(db.DB)
+	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
+		fmt.Println(err)
+	}
 
 	facultyCtrl := controller.NewFacultyController(db.DB)
 	if err := facultyCtrl.ReadFacultyFromCSV(facultyCSVPath); err != nil {
@@ -85,7 +93,7 @@ func main() {
 			case 1:
 				cli.UserCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
 			case 2:
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController)
+				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl)
 			case 3:
 				cli.InstructorCLI(instructorController)
 			case 4:

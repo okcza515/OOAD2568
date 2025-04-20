@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController) {
+func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
 	for {
 		util.ClearScreen()
 
@@ -160,16 +160,3 @@ func ManageApplicants(applicantController *controller.ApplicantController) {
 	// ฟังก์ชันจัดการผู้สมัคร
 	fmt.Println("Managing Applicants...")
 }
-
-// func ShowApplicationReports(applicationReportCtrl *controller.ApplicationReportController) {
-// 	// ฟังก์ชันดูรายงานการสมัคร
-// 	reports, err := applicationReportCtrl.GetAllReports()
-// 	if err != nil {
-// 		fmt.Println("Error fetching application reports:", err)
-// 		return
-// 	}
-// 	fmt.Println("Application Reports:")
-// 	for _, report := range reports {
-// 		fmt.Println(report)
-// 	}
-// }

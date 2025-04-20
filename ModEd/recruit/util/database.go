@@ -18,7 +18,7 @@ func InitDB(path string) {
 		log.Fatal("Failed to connect to database:", err)
 	}
 
-	err = DB.AutoMigrate(&model.Applicant{}, &model.ApplicationRound{}, &model.ApplicationReport{}, &model.Faculty{}, &model.Department{})
+	err = DB.AutoMigrate(&model.Admin{}, &model.Applicant{}, &model.ApplicationRound{}, &model.ApplicationReport{}, &model.Faculty{}, &model.Department{})
 	if err != nil {
 		log.Fatalf("Failed to migrate models: %v\n", err)
 	}
