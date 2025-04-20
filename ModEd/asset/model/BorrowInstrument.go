@@ -1,14 +1,14 @@
 package model
 
-// MEP-1012
+// MEP-1012 Asset
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 	"time"
 )
 
 type BorrowInstrument struct {
-	gorm.Model
+	core.BaseModel
 	StaffUserID        uint       `gorm:"not null"`
 	BorrowUserID       uint       `gorm:"not null"`
 	ExpectedReturnDate *time.Time `gorm:"type:timestamp"`

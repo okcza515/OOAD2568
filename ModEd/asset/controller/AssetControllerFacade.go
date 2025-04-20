@@ -1,12 +1,11 @@
 package controller
 
-// MEP-1012 Asset
-
 import (
-	"ModEd/asset/model"
+	model "ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -15,7 +14,7 @@ type AssetControllerFacade struct {
 	db        *gorm.DB
 	migration MigrationControllerInterface
 
-	BorrowInstrument BorrowInstrumentController
+	BorrowInstrument BorrowInstrumentControllerInterface
 	Category         CategoryController
 	Instrument       InstrumentController
 	InstrumentLog    InstrumentLogControllerInterface
@@ -34,7 +33,7 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade := AssetControllerFacade{db: db}
 
 	facade.migration = &MigrationController{db: db}
-	facade.BorrowInstrument = BorrowInstrumentController{db: db}
+	facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController("BorrowInstrument", db)}
 	facade.Category = CategoryController{db: db}
 	facade.Instrument = InstrumentController{db: db}
 	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
