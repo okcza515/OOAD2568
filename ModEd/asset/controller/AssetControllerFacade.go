@@ -53,9 +53,9 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
 		"Category":       &[]model.Category{},
 		"InstrumentList": &[]model.Instrument{},
-		"InstrumentLog":  &[]model.InstrumentLog{},
-		"SupplyList":     &[]model.Supply{},
-		"SupplyLog":      &[]model.SupplyLog{},
+		//"InstrumentLog":  &[]model.InstrumentLog{},
+		"SupplyList": &[]model.Supply{},
+		"SupplyLog":  &[]model.SupplyLog{},
 	}
 
 	for filename, m := range seedData {
