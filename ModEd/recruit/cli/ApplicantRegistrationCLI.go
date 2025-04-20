@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func RegisterApplicantCLI(
+func ApplicantRegistrationCLI(
 	applicantCtrl *controller.ApplicantController,
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,

@@ -10,3 +10,25 @@ type ApplicationReport struct {
 	DepartmentID        uint              `gorm:"foreignKey:DepartmentID"`
 	ApplicationStatuses ApplicationStatus `gorm:"type:varchar(20)"`
 }
+
+func (i *ApplicationReport) GetID() uint {
+	return i.ApplicantID
+}
+func (i *ApplicationReport) FromCSV(csvData string) error {
+	return nil
+}
+func (i *ApplicationReport) ToCSVRow() string {
+	return ""
+}
+func (i *ApplicationReport) FromJSON(jsonData string) error {
+	return nil
+}
+func (i *ApplicationReport) ToJSON() string {
+	return ""
+}
+func (i *ApplicationReport) Validate() error {
+	return nil
+}
+func (i *ApplicationReport) ToString() string {
+	return ""
+}

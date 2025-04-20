@@ -39,7 +39,7 @@ func ShowApplicantReportCLI(
 		return
 	}
 
-	displayApplicantReport(&applicant, report)
+	displayApplicantReport(applicant, report)
 
 	fmt.Println("\n-- Press Enter to continue... --")
 	scanner.Scan()
@@ -51,11 +51,6 @@ func displayApplicantReport(applicant *model.Applicant, report *model.Applicatio
 	fmt.Printf("Full Name: %s %s\n", applicant.FirstName, applicant.LastName)
 
 	if report != nil {
-		// fmt.Printf("\n==== Application Report ====\n")
-		// fmt.Printf("Application Round: %s\n", report.ApplicationRoundsID)
-		// fmt.Printf("Faculty: %s\n", report.FacultyID)
-		// fmt.Printf("Department: %s\n", report.DepartmentID)
-
 		fmt.Printf("\n\033[1;37;48m==== Status ==== \033[0m\n")
 		printStatus(report.ApplicationStatuses)
 	} else {

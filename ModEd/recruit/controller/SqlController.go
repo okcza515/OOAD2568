@@ -1,4 +1,4 @@
-package SQL
+package controller
 
 import (
 	"fmt"

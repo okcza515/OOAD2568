@@ -1,8 +1,7 @@
-// MEP-1003 Student Recruitment
 package controller
 
 import (
-	"ModEd/recruit/controller/SQL"
+	"ModEd/core"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 
@@ -10,33 +9,50 @@ import (
 )
 
 type ApplicantController struct {
-	sqlCtrl SQL.SQLController[model.Applicant]
+	Base *core.BaseController
+	DB   *gorm.DB
 }
 
 func NewApplicantController(db *gorm.DB) *ApplicantController {
 	return &ApplicantController{
-		SQL.NewGormSQLController[model.Applicant](db),
+		Base: core.NewBaseController("Applicant", db),
+		DB:   db,
 	}
 }
 
 func (c *ApplicantController) RegisterApplicant(applicant *model.Applicant) error {
-	return c.sqlCtrl.Create(applicant)
+	return c.Base.Insert(applicant)
 }
 
-func (c *ApplicantController) GetAllApplicants() ([]model.Applicant, error) {
-	return c.sqlCtrl.GetAll()
+func (c *ApplicantController) GetAllApplicants() ([]*model.Applicant, error) {
+	records, err := c.Base.List(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var applicants []*model.Applicant
+	for _, record := range records {
+		if applicant, ok := record.(*model.Applicant); ok {
+			applicants = append(applicants, applicant)
+		}
+	}
+	return applicants, nil
 }
 
-func (c *ApplicantController) GetApplicantByID(id uint) (model.Applicant, error) {
-	return c.sqlCtrl.GetByID(id)
+func (c *ApplicantController) GetApplicantByID(id uint) (*model.Applicant, error) {
+	var applicant model.Applicant
+	if err := c.DB.Where("applicant_id = ?", id).First(&applicant).Error; err != nil {
+		return nil, err
+	}
+	return &applicant, nil
 }
 
 func (c *ApplicantController) UpdateApplicant(applicant *model.Applicant) error {
-	return c.sqlCtrl.Update(applicant)
+	return c.Base.UpdateByID(applicant)
 }
 
 func (c *ApplicantController) DeleteApplicant(id uint) error {
-	return c.sqlCtrl.Delete(id)
+	return c.Base.DeleteByID(id)
 }
 
 func (c *ApplicantController) ReadApplicantsFromFile(filePath string) ([]model.Applicant, error) {

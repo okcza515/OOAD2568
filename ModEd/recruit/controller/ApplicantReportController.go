@@ -2,33 +2,26 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/recruit/model"
-	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type ApplicationReportController struct {
-	DB *gorm.DB
+	DB   *gorm.DB
+	Base *core.BaseController
 }
 
 func CreateApplicationReportController(db *gorm.DB) *ApplicationReportController {
-	return &ApplicationReportController{DB: db}
+	return &ApplicationReportController{
+		Base: core.NewBaseController("ApplicationReport", db),
+		DB:   db,
+	}
 }
 
 func (ctrl *ApplicationReportController) SaveApplicationReport(report *model.ApplicationReport) error {
-	result := ctrl.DB.Create(report)
-	return result.Error
-}
-
-func (ctrl *ApplicationReportController) GetApplicantStatus() ([]string, error) {
-	var statuses []string
-
-	if err := ctrl.DB.Model(&model.ApplicationReport{}).Pluck("application_statuses", &statuses).Error; err != nil {
-		return nil, err
-	}
-	fmt.Println(statuses)
-	return statuses, nil
+	return ctrl.Base.Insert(report)
 }
 
 func (ctrl *ApplicationReportController) GetApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
