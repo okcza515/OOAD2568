@@ -10,12 +10,14 @@ import (
 type HRFacade struct {
 	Student    *StudentHRController
 	Instructor *InstructorHRController
+	Resignation *ResignationHRController
 }
 
 func NewHRFacade(db *gorm.DB) *HRFacade {
 	return &HRFacade{
 		Student:    CreateStudentHRController(db),
 		Instructor: CreateInstructorHRController(db),
+		Resignation: CreateResignationHRController(db),
 	}
 }
 
@@ -69,4 +71,10 @@ func (f *HRFacade) InsertInstructor(info *model.InstructorInfo) error {
 
 func (f *HRFacade) DeleteInstructor(id string) error {
 	return f.Instructor.Delete(id)
+}
+
+// Resignation-related facade methods
+
+func (f *HRFacade) SubmitResignationRequest(info *model.RequestResignation ) error {
+	return f.Resignation.Insert(info)
 }
