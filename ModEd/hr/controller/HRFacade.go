@@ -8,18 +8,20 @@ import (
 )
 
 type HRFacade struct {
-	Student     *StudentHRController
-	Instructor  *InstructorHRController
-	Resignation *ResignationStudentHRController
-	Leave *LeaveHRController
+	Student               *StudentHRController
+	Instructor            *InstructorHRController
+	ResignationStudent    *ResignationStudentHRController
+	ResignationInstructor *ResignationInstructorHRController
+	Leave                 *LeaveHRController
 }
 
 func NewHRFacade(db *gorm.DB) *HRFacade {
 	return &HRFacade{
-		Student:     CreateStudentHRController(db),
-		Instructor:  CreateInstructorHRController(db),
-		Resignation: CreateResignationStudentHRController(db),
-		Leave: CreateLeaveHRController(db),
+		Student:               CreateStudentHRController(db),
+		Instructor:            CreateInstructorHRController(db),
+		ResignationStudent:    CreateResignationStudentHRController(db),
+		ResignationInstructor: CreateResignationInstructorHRController(db),
+		Leave:                 CreateLeaveHRController(db),
 	}
 }
 
@@ -78,15 +80,20 @@ func (f *HRFacade) DeleteInstructor(id string) error {
 // Resignation-related facade methods
 
 func (f *HRFacade) SubmitResignationStudentRequest(info *model.RequestResignationStudent) error {
-	return f.Resignation.Insert(info)
+	return f.ResignationStudent.Insert(info)
 }
+
+func (f *HRFacade) SubmitResignationInstructorRequest(info *model.RequestResignationInstructor) error {
+	return f.ResignationInstructor.Insert(info)
+}
+
 // Leave-related facade methods
 func (f *HRFacade) SubmitLeaveRequest(info *model.RequestLeave) error {
 	return f.Leave.Insert(info)
 }
 
 func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reason string) error {
-	req, err := f.Resignation.GetByStudentID(id)
+	req, err := f.ResignationStudent.GetByStudentID(id)
 	if err != nil {
 		return err
 	}
@@ -94,5 +101,5 @@ func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reas
 	if status == "Rejected" && reason != "" {
 		req.Reason = reason
 	}
-	return f.Resignation.Update(req)
+	return f.ResignationStudent.Update(req)
 }

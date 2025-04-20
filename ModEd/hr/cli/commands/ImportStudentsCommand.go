@@ -65,8 +65,6 @@ func (c *ImportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 			WithPhoneNumber(hrRec.PhoneNumber).
 			Build()
 
-		fmt.Printf("Importing student %s, Gender %s CitizenID %s PNum %s\n", newStudent.StudentCode, newStudent.Gender, newStudent.CitizenID, newStudent.PhoneNumber)
-
 		if err := hrFacade.UpsertStudent(newStudent); err != nil {
 			return fmt.Errorf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
 		}
