@@ -36,7 +36,7 @@ func RequestResignationStudent(args []string, tx *gorm.DB) error {
         return fmt.Errorf("failed to parse flags: %v", err)
     }
 
-    if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
+    if err := util.ValidateRequiredFlags(fs, []string{"id", "reason"}); err != nil {
         fs.Usage()
         return fmt.Errorf("validation error: %v", err)
     }

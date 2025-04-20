@@ -11,7 +11,7 @@ type ResignationStudentHRController struct {
 }
 
 func CreateResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
-	db.AutoMigrate(&model.RequestResignation{})
+	db.AutoMigrate(&model.RequestResignationStudent{})
 	return &ResignationStudentHRController{db: db}
 }
 
