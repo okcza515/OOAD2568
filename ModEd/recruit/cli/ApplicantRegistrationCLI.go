@@ -38,8 +38,6 @@ func ApplicantRegistrationCLI(
 	default:
 		fmt.Println("Invalid option.")
 	}
-	fmt.Println("\n-- Press Enter to continue... --")
-	scanner.Scan()
 
 }
 

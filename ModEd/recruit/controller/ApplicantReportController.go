@@ -32,3 +32,11 @@ func (ctrl *ApplicationReportController) GetApplicationReportByApplicantID(appli
 	}
 	return &report, nil
 }
+
+func (ctrl *ApplicationReportController) UpdateApplicationStatus(applicantID uint, newStatus model.ApplicationStatus) error {
+	result := ctrl.DB.Model(&model.ApplicationReport{}).
+		Where("applicant_id = ?", applicantID).
+		Update("application_statuses", newStatus)
+
+	return result.Error
+}

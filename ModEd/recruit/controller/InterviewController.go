@@ -40,8 +40,7 @@ func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 		return "", err
 	}
 
-	// คืนค่า interview_status จากฐานข้อมูล
-	return interview.InterviewStatus, nil
+	return string(interview.InterviewStatus), nil
 }
 
 func GetInterviewDetails(db *gorm.DB, applicantID uint) (*model.Interview, error) {

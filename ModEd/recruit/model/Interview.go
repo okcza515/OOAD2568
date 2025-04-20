@@ -12,8 +12,8 @@ type Interview struct {
 	ApplicantID          uint       `gorm:"not null"` // Foreign key referencing Applicant
 	Applicant            Applicant  `gorm:"foreignKey:ApplicantID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ScheduledAppointment time.Time
-	InterviewScore       *float64 `gorm:"default:null"` // Nullable score
-	InterviewStatus      string   `gorm:"column:interview_status"`
+	InterviewScore       *float64          `gorm:"default:null"` // Nullable score
+	InterviewStatus      ApplicationStatus `gorm:"type:varchar(20)"`
 }
 
 func (i *Interview) GetID() uint {

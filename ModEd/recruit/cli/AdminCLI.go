@@ -35,7 +35,7 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 			// ฟังก์ชันดูรายงานการสมัคร
 			//ShowApplicationReports(applicationReportCtrl)
 		case 3:
-			Interview(interviewCtrl)
+			AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
 		case 4:
 			DeleteInterview(interviewCtrl)
 		case 5:
@@ -52,7 +52,7 @@ func Interview(interviewCtrl *controller.InterviewController) {
 	var int_ApplicantID uint
 	var interviewScore float64
 	var scoreInput string
-	var Status string
+	// var Status string
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -81,7 +81,7 @@ func Interview(interviewCtrl *controller.InterviewController) {
 	// Get Status
 	fmt.Print("Enter Status: ")
 	scanner.Scan()
-	Status = scanner.Text()
+	// Status = scanner.Text()
 
 	// Get Scheduled Appointment
 	fmt.Print("Enter Scheduled Appointment (YYYY-MM-DD HH:MM:SS): ")
@@ -106,7 +106,7 @@ func Interview(interviewCtrl *controller.InterviewController) {
 			ApplicantID:          int_ApplicantID,
 			ScheduledAppointment: scheduledTimeParsed,
 			InterviewScore:       nil,
-			InterviewStatus:      Status,
+			InterviewStatus:      model.Pending,
 		}
 	} else {
 		interviewScore, err = strconv.ParseFloat(scoreInput, 64)
@@ -119,7 +119,7 @@ func Interview(interviewCtrl *controller.InterviewController) {
 			ApplicantID:          int_ApplicantID,
 			ScheduledAppointment: scheduledTimeParsed,
 			InterviewScore:       &interviewScore,
-			InterviewStatus:      Status,
+			InterviewStatus:      model.Pending,
 		}
 	}
 

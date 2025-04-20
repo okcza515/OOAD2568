@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 func ShowApplicantReportCLI(
@@ -41,8 +43,9 @@ func ShowApplicantReportCLI(
 
 	displayApplicantReport(applicant, report)
 
-	fmt.Println("\n-- Press Enter to continue... --")
-	scanner.Scan()
+	if report != nil && report.ApplicationStatuses == model.InterviewStage {
+		ReportInterviewDetails(applicationReportCtrl.DB, uint(applicantID))
+	}
 }
 
 func displayApplicantReport(applicant *model.Applicant, report *model.ApplicationReport) {
@@ -71,4 +74,22 @@ func printStatus(status model.ApplicationStatus) {
 	default:
 		fmt.Printf("Status: %s\n", status)
 	}
+}
+
+func ReportInterviewDetails(db *gorm.DB, applicantID uint) {
+	interview, err := controller.GetInterviewDetails(db, applicantID)
+	if err != nil {
+		fmt.Println("An error occurred while fetching the interview details:", err)
+		return
+	}
+
+	scoreText := "N/A"
+	if interview.InterviewScore != nil {
+		scoreText = fmt.Sprintf("%.2f", *interview.InterviewScore)
+	}
+
+	fmt.Println("\n==== Interview Details ====")
+	fmt.Println("Scheduled Date:", interview.ScheduledAppointment)
+	fmt.Println("Interview Score:", scoreText)
+	fmt.Println("Interview Status:", interview.InterviewStatus)
 }
