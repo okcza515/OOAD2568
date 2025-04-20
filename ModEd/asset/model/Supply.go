@@ -3,11 +3,11 @@ package model
 // MEP-1012 Asset
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type Supply struct {
-	gorm.Model
+	core.BaseModel
 	SupplyLabel string `gorm:"not null"`
 	Description *string
 	Location    *string

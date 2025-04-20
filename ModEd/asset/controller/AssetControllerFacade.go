@@ -18,7 +18,7 @@ type AssetControllerFacade struct {
 	Category         CategoryController
 	Instrument       InstrumentController
 	InstrumentLog    InstrumentLogControllerInterface
-	Supply           SupplyController
+	Supply           SupplyControllerInterface
 	SupplyLog        SupplyLogController
 }
 
@@ -37,7 +37,7 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade.Category = CategoryController{db: db}
 	facade.Instrument = InstrumentController{db: db}
 	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
-	facade.Supply = SupplyController{db: db}
+	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
 	facade.SupplyLog = SupplyLogController{db: db}
 
 	err = facade.migration.migrateToDB()

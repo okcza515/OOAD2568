@@ -21,11 +21,11 @@ func SupplyHandler(facade *controller.AssetControllerFacade) {
 		case "1":
 			fmt.Println("Add new Supply")
 		case "2":
-			supplies, err := facade.Supply.GetAll()
+			supplies, err := facade.Supply.ListAll()
 			if err != nil {
 				panic(err)
 			}
-			for _, supply := range *supplies {
+			for _, supply := range supplies {
 				fmt.Println(supply)
 			}
 		case "3":
