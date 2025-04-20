@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func printOption() {
+func printRoomMenuOption() {
 	fmt.Println("===== Room Management =====")
 	fmt.Println("1. Add new Room")
 	fmt.Println("2. List all Rooms")
@@ -26,7 +26,7 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 	for inputBuffer != "back" {
 		util.ClearScreen()
 		util.PrintBanner()
-		printOption()
+		printRoomMenuOption()
 		inputBuffer = util.GetCommandInput()
 
 		switch inputBuffer {
