@@ -24,7 +24,7 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 
 	switch choice {
 	case 1:
-		RegisterApplicantCLI(applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+		ApplicantRegistrationCLI(applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
 	case 2:
 		ShowApplicantReportCLI(applicantCtrl, applicationReportCtrl)
 	default:

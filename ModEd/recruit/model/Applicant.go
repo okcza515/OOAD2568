@@ -24,3 +24,25 @@ type Applicant struct {
 	PortfolioURL string  `json:"portfolio_url" csv:"portfolio_url"`
 	FamilyIncome float32 `json:"family_income" csv:"family_income"`
 }
+
+func (i *Applicant) GetID() uint {
+	return i.ApplicantID
+}
+func (i *Applicant) FromCSV(csvData string) error {
+	return nil
+}
+func (i *Applicant) ToCSVRow() string {
+	return ""
+}
+func (i *Applicant) FromJSON(jsonData string) error {
+	return nil
+}
+func (i *Applicant) ToJSON() string {
+	return ""
+}
+func (i *Applicant) Validate() error {
+	return nil
+}
+func (i *Applicant) ToString() string {
+	return ""
+}

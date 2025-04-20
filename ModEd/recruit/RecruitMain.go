@@ -69,7 +69,7 @@ func main() {
 
 		if role == "" {
 			fmt.Println("\n\033[1;34m╔══════════════════════════════════════╗")
-			fmt.Println("║       Moded Recruitment System     ║")
+			fmt.Println("║       Moded Recruitment System       ║")
 			fmt.Println("╚══════════════════════════════════════╝\033[0m")
 
 			fmt.Println("\n\033[1;36m[1]\033[0m  User")
