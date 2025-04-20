@@ -1,4 +1,4 @@
-package main
+package examination
 
 import (
 	answer_controller "ModEd/eval/controller/examination"
@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func RunAnswerCLI() {
 	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Connection failed:", err)
@@ -145,8 +145,8 @@ func UpdateAnswer(db *gorm.DB, answerController *answer_controller.AnswerControl
 func DeleteAnswer(db *gorm.DB, answerController *answer_controller.AnswerController, answerID uint) {
 	err := answerController.DeleteAnswerByID(answerID)
 	if err != nil {
-		fmt.Println("Failed to update answer:", err)
+		fmt.Println("Failed to delete answer:", err)
 	} else {
-		fmt.Println("Answer updated successfully!")
+		fmt.Println("Answer deleted successfully!")
 	}
 }
