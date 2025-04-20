@@ -1,7 +1,5 @@
 package model
-import (
-	"time"	
-)
+
 type RequestResignationBuilder struct {
 	req *RequestResignation
 }
@@ -9,8 +7,8 @@ type RequestResignationBuilder struct {
 func NewRequestResignationBuilder() *RequestResignationBuilder {
 	return &RequestResignationBuilder{
 		req: &RequestResignation{
-			Status:    "Pending",
-			CreatedAt: time.Now(),
+			Status: "Pending",
+			// CreatedAt: time.Now(),
 		},
 	}
 }

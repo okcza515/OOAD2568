@@ -1,7 +1,7 @@
-package asset
+package controller
 
 import (
-	model "ModEd/asset/model/asset"
+	model2 "ModEd/asset/model"
 	"errors"
 
 	"gorm.io/gorm"
@@ -13,14 +13,14 @@ type MigrationController struct {
 
 func (c *MigrationController) migrateToDB() error {
 	err := c.db.AutoMigrate(
-		&model.InstrumentLog{},
-		&model.Instrument{},
-		&model.BorrowInstrument{},
-		&model.Category{},
-		&model.Instrument{},
-		&model.InstrumentLog{},
-		&model.Supply{},
-		&model.SupplyLog{},
+		&model2.InstrumentLog{},
+		&model2.Instrument{},
+		&model2.BorrowInstrument{},
+		&model2.Category{},
+		&model2.Instrument{},
+		&model2.InstrumentLog{},
+		&model2.Supply{},
+		&model2.SupplyLog{},
 	)
 	if err != nil {
 		return errors.New("err: migration failed")
@@ -31,14 +31,14 @@ func (c *MigrationController) migrateToDB() error {
 
 func (c *MigrationController) dropDB() error {
 	err := c.db.Migrator().DropTable(
-		&model.InstrumentLog{},
-		&model.Instrument{},
-		&model.BorrowInstrument{},
-		&model.Category{},
-		&model.Instrument{},
-		&model.InstrumentLog{},
-		&model.Supply{},
-		&model.SupplyLog{},
+		&model2.InstrumentLog{},
+		&model2.Instrument{},
+		&model2.BorrowInstrument{},
+		&model2.Category{},
+		&model2.Instrument{},
+		&model2.InstrumentLog{},
+		&model2.Supply{},
+		&model2.SupplyLog{},
 	)
 	if err != nil {
 		return err

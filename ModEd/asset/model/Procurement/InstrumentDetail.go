@@ -2,7 +2,7 @@
 package model
 
 import (
-	asset "ModEd/asset/model/asset"
+	asset "ModEd/asset/model"
 	"time"
 
 	"gorm.io/gorm"

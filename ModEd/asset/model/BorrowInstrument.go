@@ -1,5 +1,5 @@
 // MEP-1012
-package asset
+package model
 
 import (
 	"gorm.io/gorm"
