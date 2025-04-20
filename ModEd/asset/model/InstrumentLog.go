@@ -1,11 +1,13 @@
 package model
 
+// MEP-1012 Asset
+
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type InstrumentLog struct {
-	gorm.Model
+	core.BaseModel
 	RefUserID        *uint
 	StaffUserID      uint                    `gorm:"type:integer;not null"`
 	Action           InstrumentLogActionEnum `gorm:"not null"`

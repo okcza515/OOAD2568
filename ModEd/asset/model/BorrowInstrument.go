@@ -1,5 +1,6 @@
-// MEP-1012
 package model
+
+// MEP-1012
 
 import (
 	"gorm.io/gorm"

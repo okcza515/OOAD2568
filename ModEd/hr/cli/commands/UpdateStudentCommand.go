@@ -3,9 +3,8 @@ package commands
 import (
 	commonController "ModEd/common/controller"
 	"ModEd/hr/controller"
-	hrModel "ModEd/hr/model"
+	"ModEd/hr/model"
 	"ModEd/hr/util"
-	hrUtil "ModEd/hr/util"
 	"flag"
 	"fmt"
 
@@ -15,73 +14,69 @@ import (
 // usage : go run hr/cli/HumanResourceCLI.go update -field="value"
 // required field : id !!
 
-func (c *UpdateStudentCommand) Execute(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("update", flag.ExitOnError)
+func updateStudent(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("update student", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
-	firstName := fs.String("fname", "", "New First Name value")
-	lastName := fs.String("lname", "", "New Last Name value")
-	gender := fs.String("gender", "", "New Gender value")
-	citizenID := fs.String("citizenID", "", "New Citizen ID value")
-	phoneNumber := fs.String("phone", "", "New Phone Number value")
-	emailStudent := fs.String("email", "", "New Email value")
+	firstName := fs.String("fname", "", "New first name")
+	lastName := fs.String("lname", "", "New last name")
+	gender := fs.String("gender", "", "New gender")
+	citizenID := fs.String("citizenID", "", "New citizen ID")
+	phoneNumber := fs.String("phone", "", "New phone number")
+	email := fs.String("email", "", "New email")
 	fs.Parse(args)
 
-	if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
+	if *studentID == "" {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("student id is required")
 	}
 
-	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
-
-	// Create a TransactionManager instance.
-	tm := &util.TransactionManager{DB: db}
-
-	err := tm.Execute(func(tx *gorm.DB) error {
-
-		studentData := map[string]any{
-			"StudentCode": *studentID,
-			"FirstName":   *firstName,
-			"LastName":    *lastName,
-			// Add other fields as needed.
-		}
-
-		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.Update(*studentID, studentData); err != nil {
-			return fmt.Errorf("failed to add student to common data: %w", err)
-		}
-
-		// Migrate the common student to HR.
-		if err := controller.MigrateStudentsToHR(tx); err != nil {
-			return fmt.Errorf("failed to migrate students to HR: %w", err)
-		}
-
-		// Update HR‑specific information.
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 		studentInfo, err := hrFacade.GetStudentById(*studentID)
 		if err != nil {
-			return fmt.Errorf("Error retrieving student with ID %s: %v\n", *studentID, err)
+			return fmt.Errorf("error retrieving student with ID %s: %v", *studentID, err)
 		}
 
-		newStudent := hrModel.NewStudentInfoBuilder().
+		// Create updated student info using non-empty flag values.
+		updatedStudent := model.NewStudentInfoBuilder().
+			WithStudentCode(*studentID).
 			WithFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).
 			WithLastName(ifNotEmpty(*lastName, studentInfo.LastName)).
 			WithGender(ifNotEmpty(*gender, studentInfo.Gender)).
 			WithCitizenID(ifNotEmpty(*citizenID, studentInfo.CitizenID)).
 			WithPhoneNumber(ifNotEmpty(*phoneNumber, studentInfo.PhoneNumber)).
-			WithEmail(ifNotEmpty(*emailStudent, studentInfo.Email)).
+			WithEmail(ifNotEmpty(*email, studentInfo.Email)).
 			Build()
 
-		if err := hrFacade.UpdateStudent(newStudent); err != nil {
-			return fmt.Errorf("failed to update student info: %w", err)
+		// Update common student data.
+		studentData := map[string]any{
+			"FirstName": updatedStudent.FirstName,
+			"LastName":  updatedStudent.LastName,
+			// add additional fields as needed.
+		}
+		studentController := commonController.CreateStudentController(tx)
+		if err := studentController.Update(*studentID, studentData); err != nil {
+			return fmt.Errorf("failed to update common student data: %v", err)
 		}
 
+		// Migrate and update HR-specific data.
+		if err := controller.MigrateStudentsToHR(tx); err != nil {
+			return fmt.Errorf("failed to migrate student to HR module: %v", err)
+		}
+
+		if err := hrFacade.UpdateStudent(updatedStudent); err != nil {
+			return fmt.Errorf("failed to update student HR info: %v", err)
+		}
+		fmt.Println("Student updated successfully!")
 		return nil
 	})
+}
 
-	if err != nil {
-		return fmt.Errorf("Transaction failed: %v\n", err)
+// ifNotEmpty returns newValue if not empty, otherwise fallback.
+func ifNotEmpty(newValue, fallback string) string {
+	if newValue != "" {
+		return newValue
 	}
-
-	fmt.Println("Student updated successfully!")
-	return nil
+	return fallback
 }

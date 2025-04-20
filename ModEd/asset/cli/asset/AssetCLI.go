@@ -1,5 +1,7 @@
 package main
 
+// MEP-1012 Asset
+
 import (
 	"ModEd/asset/cli/asset/handler"
 	"ModEd/asset/controller"
