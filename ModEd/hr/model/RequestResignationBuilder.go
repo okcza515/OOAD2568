@@ -1,33 +1,33 @@
 package model
 
-type RequestResignationBuilder struct {
-	req *RequestResignation
+type RequestResignationStudentBuilder struct {
+	req *RequestResignationStudent
 }
 
-func NewRequestResignationBuilder() *RequestResignationBuilder {
-	return &RequestResignationBuilder{
-		req: &RequestResignation{
+func NewRequestResignationStudentBuilder() *RequestResignationStudentBuilder {
+	return &RequestResignationStudentBuilder{
+		req: &RequestResignationStudent{
 			Status: "Pending",
 			// CreatedAt: time.Now(),
 		},
 	}
 }
 
-func (b *RequestResignationBuilder) WithStudentID(id string) *RequestResignationBuilder {
+func (b *RequestResignationStudentBuilder) WithStudentID(id string) *RequestResignationStudentBuilder {
 	b.req.StudentID = id
 	return b
 }
 
-func (b *RequestResignationBuilder) WithReason(reason string) *RequestResignationBuilder {
+func (b *RequestResignationStudentBuilder) WithReason(reason string) *RequestResignationStudentBuilder {
 	b.req.Reason = reason
 	return b
 }
 
-func (b *RequestResignationBuilder) WithStatus(status string) *RequestResignationBuilder {
+func (b *RequestResignationStudentBuilder) WithStatus(status string) *RequestResignationStudentBuilder {
 	b.req.Status = status
 	return b
 }
 
-func (b *RequestResignationBuilder) Build() *RequestResignation {
+func (b *RequestResignationStudentBuilder) Build() *RequestResignationStudent {
 	return b.req
 }

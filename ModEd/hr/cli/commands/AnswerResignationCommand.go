@@ -35,7 +35,7 @@ func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	err := hrFacade.UpdateResignationStatus(*id, status, *reason)
+	err := hrFacade.UpdateResignationStudentStatus(*id, status, *reason)
 	if err != nil {
 		return fmt.Errorf("error updating resignation request: %w", err)
 	}

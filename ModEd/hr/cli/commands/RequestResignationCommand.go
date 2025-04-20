@@ -1,59 +1,60 @@
 package commands
 
 import (
-	"ModEd/hr/controller"
-	hrModel "ModEd/hr/model"
-	"ModEd/hr/util"
-	"flag"
-	"fmt"
+    "ModEd/hr/controller"
+    "ModEd/hr/model"
+    "ModEd/hr/util"
+    "flag"
+    "fmt"
+    "strings"
 
-	"gorm.io/gorm"
+    "gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go requestResignation -id="66050001" -reason="ย้ายคณะ"
 func (c *RequestResignationCommand) Execute(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
-	studentID := fs.String("id", "", "Student ID")
-	instructorID := fs.String("_id", "", "Instructor ID")
-	reason := fs.String("reason", "", "Reason for resignation")
-	role := fs.String("role", "", "Role of the requester (e.g., Student, Instructor)")
-	fs.Parse(args)
+    if len(args) < 1 {
+        return fmt.Errorf("usage: requestResignation {student|instructor} [options]")
+    }
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
-		if err = util.ValidateRequiredFlags(fs, []string{"_id", "reason", "role"}); err != nil {
-			fs.Usage()
-			return fmt.Errorf("Validation error: %v\n", err)
-		}
-	}
+    target := strings.ToLower(args[0])
+    switch target {
+    case "student":
+        return RequestResignationStudent(args[1:], tx)
+    case "instructor":
+        return nil
+    default:
+        return fmt.Errorf("unknown requestResignation target: %s", target)
+    }
+}
 
-	var requesterID string
-	switch *role {
-	case "Student":
-		if *studentID == "" {
-			return fmt.Errorf("Student role requires -studentID")
-		}
-		requesterID = *studentID
-	case "Instructor":
-		if *instructorID == "" {
-			return fmt.Errorf("Instructor role requires -id")
-		}
-		requesterID = *instructorID
-	default:
-		return fmt.Errorf("Invalid role. Must be 'Student' or 'Instructor'")
-	}
+func RequestResignationStudent(args []string, tx *gorm.DB) error {
+    fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
+    ID := fs.String("id", "", "ID")
+    reason := fs.String("reason", "", "Reason for resignation")
 
-	db := util.OpenDatabase(*util.DatabasePath)
-	hrFacade := controller.NewHRFacade(db)
+    if err := fs.Parse(args); err != nil {
+        return fmt.Errorf("failed to parse flags: %v", err)
+    }
 
-	request := hrModel.NewRequestResignationBuilder().
-		WithStudentID(requesterID).
-		WithReason(*reason).
-		Build()
+    if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
+        fs.Usage()
+        return fmt.Errorf("validation error: %v", err)
+    }
 
-	if err := hrFacade.SubmitResignationRequest(request); err != nil {
-		return fmt.Errorf("Failed to submit resignation request: %v\n", err)
-	}
+    tm := &util.TransactionManager{DB: tx}
+    return tm.Execute(func(tx *gorm.DB) error {
+        hrFacade := controller.NewHRFacade(tx)
 
-	fmt.Println("Resignation request submitted successfully.")
-	return nil
+        request := model.NewRequestResignationStudentBuilder().
+            WithStudentID(*ID).
+            WithReason(*reason).
+            Build()
+
+        if err := hrFacade.SubmitResignationStudentRequest(request); err != nil {
+            return fmt.Errorf("failed to submit resignation request: %v", err)
+        }
+
+        fmt.Println("Resignation request submitted successfully.")
+        return nil
+    })
 }

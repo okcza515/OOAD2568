@@ -11,8 +11,6 @@ type UpdateStudentCommand struct{}
 type AnswerResignationCommand struct{}  // เจ้าหน้าที่ตอบคำร้องขอลาออก
 type CancelResignationCommand struct{}  // นักศึกษาเพิกถอนคำร้องขอลาออก
 type RequestResignationCommand struct{} // นักศึกษายื่นคำร้องขอลาออก
-type ApproveResignationCommand struct{} // ผู้ดูแลระบบอนุมัติคำขอลาออก
-type RejectResignationCommand struct{}  // ผู้ดูแลระบบปฏิเสธคำขอลาออก
 
 type MigrateStudentsCommand struct{}
 type ExportStudentsCommand struct{}

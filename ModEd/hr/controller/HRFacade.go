@@ -10,7 +10,7 @@ import (
 type HRFacade struct {
 	Student     *StudentHRController
 	Instructor  *InstructorHRController
-	Resignation *ResignationHRController
+	Resignation *ResignationStudentHRController
 	Leave *LeaveHRController
 }
 
@@ -18,7 +18,7 @@ func NewHRFacade(db *gorm.DB) *HRFacade {
 	return &HRFacade{
 		Student:     CreateStudentHRController(db),
 		Instructor:  CreateInstructorHRController(db),
-		Resignation: CreateResignationHRController(db),
+		Resignation: CreateResignationStudentHRController(db),
 		Leave: CreateLeaveHRController(db),
 	}
 }
@@ -77,7 +77,7 @@ func (f *HRFacade) DeleteInstructor(id string) error {
 
 // Resignation-related facade methods
 
-func (f *HRFacade) SubmitResignationRequest(info *model.RequestResignation) error {
+func (f *HRFacade) SubmitResignationStudentRequest(info *model.RequestResignationStudent) error {
 	return f.Resignation.Insert(info)
 }
 // Leave-related facade methods
@@ -85,7 +85,7 @@ func (f *HRFacade) SubmitLeaveRequest(info *model.RequestLeave) error {
 	return f.Leave.Insert(info)
 }
 
-func (f *HRFacade) UpdateResignationStatus(id string, status string, reason string) error {
+func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reason string) error {
 	req, err := f.Resignation.GetByStudentID(id)
 	if err != nil {
 		return err
