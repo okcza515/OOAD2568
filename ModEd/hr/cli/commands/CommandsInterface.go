@@ -14,3 +14,5 @@ type CancelResignationCommand struct{}       // นักศึกษาเพ�
 
 type MigrateStudentsCommand struct{}
 type ExportStudentsCommand struct{}
+
+type RequsetLeaveCommand struct{}          // นักศึกษายื่นคำร้องขอลา
