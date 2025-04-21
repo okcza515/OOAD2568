@@ -7,7 +7,6 @@ import (
 )
 
 func RunWILModuleCLI() {
-	fmt.Println("test")
 	for {
 		printWILModuleMenu()
 		choice := utils.GetUserChoice()

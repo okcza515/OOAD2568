@@ -6,7 +6,6 @@ import (
 )
 
 func RunWILProjectHandler() {
-	fmt.Println("test")
 	for {
 		printWILProjectModuleMenu()
 		choice := utils.GetUserChoice()
