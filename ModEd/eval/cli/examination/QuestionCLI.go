@@ -3,11 +3,9 @@ package examination
 import (
 	question_controller "ModEd/eval/controller/examination"
 	"ModEd/eval/model"
-	"bufio"
+	"ModEd/eval/util"
 	"fmt"
 	"log"
-	"os"
-	"strings"
 	"strconv"
 
 	"gorm.io/driver/sqlite"
@@ -49,18 +47,6 @@ func RunQuestionCLI() {
 
 }
 
-func promptString(prompt string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(prompt)
-	text, _ := reader.ReadString('\n')
-	return strings.TrimSpace(text)
-}
-
-func promptFloat(prompt string) (float64, error) {
-	text := promptString(prompt)
-	return strconv.ParseFloat(text, 64)
-}
-
 func promptQuestionType() (model.QuestionType, error) {
 	fmt.Println("Enter Question type:")
 	fmt.Println("1. Multiple Choice")
@@ -87,7 +73,7 @@ func promptQuestionType() (model.QuestionType, error) {
 }
 
 func CreateQuestion(controller *question_controller.QuestionController) {
-	examIdText := promptString("Enter Exam ID: ")
+	examIdText := util.PromptString("Enter Exam ID: ")
 	examIdUint, err := strconv.ParseUint(examIdText, 10, 64)
 	if err != nil {
 		fmt.Println("Invalid exam id input:", err)
@@ -100,9 +86,9 @@ func CreateQuestion(controller *question_controller.QuestionController) {
 		return
 	}
 
-	detail := promptString("Enter Question detail: ")
-	answer := promptString("Enter Correct answer: ")
-	score, err := promptFloat("Enter Score: ")
+	detail := util.PromptString("Enter Question detail: ")
+	answer := util.PromptString("Enter Correct answer: ")
+	score, err := util.PromptFloat("Enter Score: ")
 	if err != nil {
 		fmt.Println("Invalid score input:", err)
 		return
@@ -130,9 +116,9 @@ func UpdateQuestion(controller *question_controller.QuestionController, id uint)
 		return
 	}
 
-	detail := promptString("Enter new Question detail: ")
-	answer := promptString("Enter new Correct answer: ")
-	score, err := promptFloat("Enter new Score: ")
+	detail := util.PromptString("Enter new Question detail: ")
+	answer := util.PromptString("Enter new Correct answer: ")
+	score, err := util.PromptFloat("Enter new Score: ")
 	if err != nil {
 		fmt.Println("Invalid score input:", err)
 		return
