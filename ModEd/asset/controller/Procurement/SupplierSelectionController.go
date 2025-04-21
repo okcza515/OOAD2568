@@ -8,55 +8,61 @@ import (
 )
 
 type SupplierSelectionController struct {
-	Connector *gorm.DB
+	db *gorm.DB
 }
 
-func (quotation SupplierSelectionController) CreateQuotation(s *model.Quotation) error {
-	return quotation.Connector.Create(s).Error
+func CreateSupplierSelectionController(db *gorm.DB) *SupplierSelectionController {
+	return &SupplierSelectionController{db: db}
 }
 
-func (supplier SupplierSelectionController) CreateSupplier(s *model.Supplier) error {
-	return supplier.Connector.Create(s).Error
+func (c *SupplierSelectionController) CreateQuotation(body *model.Quotation) error {
+	return c.db.Create(body).Error
 }
 
-func (quotation SupplierSelectionController) ListAllQuotation() ([]model.Quotation, error) {
-	quotations := []model.Quotation{}
-	result := quotation.Connector.
-		Select("QuotationID").Find(&quotations)
-	return quotations, result.Error
+func (c *SupplierSelectionController) CreateSupplier(body *model.Supplier) error {
+	return c.db.Create(body).Error
 }
 
-func (supplier SupplierSelectionController) ListAllSupplier() ([]model.Supplier, error) {
-	suppliers := []model.Supplier{}
-	result := supplier.Connector.
-		Select("SupplierID").Find(&suppliers)
-	return suppliers, result.Error
+func (c *SupplierSelectionController) ListAllQuotation() ([]model.Quotation, error) {
+	var quotations []model.Quotation
+	err := c.db.Find(&quotations).Error
+	return quotations, err
 }
 
-func (quotation SupplierSelectionController) GetByQuotationID(QuotationID uint) (*model.Quotation, error) {
-	s := &model.Quotation{}
-	result := quotation.Connector.Where("QuotationID = ?", QuotationID).First(s)
-	return s, result.Error
+func (c *SupplierSelectionController) ListAllSupplier() ([]model.Supplier, error) {
+	var suppliers []model.Supplier
+	err := c.db.Find(&suppliers).Error
+	return suppliers, err
 }
 
-func (supplier SupplierSelectionController) GetBySupplierID(SupplierID uint) (*model.Supplier, error) {
-	s := &model.Supplier{}
-	result := supplier.Connector.Where("SupplierID = ?", SupplierID).First(s)
-	return s, result.Error
+func (c *SupplierSelectionController) GetByQuotationID(id uint) (*model.Quotation, error) {
+	var quotation model.Quotation
+	err := c.db.First(&quotation, id).Error
+	return &quotation, err
 }
 
-func (quotation SupplierSelectionController) UpdateQuotation(QuotationID uint, updatedData map[string]interface{}) error {
-	return quotation.Connector.Model(&model.Quotation{}).Where("QuotationID = ?", QuotationID).Updates(updatedData).Error
+func (c *SupplierSelectionController) GetBySupplierID(id uint) (*model.Supplier, error) {
+	var supplier model.Supplier
+	err := c.db.First(&supplier, id).Error
+	return &supplier, err
 }
 
-func (supplier SupplierSelectionController) UpdateSupplier(SupplierID uint, updatedData map[string]interface{}) error {
-	return supplier.Connector.Model(&model.Supplier{}).Where("SupplierID = ?", SupplierID).Updates(updatedData).Error
+func (c *SupplierSelectionController) UpdateQuotation(id uint, updated *model.Quotation) error {
+	updated.QuotationID = id
+	result := c.db.Model(&model.Quotation{}).Where("QuotationID = ?", id).Updates(updated)
+	return result.Error
 }
 
-func (quotation SupplierSelectionController) DeleteByQuotationID(QuotationID uint) error {
-	return quotation.Connector.Where("QuotationID = ?", QuotationID).Delete(&model.Quotation{}).Error
+func (c *SupplierSelectionController) UpdateSupplier(id uint, updated *model.Supplier) error {
+	updated.SupplierID = id
+	result := c.db.Model(&model.Supplier{}).Where("SupplierID = ?", id).Updates(updated)
+	return result.Error
 }
 
-func (supplier SupplierSelectionController) DeleteBySupplierID(SupplierID uint) error {
-	return supplier.Connector.Where("SupplierID = ?", SupplierID).Delete(&model.Supplier{}).Error
+func (c *SupplierSelectionController) DeleteByQuotationID(id uint) error {
+	return c.db.Delete(&model.Quotation{}, id).Error
+}
+
+func (c *SupplierSelectionController) DeleteBySupplierID(id uint) error {
+	return c.db.Delete(&model.Supplier{}, id).Error
 }
