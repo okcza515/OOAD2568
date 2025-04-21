@@ -10,6 +10,7 @@ type WILProjectApplication struct {
 	gorm.Model
 	ProjectName       string                 `gorm:"not null"`
 	ProjectDetail     string                 `gorm:"not null"`
+	Semester          string                 `gorm:"not null"`
 	Company           string                 `gorm:"not null"`
 	Mentor            string                 `gorm:"not null"`
 	Students          []WILProjectMember     `gorm:"foreignKey:WILProjectApplicationId"`

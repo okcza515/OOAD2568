@@ -7,6 +7,7 @@ import (
 
 type WILProject struct {
 	gorm.Model
+	ClassId          uint               `gorm:"not null"`
 	SeniorProjectId  uuid.UUID          `gorm:"not null"`
 	Company          uuid.UUID          `gorm:"not null"`
 	Mentor           string             `gorm:"not null"`
