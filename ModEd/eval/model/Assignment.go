@@ -20,6 +20,7 @@ type Assignment struct {
 	Description  string
 	StartDate    time.Time
 	DueDate      time.Time
+	Status       string
 	Submission   []AssignmentSubmission
 }
 
