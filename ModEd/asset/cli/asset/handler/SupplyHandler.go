@@ -17,6 +17,8 @@ func SupplyHandler(facade *controller.AssetControllerFacade) {
 		printSupplyOption()
 		inputBuffer = util.GetCommandInput()
 
+		util.ClearScreen()
+
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Add new Supply")
@@ -37,10 +39,11 @@ func SupplyHandler(facade *controller.AssetControllerFacade) {
 		case "6":
 			fmt.Println("Delete an Supply")
 		case "7":
-			fmt.Println("Miagration Supply")
+			fmt.Println("Migration Supply")
 		default:
 			fmt.Println("Invalid Command")
 		}
+
 		util.PressEnterToContinue()
 		util.ClearScreen()
 	}
