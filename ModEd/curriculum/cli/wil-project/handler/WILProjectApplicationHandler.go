@@ -13,7 +13,7 @@ func RunWILProjectApplicationHandler(controller *controller.WILProjectApplicatio
 
 		switch choice {
 		case "1":
-			fmt.Println("1 Not implemented yet...")
+			controller.RegisterWILProjectsApplication()
 		case "2":
 			fmt.Println("2 Not implemented yet...")
 		case "0":
