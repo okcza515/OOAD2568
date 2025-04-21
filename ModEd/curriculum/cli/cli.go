@@ -6,7 +6,9 @@ import (
 	wilproject "ModEd/curriculum/cli/wil-project"
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/controller/migration"
+	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -27,6 +29,12 @@ func main() {
 	})
 	if err != nil {
 		panic(err)
+	}
+
+	err = migrateDB(db)
+
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 
 	curriculumController := controller.NewCurriculumController(db)
@@ -73,4 +81,23 @@ func getUserChoice() string {
 	fmt.Print("Enter your choice: ")
 	fmt.Scanln(&choice)
 	return choice
+}
+
+func migrateDB(db *gorm.DB) error {
+	err := db.AutoMigrate(
+		&model.Curriculum{},
+		&model.Course{},
+		&model.Class{},
+		&model.WILProjectCourse{},
+		&model.WILProjectClass{},
+		&model.WILProjectMember{},
+		&model.WILProjectApplication{},
+		&model.WILProject{},
+		&model.IndependentStudy{},
+	)
+	if err != nil {
+		return errors.New("err: migration failed")
+	}
+
+	return nil
 }

@@ -53,8 +53,8 @@ func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumC
 			}
 
 			fmt.Println("------[WIL Course]------")
-			for _, course := range courses {
-				fmt.Println(string(rune(course.CourseId)) + " " + course.Name + " " + string(rune(course.CourseStatus)) + course.CreatedAt.String() + " " + course.UpdatedAt.String())
+			for i, course := range courses {
+				fmt.Printf("%d. %d %s %s %s %s\n", i+1, course.CourseId, course.Name, string(rune(course.CourseStatus)), course.CreatedAt.String(), course.UpdatedAt.String())
 			}
 
 		case "4":
@@ -64,8 +64,8 @@ func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumC
 			}
 
 			fmt.Println("------[WIL Class]------")
-			for _, class := range classes {
-				fmt.Println(string(rune(class.ClassId)) + " " + string(rune(class.Section)) + " " + class.CreatedAt.String() + " " + class.UpdatedAt.String())
+			for i, class := range classes {
+				fmt.Printf("%d. %d %d %s %s\n", i+1, class.ClassId, class.Section, class.CreatedAt.String(), class.UpdatedAt.String())
 			}
 		case "0":
 			fmt.Println("Exiting...")
