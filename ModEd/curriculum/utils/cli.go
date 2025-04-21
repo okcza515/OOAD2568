@@ -9,10 +9,22 @@ func GetUserChoice() string {
 	return choice
 }
 
-func GetInputDatabasePath(module string, defaultDBPath string) string {
-	database := defaultDBPath
+func GetUserInput(msg string) string {
+	var input string
+	fmt.Print(msg)
+	fmt.Scanln(&input)
+	return input
+}
 
-	fmt.Printf("Welcome to ModEd %s CLI!\n", module)
+func GetUserInputUint(msg string) uint {
+	var input uint
+	fmt.Print(msg)
+	fmt.Scanln(&input)
+	return input
+}
+
+func GetInputDatabasePath(defaultDBPath string) string {
+	database := defaultDBPath
 
 	fmt.Println("Please enter the path of SQLite Database (press Enter to use default):")
 	fmt.Printf("Default: %s\n", defaultDBPath)

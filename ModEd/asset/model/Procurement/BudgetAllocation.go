@@ -2,17 +2,20 @@
 package model
 
 import (
+	master "ModEd/common/model"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type BudgetAllocation struct {
-	BudgetAllocationID uint    `gorm:"primaryKey"`
-	ItemRequestID      uint    `gorm:"not null"`
-	Amount             float64 `gorm:"not null"` // Approved budget
-	ApproverName       string  `gorm:"type:varchar(255)"`
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	DeletedAt          gorm.DeletedAt `gorm:"index"` // Soft delete
+	BudgetAllocationID  uint              `gorm:"primaryKey"`
+	InstrumentRequestID uint              `gorm:"index"`
+	Amount              float64           `gorm:"not null"`
+	ApproverID          uint              `gorm:"index"`
+	Approver            master.Instructor `gorm:"foreignKey:ApproverID"`
+	DeletedAt           gorm.DeletedAt    `gorm:"index"`
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	InstrumentRequest   InstrumentRequest
 }

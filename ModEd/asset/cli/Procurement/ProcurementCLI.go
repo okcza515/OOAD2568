@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ModEd/asset/cli/Procurement/handler"
+	handler "ModEd/asset/cli/Procurement/handler"
 	controller "ModEd/asset/controller/Procurement"
 	util "ModEd/asset/util"
 	"fmt"
@@ -47,6 +47,7 @@ func initProgram() *controller.ProcurementControllerFacade {
 
 	facade, err := controller.CreateProcurementControllerFacade()
 	if err != nil {
+		fmt.Printf("Init failed: %v\n", err)
 		panic(err)
 	}
 

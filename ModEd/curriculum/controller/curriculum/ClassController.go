@@ -10,20 +10,11 @@ import (
 	"ModEd/utils/deserializer"
 )
 
-type IClassController interface {
-	CreateClass(class *model.Class) (classId uint, err error)
-	CreateSeedClass(path string) (classes []*model.Class, err error)
-	GetClass(classId uint) (class *model.Class, err error)
-	GetClasses() (classes []*model.Class, err error)
-	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
-	DeleteClass(classId uint) (class *model.Class, err error)
-}
-
 type ClassController struct {
 	db *gorm.DB
 }
 
-func NewClassController(db *gorm.DB) IClassController {
+func NewClassController(db *gorm.DB) *ClassController {
 	return &ClassController{db: db}
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 type IResultController interface {
-	// CreateResult() error
+	// CreateResults() error
 	GetAllResults() ([]model.Result, error)
 	UpdateResult(id uint, updatedResult *model.Result) error
 	DeleteResult(id uint) error
@@ -24,7 +24,7 @@ func NewResultController(db *gorm.DB) *ResultController {
 	return &ResultController{db: db}
 }
 
-// func (c *ResultController) CreateResult() error {
+// func (c *ResultController) CreateResults() error {
 // 	var exams []model.Examination
 // 	var students []commonmodel.Student
 
@@ -67,21 +67,21 @@ func NewResultController(db *gorm.DB) *ResultController {
 // 	}
 // }
 
-func (c *ResultController) GetAllResults() ([]model.Result, error) {
+func (c *ResultController) GetResultByStudent(studentID uint) ([]model.Result, error) {
 	var results []model.Result
-	if err := c.db.Find(&results).Error; err != nil {
+	if err := c.db.Where("student_id = ?", studentID).Preload("Examination").Preload("Student").Find(&results).Error; err != nil {
 		return nil, err
 	}
 	return results, nil
 }
 
-func (c *ResultController) UpdateResult(id uint, updatedResult *model.Result) error {
+func (c *ResultController) UpdateResult(id uint, updatedData map[string]interface{}) error {
 	var result model.Result
 	if err := c.db.First(&result, id).Error; err != nil {
 		return err
 	}
 
-	if err := c.db.Model(&result).Updates(updatedResult).Error; err != nil {
+	if err := c.db.Model(&result).Updates(updatedData).Error; err != nil {
 		return err
 	}
 	return nil

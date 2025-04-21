@@ -1,12 +1,16 @@
 package handler
 
+// MEP-1012 Asset
+
 import (
-	"ModEd/asset/controller/asset"
+	"ModEd/asset/controller"
+	"ModEd/asset/model"
 	"ModEd/asset/util"
+	"ModEd/utils/deserializer"
 	"fmt"
 )
 
-func InstrumentHandler(facade *asset.AssetControllerFacade) {
+func InstrumentHandler(facade *controller.AssetControllerFacade) {
 	inputBuffer := ""
 
 	for inputBuffer != "back" {
@@ -17,12 +21,41 @@ func InstrumentHandler(facade *asset.AssetControllerFacade) {
 
 		switch inputBuffer {
 		case "1":
+			util.ClearScreen()
 			fmt.Println("Add new Instrument")
+
+			path := ""
+			fmt.Println("Please enter the path of the instrument file (csv or json): ")
+			_, _ = fmt.Scanln(&path)
+
+			insModel := &model.Instrument{}
+			fd, err := deserializer.NewFileDeserializer(path)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+			err = fd.Deserialize(insModel)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+
+			err = facade.Instrument.Insert(insModel)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+
+			fmt.Println("Instrument successfully inserted!")
+			util.PressEnterToContinue()
+
 		case "2":
 			util.ClearScreen()
 			fmt.Println("List all Instrument")
 
-			// ok wavie this is for testing you can remove this in the morning it's 4:00 am and I need to sleep
 			instList, err := facade.Instrument.ListAll()
 			if err != nil {
 				panic(err)

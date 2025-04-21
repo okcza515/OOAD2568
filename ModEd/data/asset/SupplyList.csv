@@ -1,0 +1,6 @@
+ID,CreatedAt,UpdatedAt,DeletedAt,SupplyLabel,Description,Location,CategoryID,Quantity
+1,2025-04-21T10:00:00Z,2025-04-21T10:00:00Z,,Paper Clips,Small metal clips,Office A,1,100
+2,2025-04-21T10:05:00Z,2025-04-21T10:05:00Z,,Pens,Blue ink pens,Office B,2,200
+3,2025-04-21T10:10:00Z,2025-04-21T10:10:00Z,,Notebooks,Spiral notebooks,,3,150
+4,2025-04-21T10:15:00Z,2025-04-21T10:15:00Z,,Staplers,,,4,75
+5,2025-04-21T10:20:00Z,2025-04-21T10:20:00Z,,Markers,Black markers,Storage,5,50

@@ -9,10 +9,10 @@ import (
 
 type ProcurementApproval struct {
 	ProcurementApprovalID uint           `gorm:"primaryKey"`
-	ApproversID           uint           
-	Approver			  Approver		 `gorm:"foreignKey:ApproversID"`
+	ApproversID           uint           `gorm:"index"`
+	Approver              Approver       `gorm:"foreignKey:ApproversID"`
 	Status                string         `gorm:"type:varchar(50);not null"`
 	Description           string         `gorm:"type:text"`
-	ApprovalTime          *time.Time
 	DeletedAt             gorm.DeletedAt `gorm:"index"`
+	ApprovalTime          *time.Time
 }

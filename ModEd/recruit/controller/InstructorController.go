@@ -2,30 +2,38 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/recruit/model"
+	"fmt"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type InstructorController struct {
+	*core.BaseController
 	DB *gorm.DB
 }
 
 func CreateInstructorController(db *gorm.DB) *InstructorController {
-	return &InstructorController{DB: db}
+	return &InstructorController{
+		BaseController: core.NewBaseController("Interview", db),
+		DB:             db,
+	}
 }
 
-// Get all interviews assigned to an instructor
 func (ctrl *InstructorController) GetInterviewsByInstructor(instructorID uint) ([]model.Interview, error) {
 	var interviews []model.Interview
 	err := ctrl.DB.Where("instructor_id = ?", instructorID).Find(&interviews).Error
 	return interviews, err
 }
 
-// Evaluate an applicant by updating interview score
-func (ctrl *InstructorController) EvaluateApplicant(interviewID uuid.UUID, score float64) error {
-	return ctrl.DB.Model(&model.Interview{}).
+func (ctrl *InstructorController) EvaluateApplicant(interviewID uint, score float64) error {
+	result := ctrl.DB.Model(&model.Interview{}).
 		Where("id = ?", interviewID).
-		Update("interview_score", score).Error
+		Update("interview_score", score)
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("no interview found with ID %d", interviewID)
+	}
+	return result.Error
 }

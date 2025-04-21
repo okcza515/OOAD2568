@@ -18,8 +18,8 @@ func CreateInstructorHRController(db *gorm.DB) *InstructorHRController {
 }
 
 // GetAll returns all InstructorInfo records.
-func (c *InstructorHRController) GetAll() ([]model.InstructorInfo, error) {
-	var infos []model.InstructorInfo
+func (c *InstructorHRController) GetAll() ([]*model.InstructorInfo, error) {
+	var infos []*model.InstructorInfo
 	err := c.db.Find(&infos).Error
 	return infos, err
 }
@@ -39,11 +39,26 @@ func (c *InstructorHRController) Insert(info *model.InstructorInfo) error {
 }
 
 // Update updates an existing InstructorInfo record.
+// No Primary Key for InstructorInfo
 func (c *InstructorHRController) Update(info *model.InstructorInfo) error {
-	return c.db.Save(info).Error
+	return c.db.Model(&model.InstructorInfo{}).
+		Where("id = ?", info.ID).
+		Updates(info).Error
 }
 
 // Delete deletes an instructor's HR information by ID.
 func (c *InstructorHRController) Delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+}
+
+// Upsert inserts or updates a InstructorInfo record.
+func (c *InstructorHRController) Upsert(info *model.InstructorInfo) error {
+	var existingInfo model.InstructorInfo
+	if err := c.db.Where("instructor_id = ?", info.ID).First(&existingInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Insert(info)
+		}
+		return err
+	}
+	return c.Update(info)
 }

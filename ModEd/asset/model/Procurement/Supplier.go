@@ -11,4 +11,5 @@ type Supplier struct {
 	ContactInfo string         `gorm:"type:text"`
 	Performance float64        `gorm:"not null"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	Quotations  []Quotation
 }

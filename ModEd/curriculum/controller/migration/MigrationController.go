@@ -2,7 +2,9 @@ package migration
 
 import (
 	// modelCommon "ModEd/common/model"
+	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
+
 	// modelInternShip "ModEd/curriculum/model/Internship"
 
 	"github.com/cockroachdb/errors"
@@ -22,6 +24,12 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelCurriculum.Curriculum{},
 		&modelCurriculum.Class{},
 		&modelCurriculum.Course{},
+		&model.WILProjectCourse{},
+		&model.WILProjectClass{},
+		&model.WILProjectMember{},
+		&model.WILProjectApplication{},
+		&model.WILProject{},
+		&model.IndependentStudy{},
 		// &modelInternShip.InternStudent{},
 		// &modelInternShip.Company{},
 		// &modelInternShip.InternshipSchedule{},
@@ -32,6 +40,32 @@ func (c *MigrationController) MigrateToDB() error {
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
+	}
+
+	return nil
+}
+
+func (c *MigrationController) DropAllTables() error {
+	err := c.Db.Migrator().DropTable(
+		&modelCurriculum.Curriculum{},
+		&modelCurriculum.Class{},
+		&modelCurriculum.Course{},
+		&model.WILProjectCourse{},
+		&model.WILProjectClass{},
+		&model.WILProjectMember{},
+		&model.WILProjectApplication{},
+		&model.WILProject{},
+		&model.IndependentStudy{},
+		// &modelInternShip.InternStudent{},
+		// &modelInternShip.Company{},
+		// &modelInternShip.InternshipSchedule{},
+		// &modelInternShip.SupervisorReview{},
+		// &modelCommon.Student{},
+		// &modelInternShip.InternshipReport{},
+		// &modelInternShip.InternshipApplication{},
+	)
+	if err != nil {
+		return err
 	}
 
 	return nil

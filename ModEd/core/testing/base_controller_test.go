@@ -2,6 +2,7 @@ package core_test
 
 import (
 	"ModEd/core"
+	"errors"
 	"os"
 	"testing"
 
@@ -14,6 +15,28 @@ type TestModel struct {
 	gorm.Model
 	ID   uint
 	Name string
+}
+
+func (m TestModel) GetID() uint {
+	return 0
+}
+func (m TestModel) ToString() string {
+	return ""
+}
+func (m TestModel) Validate() error {
+	return nil
+}
+func (m TestModel) ToCSVRow() string {
+	return ""
+}
+func (m TestModel) FromCSV(raw string) error {
+	return nil
+}
+func (m TestModel) ToJSON() string {
+	return ""
+}
+func (m TestModel) FromJSON(raw string) error {
+	return nil
 }
 
 func Init() (*gorm.DB, string) {
@@ -37,7 +60,7 @@ func TestInsert(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 	testData := TestModel{Name: "TestName"}
 	err := controller.Insert(testData)
 	assert.NoError(t, err)
@@ -47,27 +70,35 @@ func TestRetrieveByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 
 	testData := TestModel{Name: "TestName"} // Remove explicit ID
-	db.Create(&testData)
+	controller.Insert(&testData)
 
 	result, err := controller.RetrieveByID(testData.ID) // Use the auto-generated ID
-	assert.NoError(t, err)
-	assert.Equal(t, testData.ID, result.ID)
-	assert.Equal(t, "TestName", result.Name)
+	if err != nil {
+		assert.NoError(t, err)
+	}
+
+	if resultCasted, ok := (*result).(TestModel); ok {
+		assert.NoError(t, err)
+		assert.Equal(t, testData.ID, resultCasted.ID)
+		assert.Equal(t, "TestName", resultCasted.Name)
+	} else {
+		assert.NoError(t, errors.New("Failed to cast type"))
+	}
 }
 
 func TestUpdateByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 	testData := TestModel{Name: "OldName"}
 	db.Create(&testData)
 
 	updatedData := TestModel{Name: "UpdatedName"}
-	err := controller.UpdateByID(testData.ID, &updatedData)
+	err := controller.UpdateByID(updatedData)
 	assert.NoError(t, err)
 
 	var result TestModel
@@ -79,7 +110,7 @@ func TestDeleteByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 	testData := TestModel{Name: "TestName"}
 	db.Create(&testData)
 
@@ -95,7 +126,7 @@ func TestList(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 
@@ -108,13 +139,13 @@ func TestListPagination(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController("test", db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 
-	result, totalCount, err := controller.ListPagination(map[string]interface{}{"name": "TestName"}, 1, 2)
+	result, err := controller.ListPagination(map[string]interface{}{"name": "TestName"}, 1, 2)
 	assert.NoError(t, err)
 	assert.Len(t, result, 2)
-	assert.Equal(t, int64(3), totalCount)
+	assert.Equal(t, int64(3), result.TotalCount)
 }

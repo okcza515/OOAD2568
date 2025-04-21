@@ -4,6 +4,7 @@ package spacemanagement
 import (
 	model "ModEd/asset/model/spacemanagement"
 	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -12,7 +13,7 @@ type SupplyManagementAdapter struct {
 }
 
 func NewSupplyManagementAdapter(db *gorm.DB) *SupplyManagementAdapter {
-    return &SupplyManagementAdapter{db: db}
+	return &SupplyManagementAdapter{db: db}
 }
 
 func (a *SupplyManagementAdapter) getAllSupplyManagement() (*[]model.SupplyManagement, error) {

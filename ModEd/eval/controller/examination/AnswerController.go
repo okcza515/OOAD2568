@@ -25,30 +25,29 @@ func NewAnswerController(db *gorm.DB) *AnswerController {
 	return &AnswerController{db: db}
 }
 
-func (c *AnswerController) SubmitAnswer(answer *model.Answer) error {
+func (c *AnswerController) SubmitAnswer(questionID, studentID uint, answerText string) error {
 	var existingAnswer model.Answer
 
-	if err := c.db.Where("question_id = ? AND student_id = ?", answer.QuestionID, answer.StudentID).First(&existingAnswer).Error; err == nil {
+	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).First(&existingAnswer).Error; err == nil {
 		return errors.New("Answer already submitted")
 	}
 
-	if err := c.db.Create(answer).Error; err != nil {
+	newAnswer := model.Answer{
+		QuestionID: questionID,
+		StudentID:  studentID,
+		Answer:     answerText,
+	}
+
+	if err := c.db.Create(&newAnswer).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func (c *AnswerController) GetAnswersByQuestion(questionID uint) ([]model.Answer, error) {
 	var answers []model.Answer
 	if err := c.db.Where("question_id = ?", questionID).Preload("Question").Preload("Student").Find(&answers).Error; err != nil {
-		return nil, err
-	}
-	return answers, nil
-}
-
-func (c *AnswerController) GetAnswersByStudent(studentID uint) ([]model.Answer, error) {
-	var answers []model.Answer
-	if err := c.db.Where("student_id = ?", studentID).Preload("Question").Preload("Student").Find(&answers).Error; err != nil {
 		return nil, err
 	}
 	return answers, nil

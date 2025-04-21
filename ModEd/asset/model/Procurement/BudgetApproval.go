@@ -2,17 +2,20 @@
 package model
 
 import (
+	master "ModEd/common/model"
 	"time"
 
 	"gorm.io/gorm"
 )
 
 type BudgetApproval struct {
-	BudgetApprovalID uint                 `gorm:"primaryKey"`
-	ItemRequestID    uint                 `gorm:"not null"`
-	ApproverName     string               `gorm:"type:varchar(255);not null"`
-	Status           BudgetApprovalStatus `gorm:"type:varchar(50);default:'pending'"`
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        gorm.DeletedAt `gorm:"index"` // Soft delete
+	BudgetApprovalID    uint                 `gorm:"primaryKey"`
+	InstrumentRequestID uint                 `gorm:"index"`
+	ApproverID          uint                 `gorm:"index"`
+	Approver            master.Instructor    `gorm:"foreignKey:ApproverID"`
+	Status              BudgetApprovalStatus `gorm:"type:varchar(50);default:'pending'"`
+	DeletedAt           gorm.DeletedAt       `gorm:"index"`
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	InstrumentRequest   InstrumentRequest
 }

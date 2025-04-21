@@ -1,8 +1,10 @@
 package main
 
+// MEP-1012 Asset
+
 import (
 	"ModEd/asset/cli/asset/handler"
-	controller "ModEd/asset/controller/asset"
+	"ModEd/asset/controller"
 	util "ModEd/asset/util"
 	"flag"
 	"fmt"

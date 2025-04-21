@@ -2,8 +2,10 @@
 
 package spacemanagement
 
-import("errors"
- model "ModEd/asset/model/spacemanagement")
+import (
+	model "ModEd/asset/model/spacemanagement"
+	"errors"
+)
 
 type AssetType int
 
@@ -12,15 +14,15 @@ const (
 	Supply
 )
 
-type AssetManagementController struct{
+type AssetManagementController struct {
 	InstrumentManagementAdapter *InstrumentManagementAdapter
-	SupplyManagementAdapter *SupplyManagementAdapter
+	SupplyManagementAdapter     *SupplyManagementAdapter
 }
 
 func NewAssetManagementController(instrumentAdapter *InstrumentManagementAdapter, supplyAdapter *SupplyManagementAdapter) *AssetManagementController {
 	return &AssetManagementController{
 		InstrumentManagementAdapter: instrumentAdapter,
-		SupplyManagementAdapter: supplyAdapter,
+		SupplyManagementAdapter:     supplyAdapter,
 	}
 }
 
@@ -57,7 +59,7 @@ func (c *AssetManagementController) GetAssetByRoomId(assetType AssetType, roomID
 	}
 }
 
-func (c *AssetManagementController) CreateAsset(assetType AssetType, payload interface{}) error {	
+func (c *AssetManagementController) CreateAsset(assetType AssetType, payload interface{}) error {
 	switch assetType {
 	case Instrument:
 		return c.InstrumentManagementAdapter.CreateInstrumentManagement(payload.(*model.InstrumentManagement))

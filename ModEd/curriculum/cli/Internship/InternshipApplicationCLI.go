@@ -41,7 +41,8 @@ func main() {
 		fmt.Println("3. Clear Database")
 		fmt.Println("4. Evaluation Student Performance")
 		fmt.Println("5. Evaluation Student Report")
-		fmt.Println("6. Exit")
+		fmt.Println("6. Update Approval Status")
+		fmt.Println("7. Exit")
 		fmt.Print("Enter your choice: ")
 
 		scanner.Scan()
@@ -185,6 +186,31 @@ func main() {
 			Report.UpdateReportScore(studentCode, score)
 
 		case "6":
+			approvedController := controller.NewApprovedController(db)
+	
+			fmt.Print("Enter StudentCode: ")
+			scanner.Scan()
+			studentCode := strings.TrimSpace(scanner.Text())
+	
+			fmt.Print("Enter Advisor Approval Status (APPROVED/REJECT): ")
+			scanner.Scan()
+			advisorStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
+	
+			fmt.Print("Enter Company Approval Status (APPROVED/REJECT): ")
+			scanner.Scan()
+			companyStatus := strings.ToUpper(strings.TrimSpace(scanner.Text()))
+	
+			err := approvedController.UpdateApprovalStatuses(studentCode, model.ApprovedStatus(advisorStatus), model.ApprovedStatus(companyStatus))
+			if err != nil {
+					fmt.Printf("Error: %v\n", err)
+			} else {
+					fmt.Println("Approval statuses updated successfully!")
+					if advisorStatus == string(model.APPROVED) && companyStatus == string(model.APPROVED) {
+							fmt.Println("Intern status updated to ACTIVE.")
+					}
+			}
+
+		case "7":
 			fmt.Println("Exiting the system. Goodbye!")
 			return
 

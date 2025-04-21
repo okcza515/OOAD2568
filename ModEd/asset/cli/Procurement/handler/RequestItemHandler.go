@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"ModEd/asset/controller/Procurement"
+	procurement "ModEd/asset/controller/Procurement"
 	"ModEd/asset/util"
 	"fmt"
 )
 
-func RequestItemHandler(facade *Procurement.ProcurementControllerFacade) {
+func RequestItemHandler(facade *procurement.ProcurementControllerFacade) {
 	inputBuffer := ""
 
 	for inputBuffer != "back" {

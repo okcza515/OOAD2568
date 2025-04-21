@@ -9,20 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type ICourseController interface {
-	CreateCourse(course *model.Course) (courseId uint, err error)
-	CreateSeedCourse(path string) (courses []*model.Course, err error)
-	GetCourseByID(courseId uint) (course *model.Course, err error)
-	UpdateCourse(updatedCourse *model.Course) (course *model.Course, err error)
-	DeleteCourse(courseId uint) (course *model.Course, err error)
-	ListCourses() (courses []*model.Course, err error)
-}
-
 type CourseController struct {
 	db *gorm.DB
 }
 
-func NewCourseController(db *gorm.DB) ICourseController {
+func NewCourseController(db *gorm.DB) *CourseController {
 	return &CourseController{db: db}
 }
 

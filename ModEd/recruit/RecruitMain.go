@@ -4,31 +4,13 @@ package main
 import (
 	"ModEd/recruit/cli"
 	"ModEd/recruit/controller"
+	"ModEd/recruit/util"
 	db "ModEd/recruit/util"
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-
-	"runtime"
-
-	"strconv"
 )
-
-func clearScreen() {
-	switch runtime.GOOS {
-	case "windows":
-		cmd := exec.Command("cmd", "/c", "cls") // Windows clear screen command
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	default:
-		cmd := exec.Command("clear") // Linux/macOS clear screen command
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
-}
 
 func main() {
 	var (
@@ -36,6 +18,8 @@ func main() {
 		roundsCSVPath     string
 		facultyCSVPath    string
 		departmentCSVPath string
+		adminCSVPath      string
+		role              string
 	)
 
 	curDir, err := os.Getwd()
@@ -49,34 +33,39 @@ func main() {
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
 	defaultfacultyPath := filepath.Join(parentDir, "recruit", "data", "fac.csv")
 	defaultdepartmentPath := filepath.Join(parentDir, "recruit", "data", "dp.csv")
+	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
 
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
 	flag.StringVar(&facultyCSVPath, "faculty", defaultfacultyPath, "")
 	flag.StringVar(&departmentCSVPath, "department", defaultdepartmentPath, "")
+	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
+	flag.StringVar(&role, "role", "", "Specify the role (user/admin/instructor)")
 	flag.Parse()
 
 	db.InitDB(database)
 
 	applicationReportCtrl := controller.CreateApplicationReportController(db.DB)
 	applicantController := controller.NewApplicantController(db.DB)
+	interviewController := controller.CreateInterviewController(db.DB)
 	applicationRoundCtrl := controller.CreateApplicationRoundController(db.DB)
 
-	//temp
+	adminCtrl := controller.CreateAdminController(db.DB)
+	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
+		fmt.Println(err)
+	}
+
 	facultyCtrl := controller.NewFacultyController(db.DB)
 	if err := facultyCtrl.ReadFacultyFromCSV(facultyCSVPath); err != nil {
 		fmt.Println(err)
 	}
 
 	departmentCtrl := controller.NewDepartmentController(db.DB)
-
 	if err := departmentCtrl.ReadDepartmentFromCSV(departmentCSVPath); err != nil {
 		fmt.Println(err)
 	}
 
 	instructorController := controller.CreateInstructorController(db.DB)
-
-	interviewController := controller.CreateInterviewController(db.DB)
 
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
 		fmt.Println("Failed to initialize application rounds:", err)
@@ -84,75 +73,37 @@ func main() {
 	}
 
 	for {
-		clearScreen()
+		util.ClearScreen()
 
-		fmt.Println("\n==== Student Recruitment System ====")
-		fmt.Println("1. Register Applicant")
-		fmt.Println("2. Instructor Menu")
-		fmt.Println("3. Interview Management")
-		fmt.Println("4. View Interview Details")
-		fmt.Println("5. Show Application Rounds")
-		fmt.Println("6. Show Applicant status")
-		fmt.Println("7. Exit")
-		fmt.Print("Select an option: ")
+		if role == "" {
+			fmt.Println("\n\033[1;34m╔══════════════════════════════════════╗")
+			fmt.Println("║       Moded Recruitment System       ║")
+			fmt.Println("╚══════════════════════════════════════╝\033[0m")
 
-		var choice int
-		fmt.Scan(&choice)
+			fmt.Println("\n\033[1;36m[1]\033[0m  User")
+			fmt.Println("\033[1;36m[2]\033[0m  Admin")
+			fmt.Println("\033[1;36m[3]\033[0m  Instructor")
+			fmt.Println("\033[1;36m[4]\033[0m  Exit")
+			fmt.Print("\n\033[1;33mSelect role:\033[0m ")
 
-		scanner := bufio.NewScanner(os.Stdin)
+			var roleChoice int
+			fmt.Scanln(&roleChoice)
 
-		switch choice {
-		case 1:
-			cli.RegisterApplicantCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
-		case 2:
-			cli.InstructorCLI(instructorController)
-		case 3:
-			cli.InterviewCLI(interviewController)
-		case 4:
-			var applicantID uint
-			fmt.Print("Enter Applicant ID: ")
-			scanner.Scan()
-			applicantIDInput := scanner.Text()
-
-			convApplicantID, err := strconv.ParseUint(applicantIDInput, 10, 32)
-			if err != nil {
-				fmt.Println("Invalid Applicant ID. Please enter a valid number.")
+			switch roleChoice {
+			case 1:
+				cli.UserCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+			case 2:
+				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl)
+			case 3:
+				cli.InstructorCLI(instructorController)
+			case 4:
+				fmt.Println("Existing...")
+				return
+			default:
+				fmt.Println("Invalid option. Try again.")
 				continue
 			}
-			applicantID = uint(convApplicantID)
-
-			cli.ReportInterviewDetails(db.DB, applicantID) // Pass db.DB and applicantID (uint)
-
-		case 5:
-			rounds, err := applicationRoundCtrl.GetAllRounds()
-			if err != nil {
-				fmt.Println("Error fetching application rounds:", err)
-				continue
-			}
-			fmt.Println("\n===== Application Rounds =====")
-			for _, round := range rounds {
-				fmt.Println("-", round.RoundName)
-			}
-		case 6:
-			statuses, err := applicationReportCtrl.GetApplicantStatus()
-			if err != nil {
-				fmt.Printf("error fetching applicant statuses: %v\n", err)
-			}
-
-			// Print the fetched statuses
-			fmt.Println("Applicant Statuses:")
-			for _, status := range statuses {
-				fmt.Println(status)
-			}
-
-		case 7:
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option. Try again.")
 		}
-		fmt.Println("\nPress Enter to continue...")
-		fmt.Scanln() // Wait for user input before clearing the screen
-		fmt.Scanln() // Needed to capture extra newline
+
 	}
 }

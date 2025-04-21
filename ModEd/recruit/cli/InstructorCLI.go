@@ -6,14 +6,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-
-	"github.com/google/uuid"
 )
 
 func InstructorCLI(instructorCtrl *controller.InstructorController) {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
-	fmt.Scan(&instructorID)
+	fmt.Scanln(&instructorID)
+
+	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
 		fmt.Println("\n==== Instructor Menu ====")
@@ -23,7 +23,12 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 		fmt.Print("Select an option: ")
 
 		var choice int
-		fmt.Scan(&choice)
+		scanner.Scan()
+		_, err := fmt.Sscan(scanner.Text(), &choice)
+		if err != nil {
+			fmt.Println("Invalid input, please try again.")
+			continue
+		}
 
 		switch choice {
 		case 1:
@@ -36,47 +41,5 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 		default:
 			fmt.Println("Invalid option. Try again.")
 		}
-	}
-}
-
-func ViewInterviewDetails(instructorCtrl *controller.InstructorController, instructorID uint) {
-	interviews, err := instructorCtrl.GetInterviewsByInstructor(instructorID)
-	if err != nil {
-		fmt.Println("Error retrieving interviews:", err)
-		return
-	}
-
-	fmt.Println("\n==== Interview Schedule ====")
-	for _, interview := range interviews {
-		fmt.Printf("ID: %d | Applicant ID: %d | Date: %s | Score: ",
-			interview.ID, interview.ApplicantID, interview.ScheduledAppointment)
-
-		// Check if InterviewScore is nil before dereferencing
-		if interview.InterviewScore != nil {
-			fmt.Println(*interview.InterviewScore) // Dereference pointer
-		} else {
-			fmt.Println("Not Assigned") // Handle nil case
-		}
-	}
-}
-
-func EvaluateApplicant(instructorCtrl *controller.InstructorController) {
-	var interviewID uuid.UUID
-	var score float64
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter Interview ID: ")
-	scanner.Scan()
-	interviewID, _ = uuid.Parse(scanner.Text())
-
-	fmt.Print("Enter Interview Score: ")
-	fmt.Scan(&score)
-
-	err := instructorCtrl.EvaluateApplicant(interviewID, score)
-	if err != nil {
-		fmt.Println("Error updating interview score:", err)
-	} else {
-		fmt.Println("Score updated successfully!")
 	}
 }

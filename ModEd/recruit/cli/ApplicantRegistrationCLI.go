@@ -1,15 +1,18 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
+	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
-func RegisterApplicantCLI(
+func ApplicantRegistrationCLI(
 	applicantCtrl *controller.ApplicantController,
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
@@ -17,6 +20,7 @@ func RegisterApplicantCLI(
 	departmentCtrl *controller.DepartmentController,
 ) {
 	scanner := bufio.NewScanner(os.Stdin)
+	util.ClearScreen()
 
 	fmt.Println("==== Applicant Registration ====")
 	fmt.Println("1. Register manually")
@@ -25,14 +29,17 @@ func RegisterApplicantCLI(
 	scanner.Scan()
 	choice := scanner.Text()
 
+	criteriaCtrl := controller.NewApplicationCriteriaController()
+
 	switch choice {
 	case "1":
-		registerManually(scanner, applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+		registerManually(scanner, applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl, criteriaCtrl)
 	case "2":
-		registerFromFile(scanner, applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+		registerFromFile(scanner, applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl, criteriaCtrl)
 	default:
 		fmt.Println("Invalid option.")
 	}
+
 }
 
 func registerFromFile(
@@ -42,6 +49,7 @@ func registerFromFile(
 	applicationReportCtrl *controller.ApplicationReportController,
 	facultyCtrl *controller.FacultyController,
 	departmentCtrl *controller.DepartmentController,
+	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
 	fmt.Print("Enter CSV or JSON file path: ")
 	scanner.Scan()
@@ -53,23 +61,43 @@ func registerFromFile(
 		return
 	}
 
-	round := selectApplicationRound(applicationRoundCtrl)
-	if round == nil {
-		return
-	}
-
-	faculty, department := selectFacultyAndDepartment(facultyCtrl, departmentCtrl)
-	if faculty == nil || department == nil {
-		return
-	}
-
 	for _, a := range applicants {
-		err := applicantCtrl.RegisterApplicant(&a)
-		if err != nil {
-			fmt.Printf("Failed to register %s %s: %v\n", a.FirstName, a.LastName, err)
+		round := selectApplicationRound(applicationRoundCtrl)
+		if round == nil {
+			fmt.Println("No valid round selected. Skipping applicant.")
 			continue
 		}
-		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID)
+
+		var strategy controller.FormRound
+		strategy, err = controller.GetFormStrategy(round.RoundName)
+		if err == nil && strategy != nil {
+			if applyErr := strategy.ApplyForm(&a); applyErr != nil {
+				fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, applyErr)
+				continue
+			}
+		}
+
+		if regErr := applicantCtrl.RegisterApplicant(&a); regErr != nil {
+			fmt.Printf("Failed to register %s %s: %v\n", a.FirstName, a.LastName, regErr)
+			continue
+		}
+
+		faculty, department := selectFacultyAndDepartment(facultyCtrl, departmentCtrl)
+		if faculty == nil || department == nil {
+			fmt.Println("No valid faculty or department selected. Skipping applicant.")
+			// continue
+		}
+
+		compositeCriteria := criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
+		status := model.Pending
+		if compositeCriteria.IsSatisfiedBy(a) {
+			status = model.Pending
+		} else {
+			status = model.Rejected
+		}
+
+		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
+		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
 }
 
@@ -80,6 +108,7 @@ func registerManually(
 	applicationReportCtrl *controller.ApplicationReportController,
 	facultyCtrl *controller.FacultyController,
 	departmentCtrl *controller.DepartmentController,
+	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
 	var applicant model.Applicant
 
@@ -124,13 +153,23 @@ func registerManually(
 	applicant.TPAT4 = inputFloat("Enter TPAT4 Score: ")
 	applicant.TPAT5 = inputFloat("Enter TPAT5 Score: ")
 
-	if err := applicantCtrl.RegisterApplicant(&applicant); err != nil {
-		fmt.Println("Registration failed:", err)
+	round := selectApplicationRound(applicationRoundCtrl)
+	if round == nil {
 		return
 	}
 
-	round := selectApplicationRound(applicationRoundCtrl)
-	if round == nil {
+	var strategy controller.FormRound
+
+	strategy, err := controller.GetFormStrategy(round.RoundName)
+	if err == nil && strategy != nil {
+		if err := strategy.ApplyForm(&applicant); err != nil {
+			fmt.Println("Error applying additional form:", err)
+			return
+		}
+	}
+
+	if err := applicantCtrl.RegisterApplicant(&applicant); err != nil {
+		fmt.Println("Registration failed:", err)
 		return
 	}
 
@@ -139,8 +178,18 @@ func registerManually(
 		return
 	}
 
-	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID)
+	compositeCriteria := criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
+
+	status := model.Pending
+	if compositeCriteria.IsSatisfiedBy(applicant) {
+		status = model.Pending
+	} else {
+		status = model.Rejected
+	}
+
+	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
+	time.Sleep(8 * time.Second)
 }
 
 func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController) *model.ApplicationRound {
@@ -213,6 +262,7 @@ func saveReportForApplicant(
 	roundID uint,
 	facultyID uint,
 	departmentID uint,
+	status string,
 ) {
 	report := model.ApplicationReport{
 		ApplicationReportID: 0,
@@ -220,7 +270,7 @@ func saveReportForApplicant(
 		ApplicationRoundsID: roundID,
 		FacultyID:           facultyID,
 		DepartmentID:        departmentID,
-		ApplicationStatuses: model.Pending,
+		ApplicationStatuses: model.ApplicationStatus(status),
 	}
 	err := appReportCtrl.SaveApplicationReport(&report)
 	if err != nil {

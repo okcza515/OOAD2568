@@ -2,33 +2,31 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/recruit/model"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type InterviewController struct {
+	*core.BaseController
 	DB *gorm.DB
 }
 
 func CreateInterviewController(db *gorm.DB) *InterviewController {
-	controller := &InterviewController{DB: db}
-
-	if err := db.AutoMigrate(&model.Interview{}); err != nil {
-		fmt.Println("Failed to migrate interviews table:", err)
+	return &InterviewController{
+		DB:             db,
+		BaseController: core.NewBaseController("Interview", db),
 	}
-
-	return controller
 }
 
 func (c *InterviewController) CreateInterview(interview *model.Interview) error {
-	return c.DB.Create(interview).Error
+	return c.Insert(interview)
 }
 
 func (c *InterviewController) DeleteInterview(id uint) error {
-	return c.DB.Delete(&model.Interview{}, id).Error
+	return c.DeleteByID(id)
 }
 
 func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
@@ -42,8 +40,7 @@ func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 		return "", err
 	}
 
-	// คืนค่า interview_status จากฐานข้อมูล
-	return interview.InterviewStatus, nil
+	return string(interview.InterviewStatus), nil
 }
 
 func GetInterviewDetails(db *gorm.DB, applicantID uint) (*model.Interview, error) {

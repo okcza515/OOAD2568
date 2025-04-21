@@ -12,12 +12,12 @@ type MigrationController struct {
 	db *gorm.DB
 }
 
-func (c *MigrationController) MigrateToDB() error {
-	err := c.db.AutoMigrate(
-		&model.ItemRequest{},
-	)
+func (c *MigrationController) migrateToDB() error {
+	err := c.db.AutoMigrate(&model.InstrumentRequest{})
+
 	if err != nil {
-		return errors.New("migration failed")
+		return errors.New("err: migration failed")
 	}
+
 	return nil
 }
