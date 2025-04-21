@@ -475,7 +475,7 @@ func main() {
 									}
 
 									// Do the link
-									err = assessmentCriteriaLinkController.InsertAssessmentCriteriaLink(uint(assessment), uint(criteriaID))
+									_, err = assessmentCriteriaLinkController.InsertAssessmentCriteriaLink(uint(assessment), uint(criteriaID))
 									if err != nil {
 										io.Println(fmt.Sprintf("Error linking criteria: %v", err))
 										return
