@@ -1,0 +1,15 @@
+package model
+
+import (
+	"time"
+	"gorm.io/gorm"
+)
+
+type RequestLeaveStudent struct {
+	gorm.Model
+	StudentCode string    `gorm:"not null"` // รหัสนักเรียน
+	Status    string    `gorm:"default:Pending"` // สถานะการลา (เช่น Pending, Approved, Rejected)
+	LeaveType string    // ประเภทการลาออก (เช่น ลาออก, ลาเรียน, ลาอื่นๆ)
+	Reason    string    // เหตุผลการลา
+	LeaveDate time.Time // วันที่ลา
+}
