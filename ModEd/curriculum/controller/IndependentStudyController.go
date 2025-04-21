@@ -1,7 +1,7 @@
 package controller
 
 import (
-	model "ModEd/curriculum/model/wil-project"
+	model "ModEd/curriculum/model"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
