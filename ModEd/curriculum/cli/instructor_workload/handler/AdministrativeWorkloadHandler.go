@@ -18,9 +18,9 @@ func RunAdministrativeWorkloadHandler(controller controller.MeetingControllerSer
 		mockMeeting := &model.Meeting{
 			Title:       "Project Kickoff",
 			Description: "Kickoff meeting for the project",
-			Date:        time.Time{}, // Assuming you have a way to set the date
+			Date:        time.Time{},
 			Location:    "Room 101",
-			Attendees:   nil, // Assuming you have a way to set attendees
+			Attendees:   nil,
 			StartTime:   time.Time{},
 			EndTime:     time.Time{},
 		}

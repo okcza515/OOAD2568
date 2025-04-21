@@ -11,9 +11,9 @@ import (
 
 type ClassWorkloadService interface {
 	AddClassMaterial(material *model.ClassMaterial) error
-	GetClassMaterials(classId uint) ([]model.ClassMaterial, error)
+	GetClassMaterialsByClassId(classId uint) ([]model.ClassMaterial, error)
 	AddClassLecture(lecture *model.ClassLecture) error
-	GetClassLectures(classId uint) ([]model.ClassLecture, error)
+	GetClassLecturesByClassId(classId uint) ([]model.ClassLecture, error)
 	DeleteClassMaterial(materialId uint) error
 	DeleteClassLecture(lectureId uint) error
 	UpdateClassMaterial(material *model.ClassMaterial) error
@@ -39,7 +39,7 @@ func (c *ClassWorkloadController) AddClassMaterial(material *model.ClassMaterial
 	return nil
 }
 
-func (c *ClassWorkloadController) GetClassMaterials(classId uint) ([]model.ClassMaterial, error) {
+func (c *ClassWorkloadController) GetClassMaterialsByClassId(classId uint) ([]model.ClassMaterial, error) {
 	var materials []model.ClassMaterial
 	if err := c.Connector.Where("class_id = ?", classId).Find(&materials).Error; err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (c *ClassWorkloadController) AddClassLecture(lecture *model.ClassLecture) e
 	return nil
 }
 
-func (c *ClassWorkloadController) GetClassLectures(classId uint) ([]model.ClassLecture, error) {
+func (c *ClassWorkloadController) GetClassLecturesByClassId(classId uint) ([]model.ClassLecture, error) {
 	var lectures []model.ClassLecture
 	if err := c.Connector.Where("class_id = ?", classId).Find(&lectures).Error; err != nil {
 		return nil, err
