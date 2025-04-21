@@ -7,7 +7,7 @@ import (
 
 type IndependentStudy struct {
 	core.BaseModel
-	WILProjectId            uint       `gorm:"not null"`
+	WILProjectId            uint       `gorm:"default:0"`
 	WILProject              WILProject `json:"WILProject" gorm:"foreignKey:WILProjectId;references:ID"`
 	IndependentStudyTopic   string     `gorm:"not null"`
 	IndependentStudyContent string     `gorm:"not null"`
