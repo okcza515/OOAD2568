@@ -26,7 +26,7 @@ type Invoker struct {
 func NewInvoker() *Invoker {
 	return &Invoker{
 		commands: map[string]Command{
-			"list":              &commands.ListStudentsCommand{},
+			"list":              &commands.ListCommand{},
 			"add":               &commands.AddStudentCommand{},
 			"delete":            &commands.DeleteStudentCommand{},
 			"update":            &commands.UpdateCommand{},
