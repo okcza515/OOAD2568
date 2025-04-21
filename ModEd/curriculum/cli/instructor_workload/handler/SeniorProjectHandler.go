@@ -16,31 +16,41 @@ func RunSeniorProjectWorkloadHandler(controller controller.ProjectControllerServ
 
 		switch choice {
 		case "1":
-			fmt.Println("Get All Projects By Advisor ID Not implemented yet...")
+			projects, err := controller.GetProjectByAdvisorID(1)
+			if err != nil {
+				fmt.Println("Error getting projects by advisor ID:", err)
+			} else {
+				fmt.Println(projects)
+			}
 		case "2":
-			fmt.Println("Get All Projects By Committee ID Not implemented yet...")
+			projects, err := controller.GetProjectByCommitteeID(1)
+			if err != nil {
+				fmt.Println("Error getting projects by committee ID:", err)
+			} else {
+				fmt.Println(projects)
+			}
 		case "3":
-
 			mockEvaluation := &model.ProjectEvaluation{
 				GroupId:        1,
 				AssignmentId:   1,
-				AssignmentType: "mockAssignmentType",
-				Score:          95.0,
-				Comment:        "mockComment",
+				AssignmentType: "presentation",
+				Score:          0,
+				Comment:        "Improved English skills",
 			}
 
 			mockCriteria := []projectModel.AssessmentCriteria{
-				{CriteriaName: "mockCriteriaName1"},
-				{CriteriaName: "mockCriteriaName2"},
+				{CriteriaName: "Good presentation"},
+				{CriteriaName: "Answered all questions"},
+				{CriteriaName: "Good teamwork"},
 			}
 
-			err := controller.CreateEvaluation(mockEvaluation, "mockStrategy", mockCriteria)
+			err := controller.CreateEvaluation(mockEvaluation, "presentation", mockCriteria)
 			if err != nil {
 				fmt.Println("Error creating evaluation:", err)
 			} else {
 				fmt.Println("Mock evaluation created successfully")
 			}
-			controller.CreateEvaluation(mockEvaluation, "mockStrategy", mockCriteria)
+			controller.CreateEvaluation(mockEvaluation, "presentation", mockCriteria)
 		case "4":
 			fmt.Println("Evaluate Project as Committee Not implemented yet...")
 		case "exit":

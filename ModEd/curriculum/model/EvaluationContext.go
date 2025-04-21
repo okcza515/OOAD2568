@@ -1,4 +1,4 @@
-//MEP-1008
+// MEP-1008
 package model
 
 import (
@@ -19,7 +19,7 @@ func (ctx *EvaluationContext) SetStrategy(strategy EvaluationStrategy) {
 	ctx.Strategy = strategy
 }
 
-func (ctx *EvaluationContext) Evaluate(criteria []projectModel.AssessmentCriteria) float64 {
+func (ctx *EvaluationContext) Evaluate(evaluation *ProjectEvaluation, criteria []projectModel.AssessmentCriteria) float64 {
 	if ctx.Strategy == nil {
 		return 0
 	}
