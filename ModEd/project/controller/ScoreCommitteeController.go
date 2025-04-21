@@ -34,6 +34,25 @@ func (c *ScoreCommitteeController) ListAllCommitteeScores(scoreType string) (int
 	return scores, err
 }
 
+func (c *ScoreCommitteeController) ListCommitteeScoresByCondition(scoreType string, condition string, value interface{}) (interface{}, error) {
+	var scores interface{}
+	switch scoreType {
+	case "assignment":
+		scores = &[]model.ScoreAssignmentCommittee{}
+	case "presentation":
+		scores = &[]model.ScorePresentationCommittee{}
+	case "report":
+		scores = &[]model.ScoreReportCommittee{}
+	case "assessment":
+		scores = &[]model.ScoreAssessmentCommittee{}
+	default:
+		return nil, fmt.Errorf("invalid score type: %s", scoreType)
+	}
+
+	err := c.db.Where(condition, value).Find(scores).Error
+	return scores, err
+}
+
 func (c *ScoreCommitteeController) RetrieveCommitteeScore(scoreType string, id uint) (interface{}, error) {
 	var score interface{}
 	switch scoreType {

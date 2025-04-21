@@ -52,6 +52,14 @@ func (c *AssessmentController) RetrieveAssessment(id uint) (*model.Assessment, e
 	return &assessment, nil
 }
 
+func (c *AssessmentController) RetrieveAssessmentBySeniorProjectId(seniorProjectId uint) (*model.Assessment, error) {
+	var assessment model.Assessment
+	if err := c.db.First(&assessment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
+		return nil, err
+	}
+	return &assessment, nil
+}
+
 func (c *AssessmentController) InsertAssessment(seniorProjectId uint) (*model.Assessment, error) {
 	var existing []model.Assessment
 	if err := c.db.Where("senior_project_id = ?", seniorProjectId).Find(&existing).Error; err != nil {

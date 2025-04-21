@@ -2,6 +2,7 @@ package main
 
 import (
 	"ModEd/project/controller"
+	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
 	"log"
@@ -17,6 +18,8 @@ func main() {
 	assessmentController := controller.NewAssessmentController(db)
 	assessmentCriteriaController := controller.NewAssessmentCriteriaController(db)
 	assessmentCriteriaLinkController := controller.NewAssessmentCriteriaLinkController(db)
+	scoreAdvisorController := controller.NewScoreAdvisorController(db)
+	scoreCommitteeController := controller.NewScoreCommitteeController(db)
 
 	utils.PrintTitle("Senior Project CLI")
 
@@ -432,7 +435,6 @@ func main() {
 										io.Println(fmt.Sprintf("ID: %v, Name: %v", criteria.ID, criteria.CriteriaName))
 									}
 
-									// List all available criteria
 									io.Println("\nAvailable Assessment Criteria:")
 									allCriteria, err := assessmentCriteriaController.ListAllAssessmentCriterias()
 									if err != nil {
@@ -459,14 +461,12 @@ func main() {
 										return
 									}
 
-									// Check if it exists
 									criteria, err := assessmentCriteriaController.RetrieveAssessmentCriteria(uint(criteriaID))
 									if err != nil || criteria == nil {
 										io.Println(fmt.Sprintf("Criteria ID %v not found.", criteriaID))
 										return
 									}
 
-									// Check if already linked
 									for _, link := range links {
 										if link.AssessmentCriteriaId == uint(criteriaID) {
 											io.Println("This criteria is already linked to the project.")
@@ -474,8 +474,13 @@ func main() {
 										}
 									}
 
-									// Do the link
-									_, err = assessmentCriteriaLinkController.InsertAssessmentCriteriaLink(uint(assessment), uint(criteriaID))
+									assessment, err := assessmentController.RetrieveAssessmentBySeniorProjectId(uint(seniorProjectID))
+									if err != nil {
+										io.Println(fmt.Sprintf("Error retrieving assessment: %v", err))
+										return
+									}
+
+									_, err = assessmentCriteriaLinkController.InsertAssessmentCriteriaLink(uint(assessment.ID), uint(criteriaID))
 									if err != nil {
 										io.Println(fmt.Sprintf("Error linking criteria: %v", err))
 										return
@@ -581,7 +586,6 @@ func main() {
 										return
 									}
 
-									// Check for duplication
 									for _, mapper := range mappers {
 										if mapper.AssessmentCriteriaId == uint(newCriteriaID) {
 											io.Println("This criteria is already linked to the assessment.")
@@ -672,7 +676,149 @@ func main() {
 										io.Println("Criteria unlinked successfully.")
 									}
 								},
-							}},
+							},
+							{
+								Title: "Assessment Score Manager",
+								Children: []*utils.MenuItem{
+									{
+										Title: "Senior Project Selection",
+										Action: func(io *utils.MenuIO) {
+											io.Print("Enter Senior Project ID to view scores of criterias: ")
+											input, _ := io.ReadInput()
+											projectID, _ := strconv.Atoi(input)
+
+											assessment, err := assessmentController.RetrieveAssessmentBySeniorProjectId(uint(projectID))
+											if err != nil {
+												io.Println(fmt.Sprintf("Error retrieving assessment: %v", err))
+												return
+											}
+
+											links, err := assessmentCriteriaLinkController.ListProjectAssessmentCriteriaLinks(uint(projectID))
+											if err != nil || len(links) == 0 {
+												io.Println("No assessment criteria linked to this project.")
+												return
+											}
+
+											for _, link := range links {
+												criteria, err := assessmentCriteriaController.RetrieveAssessmentCriteria(link.AssessmentCriteriaId)
+												if err != nil {
+													continue
+												}
+												io.Println(fmt.Sprintf("Criteria ID: %d | Name: %s", criteria.ID, criteria.CriteriaName))
+
+												advisorScore, err := scoreAdvisorController.RetrieveAdvisorScoreByCondition(
+													"assessment", "assessment_criteria_link_id = ?", link.ID,
+												)
+												if err == nil {
+													if score, ok := advisorScore.(*model.ScoreAssessmentAdvisor); ok {
+														io.Println(fmt.Sprintf("  Advisor Score: %.2f, By Advisor ID: %d", score.Score, score.AdvisorId))
+													} else {
+														io.Println("  Advisor Score: -")
+													}
+												} else {
+													io.Println("  Advisor Score: -")
+												}
+
+												committeeScores, err := scoreCommitteeController.ListCommitteeScoresByCondition(
+													"assessment", "assessment_criteria_link_id = ?", link.ID,
+												)
+												if err != nil {
+													io.Println("  Committee Score: -")
+													return
+												}
+
+												scoreList, ok := committeeScores.(*[]model.ScoreAssessmentCommittee)
+												if !ok {
+													io.Println("  Committee Score: -")
+													return
+												}
+
+												if len(*scoreList) == 0 {
+													io.Println("  Committee Score: -")
+												} else {
+													for _, cs := range *scoreList {
+														if cs.AssessmentCriteriaLinkId == link.ID {
+															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.ComitteeId))
+														}
+													}
+												}
+											}
+
+											rootMenu := &utils.MenuItem{
+												Title: fmt.Sprintf("Manage Assessment Score of Senior Project %v", input),
+												Children: []*utils.MenuItem{
+													{
+														Title: "Fill Input",
+														Action: func(io *utils.MenuIO) {
+															io.Print("Enter Criteria ID to score: ")
+															criteriaIdStr, _ := io.ReadInput()
+															criteriaId, _ := strconv.Atoi(criteriaIdStr)
+
+															link, err := assessmentCriteriaLinkController.RetrieveAssessmentCriteriaLink(assessment.ID, uint(criteriaId))
+															if err != nil {
+																io.Println("Criteria not found")
+																return
+															}
+															cid := link.ID
+
+															io.Print("Enter scorer type (advisor/committee): ")
+															scorer, _ := io.ReadInput()
+
+															io.Print("Enter scorer ID (advisorId/committeeId): ")
+															scorerIdStr, _ := io.ReadInput()
+															scorerIdVal, err := strconv.ParseUint(scorerIdStr, 10, 64)
+															if err != nil {
+																io.Println("Invalid ID Input")
+																return
+															}
+
+															io.Print("Enter score (0.0 - 100.0): ")
+															scoreStr, _ := io.ReadInput()
+															scoreVal, err := strconv.ParseFloat(scoreStr, 64)
+															if err != nil {
+																io.Println("Invalid score.")
+																return
+															}
+
+															if scorer == "advisor" {
+																score := model.ScoreAssessmentAdvisor{
+																	AssessmentCriteriaLinkId: uint(cid),
+																	AdvisorId:                uint(scorerIdVal),
+																	Score:                    scoreVal,
+																}
+																if err := scoreAdvisorController.InsertAdvisorScore(&score); err != nil {
+																	io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
+																} else {
+																	io.Println("Advisor score submitted.")
+																}
+															} else if scorer == "committee" {
+																score := model.ScoreAssessmentCommittee{
+																	AssessmentCriteriaLinkId: uint(cid),
+																	ComitteeId:               uint(scorerIdVal),
+																	Score:                    scoreVal,
+																}
+																if err := scoreCommitteeController.InsertCommitteeScore(&score); err != nil {
+																	io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
+																} else {
+																	io.Println("Committee score submitted.")
+																}
+															} else {
+																io.Println("Invalid scorer type.")
+															}
+														},
+													},
+												},
+											}
+
+											// Create a menu builder
+											menuBuilder := utils.NewMenuBuilder(rootMenu, nil, nil)
+											// Show the menu
+											menuBuilder.Show()
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 			},

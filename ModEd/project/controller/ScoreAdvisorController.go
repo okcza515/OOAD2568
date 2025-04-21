@@ -53,6 +53,25 @@ func (c *ScoreAdvisorController) RetrieveAdvisorScore(scoreType string, id uint)
 	return score, err
 }
 
+func (c *ScoreAdvisorController) RetrieveAdvisorScoreByCondition(scoreType string, condition string, value interface{}) (interface{}, error) {
+	var score interface{}
+	switch scoreType {
+	case "assignment":
+		score = &model.ScoreAssignmentAdvisor{}
+	case "presentation":
+		score = &model.ScorePresentationAdvisor{}
+	case "report":
+		score = &model.ScoreReportAdvisor{}
+	case "assessment":
+		score = &model.ScoreAssessmentAdvisor{}
+	default:
+		return nil, fmt.Errorf("invalid score type: %s", scoreType)
+	}
+
+	err := c.db.Where(condition, value).First(score).Error
+	return score, err
+}
+
 func (c *ScoreAdvisorController) InsertAdvisorScore(score interface{}) error {
 	return c.db.Create(score).Error
 }
