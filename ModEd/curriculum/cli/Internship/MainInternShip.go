@@ -3,9 +3,7 @@ package Internship
 import (
 	controller "ModEd/curriculum/controller/Internship"
 	"ModEd/curriculum/utils"
-	"bufio"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
@@ -14,8 +12,6 @@ func RunInterShipCLI(
 	db *gorm.DB,
 ) {
 
-	scanner := bufio.NewScanner(os.Stdin)
-	CreatemigrationController := controller.MakeMigrationController(db)
 	CreateInternshipApplicationController := controller.CreateInternshipApplicationController(db)
 	CreateReviewController := controller.CreateReviewController(db)
 	CreateReportController := controller.CreateReportController(db)
@@ -23,7 +19,6 @@ func RunInterShipCLI(
 	CreateCompanyController := controller.CreateCompanyDataController(db)
 	CreateInternStudentController := controller.CreateInternStudentController(db)
 
-	CreatemigrationController.DropAllTables()
 	CreateCompanyController.ImportCompaniesFromCSV("")
 	CreateInternStudentController.RegisterInternStudentsFromFile("")
 
@@ -36,7 +31,6 @@ func RunInterShipCLI(
 		fmt.Println("5. Exit")
 		fmt.Print("Enter your choice: ")
 
-		scanner.Scan()
 		choice := utils.GetUserChoice()
 		switch choice {
 		case "1":
