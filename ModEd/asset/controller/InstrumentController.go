@@ -20,7 +20,7 @@ type InstrumentControllerInterface interface {
 	Insert(data core.RecordInterface) error
 	UpdateByID(data core.RecordInterface) error
 	DeleteByID(id uint) error
-	InsertMany(data []core.RecordInterface) error
+	InsertMany(data interface{}) error
 }
 
 func (c *InstrumentController) ListAll() ([]string, error) {
