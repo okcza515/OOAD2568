@@ -13,6 +13,7 @@ func RunWILModuleCLI(db *gorm.DB) {
 
 	wilprojectController := controller.CreateWILProjectController(db)
 	wilprojectApplicationController := controller.CreateWILProjectApplicationController(db)
+	independentStudyController := controller.CreateIndependentStudyController(db)
 
 	for {
 		printWILModuleMenu()
@@ -22,6 +23,8 @@ func RunWILModuleCLI(db *gorm.DB) {
 			handler.RunWILProjectHandler(wilprojectController)
 		case "2":
 			handler.RunWILProjectApplicationHandler(wilprojectApplicationController)
+		case "3":
+			handler.RunIndependentStudyHandler(independentStudyController)
 		case "0":
 			fmt.Println("Exiting...")
 			return
@@ -35,5 +38,6 @@ func printWILModuleMenu() {
 	fmt.Println("\nWIL Module Menu:")
 	fmt.Println("1. WIL Project")
 	fmt.Println("2. WIL Project Application")
+	fmt.Println("4. Independent Study")
 	fmt.Println("0. Exit WIL Module")
 }
