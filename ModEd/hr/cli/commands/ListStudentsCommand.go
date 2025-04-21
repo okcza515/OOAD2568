@@ -10,10 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go list
+// usage: go run hr/cli/HumanResourceCLI.go list student
 // no required fields !!
 // Run executes the list command, using flags to parse arguments.
-func (c *ListStudentsCommand) Execute(args []string, tx *gorm.DB) error {
+func listStudents(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 

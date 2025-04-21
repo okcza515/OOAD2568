@@ -23,7 +23,6 @@ func (repo InternshipApplicationController) RegisterInternshipApplications(appli
 	for _, application := range applications {
 		application.InternshipReport = model.InternshipReport{}
 		application.SupervisorReview = model.SupervisorReview{}
-		application.InternshipSchedule = model.InternshipSchedule{}
 
 		if err := repo.Connector.Create(application).Error; err != nil {
 			return err

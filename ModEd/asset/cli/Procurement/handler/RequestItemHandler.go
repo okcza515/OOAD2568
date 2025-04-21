@@ -17,7 +17,7 @@ func RequestItemHandler(facade *procurement.ProcurementControllerFacade) {
 
 		switch inputBuffer {
 		case "1":
-			fmt.Println("Not implemented yet...")
+
 		case "2":
 			fmt.Println("Not implemented yet...")
 		case "3":
@@ -35,16 +35,15 @@ func RequestItemHandler(facade *procurement.ProcurementControllerFacade) {
 }
 
 func printOption() {
-	fmt.Println(":/asset/instrument")
+	fmt.Println(":/Procurement/RequestItem")
 	fmt.Println()
-	fmt.Println("Instrument Management")
-	fmt.Println("Your options are...")
-	fmt.Println()
-	fmt.Println("  1:\tAdd new Instrument")
-	fmt.Println("  2:\tList all Instrument")
-	fmt.Println("  3:\tGet detail of an Instrument")
-	fmt.Println("  4:\tUpdate an Instrument")
-	fmt.Println("  5:\tDelete an Instrument")
+	fmt.Println("--RequestItem Function--")
+	fmt.Println("  1:\tUpdate")
+	fmt.Println("  2:\t<null>")
+	fmt.Println("  3:\t<null>")
+	fmt.Println("  4:\t<null>")
+	fmt.Println("  5:\t<null>")
+	fmt.Println("  6:\t<null>")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
