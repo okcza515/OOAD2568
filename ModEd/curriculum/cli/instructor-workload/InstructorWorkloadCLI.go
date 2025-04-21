@@ -1,9 +1,9 @@
 package main
 
 import (
-	controller "ModEd/curriculum/controller/instructor-workload"
-	instructorWorkloadModel "ModEd/curriculum/model/instructor-workload"
-	projectModel "ModEd/project/model"
+	"ModEd/curriculum/cli/instructor-workload/handler"
+	controller "ModEd/curriculum/controller/migration"
+	"ModEd/curriculum/utils"
 	"fmt"
 
 	"gorm.io/driver/sqlite"
@@ -16,46 +16,43 @@ func main() {
 		// path     string
 	)
 
-	// flag.StringVar(&database, "database", "", "Path of SQLite Database.")
-	// flag.StringVar(&path, "path", "", "Path to CSV or JSON for student registration.")
-	// flag.Parse()
-
+	database = "data/ModEd.bin"
 	connector, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
-	// if err != nil {
-	// 	panic("failed to connect database")
-	// }
-
-	// if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-	// 	fmt.Printf("*** Error: %s does not exist.\n", path)
-	// 	return
-	// }
-
-	// migrationController := controller.NewMigrationController(connector)
-	// err = migrationController.MigrateToDB()
-	// if err != nil {
-	// 	panic("err: migration failed")
-	// }
-
-	fmt.Println("Migration successful")
-
-	projectController := controller.NewProjectController(connector)
-	criteria := []projectModel.AssessmentCriteria{
-		{AssessmentCriteriaId: 1, CriteriaName: "Quality of Work"},
-		{AssessmentCriteriaId: 2, CriteriaName: "Timeliness"},
-	}
-
-	eval := &instructorWorkloadModel.ProjectEvaluation{
-		GroupId:        1,
-		AssignmentId:   1,
-		AssignmentType: "presentation",
-		Score:          0,
-		Comment:        "Good job!",
-	}
-
-	err = projectController.CreateEvaluation(eval, "presentation", criteria)
 	if err != nil {
-		fmt.Println("Error creating evaluation:", err)
-	} else {
-		fmt.Println("Evaluation created successfully")
+		panic("failed to connect database")
 	}
+
+	migrationController := controller.NewMigrationController(connector)
+	err = migrationController.MigrateToDB()
+	if err != nil {
+		panic("err: migration failed")
+	}
+
+	input := ""
+	for input != "exit" {
+		printOptions()
+		choice := utils.GetUserChoice()
+		fmt.Println("choice: ", choice)
+		switch choice {
+		case "1": // Teaching Responsibility
+			handler.RunAcademicWorkloadHandler()
+		case "2": // Administrative Tasks
+			handler.RunAdminstrativeWorkloadHandler()
+		case "3": // Senior Projects
+			handler.RunSeniorProjectWorkloadHandler()
+		case "exit":
+			fmt.Println("Exiting...")
+			return
+		default:
+			fmt.Println("Invalid option. Please try again.")
+		}
+	}
+}
+
+func printOptions() {
+	fmt.Println("\nInstructor Workload Module Menu:")
+	fmt.Println("1. Academic")
+	fmt.Println("2. Administrative Task")
+	fmt.Println("3. Senior Project")
+	fmt.Println("Type 'exit' to quit")
 }

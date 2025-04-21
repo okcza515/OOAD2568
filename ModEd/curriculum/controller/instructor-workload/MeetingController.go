@@ -7,8 +7,21 @@ import (
 	"gorm.io/gorm"
 )
 
+type MeetingControllerInterface interface {
+	GetAll() (*[]model.Meeting, error)
+	GetByID(meetingID uint) (*model.Meeting, error)
+	Create(body *model.Meeting) error
+	Update(meetingID uint, body *model.Meeting) error
+	Delete(meetingID uint) error
+	AddAttendee(meetingID uint, instructorID uint) error
+}
+
 type MeetingController struct {
 	db *gorm.DB
+}
+
+func NewMeetingController(db *gorm.DB) MeetingControllerInterface {
+	return &MeetingController{db: db}
 }
 
 func (c *MeetingController) GetAll() (*[]model.Meeting, error) {
