@@ -1,5 +1,5 @@
 // // MEP-1014
-// package model
+package model
 
 // import (
 // 	"gorm.io/gorm"
