@@ -21,7 +21,7 @@ type ProjectController struct {
 	Connector *gorm.DB
 }
 
-func NewProjectController(db *gorm.DB) ProjectControllerService {
+func CreateProjectController(db *gorm.DB) ProjectControllerService {
 	return &ProjectController{
 		BaseController: core.NewBaseController("Project", db),
 		Connector:      db,
