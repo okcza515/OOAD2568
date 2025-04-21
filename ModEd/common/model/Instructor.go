@@ -40,8 +40,12 @@ func DeleteInstructorByCode(db *gorm.DB, code string) error {
 	return db.Where("instructor_code = ?", code).Delete(&Instructor{}).Error
 }
 
-func RegisterInstructors(db *gorm.DB, instructors *[]Instructor) error {
-	for _, i := range *instructors {
+func TruncateInstructors(db *gorm.DB) error {
+	return db.Exec("DELETE FROM instructors").Error
+}
+
+func RegisterInstructors(db *gorm.DB, instructors []*Instructor) error {
+	for _, i := range instructors {
 		if err := db.Create(&i).Error; err != nil {
 			return err
 		}
