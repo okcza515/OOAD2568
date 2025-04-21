@@ -13,7 +13,7 @@ type WILProjectController struct {
 }
 
 type WILProjectControllerInterface interface {
-	GetByID(ID uint) (*model.WILProject, error)
+	RegisterWILProjects(projects []core.RecordInterface)
 	Insert(data core.RecordInterface) error
 	UpdateByID(data core.RecordInterface) error
 	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
@@ -33,10 +33,4 @@ func (repo WILProjectController) RegisterWILProjects(projects []core.RecordInter
 	for _, project := range projects {
 		repo.Insert(project)
 	}
-}
-
-func (repo WILProjectController) GetByID(ID uint) (*model.WILProject, error) {
-	WILProject := new(model.WILProject)
-	result := repo.Connector.First(&WILProject, "ID = ?", ID)
-	return WILProject, result.Error
 }
