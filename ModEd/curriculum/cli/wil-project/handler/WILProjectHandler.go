@@ -29,9 +29,9 @@ func printWILProjectModuleMenu() {
 	fmt.Println("\nWIL Project Menu:")
 	fmt.Println("1. Create WIL Project")
 	fmt.Println("2. Edit WIL Project")
-	fmt.Println("3. Search WIL Project Application")
+	fmt.Println("3. Search WIL Project")
 	fmt.Println("4. List all WIL Project")
-	fmt.Println("5. Get WIL Project By ID")
-	fmt.Println("6. Delete WIL Project")
+	fmt.Println("5. Get WIL Project Detail By ID")
+	fmt.Println("6. Delete WIL Project By ID")
 	fmt.Println("0. Exit WIL Module")
 }

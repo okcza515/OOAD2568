@@ -16,6 +16,13 @@ func GetUserInput(msg string) string {
 	return input
 }
 
+func GetUserInputUint(msg string) uint {
+	var input uint
+	fmt.Print(msg)
+	fmt.Scanln(&input)
+	return input
+}
+
 func GetInputDatabasePath(defaultDBPath string) string {
 	database := defaultDBPath
 
