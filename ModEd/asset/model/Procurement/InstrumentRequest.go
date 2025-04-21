@@ -11,8 +11,8 @@ import (
 type InstrumentRequest struct {
 	InstrumentRequestID uint                    `gorm:"primaryKey"`
 	Status              InstrumentRequestStatus `gorm:"type:varchar(50);default:'draft'"`
-	Instruments         []InstrumentDetail
-	DeleteAt            gorm.DeletedAt `gorm:"index"`
+	Instruments         []InstrumentDetail      `gorm:"foreignKey:InstrumentRequestID"`
+	DeleteAt            gorm.DeletedAt          `gorm:"index"`
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 	DepartmentID        uint

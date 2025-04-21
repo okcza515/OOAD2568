@@ -14,7 +14,6 @@ func main() {
 
 	for inputBuffer != "exit" {
 		util.ClearScreen()
-		util.PrintBanner()
 
 		printOption()
 
