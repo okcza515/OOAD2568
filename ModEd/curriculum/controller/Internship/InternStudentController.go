@@ -2,6 +2,7 @@ package controller
 
 import (
 	commonmodel "ModEd/common/model"
+	"ModEd/core"
 	model "ModEd/curriculum/model/Internship"
 	util "ModEd/utils/deserializer"
 	"fmt"
@@ -10,7 +11,15 @@ import (
 )
 
 type InternStudentController struct {
+	*core.BaseController
 	Connector *gorm.DB
+}
+
+func CreateInternStudentController(connector *gorm.DB) *InternStudentController {
+	return &InternStudentController{
+		Connector:      connector,
+		BaseController: core.NewBaseController("InternStudent", connector),
+	}
 }
 
 func (repo InternStudentController) RegisterInternStudentsFromFile(filePath string) error {
