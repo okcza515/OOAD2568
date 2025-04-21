@@ -1,0 +1,79 @@
+package testing
+
+import (
+	"ModEd/project/model"
+	"errors"
+	"fmt"
+	"testing"
+
+	"gorm.io/gorm"
+)
+
+func TestListAllAssessmentCriterias(t *testing.T) {
+	fmt.Printf("AssessmentCriteria")
+	_, _, assessmentCriteriaCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	//assessmentCriteria := model.AssessmentCriteria{}
+	// if err := db.Create(&assessmentCriteria).Error; err != nil {
+	// 	t.Error(err)
+	// 	return
+	// }
+
+	assessmentCriterias, err := assessmentCriteriaCtrl.ListAllAssessmentCriterias()
+	if err != nil || len(assessmentCriterias) == 0 {
+		t.Errorf("Expected assessmentCriterias, got error: %v", err)
+	}
+
+	for _, a := range assessmentCriterias {
+		fmt.Printf("AssessmentCriteria ID: %v", a.ID)
+	}
+}
+
+func TestRetrieveAssessmentCriteria(t *testing.T) {
+	db, _, assessmentCriteriaCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Fatalf("Failed to create assessmentCriteria: %v", err)
+	}
+
+	res, err := assessmentCriteriaCtrl.RetrieveAssessmentCriteria(assessmentCriteria.ID)
+	if err != nil || res == nil {
+		t.Errorf("Failed to retrieve assessmentCriteria: %v", err)
+	}
+	fmt.Printf("AssessmentCriteria ID: %v", res.ID)
+}
+
+func TestInsertAssessmentCriteria(t *testing.T) {
+	_, _, assessmentCriteriaCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessmentCriteria := model.AssessmentCriteria{}
+	err := assessmentCriteriaCtrl.InsertAssessmentCriteria(assessmentCriteria)
+	if err != nil {
+		t.Errorf("Failed to insert assessmentCriteria: %v", err)
+	}
+}
+
+func TestDeleteAssessmentCriteria(t *testing.T) {
+	db, _, assessmentCriteriaCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Fatalf("Failed to create assessmentCriteria: %v", err)
+	}
+
+	err := assessmentCriteriaCtrl.DeleteAssessmentCriteria(assessmentCriteria.ID)
+	if err != nil {
+		t.Errorf("Failed to delete assessmentCriteria: %v", err)
+	}
+
+	var deletedAssessmentCriteria model.AssessmentCriteria
+	err = db.First(&deletedAssessmentCriteria, assessmentCriteria.ID).Error
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		t.Errorf("Expected record to be deleted, but it still exists")
+	}
+}

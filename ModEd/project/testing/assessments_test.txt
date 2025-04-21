@@ -2,29 +2,36 @@ package testing
 
 import (
 	"ModEd/project/model"
+	"errors"
+	"fmt"
 	"testing"
 
 	"gorm.io/gorm"
 )
 
 func TestListAllAssessments(t *testing.T) {
-	db, assessmentCtrl, _, _, _, dbName := Init()
+	fmt.Printf("Assessment")
+	_, assessmentCtrl, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	assessment := model.Assessment{}
-	if err := db.Create(&assessment).Error; err != nil {
-		t.Error(err)
-		return
-	}
+	//assessment := model.Assessment{}
+	// if err := db.Create(&assessment).Error; err != nil {
+	// 	t.Error(err)
+	// 	return
+	// }
 
 	assessments, err := assessmentCtrl.ListAllAssessments()
 	if err != nil || len(assessments) == 0 {
 		t.Errorf("Expected assessments, got error: %v", err)
 	}
+
+	for _, a := range assessments {
+		fmt.Printf("Assessment ID: %v", a.ID)
+	}
 }
 
 func TestRetrieveAssessment(t *testing.T) {
-	db, assessmentCtrl, _, _, _, dbName := Init()
+	db, assessmentCtrl, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
 	assessment := model.Assessment{}
@@ -36,28 +43,38 @@ func TestRetrieveAssessment(t *testing.T) {
 	if err != nil || res == nil {
 		t.Errorf("Failed to retrieve assessment: %v", err)
 	}
+	fmt.Printf("Assessment ID: %v", res.ID)
 }
 
 func TestInsertAssessment(t *testing.T) {
-	_, assessmentCtrl, _, _, _, dbName := Init()
+	_, assessmentCtrl, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	assessment := model.Assessment{}
-	err := assessmentCtrl.InsertAssessment(&assessment)
+	_, err := assessmentCtrl.InsertAssessment(22)
 	if err != nil {
 		t.Errorf("Failed to insert assessment: %v", err)
 	}
 }
 
 func TestDeleteAssessment(t *testing.T) {
-	db, assessmentCtrl, _, _, _, dbName := Init()
+	db, assessmentCtrl, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	assessment := model.Assessment{Model: gorm.Model{ID: 1}}
-	db.Create(&assessment)
+	assessment := model.Assessment{
+		SeniorProjectId: 1,
+	}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Fatalf("Failed to create assessment: %v", err)
+	}
 
-	err := assessmentCtrl.DeleteAssessment(1)
+	err := assessmentCtrl.DeleteAssessment(assessment.ID)
 	if err != nil {
 		t.Errorf("Failed to delete assessment: %v", err)
+	}
+
+	var deletedAssessment model.Assessment
+	err = db.First(&deletedAssessment, assessment.ID).Error
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		t.Errorf("Expected record to be deleted, but it still exists")
 	}
 }

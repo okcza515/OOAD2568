@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssignmentController, *controller.PresentationController, *controller.ReportController, string) {
+func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentCriteriaController, *controller.AssessmentCriteriaLinkController, *controller.AssignmentController, *controller.PresentationController, *controller.ReportController, string) {
 	dbName := "test.db"
 	db, _ := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	db = db.Debug()
@@ -42,8 +42,10 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssignmentC
 	assignmentController := controller.NewAssignmentController(db)
 	presentationController := controller.NewPresentationController(db)
 	reportController := controller.NewReportController(db)
+	assessmentCriteriaController := controller.NewAssessmentCriteriaController(db)
+	assessmentCriteriaLinkController := controller.NewAssessmentCriteriaLinkController(db)
 
-	return db, assessmentController.(*controller.AssessmentController), assignmentController.(*controller.AssignmentController), presentationController, reportController, dbName
+	return db, assessmentController, assessmentCriteriaController, assessmentCriteriaLinkController, assignmentController.(*controller.AssignmentController), presentationController, reportController, dbName
 }
 
 func cleanup(dbName string) {
