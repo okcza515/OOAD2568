@@ -43,3 +43,12 @@ func UpdateFacultyBudget(db *gorm.DB, name string, delta int) error {
 		Where("budget + ? >= 0", delta).
 		Update("budget", gorm.Expr("budget + ?", delta)).Error
 }
+
+func RegisterFaculties(db *gorm.DB, faculties []*Faculty) error {
+	for _, faculty := range faculties {
+		if err := db.Create(faculty).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

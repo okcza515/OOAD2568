@@ -52,3 +52,12 @@ func UpdateDepartmentBudget(db *gorm.DB, name string, delta int) error {
 		Where("budget + ? >= 0", delta).
 		Update("budget", gorm.Expr("budget + ?", delta)).Error
 }
+
+func RegisterDepartments(db *gorm.DB, departments []*Department) error {
+	for _, dept := range departments {
+		if err := db.Create(dept).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

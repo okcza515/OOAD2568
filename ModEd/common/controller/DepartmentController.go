@@ -34,3 +34,7 @@ func (c *DepartmentController) SetBudget(name string, budget int) error {
 func (c *DepartmentController) UpdateBudget(name string, delta int) error {
 	return model.UpdateDepartmentBudget(c.DB, name, delta)
 }
+
+func (c *DepartmentController) Register(departments []*model.Department) error {
+	return model.RegisterDepartments(c.DB, departments)
+}
