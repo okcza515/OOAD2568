@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go update -field="value"
+// usage : go run hr/cli/HumanResourceCLI.go update student -field="value"
 // required field : id !!
 
 func updateStudent(args []string, tx *gorm.DB) error {

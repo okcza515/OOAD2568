@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// usage: go run hr/cli/HumanResourceCLI.go migrate
 func (c *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	db := util.OpenDatabase(*util.DatabasePath)
 
