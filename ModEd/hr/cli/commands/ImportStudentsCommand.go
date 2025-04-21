@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go import -path=<path>
+// usage : go run hr/cli/HumanResourceCLI.go import student -path=<path>
 // required field : path !!
 
 func importStudents(args []string, tx *gorm.DB) error {
