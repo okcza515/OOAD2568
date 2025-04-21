@@ -6,6 +6,7 @@ import (
 	"ModEd/asset/controller"
 	"ModEd/asset/model"
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"fmt"
 )
@@ -28,21 +29,27 @@ func InstrumentHandler(facade *controller.AssetControllerFacade) {
 			fmt.Println("Please enter the path of the instrument file (csv or json): ")
 			_, _ = fmt.Scanln(&path)
 
-			insModel := &model.Instrument{}
+			var insModel []model.Instrument
+
 			fd, err := deserializer.NewFileDeserializer(path)
 			if err != nil {
 				fmt.Println(err)
 				util.PressEnterToContinue()
 				break
 			}
-			err = fd.Deserialize(insModel)
+			err = fd.Deserialize(&insModel)
 			if err != nil {
 				fmt.Println(err)
 				util.PressEnterToContinue()
 				break
 			}
 
-			err = facade.Instrument.Insert(insModel)
+			records := make([]core.RecordInterface, len(insModel))
+			for i, inst := range insModel {
+				records[i] = &inst
+			}
+
+			err = facade.Instrument.InsertMany(records)
 			if err != nil {
 				fmt.Println(err)
 				util.PressEnterToContinue()

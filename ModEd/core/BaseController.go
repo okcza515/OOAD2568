@@ -21,6 +21,19 @@ func (controller *BaseController) Insert(data RecordInterface) error {
 	return controller.db.Create(data).Error
 }
 
+func (controller *BaseController) InsertMany(data []RecordInterface) error {
+	err := controller.db.Transaction(func(tx *gorm.DB) error {
+		for _, record := range data {
+			if err := tx.Create(record).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	return err
+}
+
 func (controller *BaseController) UpdateByID(data RecordInterface) error {
 	return controller.db.Model(data).Where("id = ?", (data).GetID()).Updates(data).Error
 }
