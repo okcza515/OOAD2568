@@ -12,7 +12,6 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 	for inputBuffer != "back" {
 		util.ClearScreen()
-		util.PrintBanner()
 		printOption()
 		inputBuffer = util.GetCommandInput()
 
