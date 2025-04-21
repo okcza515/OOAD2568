@@ -155,7 +155,6 @@ func TestLoadReportsFromCSV(t *testing.T) {
 	db, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	// สร้างไฟล์ CSV ชั่วคราว
 	filePath := "test_reports.csv"
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -167,13 +166,11 @@ func TestLoadReportsFromCSV(t *testing.T) {
 	file.WriteString("2,FinalReport,2025-06-15\n")
 	file.Close()
 
-	// เรียกใช้ฟังก์ชัน LoadReportsFromCSV
 	err = reportCtrl.LoadReportsFromCSV(filePath)
 	if err != nil {
 		t.Errorf("Failed to load reports from CSV: %v", err)
 	}
 
-	// ตรวจสอบว่าข้อมูลถูกบันทึกในฐานข้อมูล
 	var reports []model.Report
 	if err := db.Find(&reports).Error; err != nil {
 		t.Fatalf("Failed to retrieve reports: %v", err)
