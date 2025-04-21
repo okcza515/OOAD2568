@@ -26,17 +26,17 @@ type Invoker struct {
 func NewInvoker() *Invoker {
 	return &Invoker{
 		commands: map[string]Command{
-			"list":               &commands.ListStudentsCommand{},
-			"add":                &commands.AddStudentCommand{},
-			"delete":             &commands.DeleteStudentCommand{},
-			"update":             &commands.UpdateCommand{},
-			"status":             &commands.UpdateStudentStatusCommand{},
-			"updateStatus":       &commands.UpdateStudentStatusCommand{},
-			"import":             &commands.ImportCommand{},
-			"migrate":            &commands.MigrateStudentsCommand{},
-			"export":             &commands.ExportStudentsCommand{},
-			"requestResignation": &commands.RequestResignationCommand{},
-			"answerResignation":  &commands.AnswerResignationCommand{},
+			"list":              &commands.ListStudentsCommand{},
+			"add":               &commands.AddStudentCommand{},
+			"delete":            &commands.DeleteStudentCommand{},
+			"update":            &commands.UpdateCommand{},
+			"status":            &commands.UpdateStudentStatusCommand{},
+			"updateStatus":      &commands.UpdateStudentStatusCommand{},
+			"import":            &commands.ImportCommand{},
+			"migrate":           &commands.MigrateStudentsCommand{},
+			"export":            &commands.ExportStudentsCommand{},
+			"request":           &commands.RequestCommand{},
+			"answerResignation": &commands.AnswerResignationCommand{},
 			// ... additional command registrations ...
 		},
 	}
