@@ -9,17 +9,13 @@ import (
 
 	"fmt"
 
-	"log"
+	// "log"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunAnswerCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunAnswerCLI(db *gorm.DB) {
 
 	answerController := answer_controller.NewAnswerController(db)
 

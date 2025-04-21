@@ -5,18 +5,15 @@ import (
 	"ModEd/eval/model"
 	"ModEd/eval/util"
 	"fmt"
-	"log"
+	// "log"
 	"strconv"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunQuestionCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunQuestionCLI(db *gorm.DB) {
+
 
 	questionController := question_controller.NewQuestionController(db)
 

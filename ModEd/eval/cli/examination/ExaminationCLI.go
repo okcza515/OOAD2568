@@ -6,17 +6,14 @@ import (
 	"ModEd/eval/util"
 
 	"fmt"
-	"log"
+	// "log"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunExaminationCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunExaminationCLI(db *gorm.DB) {
+
 	examController := controllerExamination.NewExaminationController(db)
 
 	for{

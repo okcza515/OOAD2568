@@ -9,17 +9,13 @@ import (
 
 	"fmt"
 
-	"log"
+	// "log"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunResultCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunResultCLI(db *gorm.DB) {
 
 	resultController := result_controller.NewResultController(db)
 
@@ -100,7 +96,7 @@ func UpdateResult(db *gorm.DB, resultController *result_controller.ResultControl
 
 	updatedData := map[string]interface{}{
 		"Feedback": feedbackText,
-		"Score": scoreText,
+		"Score":    scoreText,
 	}
 
 	err := resultController.UpdateResult(resultID, updatedData)
