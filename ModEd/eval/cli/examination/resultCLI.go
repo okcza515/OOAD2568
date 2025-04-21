@@ -2,9 +2,10 @@ package examination
 
 import (
 	result_controller "ModEd/eval/controller/examination"
-	"bufio"
-	"os"
-	"strings"
+	"ModEd/eval/util"
+	// "bufio"
+	// "os"
+	// "strings"
 
 	"fmt"
 
@@ -94,14 +95,8 @@ func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.
 }
 
 func UpdateResult(db *gorm.DB, resultController *result_controller.ResultController, resultID uint) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter new score: ")
-	scoreText, _ := reader.ReadString('\n')
-	scoreText = strings.TrimSpace(scoreText)
-
-	fmt.Print("Enter feedback: ")
-	feedbackText, _ := reader.ReadString('\n')
-	feedbackText = strings.TrimSpace(feedbackText)
+	scoreText := util.PromptString("Enter new score: ")
+	feedbackText := util.PromptString("Enter feedback: ")
 
 	updatedData := map[string]interface{}{
 		"Feedback": feedbackText,

@@ -31,7 +31,6 @@ func (c *QuestionController) UpdateQuestion(id uint, updatedQuestion *model.Ques
 		return err
 	}
 
-	// Update only the fields that have non-zero values
 	if err := c.db.Model(&question).Select("*").Updates(updatedQuestion).Error; err != nil {
 		return err
 	}
