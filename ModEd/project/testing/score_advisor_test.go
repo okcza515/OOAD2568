@@ -20,8 +20,15 @@ func TestListAllAdvisorScores(t *testing.T) {
 
 	advisorCtrl := controller.NewScoreAdvisorController(db)
 	scores, err := advisorCtrl.ListAllAdvisorScores("assignment")
-	if err != nil || len(scores.([]model.ScoreAssignmentAdvisor)) == 0 {
+	if err != nil {
 		t.Errorf("Expected scores, got error: %v", err)
+		return
+	}
+
+	// Correctly handle the pointer to a slice
+	scoreList, ok := scores.(*[]model.ScoreAssignmentAdvisor)
+	if !ok || len(*scoreList) == 0 {
+		t.Errorf("Expected scores, got none or incorrect type")
 	}
 }
 
