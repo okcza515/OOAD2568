@@ -20,6 +20,7 @@ func RunInterShipCLI(
 	CreateReviewController := controller.CreateReviewController(db)
 	CreateReportController := controller.CreateReportController(db)
 	CreateAprovedController := controller.CreateApprovedController(db)
+	CreateCompanyController := controller.CreateCompanyDataController(db)
 
 	for {
 		fmt.Println("\n==== Internship Application System ====")
@@ -28,7 +29,8 @@ func RunInterShipCLI(
 		fmt.Println("3. Evaluation Student Performance")
 		fmt.Println("4. Evaluation Student Report")
 		fmt.Println("5. Update Approval Status")
-		fmt.Println("6. Exit")
+		fmt.Println("6. Import Data from CSV")
+		fmt.Println("7. Exit")
 		fmt.Print("Enter your choice: ")
 
 		scanner.Scan()
@@ -42,10 +44,11 @@ func RunInterShipCLI(
 			InternshipReview(CreateReviewController)
 		case "4":
 			InternshipReport(CreateReportController)
-
 		case "5":
 			InternShipApproved(CreateAprovedController)
 		case "6":
+			CreateCompanyController.ImportCompaniesFromCSV("")
+		case "7":
 			fmt.Println("Exiting the system. Goodbye!")
 			return
 		default:
