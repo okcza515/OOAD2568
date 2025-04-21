@@ -18,46 +18,35 @@ type Student struct {
 	Status      *StudentStatus `csv:"status" json:"status"`
 }
 
-func (student *Student) GetID() uint {
-	return student.ID
-}
-
-func (student *Student) ToString() string {
-	return student.StudentCode + " " + student.FirstName + " " + student.LastName
-}
-
-func GetAll(db *gorm.DB) ([]*Student, error) {
+func GetAllStudents(db *gorm.DB) ([]*Student, error) {
 	var students []*Student
 	result := db.Find(&students)
 	return students, result.Error
 }
 
-func GetByCode(db *gorm.DB, code string) (*Student, error) {
+func GetStudentByCode(db *gorm.DB, code string) (*Student, error) {
 	var s Student
 	result := db.Where("student_code = ?", code).First(&s)
 	return &s, result.Error
 }
 
-func Create(db *gorm.DB, student *Student) error {
+func CreateStudent(db *gorm.DB, student *Student) error {
 	return db.Create(student).Error
 }
 
-func UpdateByCode(db *gorm.DB, code string, updated map[string]interface{}) error {
+func UpdateStudentByCode(db *gorm.DB, code string, updated map[string]interface{}) error {
 	return db.Model(&Student{}).Where("student_code = ?", code).Updates(updated).Error
 }
 
-func DeleteByCode(db *gorm.DB, code string) error {
+func DeleteStudentByCode(db *gorm.DB, code string) error {
 	return db.Where("student_code = ?", code).Delete(&Student{}).Error
 }
 
-func Truncate(db *gorm.DB) error {
+func TruncateStudents(db *gorm.DB) error {
 	return db.Exec("DELETE FROM students").Error
 }
 
-func Register(db *gorm.DB, students []*Student) error {
-	if err := Truncate(db); err != nil {
-		return err
-	}
+func RegisterStudents(db *gorm.DB, students []*Student) error {
 	for _, s := range students {
 		if err := db.Create(s).Error; err != nil {
 			return err

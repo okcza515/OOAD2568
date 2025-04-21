@@ -2,23 +2,20 @@ package examination
 
 import (
 	result_controller "ModEd/eval/controller/examination"
-	"bufio"
-	"os"
-	"strings"
+	"ModEd/eval/util"
+	// "bufio"
+	// "os"
+	// "strings"
 
 	"fmt"
 
-	"log"
+	// "log"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunResultCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunResultCLI(db *gorm.DB) {
 
 	resultController := result_controller.NewResultController(db)
 
@@ -94,18 +91,12 @@ func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.
 }
 
 func UpdateResult(db *gorm.DB, resultController *result_controller.ResultController, resultID uint) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter new score: ")
-	scoreText, _ := reader.ReadString('\n')
-	scoreText = strings.TrimSpace(scoreText)
-
-	fmt.Print("Enter feedback: ")
-	feedbackText, _ := reader.ReadString('\n')
-	feedbackText = strings.TrimSpace(feedbackText)
+	scoreText := util.PromptString("Enter new score: ")
+	feedbackText := util.PromptString("Enter feedback: ")
 
 	updatedData := map[string]interface{}{
 		"Feedback": feedbackText,
-		"Score": scoreText,
+		"Score":    scoreText,
 	}
 
 	err := resultController.UpdateResult(resultID, updatedData)

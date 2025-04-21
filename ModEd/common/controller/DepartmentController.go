@@ -3,49 +3,42 @@ package controller
 import (
 	"ModEd/common/model"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type DepartmentController struct {
-	Connector *gorm.DB
+	DB *gorm.DB
 }
 
-func CreateDepartmentController(connector *gorm.DB) *DepartmentController {
-    department := DepartmentController{Connector: connector}
-	connector.AutoMigrate(&model.Department{})
-	return &department
+func CreateDepartmentController(db *gorm.DB) *DepartmentController {
+	db.AutoMigrate(&model.Department{})
+	return &DepartmentController{DB: db}
 }
 
-func (department *DepartmentController) GetAllDepartments() ([]*model.Department, error) {
-	departments := []*model.Department{}
-	result := department.Connector.Find(&departments)
-	return departments, result.Error
+func (c *DepartmentController) GetAll() ([]*model.Department, error) {
+	return model.GetAllDepartments(c.DB)
 }
 
-func (department *DepartmentController) GetByDepartmentId(departmentId uuid.UUID) (*model.Department, error) {
-	d := &model.Department{}
-	result := department.Connector.Where("department_id = ?", departmentId).First(d)
-	return d, result.Error
+func (c *DepartmentController) GetByName(name string) (*model.Department, error) {
+	return model.GetDepartmentByName(c.DB, name)
 }
 
-func (department *DepartmentController) SetBudget(departmentName string, newBudget int) error {
-    return department.Connector.Model(&model.Department{}).
-        Where("name = ?", departmentName).
-        Update("budget", newBudget).Error
+func (c *DepartmentController) Create(dept *model.Department) error {
+	return model.CreateDepartment(c.DB, dept)
 }
 
-//use for both decrement and increment
-func (department *DepartmentController) UpdateBudget(departmentName string, updateAmount int) error {
-	if (updateAmount >= 0) {
-		return department.Connector.Model(&model.Department{}).
-        	Where("name = ?", departmentName).
-        	Update("budget", gorm.Expr("budget + ?", updateAmount)).Error
-	} else { // ensure the budget won't go below 0
-		return department.Connector.Model(&model.Department{}).
-			Where("name = ?", departmentName).
-			Where("budget + ? >= 0", updateAmount).
-        	Update("budget", gorm.Expr("budget + ?", updateAmount)).Error
-	}
-	
+func (c *DepartmentController) SetBudget(name string, budget int) error {
+	return model.SetDepartmentBudget(c.DB, name, budget)
+}
+
+func (c *DepartmentController) UpdateBudget(name string, delta int) error {
+	return model.UpdateDepartmentBudget(c.DB, name, delta)
+}
+
+func (c *DepartmentController) Register(departments []*model.Department) error {
+	return model.RegisterDepartments(c.DB, departments)
+}
+
+func (c *DepartmentController) Truncate() error {
+	return model.TruncateDepartments(c.DB)
 }

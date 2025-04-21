@@ -90,22 +90,46 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("You have selected:", roomType.TypeRoomString())
 
 	fmt.Print("Enter room ID: ")
-	roomID, err := strconv.Atoi(util.GetCommandInput())
+	roomIDInput := util.GetCommandInput()
+	roomID, err := strconv.Atoi(roomIDInput)
 	if err != nil {
 		fmt.Println("Invalid room ID.")
 		util.PressEnterToContinue()
 		return
 	}
 
-	fmt.Print("Enter start time (YYYY-MM-DD HH:MM): ")
-	startStr := util.GetCommandInput()
-	fmt.Print("Enter end time (YYYY-MM-DD HH:MM): ")
-	endStr := util.GetCommandInput()
-
-	startTime, err1 := time.Parse("2006-01-02 15:04", startStr)
-	endTime, err2 := time.Parse("2006-01-02 15:04", endStr)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Invalid time format.")
+	var startTime, endTime time.Time
+	
+	fmt.Println("For start time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	startDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	startTimeStr := util.GetCommandInput()
+	
+	startFullStr := startDateStr + " " + startTimeStr
+	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	fmt.Println("For end time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	endDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	endTimeStr := util.GetCommandInput()
+	
+	endFullStr := endDateStr + " " + endTimeStr
+	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	if endTime.Before(startTime) || endTime.Equal(startTime) {
+		fmt.Println("End time must be after start time.")
 		util.PressEnterToContinue()
 		return
 	}
@@ -130,19 +154,38 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Print("Enter event name: ")
 	eventName := util.GetCommandInput()
 
+	fmt.Println("Attempting to book room...")
+	fmt.Printf("Room ID: %d, User ID: %d, Role: %s, Event: %s\n", roomID, 1, roleStr, eventName)
+	fmt.Printf("Time: %s to %s\n", startTime.Format("2006-01-02 15:04"), endTime.Format("2006-01-02 15:04"))
+	
+	time.Sleep(2000 * time.Millisecond)
+	
 	booking, err := facade.Booking.BookRoom(uint(roomID), uint(1), role, eventName, startTime, endTime)
+	
+	fmt.Println("\n----- BOOKING RESULT -----")
 	if err != nil {
 		fmt.Println("Booking failed:", err)
+		fmt.Println("Please check if the room exists and is available for the specified time.")
 	} else {
-		fmt.Printf("Room booked successfully. Booking ID: %d\n", booking.ID)
+		if booking == nil {
+			fmt.Println("Warning: Booking succeeded but returned nil booking object")
+		} else {
+			fmt.Printf("Room booked successfully! Booking ID: %d\n", booking.ID)
+			fmt.Printf("Details: Room ID %d, Event '%s'\n", roomID, eventName)
+			fmt.Printf("Time: %s to %s\n", startTime.Format("2006-01-02 15:04"), endTime.Format("2006-01-02 15:04"))
+		}
 	}
+	fmt.Println("--------------------------")
+	
+	fmt.Println("\nPress Enter to continue...")
 	util.PressEnterToContinue()
 }
 
 func handleCancelBooking(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Cancel Booking")
 	fmt.Print("Enter booking ID: ")
-	bookingID, err := strconv.Atoi(util.GetCommandInput())
+	bookingIDInput := util.GetCommandInput()
+	bookingID, err := strconv.Atoi(bookingIDInput)
 	if err != nil {
 		fmt.Println("Invalid booking ID.")
 		util.PressEnterToContinue()
@@ -162,22 +205,46 @@ func handleUpdateBooking(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Update a Booking")
 
 	fmt.Print("Enter booking ID: ")
-	bookingID, err := strconv.Atoi(util.GetCommandInput())
+	bookingIDInput := util.GetCommandInput()
+	bookingID, err := strconv.Atoi(bookingIDInput)
 	if err != nil {
 		fmt.Println("Invalid booking ID.")
 		util.PressEnterToContinue()
 		return
 	}
 
-	fmt.Print("Enter new start time (YYYY-MM-DD HH:MM): ")
-	startStr := util.GetCommandInput()
-	fmt.Print("Enter new end time (YYYY-MM-DD HH:MM): ")
-	endStr := util.GetCommandInput()
-
-	startTime, err1 := time.Parse("2006-01-02 15:04", startStr)
-	endTime, err2 := time.Parse("2006-01-02 15:04", endStr)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Invalid time format.")
+	var startTime, endTime time.Time
+	
+	fmt.Println("For new start time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	startDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	startTimeStr := util.GetCommandInput()
+	
+	startFullStr := startDateStr + " " + startTimeStr
+	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	fmt.Println("For new end time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	endDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	endTimeStr := util.GetCommandInput()
+	
+	endFullStr := endDateStr + " " + endTimeStr
+	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	if endTime.Before(startTime) || endTime.Equal(startTime) {
+		fmt.Println("End time must be after start time.")
 		util.PressEnterToContinue()
 		return
 	}
@@ -201,7 +268,8 @@ func handleUpdateBooking(facade *controller.SpaceManagementControllerFacade) {
 func handleGetRoomBookings(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Get Room Bookings")
 	fmt.Print("Enter room ID: ")
-	roomID, err := strconv.Atoi(util.GetCommandInput())
+	roomIDInput := util.GetCommandInput()
+	roomID, err := strconv.Atoi(roomIDInput)
 	if err != nil {
 		fmt.Println("Invalid room ID.")
 		util.PressEnterToContinue()
@@ -223,7 +291,8 @@ func handleGetRoomBookings(facade *controller.SpaceManagementControllerFacade) {
 func handleGetBookingDetails(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Get Booking Details")
 	fmt.Print("Enter booking ID: ")
-	bookingID, err := strconv.Atoi(util.GetCommandInput())
+	bookingIDInput := util.GetCommandInput()
+	bookingID, err := strconv.Atoi(bookingIDInput)
 	if err != nil {
 		fmt.Println("Invalid booking ID.")
 		util.PressEnterToContinue()
@@ -240,6 +309,14 @@ func handleGetBookingDetails(facade *controller.SpaceManagementControllerFacade)
 }
 
 func handleResetAllBookings(facade *controller.SpaceManagementControllerFacade) {
+	fmt.Println("Are you sure you want to reset ALL bookings? (y/n): ")
+	confirm := util.GetCommandInput()
+	if confirm != "y" && confirm != "Y" {
+		fmt.Println("Operation canceled.")
+		util.PressEnterToContinue()
+		return
+	}
+	
 	err := facade.Booking.ResetAllBookings()
 	if err != nil {
 		fmt.Println("Error resetting all bookings:", err)
@@ -252,22 +329,40 @@ func handleResetAllBookings(facade *controller.SpaceManagementControllerFacade) 
 func handleCheckRoomAvailability(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Check Room Availability")
 	fmt.Print("Enter room ID: ")
-	roomID, err := strconv.Atoi(util.GetCommandInput())
+	roomIDInput := util.GetCommandInput()
+	roomID, err := strconv.Atoi(roomIDInput)
 	if err != nil {
 		fmt.Println("Invalid room ID.")
 		util.PressEnterToContinue()
 		return
 	}
 
-	fmt.Print("Enter start time (YYYY-MM-DD HH:MM): ")
-	startStr := util.GetCommandInput()
-	fmt.Print("Enter end time (YYYY-MM-DD HH:MM): ")
-	endStr := util.GetCommandInput()
-
-	startTime, err1 := time.Parse("2006-01-02 15:04", startStr)
-	endTime, err2 := time.Parse("2006-01-02 15:04", endStr)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Invalid time format.")
+	var startTime, endTime time.Time
+	
+	fmt.Println("For start time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	startDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	startTimeStr := util.GetCommandInput()
+	
+	startFullStr := startDateStr + " " + startTimeStr
+	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	fmt.Println("For end time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	endDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	endTimeStr := util.GetCommandInput()
+	
+	endFullStr := endDateStr + " " + endTimeStr
+	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
+	if err != nil {
+		fmt.Println("Invalid date or time format.")
 		util.PressEnterToContinue()
 		return
 	}
@@ -285,15 +380,33 @@ func handleCheckRoomAvailability(facade *controller.SpaceManagementControllerFac
 
 func handleGetAvailableRooms(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Get Available Rooms")
-	fmt.Print("Enter start time (YYYY-MM-DD HH:MM): ")
-	startStr := util.GetCommandInput()
-	fmt.Print("Enter end time (YYYY-MM-DD HH:MM): ")
-	endStr := util.GetCommandInput()
-
-	startTime, err1 := time.Parse("2006-01-02 15:04", startStr)
-	endTime, err2 := time.Parse("2006-01-02 15:04", endStr)
-	if err1 != nil || err2 != nil {
-		fmt.Println("Invalid time format.")
+	
+	var startTime, endTime time.Time
+	
+	fmt.Println("For start time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	startDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	startTimeStr := util.GetCommandInput()
+	
+	startFullStr := startDateStr + " " + startTimeStr
+	startTime, err1 := time.Parse("2006-01-02 15:04", startFullStr)
+	if err1 != nil {
+		fmt.Println("Invalid date or time format.")
+		util.PressEnterToContinue()
+		return
+	}
+	
+	fmt.Println("For end time:")
+	fmt.Print("Enter date (YYYY-MM-DD): ")
+	endDateStr := util.GetCommandInput()
+	fmt.Print("Enter time (HH:MM): ")
+	endTimeStr := util.GetCommandInput()
+	
+	endFullStr := endDateStr + " " + endTimeStr
+	endTime, err2 := time.Parse("2006-01-02 15:04", endFullStr)
+	if err2 != nil {
+		fmt.Println("Invalid date or time format.")
 		util.PressEnterToContinue()
 		return
 	}
@@ -313,9 +426,18 @@ func handleGetAvailableRooms(facade *controller.SpaceManagementControllerFacade)
 func handleResetTimeSlots(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Reset Time Slots for a Room")
 	fmt.Print("Enter room ID: ")
-	roomID, err := strconv.Atoi(util.GetCommandInput())
+	roomIDInput := util.GetCommandInput()
+	roomID, err := strconv.Atoi(roomIDInput)
 	if err != nil {
 		fmt.Println("Invalid room ID.")
+		util.PressEnterToContinue()
+		return
+	}
+
+	fmt.Println("Are you sure you want to reset all time slots for this room? (y/n): ")
+	confirm := util.GetCommandInput()
+	if confirm != "y" && confirm != "Y" {
+		fmt.Println("Operation canceled.")
 		util.PressEnterToContinue()
 		return
 	}

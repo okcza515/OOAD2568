@@ -3,16 +3,24 @@ package cli
 
 import (
 	"ModEd/recruit/controller"
-	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
-	"time"
 )
 
 func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
+	var username, password string
+	fmt.Print("Enter admin username: ")
+	fmt.Scanln(&username)
+	fmt.Print("Enter admin password: ")
+	fmt.Scanln(&password)
+	if username != "admin" || password != "admin123" {
+		fmt.Println("Invalid credentials. Access denied.")
+		return
+	}
+	fmt.Println("Login successful. Welcome, admin!")
 	for {
 		util.ClearScreen()
 
@@ -42,87 +50,6 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 			fmt.Println("Invalid option. Try again.")
 		}
 	}
-}
-
-func Interview(interviewCtrl *controller.InterviewController) {
-	var instructorID string
-	var con_int_instrucID uint
-	var int_ApplicantID uint
-	var interviewScore float64
-	var scoreInput string
-	// var Status string
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter Instructor ID: ")
-	scanner.Scan()
-	instructorID = scanner.Text()
-	convInstructorID, err := strconv.ParseUint(instructorID, 10, 32)
-	if err != nil {
-		fmt.Println("Invalid Instructor ID. Please enter a valid number.")
-		return
-	}
-	con_int_instrucID = uint(convInstructorID)
-
-	fmt.Print("Enter Applicant ID: ")
-	scanner.Scan()
-	applicantID := scanner.Text()
-	convApplicantID, err := strconv.ParseUint(applicantID, 10, 32)
-	if err != nil {
-		fmt.Println("Invalid Applicant ID. Please enter a valid number.")
-		return
-	}
-	int_ApplicantID = uint(convApplicantID)
-
-	fmt.Print("Enter Status: ")
-	scanner.Scan()
-	// Status = scanner.Text()
-
-	fmt.Print("Enter Scheduled Appointment (YYYY-MM-DD HH:MM:SS): ")
-	scanner.Scan()
-	scheduledTime := scanner.Text()
-
-	scheduledTimeParsed, err := time.Parse("2006-01-02 15:04:05", scheduledTime)
-	if err != nil {
-		fmt.Println("Invalid date format. Use YYYY-MM-DD HH:MM:SS.")
-		return
-	}
-
-	fmt.Print("Enter Interview Score (or press Enter to skip): ")
-	scanner.Scan()
-	scoreInput = scanner.Text()
-
-	var interview *model.Interview
-	if scoreInput == "" {
-		interview = &model.Interview{
-			InstructorID:         con_int_instrucID,
-			ApplicantID:          int_ApplicantID,
-			ScheduledAppointment: scheduledTimeParsed,
-			InterviewScore:       nil,
-			InterviewStatus:      model.Pending,
-		}
-	} else {
-		interviewScore, err = strconv.ParseFloat(scoreInput, 64)
-		if err != nil {
-			fmt.Println("Invalid interview score. Please enter a valid number.")
-			return
-		}
-		interview = &model.Interview{
-			InstructorID:         con_int_instrucID,
-			ApplicantID:          int_ApplicantID,
-			ScheduledAppointment: scheduledTimeParsed,
-			InterviewScore:       &interviewScore,
-			InterviewStatus:      model.Pending,
-		}
-	}
-
-	err = interviewCtrl.CreateInterview(interview)
-	if err != nil {
-		fmt.Println("Failed to create interview:", err)
-		return
-	}
-
-	fmt.Println("Interview scheduled successfully!")
 }
 
 func DeleteInterview(interviewCtrl *controller.InterviewController) {

@@ -80,3 +80,14 @@ func (c *AssetManagementController) UpdateAsset(assetType AssetType, Id uint, pa
 		return errors.New("invalid asset type")
 	}
 }
+
+func (c *AssetManagementController) DeleteAsset(assetType AssetType, Id uint) error {
+    switch assetType {
+    case Instrument:
+        return c.InstrumentManagementAdapter.DeleteInstrumentManagement(Id)
+    case Supply:
+        return c.SupplyManagementAdapter.DeleteSupplyManagement(Id)
+    default:
+        return errors.New("invalid asset type")
+    }
+}

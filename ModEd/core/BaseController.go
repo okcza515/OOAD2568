@@ -21,6 +21,10 @@ func (controller *BaseController) Insert(data RecordInterface) error {
 	return controller.db.Create(data).Error
 }
 
+func (controller *BaseController) InsertMany(data interface{}) error {
+	return controller.db.Create(data).Error
+}
+
 func (controller *BaseController) UpdateByID(data RecordInterface) error {
 	return controller.db.Model(data).Where("id = ?", (data).GetID()).Updates(data).Error
 }

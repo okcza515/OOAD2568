@@ -2,23 +2,20 @@ package examination
 
 import (
 	answer_controller "ModEd/eval/controller/examination"
-	"bufio"
-	"os"
-	"strings"
+	"ModEd/eval/util"
+	// "bufio"
+	// "os"
+	// "strings"
 
 	"fmt"
 
-	"log"
+	// "log"
 
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunAnswerCLI() {
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Connection failed:", err)
-	}
+func RunAnswerCLI(db *gorm.DB) {
 
 	answerController := answer_controller.NewAnswerController(db)
 
@@ -111,10 +108,7 @@ func DisplayAnswerByStudentQuestion(db *gorm.DB, answerController *answer_contro
 }
 
 func CreateAnswer(db *gorm.DB, answerController *answer_controller.AnswerController, studentID, questionID uint) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter your Answer: ")
-	answerText, _ := reader.ReadString('\n')
-	answerText = strings.TrimSpace(answerText)
+	answerText := util.PromptString("Enter your Answer: ")
 
 	err := answerController.SubmitAnswer(questionID, studentID, answerText)
 	if err != nil {
@@ -125,10 +119,7 @@ func CreateAnswer(db *gorm.DB, answerController *answer_controller.AnswerControl
 }
 
 func UpdateAnswer(db *gorm.DB, answerController *answer_controller.AnswerController, answerID uint) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter new answer: ")
-	answerText, _ := reader.ReadString('\n')
-	answerText = strings.TrimSpace(answerText)
+	answerText := util.PromptString("Enter new answer: ")
 
 	updatedData := map[string]interface{}{
 		"Answer": answerText,

@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go import -path=<path>
+// usage : go run hr/cli/HumanResourceCLI.go import student -path=<path>
 // required field : path !!
 
 func importStudents(args []string, tx *gorm.DB) error {
@@ -48,27 +48,31 @@ func importStudents(args []string, tx *gorm.DB) error {
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	hrFacade := controller.NewHRFacade(db)
 
-	for _, hrRec := range hrRecordsMap {
-		commonStudentController := commonController.CreateStudentController(db)
-		commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
-		if err != nil {
-			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
-			continue
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
+		hrFacade := controller.NewHRFacade(db)
+
+		for _, hrRec := range hrRecordsMap {
+			commonStudentController := commonController.CreateStudentController(db)
+			commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
+			if err != nil {
+				fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
+				continue
+			}
+
+			newStudent := hrModel.NewStudentInfoBuilder().
+				WithStudent(*commonStudent).
+				WithGender(hrRec.Gender).
+				WithCitizenID(hrRec.CitizenID).
+				WithPhoneNumber(hrRec.PhoneNumber).
+				Build()
+
+			if err := hrFacade.UpsertStudent(newStudent); err != nil {
+				return fmt.Errorf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
+			}
 		}
-
-		newStudent := hrModel.NewStudentInfoBuilder().
-			WithStudent(*commonStudent).
-			WithGender(hrRec.Gender).
-			WithCitizenID(hrRec.CitizenID).
-			WithPhoneNumber(hrRec.PhoneNumber).
-			Build()
-
-		if err := hrFacade.UpsertStudent(newStudent); err != nil {
-			return fmt.Errorf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
-		}
-	}
-	fmt.Println("Students imported successfully!")
-	return nil
+		fmt.Println("Students imported successfully!")
+		return nil
+	})
 }

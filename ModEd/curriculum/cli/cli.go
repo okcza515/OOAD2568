@@ -1,7 +1,9 @@
 package main
 
 import (
+	internship "ModEd/curriculum/cli/Internship"
 	"ModEd/curriculum/cli/curriculum"
+	instructorWorkload "ModEd/curriculum/cli/instructor_workload"
 	migrationcli "ModEd/curriculum/cli/migration"
 	wilproject "ModEd/curriculum/cli/wil-project"
 	controller "ModEd/curriculum/controller/curriculum"
@@ -49,6 +51,10 @@ func main() {
 			curriculum.RunCourseCLI(courseController)
 		case "5":
 			wilproject.RunWILModuleCLI(db, courseController, classController)
+		case "6":
+			instructorWorkload.RunInstructorWorkloadModuleCLI(db, courseController, classController, curriculumController)
+		case "7":
+			internship.RunInterShipCLI(db)
 		case "0":
 			fmt.Println("Exiting...")
 			return
@@ -65,6 +71,8 @@ func displayMainMenu() {
 	fmt.Println("3. Class")
 	fmt.Println("4. Course")
 	fmt.Println("5. WIL-Project")
+	fmt.Println("6. Instructor Workload")
+	fmt.Println("7. Internship")
 	fmt.Println("0. Exit")
 }
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	handler "ModEd/asset/cli/Procurement/handler"
-	controller "ModEd/asset/controller/Procurement"
+	controller "ModEd/asset/controller"
 	util "ModEd/asset/util"
 	"fmt"
 )
@@ -14,7 +14,6 @@ func main() {
 
 	for inputBuffer != "exit" {
 		util.ClearScreen()
-		util.PrintBanner()
 
 		printOption()
 
@@ -22,9 +21,9 @@ func main() {
 
 		switch inputBuffer {
 		case "1":
-			handler.RequestItemHandler(facade)
+			handler.InstrumentRequestHandler(facade)
 		case "2":
-			fmt.Println("Not implemented yet...")
+			handler.ProcurementHandler(facade)
 		case "3":
 			fmt.Println("Not implemented yet...")
 		case "4":
@@ -40,43 +39,26 @@ func main() {
 }
 
 func initProgram() *controller.ProcurementControllerFacade {
-	// resetFlag := flag.Bool("reset", false, "Reset database")
-	// blankFlag := flag.Bool("blank", false, "Load seed data to database")
-
-	// flag.Parse()
-
 	facade, err := controller.CreateProcurementControllerFacade()
 	if err != nil {
 		fmt.Printf("Init failed: %v\n", err)
 		panic(err)
 	}
 
-	// if *blankFlag {
-	// 	err = facade.ResetDB()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// } else if *resetFlag {
-	// 	err = facade.ResetAndLoadDB()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
-
 	return facade
 }
 
 func printOption() {
-	fmt.Println(":/asset")
+	fmt.Println(":/Procurement")
 	fmt.Println()
-	fmt.Println("Welcome to ModEd Asset Service CLI!")
+	fmt.Println("Welcome to ModEd Procurement Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
-	fmt.Println("  1:\tCategory Page")
-	fmt.Println("  2:\tInstrument Page")
-	fmt.Println("  3:\tSupply Page")
-	fmt.Println("  4:\tBorrow Page")
-	fmt.Println("  5:\tInstrument Log Page")
-	fmt.Println("  6:\tSupply Log Page")
+	fmt.Println("  1:\tRequest Instrument Page")
+	fmt.Println("  2:\tProcurement Page")
+	fmt.Println("  3:\tNot implemented yet... Page")
+	fmt.Println("  4:\tNot implemented yet... Page")
+	fmt.Println("  5:\tNot implemented yet... Page")
+	fmt.Println("  6:\tNot implemented yet... Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }

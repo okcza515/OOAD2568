@@ -9,7 +9,7 @@ import (
 )
 
 type IResultController interface {
-	// CreateResults() error
+	CreateResults() error
 	GetAllResults() ([]model.Result, error)
 	UpdateResult(id uint, updatedResult *model.Result) error
 	DeleteResult(id uint) error
@@ -27,6 +27,7 @@ func NewResultController(db *gorm.DB) *ResultController {
 // func (c *ResultController) CreateResults() error {
 // 	var exams []model.Examination
 // 	var students []commonmodel.Student
+//  var count uint
 
 // 	if err := c.db.Find(&exams).Error; err != nil {
 // 		return err
@@ -37,34 +38,42 @@ func NewResultController(db *gorm.DB) *ResultController {
 // 	}
 
 // 	for _, exam := range exams {
-// 		status := GetExamStatusByID(exam.ID)
 // 		questions := GetQuestionByExam(exam.ID)
 
 // 		for _, student := range students {
 // 			newResult := model.Result{
 // 				ExaminationID: exam.ID,
 // 				StudentID:     student.ID,
-// 				Status:        status,
+// 				Status:        "Pending",
 // 				Feedback:      "",
 // 				Score:         0,
 // 			}
+//          count = 0
+
 // 			for _, question := range questions {
-// 				answer, err := c.AnswerController.GetAnswerByQuestionAndStudent(question.ID, student.ID)
-// 				if err != nil {
-// 					return err
+// 				if question.Question_type == "Multiple_choice" || question.Question_type == "True_false" {
+// 					answer, err := c.AnswerController.GetAnswerByQuestionAndStudent(question.ID, student.ID)
+// 					if err != nil {
+// 						return err
+// 					}
+					
+// 					if answer.Question.Correct_answer == answer.Answer {
+// 						newResult.Score += question.Score
+// 					}
+// 					count++
 // 				}
-				
-// 				if answer.Question.Correct_answer == answer.Answer {
-// 					newResult.Score += question.Score
-// 				}
+// 			}
+
+// 			if count == len(questions) {
+// 				newResult.Status = "Success"
 // 			}
 
 // 			if err := c.db.Create(&newResult).Error; err != nil {
 // 				return err
 // 			}
-// 			return nil
 // 		}
 // 	}
+// 	return nil
 // }
 
 func (c *ResultController) GetResultByStudent(studentID uint) ([]model.Result, error) {

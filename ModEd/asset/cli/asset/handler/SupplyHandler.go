@@ -4,7 +4,9 @@ package handler
 
 import (
 	"ModEd/asset/controller"
+	"ModEd/asset/model"
 	"ModEd/asset/util"
+	"ModEd/utils/deserializer"
 	"fmt"
 )
 
@@ -17,17 +19,54 @@ func SupplyHandler(facade *controller.AssetControllerFacade) {
 		printSupplyOption()
 		inputBuffer = util.GetCommandInput()
 
+		util.ClearScreen()
+
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Add new Supply")
+
+			path := ""
+			fmt.Println("Please enter the path of the supply file (csv or json): ")
+			_, _ = fmt.Scanln(&path)
+
+			var supModel []model.Supply
+
+			fd, err := deserializer.NewFileDeserializer(path)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+			err = fd.Deserialize(&supModel)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+
+			err = facade.Supply.InsertMany(supModel)
+			if err != nil {
+				fmt.Println(err)
+				util.PressEnterToContinue()
+				break
+			}
+
+			fmt.Println("Supply successfully inserted!")
+			util.PressEnterToContinue()
 		case "2":
-			supplies, err := facade.Supply.ListAll()
+			util.ClearScreen()
+			fmt.Println("List all Supply")
+
+			suppList, err := facade.Supply.ListAll()
 			if err != nil {
 				panic(err)
 			}
-			for _, supply := range supplies {
-				fmt.Println(supply)
+
+			for _, supp := range suppList {
+				fmt.Println(supp)
 			}
+
+			util.PressEnterToContinue()
 		case "3":
 			fmt.Println("Get detail of an Supply")
 		case "4":
@@ -41,7 +80,6 @@ func SupplyHandler(facade *controller.AssetControllerFacade) {
 		default:
 			fmt.Println("Invalid Command")
 		}
-		util.PressEnterToContinue()
 		util.ClearScreen()
 	}
 

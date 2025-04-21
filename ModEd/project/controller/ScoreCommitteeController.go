@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 	"fmt"
 
@@ -8,11 +9,15 @@ import (
 )
 
 type ScoreCommitteeController struct {
+	*core.BaseController
 	db *gorm.DB
 }
 
 func NewScoreCommitteeController(db *gorm.DB) *ScoreCommitteeController {
-	return &ScoreCommitteeController{db: db}
+	return &ScoreCommitteeController{
+		db:             db,
+		BaseController: core.NewBaseController("score_committees", db),
+	}
 }
 
 func (c *ScoreCommitteeController) ListAllCommitteeScores(scoreType string) (interface{}, error) {
@@ -20,12 +25,12 @@ func (c *ScoreCommitteeController) ListAllCommitteeScores(scoreType string) (int
 	switch scoreType {
 	case "assignment":
 		scores = &[]model.ScoreAssignmentCommittee{}
+	case "assessment":
+		scores = &[]model.ScoreAssessmentCommittee{}
 	case "presentation":
 		scores = &[]model.ScorePresentationCommittee{}
 	case "report":
 		scores = &[]model.ScoreReportCommittee{}
-	case "assessment":
-		scores = &[]model.ScoreAssessmentCommittee{}
 	default:
 		return nil, fmt.Errorf("invalid score type: %s", scoreType)
 	}
@@ -58,12 +63,12 @@ func (c *ScoreCommitteeController) RetrieveCommitteeScore(scoreType string, id u
 	switch scoreType {
 	case "assignment":
 		score = &model.ScoreAssignmentCommittee{}
+	case "assessment":
+		score = &model.ScoreAssessmentCommittee{}
 	case "presentation":
 		score = &model.ScorePresentationCommittee{}
 	case "report":
 		score = &model.ScoreReportCommittee{}
-	case "assessment":
-		score = &model.ScoreAssessmentCommittee{}
 	default:
 		return nil, fmt.Errorf("invalid score type: %s", scoreType)
 	}
@@ -73,16 +78,57 @@ func (c *ScoreCommitteeController) RetrieveCommitteeScore(scoreType string, id u
 }
 
 func (c *ScoreCommitteeController) InsertCommitteeScore(score interface{}) error {
-	return c.db.Create(score).Error
-}
-
-func (c *ScoreCommitteeController) UpdateCommitteeScore(score interface{}) error {
-	return c.db.Save(score).Error
-}
-
-func (c *ScoreCommitteeController) DeleteCommitteeScore(score interface{}, id uint) error {
-	if err := c.db.Where("id = ?", id).First(score).Error; err != nil {
-		return fmt.Errorf("record not found: %w", err)
+	// Ensure the score implements core.RecordInterface
+	if record, ok := score.(core.RecordInterface); ok {
+		return c.Insert(record)
 	}
-	return c.db.Delete(score).Error
+	return fmt.Errorf("score does not implement core.RecordInterface")
+}
+
+func (c *ScoreCommitteeController) UpdateCommitteeScore(scoreType string, score interface{}) error {
+	switch scoreType {
+	case "assignment":
+		if s, ok := score.(*model.ScoreAssignmentCommittee); ok {
+			return c.UpdateByID(s)
+		}
+	case "assessment":
+		if s, ok := score.(*model.ScoreAssessmentCommittee); ok {
+			return c.UpdateByID(s)
+		}
+	case "presentation":
+		if s, ok := score.(*model.ScorePresentationCommittee); ok {
+			return c.UpdateByID(s)
+		}
+	case "report":
+		if s, ok := score.(*model.ScoreReportCommittee); ok {
+			return c.UpdateByID(s)
+		}
+	default:
+		return fmt.Errorf("invalid score type: %s", scoreType)
+	}
+	return fmt.Errorf("failed to cast score to the correct type for scoreType: %s", scoreType)
+}
+
+func (c *ScoreCommitteeController) DeleteCommitteeScore(scoreType string, score interface{}) error {
+	switch scoreType {
+	case "assignment":
+		if s, ok := score.(*model.ScoreAssignmentCommittee); ok {
+			return c.db.Where("id = ?", s.ID).Delete(&model.ScoreAssignmentCommittee{}).Error
+		}
+	case "assessment":
+		if s, ok := score.(*model.ScoreAssessmentCommittee); ok {
+			return c.db.Where("id = ?", s.ID).Delete(&model.ScoreAssessmentCommittee{}).Error
+		}
+	case "presentation":
+		if s, ok := score.(*model.ScorePresentationCommittee); ok {
+			return c.db.Where("id = ?", s.ID).Delete(&model.ScorePresentationCommittee{}).Error
+		}
+	case "report":
+		if s, ok := score.(*model.ScoreReportCommittee); ok {
+			return c.db.Where("id = ?", s.ID).Delete(&model.ScoreReportCommittee{}).Error
+		}
+	default:
+		return fmt.Errorf("invalid score type: %s", scoreType)
+	}
+	return fmt.Errorf("failed to cast score to the correct type for scoreType: %s", scoreType)
 }

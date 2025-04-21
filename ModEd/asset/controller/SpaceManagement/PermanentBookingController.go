@@ -4,6 +4,7 @@ package spacemanagement
 import (
 	model "ModEd/asset/model/spacemanagement"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -18,33 +19,49 @@ func NewPermanentBookingController(db *gorm.DB) *PermanentBookingController {
 	}
 }
 
-func (controller *PermanentBookingController) CheckRoomInService(RoomID uint) (bool, error) {
+func (controller *PermanentBookingController) CreateWeeklySchedule(StartDate time.Time, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint) error {
+	if !StartDate.Before(EndDate) {
+		return fmt.Errorf("start date must be before end date")
+	}
+
 	var room model.Room
 	if err := controller.db.First(&room, RoomID).Error; err != nil {
-		return false, fmt.Errorf("Room %d is out of service: %w", RoomID, err)
+		return fmt.Errorf("unable to find room with ID %d: %w", RoomID, err)
 	}
-	return !room.IsRoomOutOfService, nil
-}
-
-// func (controller *PermanentBookingController) CreatePermanentSchedule(RoomID uint, Faculty string, Department string, Programtype string, CourseId string, ClassId string, StartDate, EndDate time.Time) (*model.PermanentSchedule, error) {
-// 	schedule := &model.PermanentSchedule{
-// 		RoomID:      RoomID,
-// 		Faculty:     Faculty,
-// 		Department:  Department,
-// 		ProgramType: Programtype,
-// 		CourseId:    CourseId,
-// 		ClassId:     ClassId,
-// 	}
-// 	if err := controller.db.Create(schedule).Error; err != nil {
-// 		return nil, fmt.Errorf("failed to create schedule: %w", err)
-// 	}
-// 	return schedule, nil
-// }
-
-func (controller *PermanentBookingController) GetAll() (*[]model.PermanentSchedule, error) {
-	schedules := new([]model.PermanentSchedule)
-	if err := controller.db.Find(&schedules).Error; err != nil {
-		return nil, fmt.Errorf("failed to get all schedules: %w", err)
+	if room.IsRoomOutOfService {
+		return fmt.Errorf("room with ID %d is out of service", RoomID)
 	}
-	return schedules, nil
+
+	currentDate := StartDate
+	for currentDate.Before(EndDate) || currentDate.Equal(EndDate) {
+		slotStart := currentDate
+		slotEnd := currentDate.Add(time.Hour * 2)
+
+		timetable := model.TimeTable{
+			StartDate:   slotStart,
+			EndDate:     slotEnd,
+			RoomID:      RoomID,
+			IsAvailable: false,
+		}
+		if err := controller.db.Create(&timetable).Error; err != nil {
+			return fmt.Errorf("Failed to creating timetable: %w", err)
+		}
+
+		schedule := model.PermanentSchedule{
+			TimeTableID:   timetable.ID,
+			FacultyID:     FacultyID,
+			DepartmentID:  DepartmentID,
+			ProgramtypeID: ProgramtypeID,
+			Classroom:     room,
+			CourseId:      CourseID,
+			ClassId:       ClassID,
+		}
+
+		if err := controller.db.Create(&schedule).Error; err != nil {
+			return fmt.Errorf("Failed to create permanent schedule: %w", err)
+		}
+
+		currentDate = currentDate.AddDate(0, 0, 7)
+	}
+	return nil
 }

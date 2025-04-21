@@ -19,6 +19,8 @@ type PermanentSchedule struct {
 	ProgramtypeID uint
 	Programtype   master.ProgramType `gorm:"foreignKey:ProgramtypeID;references:ID"`
 	Classroom     Room               `gorm:"foreignKey:RoomID;references:RoomID"`
-	Course        curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId"`
-	Class         curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId"`
+	CourseId      uint
+	Course        curriculum.Course `gorm:"foreignKey:CourseId;references:CourseId"`
+	ClassId       uint
+	Class         curriculum.Class `gorm:"foreignKey:ClassId;references:ClassId"`
 }

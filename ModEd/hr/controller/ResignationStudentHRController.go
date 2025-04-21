@@ -10,16 +10,16 @@ type ResignationStudentHRController struct {
 	db *gorm.DB
 }
 
-func CreateResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
+func createResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
 	db.AutoMigrate(&model.RequestResignationStudent{})
 	return &ResignationStudentHRController{db: db}
 }
 
-func (c *ResignationStudentHRController) Insert(request *model.RequestResignationStudent) error {
+func (c *ResignationStudentHRController) insert(request *model.RequestResignationStudent) error {
 	return c.db.Create(request).Error
 }
 
-func (c *ResignationStudentHRController) GetByStudentID(id string) (*model.RequestResignationStudent, error) {
+func (c *ResignationStudentHRController) getByStudentID(id string) (*model.RequestResignationStudent, error) {
 	var req model.RequestResignationStudent
 	if err := c.db.Where("id = ?", id).First(&req).Error; err != nil {
 		return nil, err
@@ -27,6 +27,6 @@ func (c *ResignationStudentHRController) GetByStudentID(id string) (*model.Reque
 	return &req, nil
 }
 
-func (c *ResignationStudentHRController) Update(req *model.RequestResignationStudent) error {
+func (c *ResignationStudentHRController) update(req *model.RequestResignationStudent) error {
 	return c.db.Save(req).Error
 }

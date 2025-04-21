@@ -12,92 +12,113 @@ type HRFacade struct {
 	Instructor            *InstructorHRController
 	ResignationStudent    *ResignationStudentHRController
 	ResignationInstructor *ResignationInstructorHRController
-	Leave                 *LeaveHRController
+	LeaveStudent          *LeaveStudentHRController
+	Raise                 *RaiseHRController
+	LeaveInstructor       *LeaveInstructorHRController
 }
 
 func NewHRFacade(db *gorm.DB) *HRFacade {
 	return &HRFacade{
-		Student:               CreateStudentHRController(db),
-		Instructor:            CreateInstructorHRController(db),
-		ResignationStudent:    CreateResignationStudentHRController(db),
-		ResignationInstructor: CreateResignationInstructorHRController(db),
-		Leave:                 CreateLeaveHRController(db),
+		Student:               createStudentHRController(db),
+		Instructor:            createInstructorHRController(db),
+		ResignationStudent:    createResignationStudentHRController(db),
+		ResignationInstructor: createResignationInstructorHRController(db),
+		LeaveStudent:          createLeaveStudentHRController(db),
+		LeaveInstructor:       createLeaveInstructorHRController(db),
+		Raise:                 createRaiseHRController(db),
 	}
 }
 
 // Student-related facade methods
 
 func (f *HRFacade) GetAllStudents() ([]*model.StudentInfo, error) {
-	return f.Student.GetAll()
+	return f.Student.getAll()
 }
 
 func (f *HRFacade) GetStudentById(sid string) (*model.StudentInfo, error) {
-	return f.Student.GetById(sid)
+	return f.Student.getById(sid)
 }
 
 func (f *HRFacade) InsertStudent(info *model.StudentInfo) error {
-	return f.Student.Insert(info)
+	return f.Student.insert(info)
 }
 
 func (f *HRFacade) UpdateStudent(info *model.StudentInfo) error {
-	return f.Student.Update(info)
+	return f.Student.update(info)
 }
 
 func (f *HRFacade) DeleteStudent(sid string) error {
-	return f.Student.Delete(sid)
+	return f.Student.delete(sid)
 }
 
 func (f *HRFacade) UpdateStudentStatus(sid string, status commonModel.StudentStatus) error {
-	return f.Student.UpdateStatus(sid, status)
+	return f.Student.updateStatus(sid, status)
 }
 
 func (f *HRFacade) UpsertStudent(info *model.StudentInfo) error {
-	return f.Student.Upsert(info)
+	existing, err := f.Student.getById(info.StudentCode)
+	if err != nil {
+		return err
+	}
+	if existing != nil {
+		return f.Student.update(info)
+	}
+	return f.Student.insert(info)
 }
 
 // Instructor-related facade methods
 
 func (f *HRFacade) GetAllInstructors() ([]*model.InstructorInfo, error) {
-	return f.Instructor.GetAll()
+	return f.Instructor.getAll()
 }
 
 func (f *HRFacade) GetInstructorById(id string) (*model.InstructorInfo, error) {
-	return f.Instructor.GetById(id)
+	return f.Instructor.getById(id)
 }
 
 func (f *HRFacade) InsertInstructor(info *model.InstructorInfo) error {
-	return f.Instructor.Insert(info)
+	return f.Instructor.insert(info)
 }
 
 func (f *HRFacade) UpdateInstructor(info *model.InstructorInfo) error {
-	return f.Instructor.Update(info)
+	return f.Instructor.update(info)
 }
 
-func (f *HRFacade) UpsertInstructor(info *model.InstructorInfo) error {
-	return f.Instructor.Upsert(info)
-}
+// func (f *HRFacade) UpsertInstructor(info *model.InstructorInfo) error {
+// 	existing, err := f.Instructor.getById(info.ID)
+//     if err != nil {
+//         return err
+//     }
+//     if existing != nil {
+//         return f.Instructor.update(info)
+//     }
+//     return f.Instructor.insert(info)
+// }
 
 func (f *HRFacade) DeleteInstructor(id string) error {
-	return f.Instructor.Delete(id)
+	return f.Instructor.delete(id)
 }
 
 // Resignation-related facade methods
 
 func (f *HRFacade) SubmitResignationStudentRequest(info *model.RequestResignationStudent) error {
-	return f.ResignationStudent.Insert(info)
+	return f.ResignationStudent.insert(info)
 }
 
 func (f *HRFacade) SubmitResignationInstructorRequest(info *model.RequestResignationInstructor) error {
-	return f.ResignationInstructor.Insert(info)
+	return f.ResignationInstructor.insert(info)
 }
 
 // Leave-related facade methods
-func (f *HRFacade) SubmitLeaveRequest(info *model.RequestLeave) error {
-	return f.Leave.Insert(info)
+func (f *HRFacade) SubmitLeaveStudentRequest(info *model.RequestLeaveStudent) error {
+	return f.LeaveStudent.insert(info)
+}
+func (f *HRFacade) SubmitLeaveInstructorRequest(info *model.RequestLeaveInstructor) error {
+	return f.LeaveInstructor.insert(info)
 }
 
 func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reason string) error {
-	req, err := f.ResignationStudent.GetByStudentID(id)
+	req, err := f.ResignationStudent.getByStudentID(id)
 	if err != nil {
 		return err
 	}
@@ -105,5 +126,19 @@ func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reas
 	if status == "Rejected" && reason != "" {
 		req.Reason = reason
 	}
-	return f.ResignationStudent.Update(req)
+	return f.ResignationStudent.update(req)
+}
+
+//Raise-related facade methods
+
+func (f *HRFacade) SubmitRaiseInstructorRequest(request *model.RequestRaise) error {
+	return f.Raise.insert(request)
+}
+
+func (f *HRFacade) ApproveRaise(id uint) error {
+	return f.Raise.updateStatus(id, "Approved")
+}
+
+func (f *HRFacade) RejectRaise(id uint) error {
+	return f.Raise.updateStatus(id, "Rejected")
 }

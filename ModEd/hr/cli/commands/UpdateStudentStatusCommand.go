@@ -9,9 +9,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go updateStatus -field="value"
+// usage : go run hr/cli/HumanResourceCLI.go update student status -field="value"
 // required field : id, status !!
-func (c *UpdateStudentStatusCommand) Execute(args []string, tx *gorm.DB) error {
+func updateStudentStatus(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("updateStatus", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update status")
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")

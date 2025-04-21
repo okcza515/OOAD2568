@@ -1,5 +1,7 @@
 package controller
 
+// MEP-1012 Asset
+
 import (
 	"ModEd/asset/model"
 	"ModEd/core"

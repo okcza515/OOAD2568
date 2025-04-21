@@ -1,0 +1,37 @@
+[
+  {
+    "asset_management_id": 1,
+    "borrow_id": 1001,
+    "room_id": 101,
+    "instrument_id": 501,
+    "instrument_label": "OSC-001"
+  },
+  {
+    "asset_management_id": 2,
+    "borrow_id": 1002,
+    "room_id": 102,
+    "instrument_id": 502,
+    "instrument_label": "MM-002"
+  },
+  {
+    "asset_management_id": 3,
+    "borrow_id": 1003,
+    "room_id": 103,
+    "instrument_id": 503,
+    "instrument_label": "FG-003"
+  },
+  {
+    "asset_management_id": 4,
+    "borrow_id": 1004,
+    "room_id": 104,
+    "instrument_id": 504,
+    "instrument_label": "PS-004"
+  },
+  {
+    "asset_management_id": 5,
+    "borrow_id": 1005,
+    "room_id": 101,
+    "instrument_id": 505,
+    "instrument_label": "SA-005"
+  }
+]
