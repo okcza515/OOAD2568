@@ -3,6 +3,7 @@ package procurement
 
 import (
 	model "ModEd/asset/model/Procurement"
+
 	"gorm.io/gorm"
 )
 
@@ -76,4 +77,3 @@ func (c *InstrumentRequestController) DeleteInstrumentRequest(id uint) error {
 func (c *InstrumentRequestController) RemoveInstrumentFromRequest(detailID uint) error {
 	return c.db.Delete(&model.InstrumentDetail{}, detailID).Error
 }
-

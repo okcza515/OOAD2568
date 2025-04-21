@@ -8,10 +8,10 @@ import (
 )
 
 type ProcurementControllerFacade struct {
-	db *gorm.DB
+	db        *gorm.DB
+	migration MigrationController
 
-	migration     MigrationController
-	requestedItem InstrumentRequestController
+	RequestedItem InstrumentRequestController
 }
 
 func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
@@ -25,7 +25,7 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	facade := ProcurementControllerFacade{db: db}
 
 	facade.migration = MigrationController{db: db}
-	facade.requestedItem = InstrumentRequestController{db: db}
+	facade.RequestedItem = InstrumentRequestController{db: db}
 
 	// fmt.Println("I'm In Facade yippie!")
 	err = facade.migration.migrateToDB()
