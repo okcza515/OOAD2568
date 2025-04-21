@@ -50,3 +50,15 @@ func (c *InstructorHRController) Update(info *model.InstructorInfo) error {
 func (c *InstructorHRController) Delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
+
+// Upsert inserts or updates a InstructorInfo record.
+func (c *InstructorHRController) Upsert(info *model.InstructorInfo) error {
+	var existingInfo model.InstructorInfo
+	if err := c.db.Where("instructor_id = ?", info.ID).First(&existingInfo).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Insert(info)
+		}
+		return err
+	}
+	return c.Update(info)
+}

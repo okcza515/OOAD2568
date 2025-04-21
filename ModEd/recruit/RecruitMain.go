@@ -93,7 +93,8 @@ func main() {
 			case 1:
 				cli.UserCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
 			case 2:
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl)
+				role = "admin";
+				cli.AdminCLI(role,applicantController, applicationReportCtrl, interviewController, adminCtrl)
 			case 3:
 				cli.InstructorCLI(instructorController)
 			case 4:

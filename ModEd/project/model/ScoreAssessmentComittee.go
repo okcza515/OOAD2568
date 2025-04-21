@@ -6,8 +6,8 @@ import (
 
 type ScoreAssessmentCommittee struct {
 	gorm.Model
-	ScoreAssessmentAdvisorId uint    `gorm:"primaryKey"`
-	AssessmentId             uint    `gorm:"not null;index"`
-	ComitteeId               uint    `gorm:"not null;index"`
-	Score                    float64 `gorm:"not null"`
+	ScoreAssessmentComitteeId uint    `gorm:"primaryKey"`
+	AssessmentCriteriaLinkId  uint    `gorm:"not null;index"`
+	ComitteeId                uint    `gorm:"not null;index"`
+	Score                     float64 `gorm:"not null"`
 }
