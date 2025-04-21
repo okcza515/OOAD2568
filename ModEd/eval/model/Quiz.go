@@ -12,17 +12,18 @@ import (
 
 type Quiz struct {
 	gorm.Model
-	FirstName   commonModel.Instructor
-	LastName    commonModel.Instructor
-	CourseId    curriculumModel.Course
-	QuizId      uint
-	Title       string
-	Description string
-	Released    bool
-	QuizStart   time.Time
-	QuizEnd     time.Time
-	Status      string
-	Submission  []QuizSubmission
+	InstructorCode commonModel.Instructor
+	FirstName      commonModel.Instructor
+	LastName       commonModel.Instructor
+	CourseId       curriculumModel.Course
+	QuizId         uint
+	Title          string
+	Description    string
+	Released       bool
+	QuizStart      time.Time
+	QuizEnd        time.Time
+	Status         string
+	Submission     []QuizSubmission
 }
 
 type QuizSubmission struct {
