@@ -12,13 +12,15 @@ type RoomController struct {
 	db *gorm.DB
 }
 
-func (c *RoomController) CreateSeedRooms(path string) (rooms []*model.Room, err error) {
+func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
 	deserializer, err := deserializer.NewFileDeserializer(path)
 	if err != nil {
-		return nil, errors.New("failed to create file deserializer")
+		return nil, err
+		// return nil, errors.New("failed to create file deserializer")
 	}
 	if err := deserializer.Deserialize(&rooms); err != nil {
-		return nil, errors.New("failed to deserialize curriculums")
+		// return nil, errors.New("failed to deserialize curriculums")
+		return nil, err
 	}
 	for _, room := range rooms {
 		err := c.CreateRoom(room)
