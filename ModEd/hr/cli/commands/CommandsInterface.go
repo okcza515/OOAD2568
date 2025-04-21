@@ -1,6 +1,8 @@
 package commands
 
 type UpdateCommand struct{}
+type ImportCommand struct{}
+type ExportCommand struct{}
 type ListStudentsCommand struct{}
 type AddStudentCommand struct{}
 type UpdateStudentStatusCommand struct{}
