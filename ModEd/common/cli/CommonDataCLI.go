@@ -70,15 +70,14 @@ func main() {
 		fmt.Println("Student data updated successfully.")
 
 	case DELETE:
-		
-	case CLEAR_DB: 
+
+	case CLEAR_DB:
 		studentController := controller.CreateStudentController(connector)
-		studentController.TruncateStudents()
+		studentController.Truncate()
 
 		fmt.Println("Student table has been cleared.")
 	}
 
-	
 	instructorController := controller.CreateInstructorController(connector)
 	// controller := core.NewBaseController[*model.Student](connector)
 

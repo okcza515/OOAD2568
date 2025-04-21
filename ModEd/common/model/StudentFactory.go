@@ -3,7 +3,7 @@ package model
 type StudentInterface interface {
 }
 
-func CreateStudent(st ProgramType) StudentInterface {
+func NewStudentByProgram(st ProgramType) StudentInterface {
 	if st == REGULAR {
 		student := RegularStudent{}
 		student.Program = REGULAR
