@@ -7,48 +7,38 @@ import (
 )
 
 type StudentController struct {
-	Connector *gorm.DB
+	DB *gorm.DB
 }
 
-func CreateStudentController(connector *gorm.DB) *StudentController {
-	student := StudentController{Connector: connector}
-	connector.AutoMigrate(&model.Student{})
-	return &student
+func CreateStudentController(db *gorm.DB) *StudentController {
+	db.AutoMigrate(&model.Student{})
+	return &StudentController{DB: db}
 }
 
-func (student StudentController) GetAll() ([]*model.Student, error) {
-	students := []*model.Student{}
-	result := student.Connector.Find(&students)
-	return students, result.Error
+func (c *StudentController) GetAll() ([]*model.Student, error) {
+	return model.GetAll(c.DB)
 }
 
-func (student StudentController) GetByStudentId(sid string) (*model.Student, error) {
-	s := &model.Student{}
-	result := student.Connector.Where("s_id = ?", sid).First(student)
-	return s, result.Error
+func (c *StudentController) GetByCode(code string) (*model.Student, error) {
+	return model.GetByCode(c.DB, code)
 }
 
-func (student StudentController) Create(s *model.Student) error {
-	return student.Connector.Create(s).Error
+func (c *StudentController) Create(student *model.Student) error {
+	return model.Create(c.DB, student)
 }
 
-func (student StudentController) Update(sid string, updatedData map[string]any) error {
-	return student.Connector.Model(&model.Student{}).
-		Where("s_id = ?", sid).
-		Updates(updatedData).Error
+func (c *StudentController) Update(code string, updatedData map[string]any) error {
+	return model.UpdateByCode(c.DB, code, updatedData)
 }
 
-func (student StudentController) DeleteByStudentId(sid string) error {
-	return student.Connector.Where("s_id = ?", sid).Delete(&model.Student{}).Error
+func (c *StudentController) DeleteByCode(code string) error {
+	return model.DeleteByCode(c.DB, code)
 }
 
-func (student StudentController) TruncateStudents() error {
-	return student.Connector.Exec("DELETE FROM students").Error
+func (c *StudentController) Register(students []*model.Student) error {
+	return model.Register(c.DB, students)
 }
 
-func (student StudentController) Register(students []*model.Student) {
-	_ = student.TruncateStudents()
-	for _, s := range students {
-		student.Connector.Create(s)
-	}
+func (c *StudentController) Truncate() error {
+	return model.Truncate(c.DB)
 }
