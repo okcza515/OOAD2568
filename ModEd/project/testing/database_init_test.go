@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssignmentController, *controller.PresentationController, *controller.ReportController, string) {
+func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssignmentController, controller.IPresentationController, *controller.ReportController, string) {
 	dbName := "test.db"
 	db, _ := gorm.Open(sqlite.Open(dbName), &gorm.Config{})
 	db = db.Debug()
