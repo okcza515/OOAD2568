@@ -38,3 +38,7 @@ func (c *DepartmentController) UpdateBudget(name string, delta int) error {
 func (c *DepartmentController) Register(departments []*model.Department) error {
 	return model.RegisterDepartments(c.DB, departments)
 }
+
+func (c *DepartmentController) Truncate() error {
+	return model.TruncateDepartments(c.DB)
+}
