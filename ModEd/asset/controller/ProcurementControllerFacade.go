@@ -1,5 +1,5 @@
 // MEP-1014
-package procurement
+package controller
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 
 type ProcurementControllerFacade struct {
 	db        *gorm.DB
-	migration MigrationController
+	migration ProcurementMigrationController
 
 	RequestedItem               InstrumentRequestController
 	SupplierSelectionController SupplierSelectionController
@@ -26,7 +26,7 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 
 	facade := ProcurementControllerFacade{db: db}
 
-	facade.migration = MigrationController{db: db}
+	facade.migration = ProcurementMigrationController{db: db}
 	facade.RequestedItem = InstrumentRequestController{db: db}
 	facade.SupplierSelectionController = SupplierSelectionController{db: db}
 

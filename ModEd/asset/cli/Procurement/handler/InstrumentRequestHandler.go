@@ -1,8 +1,8 @@
 package handler
 
 import (
-	procurement "ModEd/asset/controller/Procurement"
-	model "ModEd/asset/model/Procurement"
+	procurement "ModEd/asset/controller"
+	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
 )

@@ -1,8 +1,8 @@
 // MEP-1014
-package procurement
+package controller
 
 import (
-	model "ModEd/asset/model/Procurement"
+	model "ModEd/asset/model"
 
 	"net/http"
 	"time"
@@ -29,7 +29,7 @@ func (ctrl *ProcurementApprovalController) ListApprovals(c *gin.Context) {
 			"procurement_approval_id": a.ProcurementApprovalID,
 			"description":             a.Description,
 			"status":                  a.Status,
-			"approver_id":            a.ApproverID,
+			"approver_id":             a.ApproverID,
 		}
 
 		if a.DeletedAt.Valid {

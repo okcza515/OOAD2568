@@ -1,10 +1,10 @@
 // MEP-1014
-package procurement
+package controller
 
 import (
 	"time"
 
-	model "ModEd/asset/model/Procurement"
+	model "ModEd/asset/model"
 
 	"gorm.io/gorm"
 )
@@ -32,7 +32,6 @@ func (c *TORController) GetTORByID(id uint) (*model.TOR, error) {
 
 	return &tor, err
 }
-
 
 func (c *TORController) DeleteTOR(id uint) error {
 	return c.db.Model(&model.TOR{}).Where("tor_id = ?", id).Update("deleted_at", time.Now()).Error

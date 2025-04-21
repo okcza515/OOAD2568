@@ -2,7 +2,7 @@ package main
 
 import (
 	handler "ModEd/asset/cli/Procurement/handler"
-	controller "ModEd/asset/controller/Procurement"
+	controller "ModEd/asset/controller"
 	util "ModEd/asset/util"
 	"fmt"
 )

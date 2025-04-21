@@ -1,10 +1,10 @@
 // MEP-1014
-package procurement
+package controller
 
 import (
 	"time"
 
-	model "ModEd/asset/model/Procurement"
+	model "ModEd/asset/model"
 
 	"gorm.io/gorm"
 )
@@ -24,29 +24,29 @@ func (c *BudgetApprovalController) BudgetApprove(id uint, status model.BudgetApp
 func (c *BudgetApprovalController) ShowBudgetRequestList(instrumentRequestID uint) (*[]model.BudgetApproval, error) {
 	var approvals []model.BudgetApproval
 	err := c.db.
-	Preload("Approver").
-	Preload("InstrumentRequest.Departments").
-	Where("instrument_request_id = ?", instrumentRequestID).
-	Find(&approvals).Error
+		Preload("Approver").
+		Preload("InstrumentRequest.Departments").
+		Where("instrument_request_id = ?", instrumentRequestID).
+		Find(&approvals).Error
 	return &approvals, err
 }
 
 func (c *BudgetApprovalController) ShowBudgetRequestStatus(id uint) (*model.BudgetApproval, error) {
 	approval := new(model.BudgetApproval)
 	err := c.db.
-	Preload("Approver").
-	Preload("InstrumentRequest.Departments").
-	First(&approval, "budget_approval_id = ?", id).Error
+		Preload("Approver").
+		Preload("InstrumentRequest.Departments").
+		First(&approval, "budget_approval_id = ?", id).Error
 	return approval, err
 }
 
 func (c *BudgetApprovalController) ShowBudgetRequestByStatus(status model.BudgetApprovalStatus) (*[]model.BudgetApproval, error) {
 	var approvals []model.BudgetApproval
 	err := c.db.
-	Preload("Approver").
-	Preload("InstrumentRequest").
-	Where("status = ?", status).
-	Find(&approvals).Error
+		Preload("Approver").
+		Preload("InstrumentRequest").
+		Where("status = ?", status).
+		Find(&approvals).Error
 	return &approvals, err
 }
 

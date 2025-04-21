@@ -2,7 +2,6 @@
 package model
 
 import (
-	asset "ModEd/asset/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,7 +13,7 @@ type InstrumentDetail struct {
 	InstrumentLabel     string         `gorm:"not null"`
 	Description         *string        `gorm:"type:text"`
 	CategoryID          uint           `gorm:"type:text;not null"`
-	Category            asset.Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE;"`
+	Category            Category       `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE;"`
 	Quantity            int            `gorm:"not null"`
 	DeletedAt           gorm.DeletedAt `gorm:"index"`
 	InstrumentRequest   InstrumentRequest
