@@ -9,56 +9,56 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestListAllAdvisorScores(t *testing.T) {
+func TestListAllCommitteeScores(t *testing.T) {
 	db, _, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	score := model.ScoreAssignmentAdvisor{
+	score := model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        85.0,
 	}
 	if err := db.Create(&score).Error; err != nil {
 		t.Fatalf("Failed to create score: %v", err)
 	}
 
-	advisorCtrl := controller.NewScoreAdvisorController(db)
-	scores, err := advisorCtrl.ListAllAdvisorScores("assignment")
+	committeeCtrl := controller.NewScoreCommitteeController(db)
+	scores, err := committeeCtrl.ListAllCommitteeScores("assignment")
 	if err != nil {
 		t.Errorf("Expected scores, got error: %v", err)
 		return
 	}
 
-	scoreList, ok := scores.(*[]model.ScoreAssignmentAdvisor)
+	scoreList, ok := scores.(*[]model.ScoreAssignmentCommittee)
 	if !ok || len(*scoreList) == 0 {
 		t.Errorf("Expected scores, got none or incorrect type")
 	}
 }
 
-func TestRetrieveAdvisorScore(t *testing.T) {
+func TestRetrieveCommitteeScore(t *testing.T) {
 	db, _, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	score := model.ScoreAssignmentAdvisor{
+	score := model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        90.0,
 	}
 	if err := db.Create(&score).Error; err != nil {
 		t.Fatalf("Failed to create score: %v", err)
 	}
 
-	t.Logf("Created ScoreAssignmentAdvisor with ID: %d", score.ID)
+	t.Logf("Created ScoreAssignmentCommittee with ID: %d", score.ID)
 
-	advisorCtrl := controller.NewScoreAdvisorController(db)
-	res, err := advisorCtrl.RetrieveAdvisorScore("assignment", score.ID)
+	committeeCtrl := controller.NewScoreCommitteeController(db)
+	res, err := committeeCtrl.RetrieveCommitteeScore("assignment", score.ID)
 	if err != nil {
 		t.Fatalf("Failed to retrieve score: %v", err)
 	}
 
-	retrievedScore, ok := res.(*model.ScoreAssignmentAdvisor)
+	retrievedScore, ok := res.(*model.ScoreAssignmentCommittee)
 	if !ok {
-		t.Fatalf("Failed to cast retrieved score to *model.ScoreAssignmentAdvisor")
+		t.Fatalf("Failed to cast retrieved score to *model.ScoreAssignmentCommittee")
 	}
 
 	if retrievedScore.Score != score.Score {
@@ -66,22 +66,22 @@ func TestRetrieveAdvisorScore(t *testing.T) {
 	}
 }
 
-func TestInsertAdvisorScore(t *testing.T) {
+func TestInsertCommitteeScore(t *testing.T) {
 	db, _, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	score := &model.ScoreAssignmentAdvisor{
+	score := &model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        95.0,
 	}
-	advisorCtrl := controller.NewScoreAdvisorController(db)
-	err := advisorCtrl.InsertAdvisorScore(score)
+	committeeCtrl := controller.NewScoreCommitteeController(db)
+	err := committeeCtrl.InsertCommitteeScore(score)
 	if err != nil {
 		t.Errorf("Failed to insert score: %v", err)
 	}
 
-	var insertedScore model.ScoreAssignmentAdvisor
+	var insertedScore model.ScoreAssignmentCommittee
 	if err := db.First(&insertedScore, score.ID).Error; err != nil {
 		t.Fatalf("Failed to retrieve inserted score: %v", err)
 	}
@@ -91,13 +91,13 @@ func TestInsertAdvisorScore(t *testing.T) {
 	}
 }
 
-func TestUpdateAdvisorScore(t *testing.T) {
+func TestUpdateCommitteeScore(t *testing.T) {
 	db, _, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	score := &model.ScoreAssignmentAdvisor{
+	score := &model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        80.0,
 	}
 	if err := db.Create(score).Error; err != nil {
@@ -105,13 +105,13 @@ func TestUpdateAdvisorScore(t *testing.T) {
 	}
 
 	score.Score = 100.0
-	advisorCtrl := controller.NewScoreAdvisorController(db)
-	err := advisorCtrl.UpdateAdvisorScore("assignment", score)
+	committeeCtrl := controller.NewScoreCommitteeController(db)
+	err := committeeCtrl.UpdateCommitteeScore("assignment", score)
 	if err != nil {
 		t.Errorf("Failed to update score: %v", err)
 	}
 
-	var updatedScore model.ScoreAssignmentAdvisor
+	var updatedScore model.ScoreAssignmentCommittee
 	if err := db.First(&updatedScore, score.ID).Error; err != nil {
 		t.Fatalf("Failed to retrieve updated score: %v", err)
 	}
@@ -121,36 +121,36 @@ func TestUpdateAdvisorScore(t *testing.T) {
 	}
 }
 
-func TestDeleteAdvisorScore(t *testing.T) {
+func TestDeleteCommitteeScore(t *testing.T) {
 	db, _, _, _, _, _, _, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
-	score := &model.ScoreAssignmentAdvisor{
+	score := &model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        75.0,
 	}
 	if err := db.Create(score).Error; err != nil {
 		t.Fatalf("Failed to create score: %v", err)
 	}
 
-	advisorCtrl := controller.NewScoreAdvisorController(db)
-	err := advisorCtrl.DeleteAdvisorScore("assignment", score)
+	committeeCtrl := controller.NewScoreCommitteeController(db)
+	err := committeeCtrl.DeleteCommitteeScore("assignment", score)
 	if err != nil {
 		t.Errorf("Failed to delete score: %v", err)
 	}
 
-	var deletedScore model.ScoreAssignmentAdvisor
+	var deletedScore model.ScoreAssignmentCommittee
 	err = db.First(&deletedScore, score.ID).Error
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		t.Errorf("Expected record to be deleted, but it still exists")
 	}
 }
 
-func TestValidateAdvisorScore(t *testing.T) {
-	score := &model.ScoreAssignmentAdvisor{
+func TestValidateCommitteeScore(t *testing.T) {
+	score := &model.ScoreAssignmentCommittee{
 		AssignmentId: 1,
-		AdvisorId:    2,
+		CommitteeId:  2,
 		Score:        110.0, // Invalid score
 	}
 	err := score.Validate()
