@@ -1,7 +1,7 @@
 package model
 
 import (
-	CommonModel "ModEd/common/model"
+	commonModel "ModEd/common/model"
 
 	"gorm.io/gorm"
 )
@@ -9,6 +9,6 @@ import (
 type InternStudent struct {
 	gorm.Model
 	InternStatus InternStatus        `gorm:"type:varchar(20)"`
-	StudentCode  string              `gorm:"type:varchar(255);not null;unique" csv:"student_code"`
-	Student      CommonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
+	StudentCode  string              `gorm:"type:varchar(255);not null"`
+	Student      commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
 }
