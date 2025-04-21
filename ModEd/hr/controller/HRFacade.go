@@ -13,6 +13,7 @@ type HRFacade struct {
 	ResignationStudent    *ResignationStudentHRController
 	ResignationInstructor *ResignationInstructorHRController
 	LeaveStudent                 *LeaveStudentHRController
+	Raise                 *RaiseHRController
 	LeaveInstructor 			*LeaveInstructorHRController	
 }
 
@@ -24,6 +25,7 @@ func NewHRFacade(db *gorm.DB) *HRFacade {
 		ResignationInstructor: CreateResignationInstructorHRController(db),
 		LeaveStudent:                 CreateLeaveStudentHRController(db),
 		LeaveInstructor: 			CreateLeaveInstructorHRController(db),
+		Raise:                 CreateRaiseHRController(db),
 	}
 }
 
@@ -111,4 +113,18 @@ func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reas
 		req.Reason = reason
 	}
 	return f.ResignationStudent.Update(req)
+}
+
+//Raise-related facade methods
+
+func (f *HRFacade) SubmitRaiseInstructorRequest(request *model.RequestRaise) error {
+	return f.Raise.Insert(request)
+}
+
+func (f *HRFacade) ApproveRaise(id uint) error {
+	return f.Raise.UpdateStatus(id, "Approved")
+}
+
+func (f *HRFacade) RejectRaise(id uint) error {
+	return f.Raise.UpdateStatus(id, "Rejected")
 }
