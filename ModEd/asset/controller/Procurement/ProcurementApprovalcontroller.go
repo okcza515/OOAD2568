@@ -29,7 +29,7 @@ func (ctrl *ProcurementApprovalController) ListApprovals(c *gin.Context) {
 			"procurement_approval_id": a.ProcurementApprovalID,
 			"description":             a.Description,
 			"status":                  a.Status,
-			"approvers_id":            a.ApproversID,
+			"approver_id":            a.ApproverID,
 		}
 
 		if a.DeletedAt.Valid {
@@ -64,7 +64,7 @@ func (ctrl *ProcurementApprovalController) FilterApprovals(c *gin.Context) {
 	query := ctrl.DB.Model(&model.ProcurementApproval{})
 
 	if approverID != "" {
-		query = query.Where("approvers_id = ?", approverID)
+		query = query.Where("approver_id = ?", approverID)
 	}
 	if status != "" {
 		query = query.Where("status = ?", status)
