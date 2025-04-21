@@ -4,7 +4,6 @@ import "gorm.io/gorm"
 
 type ProjectEvaluation struct {
 	gorm.Model
-	ActionTracker
 	GroupId        int     `gorm:"not null;index"`
 	AssignmentId   int     `gorm:"not null;index"`
 	AssignmentType string  `gorm:"type:varchar(20);not null"`

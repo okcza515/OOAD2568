@@ -12,35 +12,49 @@ import (
 	"time"
 )
 
-func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
-	for {
-		util.ClearScreen()
-
-		fmt.Println("==== Admin Menu ====")
-		fmt.Println("1. Manage Applicants")
-		fmt.Println("2. View Application Reports")
-		fmt.Println("3. Schedule Interview")
-		fmt.Println("4. Delete Interview")
-		fmt.Println("5. back")
-		fmt.Print("Select an option: ")
-
-		var choice int
-		fmt.Scanln(&choice)
-
-		switch choice {
-		case 1:
-			ManageApplicants(applicantController)
-		case 2:
-			//ShowApplicationReports(applicationReportCtrl)
-		case 3:
-			AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
-		case 4:
-			DeleteInterview(interviewCtrl)
-		case 5:
+func AdminCLI(role string,applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
+	if role == "admin" {
+		var username, password string
+		fmt.Print("Enter admin username: ")
+		fmt.Scanln(&username)
+		fmt.Print("Enter admin password: ")
+		fmt.Scanln(&password)
+		if username != "admin" || password != "admin123" {
+			fmt.Println("Invalid credentials. Access denied.")
 			return
-		default:
-			fmt.Println("Invalid option. Try again.")
 		}
+		fmt.Println("Login successful. Welcome, admin!")
+		for {
+			util.ClearScreen()
+	
+			fmt.Println("==== Admin Menu ====")
+			fmt.Println("1. Manage Applicants")
+			fmt.Println("2. View Application Reports")
+			fmt.Println("3. Schedule Interview")
+			fmt.Println("4. Delete Interview")
+			fmt.Println("5. back")
+			fmt.Print("Select an option: ")
+	
+			var choice int
+			fmt.Scanln(&choice)
+	
+			switch choice {
+			case 1:
+				ManageApplicants(applicantController)
+			case 2:
+				//ShowApplicationReports(applicationReportCtrl)
+			case 3:
+				AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
+			case 4:
+				DeleteInterview(interviewCtrl)
+			case 5:
+				return
+			default:
+				fmt.Println("Invalid option. Try again.")
+			}
+	}
+	
+	
 	}
 }
 

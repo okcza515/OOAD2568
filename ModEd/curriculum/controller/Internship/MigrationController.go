@@ -17,7 +17,6 @@ func (c *MigrationController) MigrateToDB() error {
 	err := c.Db.AutoMigrate(
 		&model.InternStudent{},
 		&model.Company{},
-		&model.InternshipSchedule{},
 		&model.SupervisorReview{},
 		&modelCommon.Student{},
 		&model.InternshipReport{},

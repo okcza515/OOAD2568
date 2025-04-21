@@ -27,28 +27,27 @@ func importInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("*** Error: File %s does not exist.\n", *filePath)
 	}
 
-	// Use CreateMapper to get the appropriate mapper
 	hrMapper, err := core.CreateMapper[model.InstructorInfo](*filePath)
 	if err != nil {
 		return fmt.Errorf("Failed to create HR mapper: %v\n", err)
 	}
 
-	// Deserialize the data
 	instructors := hrMapper.Deserialize()
 
-	// Validate and insert each instructor
-	hrFacade := controller.NewHRFacade(tx)
-	for _, instructor := range instructors {
-		if instructor.ID == 0 || instructor.FirstName == "" {
-			return fmt.Errorf("Invalid instructor data: %+v\n", instructor)
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
+		hrFacade := controller.NewHRFacade(tx)
+		for _, instructor := range instructors {
+			if instructor.ID == 0 || instructor.FirstName == "" {
+				return fmt.Errorf("Invalid instructor data: %+v\n", instructor)
+			}
+
+			if err := hrFacade.InsertInstructor(instructor); err != nil {
+				return fmt.Errorf("Failed to insert instructor %d: %v\n", instructor.ID, err)
+			}
 		}
 
-		// Insert instructor into the database
-		if err := hrFacade.InsertInstructor(instructor); err != nil {
-			return fmt.Errorf("Failed to insert instructor %d: %v\n", instructor.ID, err)
-		}
-	}
-
-	fmt.Println("Instructors imported successfully!")
-	return nil
+		fmt.Println("Instructors imported successfully!")
+		return nil
+	})
 }

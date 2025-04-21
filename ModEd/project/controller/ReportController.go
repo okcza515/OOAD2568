@@ -25,20 +25,10 @@ func NewReportController(db *gorm.DB) *ReportController {
 }
 
 func (c *ReportController) ListAllReports() ([]model.Report, error) {
-	records, err := c.List(map[string]interface{}{})
-	if err != nil {
-		return nil, err
-	}
-
 	var reports []model.Report
-	for _, record := range records {
-		report, ok := record.(*model.Report)
-		if !ok {
-			return nil, fmt.Errorf("failed to cast record to model.Report")
-		}
-		reports = append(reports, *report)
+	if err := c.db.Model(&model.Report{}).Find(&reports).Error; err != nil {
+			return nil, err
 	}
-
 	return reports, nil
 }
 
