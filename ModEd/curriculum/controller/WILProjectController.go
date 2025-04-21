@@ -1,65 +1,42 @@
 package controller
 
 import (
-	model "ModEd/curriculum/model"
-	"time"
+	"ModEd/core"
+	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
 
 type WILProjectController struct {
+	*core.BaseController
 	Connector *gorm.DB
+}
+
+type WILProjectControllerInterface interface {
+	GetByID(ID uint) (*model.WILProject, error)
+	Insert(data core.RecordInterface) error
+	UpdateByID(data core.RecordInterface) error
+	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	DeleteByID(id uint) error
+	ListPagination(condition map[string]interface{}, page int, pageSize int)
 }
 
 func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
 	connector.AutoMigrate(&model.WILProject{})
-	return &WILProjectController{Connector: connector}
+	return &WILProjectController{
+		Connector:      connector,
+		BaseController: core.NewBaseController("WILProject", connector),
+	}
 }
 
-func (repo WILProjectController) RegisterWILProjects(projects []*model.WILProject) {
+func (repo WILProjectController) RegisterWILProjects(projects []core.RecordInterface) {
 	for _, project := range projects {
-		repo.Connector.Create(project)
+		repo.Insert(project)
 	}
 }
 
-func (repo WILProjectController) CreateWILProject(project *model.WILProject) error {
-	result := repo.Connector.Create(project)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
-
-func (repo WILProjectController) GetAllWILProjects() ([]*model.WILProject, error) {
-	projects := []*model.WILProject{}
-	result := repo.Connector.Find(&projects, "DeletedAt IS NULL")
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return projects, nil
-}
-
-func (repo WILProjectController) GetWILProjectById(id string) (*model.WILProject, error) {
-	project := &model.WILProject{}
-	result := repo.Connector.Where("WilProjectId = ?", id).First(project)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return project, nil
-}
-
-func (repo WILProjectController) UpdateWILProject(project *model.WILProject) error {
-	result := repo.Connector.Save(project)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
-
-func (repo WILProjectController) DeleteWILProject(id string) error {
-	result := repo.Connector.Model(&model.WILProject{}).Where("WilProjectId = ?", id).Update("DeletedAt", gorm.DeletedAt{Time: time.Now(), Valid: true})
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+func (repo WILProjectController) GetByID(ID uint) (*model.WILProject, error) {
+	WILProject := new(model.WILProject)
+	result := repo.Connector.First(&WILProject, "ID = ?", ID)
+	return WILProject, result.Error
 }
