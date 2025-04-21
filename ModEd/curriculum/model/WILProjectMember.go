@@ -2,12 +2,10 @@ package model
 
 import (
 	commonModel "ModEd/common/model"
-
-	"github.com/google/uuid"
 )
 
 type WILProjectMember struct {
-	WILProjectApplicationId uuid.UUID           `json:"-" gorm:"primaryKey"`
+	WILProjectApplicationId uint                `json:"-" gorm:"primaryKey"`
 	StudentId               string              `json:"StudentId" gorm:"primaryKey"`
-	Student                 commonModel.Student `json:"Student" gorm:"foreignKey:StudentId;references:SID"`
+	Student                 commonModel.Student `json:"Student" gorm:"foreignKey:StudentId;references:StudentCode"`
 }

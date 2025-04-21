@@ -2,7 +2,6 @@ package controller
 
 import (
 	"ModEd/core"
-	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
@@ -22,7 +21,6 @@ type WILProjectControllerInterface interface {
 }
 
 func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
-	connector.AutoMigrate(&model.WILProject{})
 	return &WILProjectController{
 		Connector:      connector,
 		BaseController: core.NewBaseController("WILProject", connector),
