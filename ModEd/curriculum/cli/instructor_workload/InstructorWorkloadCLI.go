@@ -16,7 +16,8 @@ func RunInstructorWorkloadModuleCLI(
 	classController *curriculumController.ClassController,
 	curriculumController *curriculumController.CurriculumController,
 ) {
-
+	coursePlanController := controller.CreateCoursePlanController(db)
+	classWorkloadController := controller.CreateClassWorkloadController(db)
 	seniorProjectWorkloadController := controller.CreateProjectController(db)
 	studentWorkloadController := controller.CreateStudentWorkloadController(db)
 	administrativeWorkloadController := controller.CreateMeetingController(db)
@@ -28,7 +29,7 @@ func RunInstructorWorkloadModuleCLI(
 		fmt.Println("choice: ", choice)
 		switch choice {
 		case "1": // Teaching Responsibility
-			handler.RunAcademicWorkloadHandler()
+			handler.RunAcademicWorkloadHandler(coursePlanController, classWorkloadController)
 		case "2": // StudentAdvisor Workload
 			handler.RunStudentAdvisorWorkloadHandler(studentWorkloadController)
 		case "3": // Administrative Task

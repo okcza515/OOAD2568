@@ -1,11 +1,16 @@
 package handler
 
 import (
+	"ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 )
 
-func RunAcademicWorkloadHandler() {
+func RunAcademicWorkloadHandler(
+	coursePlanController controller.CoursePlanService,
+	classWorkloadController controller.ClassWorkloadService,
+
+) {
 	for {
 		DisplayAcademicWorkloadModuleMenu()
 		choice := utils.GetUserChoice()
