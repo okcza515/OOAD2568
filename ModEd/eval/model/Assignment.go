@@ -26,6 +26,10 @@ type Assignment struct {
 type AssignmentSubmission struct {
 	gorm.Model
 	StudentCode commonModel.Student
-	Content     string
+	FirstName   commonModel.Student
+	LastName    commonModel.Student
+	Email       commonModel.Student
+	Answers     string
+	Submitted   bool
 	SubmittedAt time.Time
 }

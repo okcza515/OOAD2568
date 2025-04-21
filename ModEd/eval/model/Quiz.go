@@ -26,11 +26,11 @@ type Quiz struct {
 
 type QuizSubmission struct {
 	gorm.Model
-	SID        commonModel.Student
-	FirstName  commonModel.Student
-	LastName   commonModel.Student
-	Email      commonModel.Student
-	Answers    string
-	Submitted  bool
-	SubmitTime time.Time
+	StudentCode commonModel.Student
+	FirstName   commonModel.Student
+	LastName    commonModel.Student
+	Email       commonModel.Student
+	Answers     string
+	Submitted   bool
+	SubmittedAt time.Time
 }
