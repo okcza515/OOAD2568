@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"ModEd/hr/controller"
@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go request instructor resign -id="66050001" -reason="เหนื่อยมาก"
-func requestResignationInstructor(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go request student resign -id="66050001" -reason="อยากลาออกโว้ย"
+func requestResignationStudent(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
 	ID := fs.String("id", "", "ID")
 	reason := fs.String("reason", "", "Reason for resignation")
@@ -20,7 +20,7 @@ func requestResignationInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	if err := util.ValidateRequiredFlags(fs, []string{"reason"}); err != nil {
+	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason"}); err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
@@ -29,12 +29,12 @@ func requestResignationInstructor(args []string, tx *gorm.DB) error {
 	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 
-		request := model.NewRequestResignationInstructorBuilder().
-			WithInstructorID(*ID).
+		request := model.NewRequestResignationStudentBuilder().
+			WithStudentID(*ID).
 			WithReason(*reason).
 			Build()
 
-		if err := hrFacade.SubmitResignationInstructorRequest(request); err != nil {
+		if err := hrFacade.SubmitResignationStudentRequest(request); err != nil {
 			return fmt.Errorf("failed to submit resignation request: %v", err)
 		}
 

@@ -12,9 +12,9 @@ type HRFacade struct {
 	Instructor            *InstructorHRController
 	ResignationStudent    *ResignationStudentHRController
 	ResignationInstructor *ResignationInstructorHRController
-	LeaveStudent                 *LeaveStudentHRController
+	LeaveStudent          *LeaveStudentHRController
 	Raise                 *RaiseHRController
-	LeaveInstructor 			*LeaveInstructorHRController	
+	LeaveInstructor       *LeaveInstructorHRController
 }
 
 func NewHRFacade(db *gorm.DB) *HRFacade {
@@ -23,8 +23,8 @@ func NewHRFacade(db *gorm.DB) *HRFacade {
 		Instructor:            createInstructorHRController(db),
 		ResignationStudent:    createResignationStudentHRController(db),
 		ResignationInstructor: createResignationInstructorHRController(db),
-		LeaveStudent:                 createLeaveStudentHRController(db),
-		LeaveInstructor: 			createLeaveInstructorHRController(db),
+		LeaveStudent:          createLeaveStudentHRController(db),
+		LeaveInstructor:       createLeaveInstructorHRController(db),
 		Raise:                 createRaiseHRController(db),
 	}
 }
@@ -56,7 +56,14 @@ func (f *HRFacade) UpdateStudentStatus(sid string, status commonModel.StudentSta
 }
 
 func (f *HRFacade) UpsertStudent(info *model.StudentInfo) error {
-	return f.Student.upsert(info)
+	existing, err := f.Student.getById(info.StudentCode)
+	if err != nil {
+		return err
+	}
+	if existing != nil {
+		return f.Student.update(info)
+	}
+	return f.Student.insert(info)
 }
 
 // Instructor-related facade methods
@@ -77,9 +84,16 @@ func (f *HRFacade) UpdateInstructor(info *model.InstructorInfo) error {
 	return f.Instructor.update(info)
 }
 
-func (f *HRFacade) UpsertInstructor(info *model.InstructorInfo) error {
-	return f.Instructor.upsert(info)
-}
+// func (f *HRFacade) UpsertInstructor(info *model.InstructorInfo) error {
+// 	existing, err := f.Instructor.getById(info.ID)
+//     if err != nil {
+//         return err
+//     }
+//     if existing != nil {
+//         return f.Instructor.update(info)
+//     }
+//     return f.Instructor.insert(info)
+// }
 
 func (f *HRFacade) DeleteInstructor(id string) error {
 	return f.Instructor.delete(id)
