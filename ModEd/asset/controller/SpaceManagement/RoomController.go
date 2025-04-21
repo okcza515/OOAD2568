@@ -15,12 +15,10 @@ type RoomController struct {
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
 	deserializer, err := deserializer.NewFileDeserializer(path)
 	if err != nil {
-		return nil, err
-		// return nil, errors.New("failed to create file deserializer")
+		return nil, errors.New("failed to create file deserializer")
 	}
 	if err := deserializer.Deserialize(&rooms); err != nil {
-		// return nil, errors.New("failed to deserialize curriculums")
-		return nil, err
+		return nil, errors.New("failed to deserialize curriculums")
 	}
 	for _, room := range rooms {
 		err := c.CreateRoom(room)
