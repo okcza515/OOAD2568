@@ -1,6 +1,7 @@
 package model
 import (
-	"time"	
+	"time"
+	"fmt"
 )
 type RequestLeaveStudentBuilder struct {
 	req *RequestLeaveStudent
@@ -13,8 +14,8 @@ func NewRequestLeaveStudentBuilder() *RequestLeaveStudentBuilder {
 	return &RequestLeaveStudentBuilder{
 		req: &RequestLeaveStudent{
 			Status:    "Pending",
-			LeaveType: "ลาป่วย",
-			Reason:    "เหตุผลการลา",
+			LeaveType: "sick",
+			Reason:    "Reason for leave",
 			LeaveDate: time.Now(),
 		},
 	}
@@ -23,8 +24,8 @@ func NewRequestLeaveInstructorBuilder() *RequestLeaveInstructorBuilder{
 	return &RequestLeaveInstructorBuilder{
 		req: &RequestLeaveInstructor{
 			Status:    "Pending",
-			LeaveType: "ลาป่วย",
-			Reason:    "เหตุผลการลา",
+			LeaveType: "sick",
+			Reason:    "Reason for leave",
 			LeaveDate: time.Now(),
 		},
 	}
@@ -50,10 +51,16 @@ func (b *RequestLeaveStudentBuilder) WithReason(reason string) *RequestLeaveStud
 	return b
 }
 
-func (b *RequestLeaveStudentBuilder) WithLeaveDate(leaveDate time.Time) *RequestLeaveStudentBuilder {
+func (b *RequestLeaveStudentBuilder) WithLeaveDate(leaveDateStr string) *RequestLeaveStudentBuilder {
+	leaveDate, err := time.Parse("2006-01-02", leaveDateStr)
+	if err != nil {
+		fmt.Printf("Invalid date format: %v\n", err)
+		return b
+	}
 	b.req.LeaveDate = leaveDate
 	return b
 }
+
 func (b *RequestLeaveStudentBuilder) Build() *RequestLeaveStudent {
 	return b.req
 }
@@ -70,6 +77,7 @@ func (b *RequestLeaveInstructorBuilder) WithStatus(status string) *RequestLeaveI
 	return b
 }
 func (b *RequestLeaveInstructorBuilder) WithLeaveType(leaveType string) *RequestLeaveInstructorBuilder {
+	
 	b.req.LeaveType = leaveType
 	return b
 }
@@ -78,7 +86,12 @@ func (b *RequestLeaveInstructorBuilder) WithReason(reason string) *RequestLeaveI
 	return b
 }
 
-func (b *RequestLeaveInstructorBuilder) WithLeaveDate(leaveDate time.Time) *RequestLeaveInstructorBuilder {
+func (b *RequestLeaveInstructorBuilder) WithLeaveDate(leaveDateStr string) *RequestLeaveInstructorBuilder {
+	leaveDate, err := time.Parse("2006-01-02", leaveDateStr)
+	if err != nil {
+		fmt.Printf("Invalid date format: %v\n", err)
+		return b
+	}
 	b.req.LeaveDate = leaveDate
 	return b
 }

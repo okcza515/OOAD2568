@@ -7,9 +7,9 @@ import (
 
 type RequestLeaveStudent struct {
 	gorm.Model
-	StudentCode string    `gorm:"not null"` // รหัสนักเรียน
-	Status    string    `gorm:"default:Pending"` // สถานะการลา (เช่น Pending, Approved, Rejected)
-	LeaveType string    // ประเภทการลาออก (เช่น ลาออก, ลาเรียน, ลาอื่นๆ)
-	Reason    string    // เหตุผลการลา
-	LeaveDate time.Time // วันที่ลา
+	StudentCode string    `gorm:"not null"` 
+	Status    string    `gorm:"default:Pending"` 
+	LeaveType string    
+	Reason    string    
+	LeaveDate time.Time 
 }

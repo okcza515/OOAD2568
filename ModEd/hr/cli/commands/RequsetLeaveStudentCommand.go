@@ -6,7 +6,6 @@ import (
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -21,29 +20,22 @@ func RequestLeaveStudent(args []string, tx *gorm.DB) error {
 	leaveDateStr := fs.String("date", "", "Leave date (YYYY-MM-DD)")
 	fs.Parse(args)
 
-	// fmt.Printf("Student ID: %s\n", *studentID)
+
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "type", "reason", "date"}); err != nil {
 		fs.Usage()
 		return fmt.Errorf("Validation error: %v\n", err)
 	}
 
-	// แปลง string -> time.Time
-	leaveDate, err := time.Parse("2006-01-02", *leaveDateStr)
-	if err != nil {
-		return fmt.Errorf("Invalid date format: %v\n", err)
-	}
-
-	// เปิด database และเตรียม facade
+	
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	// สร้างคำขอลา
 	request := hrModel.NewRequestLeaveStudentBuilder().
 		WithStudentID(*studentID).
 		WithLeaveType(*leaveType).
 		WithReason(*reason).
-		WithLeaveDate(leaveDate).
+		WithLeaveDate(*leaveDateStr).
 		Build()
 
 	if err := hrFacade.SubmitLeaveStudentRequest(request); err != nil {
