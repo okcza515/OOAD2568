@@ -1,87 +1,72 @@
 package controller
 
 import (
-	"net/http"
+	"errors"
 	"time"
 
-	"ModEd/assignment/model"
-	"ModEd/common/model"     // สมมุติว่า commonModel อยู่ path นี้
-	"ModEd/curriculum/model" // สมมุติว่า curriculumModel อยู่ path นี้
+	assignmentModel "ModEd/eval/model"
 
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
+type AssignmentController interface {
+	GetAll() ([]assignmentModel.Assignment, error)
+	GetByID(id uint) (*assignmentModel.Assignment, error)
+	Create(input AssignmentInput) (*assignmentModel.Assignment, error)
+	Update(id uint, input AssignmentInput) (*assignmentModel.Assignment, error)
+	Delete(id uint) error
+}
+
+type assignmentController struct {
+	db *gorm.DB
+}
+
+func NewAssignmentController(db *gorm.DB) AssignmentController {
+	return &assignmentController{db: db}
+}
+
 type AssignmentInput struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	StartDate   time.Time `json:"start_date"`
-	DueDate     time.Time `json:"due_date"`
-	Status      string    `json:"status"`
+	Title       string
+	Description string
+	StartDate   time.Time
+	DueDate     time.Time
+	Status      string
 }
 
-func GetAssignments(c *gin.Context) {
-	var assignments []model.Assignment
-	db := c.MustGet("db").(*gorm.DB)
-
-	if err := db.Preload("Submission").Find(&assignments).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+func (c *assignmentController) GetAll() ([]assignmentModel.Assignment, error) {
+	var assignments []assignmentModel.Assignment
+	if err := c.db.Preload("Submission").Find(&assignments).Error; err != nil {
+		return nil, err
 	}
-	c.JSON(http.StatusOK, assignments)
+	return assignments, nil
 }
 
-func GetAssignmentByID(c *gin.Context) {
-	var assignment model.Assignment
-	db := c.MustGet("db").(*gorm.DB)
-
-	id := c.Param("id")
-	if err := db.Preload("Submission").First(&assignment, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Assignment not found"})
-		return
+func (c *assignmentController) GetByID(id uint) (*assignmentModel.Assignment, error) {
+	var assignment assignmentModel.Assignment
+	if err := c.db.Preload("Submission").First(&assignment, id).Error; err != nil {
+		return nil, err
 	}
-	c.JSON(http.StatusOK, assignment)
+	return &assignment, nil
 }
 
-func CreateAssignment(c *gin.Context) {
-	var input AssignmentInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	db := c.MustGet("db").(*gorm.DB)
-
-	assignment := model.Assignment{
+func (c *assignmentController) Create(input AssignmentInput) (*assignmentModel.Assignment, error) {
+	assignment := assignmentModel.Assignment{
 		Title:       input.Title,
 		Description: input.Description,
 		StartDate:   input.StartDate,
 		DueDate:     input.DueDate,
 		Status:      input.Status,
 	}
-
-	if err := db.Create(&assignment).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if err := c.db.Create(&assignment).Error; err != nil {
+		return nil, err
 	}
-
-	c.JSON(http.StatusCreated, assignment)
+	return &assignment, nil
 }
 
-func UpdateAssignment(c *gin.Context) {
-	var assignment model.Assignment
-	db := c.MustGet("db").(*gorm.DB)
-
-	id := c.Param("id")
-	if err := db.First(&assignment, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Assignment not found"})
-		return
-	}
-
-	var input AssignmentInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+func (c *assignmentController) Update(id uint, input AssignmentInput) (*assignmentModel.Assignment, error) {
+	var assignment assignmentModel.Assignment
+	if err := c.db.First(&assignment, id).Error; err != nil {
+		return nil, err
 	}
 
 	assignment.Title = input.Title
@@ -90,28 +75,16 @@ func UpdateAssignment(c *gin.Context) {
 	assignment.DueDate = input.DueDate
 	assignment.Status = input.Status
 
-	if err := db.Save(&assignment).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if err := c.db.Save(&assignment).Error; err != nil {
+		return nil, err
 	}
-
-	c.JSON(http.StatusOK, assignment)
+	return &assignment, nil
 }
 
-func DeleteAssignment(c *gin.Context) {
-	var assignment model.Assignment
-	db := c.MustGet("db").(*gorm.DB)
-
-	id := c.Param("id")
-	if err := db.First(&assignment, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Assignment not found"})
-		return
+func (c *assignmentController) Delete(id uint) error {
+	var assignment assignmentModel.Assignment
+	if err := c.db.First(&assignment, id).Error; err != nil {
+		return errors.New("assignment not found")
 	}
-
-	if err := db.Delete(&assignment).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Assignment deleted"})
+	return c.db.Delete(&assignment).Error
 }
