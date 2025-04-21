@@ -1,8 +1,8 @@
 package main
 
 import (
-	controller "ModEd/curriculum/controller/wil-project"
-	model "ModEd/curriculum/model/wil-project"
+	controller "ModEd/curriculum/controller"
+	model "ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 	"errors"
 	"flag"
@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func main() {
+func WILProjectApplicationCLI() {
 	var (
 		database string
 		path     string
