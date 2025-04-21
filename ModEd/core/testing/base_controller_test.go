@@ -73,9 +73,12 @@ func TestRetrieveByID(t *testing.T) {
 	controller := core.NewBaseController("test", db)
 
 	testData := TestModel{Name: "TestName"} // Remove explicit ID
-	db.Create(&testData)
+	controller.Insert(&testData)
 
 	result, err := controller.RetrieveByID(testData.ID) // Use the auto-generated ID
+	if err != nil {
+		assert.NoError(t, err)
+	}
 
 	if resultCasted, ok := (*result).(TestModel); ok {
 		assert.NoError(t, err)
