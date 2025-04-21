@@ -2,7 +2,6 @@ package controller
 
 import (
 	model "ModEd/curriculum/model/Internship"
-	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -16,8 +15,12 @@ func NewApprovedController(db *gorm.DB) *ApprovedController {
 	return &ApprovedController{Db: db}
 }
 
+func isValidStatus(status model.ApprovedStatus) bool {
+	return status == model.APPROVED || status == model.REJECT
+}
+
 func (c *ApprovedController) UpdateAdvisorApprovalStatus(applicationID uint, status model.ApprovedStatus) error {
-	if status != model.APPROVED && status != model.REJECT {
+	if !isValidStatus(status) {
 		return fmt.Errorf("invalid status: %s", status)
 	}
 
@@ -33,7 +36,7 @@ func (c *ApprovedController) UpdateAdvisorApprovalStatus(applicationID uint, sta
 }
 
 func (c *ApprovedController) UpdateCompanyApprovalStatus(applicationID uint, status model.ApprovedStatus) error {
-	if status != model.APPROVED && status != model.REJECT {
+	if !isValidStatus(status) {
 		return fmt.Errorf("invalid status: %s", status)
 	}
 
@@ -51,14 +54,27 @@ func (ac *ApprovedController) UpdateApprovalStatuses(studentCode string, advisor
 	var application model.InternshipApplication
 
 	if err := ac.Db.Where("student_code = ?", studentCode).Last(&application).Error; err != nil {
-		return errors.New("internship application not found")
+		return fmt.Errorf("internship application for student '%s' not found", studentCode)
 	}
 
 	application.ApprovalAdvisorStatus = advisorStatus
 	application.ApprovalCompanyStatus = companyStatus
 
 	if err := ac.Db.Save(&application).Error; err != nil {
-		return errors.New("failed to update approval statuses")
+		return fmt.Errorf("failed to update application statuses: %w", err)
+	}
+
+	if advisorStatus == model.APPROVED && companyStatus == model.APPROVED {
+		var student model.InternStudent
+		if err := ac.Db.Where("student_code = ?", studentCode).First(&student).Error; err != nil {
+			return fmt.Errorf("failed to find student: %w", err)
+		}
+
+		student.InternStatus = model.ACTIVE
+
+		if err := ac.Db.Save(&student).Error; err != nil {
+			return fmt.Errorf("failed to update student intern status: %w", err)
+		}
 	}
 
 	return nil
