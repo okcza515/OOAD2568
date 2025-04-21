@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func RunSeniorProjectWorkloadHandler(controller *controller.ProjectController) {
+func RunSeniorProjectWorkloadHandler(controller controller.ProjectControllerService) {
 	for {
 		DisplaySeniorProjectWorkloadModuleMenu()
 		choice := utils.GetUserChoice()
@@ -30,8 +30,8 @@ func RunSeniorProjectWorkloadHandler(controller *controller.ProjectController) {
 			}
 
 			mockCriteria := []projectModel.AssessmentCriteria{
-				{AssessmentCriteriaId: 1, CriteriaName: "mockCriteriaName1"},
-				{AssessmentCriteriaId: 2, CriteriaName: "mockCriteriaName2"},
+				{CriteriaName: "mockCriteriaName1"},
+				{CriteriaName: "mockCriteriaName2"},
 			}
 
 			err := controller.CreateEvaluation(mockEvaluation, "mockStrategy", mockCriteria)
