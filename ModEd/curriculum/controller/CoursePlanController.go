@@ -2,6 +2,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	model "ModEd/curriculum/model"
 
 	"time"
@@ -9,39 +10,56 @@ import (
 	"gorm.io/gorm"
 )
 
+type CoursePlanService interface {
+	CreateCoursePlan(CoursePlan model.CoursePlan) error
+	UpdateCoursePlan(course_id uint, body *model.CoursePlan) error
+	DeleteCoursePlan(course_id uint) error
+	ListAllCoursePlans() ([]model.CoursePlan, error)
+	ListPlanByCourseID(courseID uint) ([]model.CoursePlan, error)
+	ListUpcomingPlan() ([]model.CoursePlan, error)
+}
+
 type CoursePlanController struct {
-	DB *gorm.DB
+	*core.BaseController
+	Connector *gorm.DB
+}
+
+func CreateCoursePlanController(db *gorm.DB) *CoursePlanController {
+	return &CoursePlanController{
+		BaseController: core.NewBaseController("CoursePlan", db),
+		Connector:      db,
+	}
 }
 
 func (src *CoursePlanController) CreateCoursePlan(CoursePlan model.CoursePlan) error {
-	return src.DB.Create(&CoursePlan).Error
+	return src.Connector.Create(&CoursePlan).Error
 }
 
 func (src *CoursePlanController) UpdateCoursePlan(course_id uint, body *model.CoursePlan) error {
 	body.ID = course_id
-	result := src.DB.Updates(body)
+	result := src.Connector.Updates(body)
 	return result.Error
 }
 
 func (src *CoursePlanController) DeleteCoursePlan(course_id uint) error {
-	result := src.DB.Model(&model.CoursePlan{}).Where("ID = ?", course_id).Update("deleted_at", nil)
+	result := src.Connector.Model(&model.CoursePlan{}).Where("ID = ?", course_id).Update("deleted_at", nil)
 	return result.Error
 }
 
 func (src *CoursePlanController) ListAllCoursePlans() ([]model.CoursePlan, error) {
 	var coursePlans []model.CoursePlan
-	result := src.DB.Find(&coursePlans)
+	result := src.Connector.Find(&coursePlans)
 	return coursePlans, result.Error
 }
 
 func (src *CoursePlanController) ListPlanByCourseID(courseID uint) ([]model.CoursePlan, error) {
 	var coursePlans []model.CoursePlan
-	result := src.DB.Where("course_id = ?", courseID).Find(&coursePlans)
+	result := src.Connector.Where("course_id = ?", courseID).Find(&coursePlans)
 	return coursePlans, result.Error
 }
 
 func (src *CoursePlanController) ListUpcomingPlan() ([]model.CoursePlan, error) {
 	var coursePlans []model.CoursePlan
-	result := src.DB.Where("date >= ?", time.Now()).Find(&coursePlans)
+	result := src.Connector.Where("date >= ?", time.Now()).Find(&coursePlans)
 	return coursePlans, result.Error
 }

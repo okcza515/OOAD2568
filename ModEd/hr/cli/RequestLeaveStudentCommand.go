@@ -1,4 +1,4 @@
-package commands
+package main
 
 import (
 	"ModEd/hr/controller"
@@ -10,11 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go request instructor leave -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
-func requestLeaveInstructor(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go request student leave -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
+func requestLeaveStudent(args []string, tx *gorm.DB) error {
 	// fmt.Printf("asdjoasjdojaodjsaojdoasjodsjodasj")
 	fs := flag.NewFlagSet("requestLeave", flag.ExitOnError)
-	InstructorID := fs.String("id", "", "Instructor ID")
+	studentID := fs.String("id", "", "Student ID")
 	leaveType := fs.String("type", "", "Type of leave (e.g. sick, personal)")
 	reason := fs.String("reason", "", "Reason for leave")
 	leaveDateStr := fs.String("date", "", "Leave date (YYYY-MM-DD)")
@@ -28,14 +28,14 @@ func requestLeaveInstructor(args []string, tx *gorm.DB) error {
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	request := hrModel.NewRequestLeaveInstructorBuilder().
-	WithInstructorID(*InstructorID).
-	WithLeaveType(*leaveType).
-	WithReason(*reason).
-	WithLeaveDate(*leaveDateStr).
-	Build()
+	request := hrModel.NewRequestLeaveStudentBuilder().
+		WithStudentID(*studentID).
+		WithLeaveType(*leaveType).
+		WithReason(*reason).
+		WithLeaveDate(*leaveDateStr).
+		Build()
 
-	if err := hrFacade.SubmitLeaveInstructorRequest(request); err != nil {
+	if err := hrFacade.SubmitLeaveStudentRequest(request); err != nil {
 		return fmt.Errorf("Failed to submit leave request: %v\n", err)
 	}
 

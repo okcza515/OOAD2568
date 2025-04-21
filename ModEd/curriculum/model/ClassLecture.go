@@ -1,8 +1,9 @@
-//MEP-1008
+// MEP-1008
 package model
 
 import (
 	commonModel "ModEd/common/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,6 +15,6 @@ type ClassLecture struct {
 	LectureName  string                 `gorm:"not null" json:"lecture_name"`
 	InstructorId uint                   `gorm:"not null" json:"instructor_id"`
 	Instructor   commonModel.Instructor `gorm:"foreignKey:InstructorId;references:ID" json:"-"`
-	StartTime    string                 `gorm:"not null" json:"start_time"`
-	EndTime      string                 `gorm:"not null" json:"end_time"`
+	StartTime    time.Time              `gorm:"not null" json:"start_time"`
+	EndTime      time.Time              `gorm:"not null" json:"end_time"`
 }

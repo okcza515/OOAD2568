@@ -1,11 +1,17 @@
 package handler
 
 import (
+	"ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
+	"time"
 )
 
-func RunAcademicWorkloadHandler() {
+func RunAcademicWorkloadHandler(
+	coursePlanController controller.CoursePlanService,
+	classWorkloadController controller.ClassWorkloadService,
+) {
 	for {
 		DisplayAcademicWorkloadModuleMenu()
 		choice := utils.GetUserChoice()
@@ -13,25 +19,46 @@ func RunAcademicWorkloadHandler() {
 
 		switch choice {
 		case "1":
-			fmt.Println("Add Class Lecture Not implemented yet...")
+			mockLecture := model.ClassLecture{
+				ClassId:      1,
+				LectureName:  "Introduction to OOAD",
+				InstructorId: 1,
+				StartTime:    time.Now(),
+				EndTime:      time.Now().Add(2 * time.Hour),
+			}
+			classWorkloadController.AddClassLecture(&mockLecture)
 		case "2":
-			fmt.Println("Edit Class Lecture Not implemented yet...")
+			mockEditedLecture := model.ClassLecture{
+				ClassId:      1,
+				LectureName:  "Introduction to OOAD - Hardcore",
+				InstructorId: 1,
+				StartTime:    time.Now(),
+				EndTime:      time.Now().Add(2 * time.Hour),
+			}
+			classWorkloadController.UpdateClassLecture(&mockEditedLecture)
 		case "3":
-			fmt.Println("Delete Class Lecture Not implemented yet...")
+			classWorkloadController.DeleteClassLecture(1)
 		case "4":
-			fmt.Println("List all Class Lectures Not implemented yet...")
+			classWorkloadController.GetClassLecturesByClassId(1)
+
 		case "5":
-			fmt.Println("Get Class Lecture By ID Not implemented yet...")
+			mockMaterial := model.ClassMaterial{
+				ClassId:  1,
+				FileName: "Lecture1.pdf",
+				FilePath: "path/to/lecture1.pdf",
+			}
+			classWorkloadController.AddClassMaterial(&mockMaterial)
 		case "6":
-			fmt.Println("Add Class Material Not implemented yet...")
+			editedMockMaterial := model.ClassMaterial{
+				ClassId:  1,
+				FileName: "Lecture1_edited.pdf",
+				FilePath: "path/to/lecture1_edited.pdf",
+			}
+			classWorkloadController.UpdateClassMaterial(&editedMockMaterial)
 		case "7":
-			fmt.Println("Edit Class Material Not implemented yet...")
+			classWorkloadController.DeleteClassMaterial(1)
 		case "8":
-			fmt.Println("Delete Class Material Not implemented yet...")
-		case "9":
-			fmt.Println("List all Class Materials Not implemented yet...")
-		case "10":
-			fmt.Println("Get Class Material By ID Not implemented yet...")
+			classWorkloadController.GetClassMaterialsByClassId(1)
 		case "exit":
 			fmt.Println("Exiting...")
 			return
@@ -47,13 +74,11 @@ func DisplayAcademicWorkloadModuleMenu() {
 	fmt.Println("2. Edit Class Lecture")
 	fmt.Println("3. Delete Class Lecture")
 	fmt.Println("4. List all Class Lectures")
-	fmt.Println("5. Get Class Lecture By ID")
 
-	fmt.Println("6. Add Class Material")
-	fmt.Println("7. Edit Class Material")
-	fmt.Println("8. Delete Class Material")
-	fmt.Println("9. List all Class Materials")
-	fmt.Println("10. Get Class Material By ID")
+	fmt.Println("5. Add Class Material")
+	fmt.Println("6. Edit Class Material")
+	fmt.Println("7. Delete Class Material")
+	fmt.Println("8. Get Class Material By ID")
 
 	fmt.Println("Type 'exit' to quit")
 }

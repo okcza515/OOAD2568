@@ -7,17 +7,30 @@ import (
 )
 
 type FacultyController struct {
-	Connector *gorm.DB
+	DB *gorm.DB
 }
 
-func CreateFacultyController(connector *gorm.DB) *FacultyController {
-    faculty := FacultyController{Connector: connector}
-	connector.AutoMigrate(&model.Faculty{})
-	return &faculty
+func CreateFacultyController(db *gorm.DB) *FacultyController {
+	db.AutoMigrate(&model.Faculty{})
+	return &FacultyController{DB: db}
 }
 
-func (faculty *FacultyController) GetAllFaculties() ([]*model.Faculty, error) {
-	faculties := []*model.Faculty{}
-	result := faculty.Connector.Find(&faculty)
-	return faculties, result.Error
+func (c *FacultyController) GetAll() ([]*model.Faculty, error) {
+	return model.GetAllFaculties(c.DB)
+}
+
+func (c *FacultyController) GetByName(name string) (*model.Faculty, error) {
+	return model.GetFacultyByName(c.DB, name)
+}
+
+func (c *FacultyController) Create(faculty *model.Faculty) error {
+	return model.CreateFaculty(c.DB, faculty)
+}
+
+func (c *FacultyController) SetBudget(name string, budget int) error {
+	return model.SetFacultyBudget(c.DB, name, budget)
+}
+
+func (c *FacultyController) UpdateBudget(name string, delta int) error {
+	return model.UpdateFacultyBudget(c.DB, name, delta)
 }

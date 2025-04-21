@@ -12,25 +12,26 @@ import (
 
 type Quiz struct {
 	gorm.Model
-	ID           uint
-	Title        string
-	Description  string
-	CourseId     curriculumModel.Course
-	InstructorId commonModel.Instructor
-	Released     bool
-	QuizStart    time.Time
-	QuizEnd      time.Time
-	Status       string
-	Submission   []QuizSubmission
+	FirstName   commonModel.Instructor
+	LastName    commonModel.Instructor
+	CourseId    curriculumModel.Course
+	QuizId      uint
+	Title       string
+	Description string
+	Released    bool
+	QuizStart   time.Time
+	QuizEnd     time.Time
+	Status      string
+	Submission  []QuizSubmission
 }
 
 type QuizSubmission struct {
 	gorm.Model
-	SID        commonModel.Student
-	FirstName  commonModel.Student
-	LastName   commonModel.Student
-	Email      commonModel.Student
-	Answers    string
-	Submitted  bool
-	SubmitTime time.Time
+	StudentCode commonModel.Student
+	FirstName   commonModel.Student
+	LastName    commonModel.Student
+	Email       commonModel.Student
+	Answers     string
+	Submitted   bool
+	SubmittedAt time.Time
 }
