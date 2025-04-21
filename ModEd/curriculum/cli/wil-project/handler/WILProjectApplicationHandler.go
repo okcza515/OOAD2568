@@ -1,11 +1,11 @@
-package wilproject
+package handler
 
 import (
 	"ModEd/curriculum/utils"
 	"fmt"
 )
 
-func RunApplicationHandlerCLI() {
+func RunWIlProjectApplicationHandler() {
 	fmt.Println("test")
 	for {
 		printWILProjectApplicationModuleMenu()

@@ -1,6 +1,7 @@
 package wilproject
 
 import (
+	"ModEd/curriculum/cli/wil-project/handler"
 	"ModEd/curriculum/utils"
 	"fmt"
 )
@@ -13,9 +14,9 @@ func RunWILModuleCLI() {
 
 		switch choice {
 		case "1":
-			fmt.Println("1 Not implemented yet...")
+			handler.RunWILProjectHandler()
 		case "2":
-			fmt.Println("2 Not implemented yet...")
+			handler.RunWIlProjectApplicationHandler()
 		case "0":
 			fmt.Println("Exiting...")
 			return
