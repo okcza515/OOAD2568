@@ -37,12 +37,6 @@ func NewInvoker() *Invoker {
 			"export":            &commands.ExportStudentsCommand{},
 			"request":           &commands.RequestCommand{},
 			"answerResignation": &commands.AnswerResignationCommand{},
-			"raise":              &commands.RequestRaiseCommand{},
-
-			"requestLeaveStudent":    &commands.RequestLeaveStudentCommand{},
-			"requestLeaveInstructor":     &commands.RequestLeaveInstructorCommand{},
-
-			
 			// ... additional command registrations ...
 		},
 	}
