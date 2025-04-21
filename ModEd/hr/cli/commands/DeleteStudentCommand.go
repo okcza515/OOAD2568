@@ -30,7 +30,7 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	err := tm.Execute(func(tx *gorm.DB) error {
 		// Delete student from common data.
 		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.DeleteByStudentId(*studentID); err != nil {
+		if err := studentController.DeleteByCode(*studentID); err != nil {
 			return fmt.Errorf("failed to delete student from common data: %w", err)
 		}
 

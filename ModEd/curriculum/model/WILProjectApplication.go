@@ -11,10 +11,11 @@ type WILProjectApplication struct {
 	ProjectName       string                 `gorm:"not null"`
 	ProjectDetail     string                 `gorm:"not null"`
 	Semester          string                 `gorm:"not null"`
-	Company           string                 `gorm:"not null"`
+	CompanyId         uint                   `gorm:"not null"`
 	Mentor            string                 `gorm:"not null"`
 	Students          []WILProjectMember     `gorm:"foreignKey:WILProjectApplicationId"`
-	Advisor           commonModel.Instructor `json:"Advisor"`
+	AdvisorId         uint                   `json:"AdvisorId"`
+	Advisor           commonModel.Instructor `json:"Advisor", gorm:"foreignKey:AdvisorId;references:Id"`
 	ApplicationStatus string                 `gorm:"not null"`
 	TurninDate        string                 `gorm:"not null"`
 }

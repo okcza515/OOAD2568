@@ -2,7 +2,9 @@ package migration
 
 import (
 	// modelCommon "ModEd/common/model"
+	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
+
 	// modelInternShip "ModEd/curriculum/model/Internship"
 
 	"github.com/cockroachdb/errors"
@@ -22,6 +24,12 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelCurriculum.Curriculum{},
 		&modelCurriculum.Class{},
 		&modelCurriculum.Course{},
+		&model.WILProjectCourse{},
+		&model.WILProjectClass{},
+		&model.WILProjectMember{},
+		&model.WILProjectApplication{},
+		&model.WILProject{},
+		&model.IndependentStudy{},
 		// &modelInternShip.InternStudent{},
 		// &modelInternShip.Company{},
 		// &modelInternShip.InternshipSchedule{},
@@ -42,6 +50,12 @@ func (c *MigrationController) DropAllTables() error {
 		&modelCurriculum.Curriculum{},
 		&modelCurriculum.Class{},
 		&modelCurriculum.Course{},
+		&model.WILProjectCourse{},
+		&model.WILProjectClass{},
+		&model.WILProjectMember{},
+		&model.WILProjectApplication{},
+		&model.WILProject{},
+		&model.IndependentStudy{},
 		// &modelInternShip.InternStudent{},
 		// &modelInternShip.Company{},
 		// &modelInternShip.InternshipSchedule{},

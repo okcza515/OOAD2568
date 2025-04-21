@@ -19,7 +19,7 @@ import (
 // usage : go run hr/cli/HumanResourceCLI.go import -path=<path>
 // required field : path !!
 
-func (c *ImportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
+func importStudents(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
@@ -52,7 +52,7 @@ func (c *ImportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 
 	for _, hrRec := range hrRecordsMap {
 		commonStudentController := commonController.CreateStudentController(db)
-		commonStudent, err := commonStudentController.GetByStudentId(hrRec.StudentCode)
+		commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
 		if err != nil {
 			fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
 			continue

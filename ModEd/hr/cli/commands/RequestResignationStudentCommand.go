@@ -1,40 +1,43 @@
 package commands
 
-// import (
-// 	"ModEd/hr/controller"
-// 	hrModel "ModEd/hr/model"
-// 	"ModEd/hr/util"
-// 	"flag"
-// 	"fmt"
+import (
+	"ModEd/hr/controller"
+	"ModEd/hr/model"
+	"ModEd/hr/util"
+	"flag"
+	"fmt"
 
+	"gorm.io/gorm"
+)
 
-// 	"gorm.io/gorm"
-// )
+func RequestResignationStudent(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
+	ID := fs.String("id", "", "ID")
+	reason := fs.String("reason", "", "Reason for resignation")
 
-// // usage: go run hr/cli/HumanResourceCLI.go requestResignation -id="66050001" -reason="ย้ายคณะ"
-// func (c *RequestResignationStudentCommand) Execute(args []string, tx *gorm.DB) error {
-// 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
-// 	ID := fs.String("id", "", "ID")
-// 	reason := fs.String("reason", "", "Reason for resignation")
-// 	fs.Parse(args)
+	if err := fs.Parse(args); err != nil {
+		return fmt.Errorf("failed to parse flags: %v", err)
+	}
 
-// 	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason", "role"}); err != nil {
-// 		fs.Usage()
-// 		return fmt.Errorf("Validation error: %v\n", err)
-// 	}
+	if err := util.ValidateRequiredFlags(fs, []string{"id", "reason"}); err != nil {
+		fs.Usage()
+		return fmt.Errorf("validation error: %v", err)
+	}
 
-// 	db := util.OpenDatabase(*util.DatabasePath)
-// 	hrFacade := controller.NewHRFacade(db)
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
+		hrFacade := controller.NewHRFacade(tx)
 
-// 	request := hrModel.NewRequestResignationStudentBuilder().
-// 		WithStudentID(*ID).
-// 		WithReason(*reason).
-// 		Build()
+		request := model.NewRequestResignationStudentBuilder().
+			WithStudentID(*ID).
+			WithReason(*reason).
+			Build()
 
-// 	if err := hrFacade.SubmitResignationStudentRequest(request); err != nil {
-// 		return fmt.Errorf("Failed to submit resignation request: %v\n", err)
-// 	}
+		if err := hrFacade.SubmitResignationStudentRequest(request); err != nil {
+			return fmt.Errorf("failed to submit resignation request: %v", err)
+		}
 
-// 	fmt.Println("Resignation request submitted successfully.")
-// 	return nil
-// }
+		fmt.Println("Resignation request submitted successfully.")
+		return nil
+	})
+}

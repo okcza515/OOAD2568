@@ -21,7 +21,6 @@ type IndependentStudyControllerInterface interface {
 }
 
 func CreateIndependentStudyController(connector *gorm.DB) *IndependentStudyController {
-	connector.AutoMigrate(&model.IndependentStudy{})
 	return &IndependentStudyController{
 		Connector:      connector,
 		BaseController: core.NewBaseController("IndependentStudy", connector),
