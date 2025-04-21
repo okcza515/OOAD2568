@@ -48,7 +48,7 @@ func main() {
 		case "4":
 			curriculum.RunCourseCLI(courseController)
 		case "5":
-			wilproject.RunWILModuleCLI()
+			wilproject.RunWILModuleCLI(db)
 		case "0":
 			fmt.Println("Exiting...")
 			return

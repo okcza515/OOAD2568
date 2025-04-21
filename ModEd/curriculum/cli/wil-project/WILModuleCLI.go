@@ -2,20 +2,26 @@ package wilproject
 
 import (
 	"ModEd/curriculum/cli/wil-project/handler"
+	"ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
-func RunWILModuleCLI() {
+func RunWILModuleCLI(db *gorm.DB) {
+
+	wilprojectController := controller.CreateWILProjectController(db)
+	wilprojectApplicationController := controller.CreateWILProjectApplicationController(db)
+
 	for {
 		printWILModuleMenu()
 		choice := utils.GetUserChoice()
-
 		switch choice {
 		case "1":
-			handler.RunWILProjectHandler()
+			handler.RunWILProjectHandler(wilprojectController)
 		case "2":
-			handler.RunWIlProjectApplicationHandler()
+			handler.RunWILProjectApplicationHandler(wilprojectApplicationController)
 		case "0":
 			fmt.Println("Exiting...")
 			return

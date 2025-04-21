@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 )
 
-func RunWIlProjectApplicationHandler() {
+func RunWILProjectApplicationHandler(controller *controller.WILProjectApplicationController) {
 	for {
 		printWILProjectApplicationModuleMenu()
 		choice := utils.GetUserChoice()
