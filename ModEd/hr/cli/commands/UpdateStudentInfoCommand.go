@@ -11,10 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go update student -field="value"
+// usage : go run hr/cli/HumanResourceCLI.go update student info -field="value"
 // required field : id !!
 
-func updateStudent(args []string, tx *gorm.DB) error {
+func updateStudentInfo(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("update student", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
 	firstName := fs.String("fname", "", "New first name")

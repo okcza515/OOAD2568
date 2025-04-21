@@ -30,7 +30,6 @@ func NewInvoker() *Invoker {
 			"add":               &commands.AddStudentCommand{},
 			"delete":            &commands.DeleteStudentCommand{},
 			"update":            &commands.UpdateCommand{},
-			"status":            &commands.UpdateStudentStatusCommand{},
 			"import":            &commands.ImportCommand{},
 			"migrate":           &commands.MigrateStudentsCommand{},
 			"export":            &commands.ExportStudentsCommand{},

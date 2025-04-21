@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go update instructor -id="66050001" -field="position" -value="Professor"
-func updateInstructor(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go update instructor info -id="66050001" -field="position" -value="Professor"
+func updateInstructorInfo(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("update instructor", flag.ExitOnError)
 	instructorID := fs.String("id", "", "Instructor ID to update")
 	field := fs.String("field", "", "Field to update (e.g., position, department)")
