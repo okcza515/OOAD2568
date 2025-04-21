@@ -12,16 +12,17 @@ import (
 
 type Assignment struct {
 	gorm.Model
-	FirstName    commonModel.Instructor
-	LastName     commonModel.Instructor
-	CourseId     curriculumModel.Course
-	AssignmentId uint
-	Title        string
-	Description  string
-	StartDate    time.Time
-	DueDate      time.Time
-	Status       string
-	Submission   []AssignmentSubmission
+	InstructorCode commonModel.Instructor
+	FirstName      commonModel.Instructor
+	LastName       commonModel.Instructor
+	CourseId       curriculumModel.Course
+	AssignmentId   uint
+	Title          string
+	Description    string
+	StartDate      time.Time
+	DueDate        time.Time
+	Status         string
+	Submission     []AssignmentSubmission
 }
 
 type AssignmentSubmission struct {

@@ -2,11 +2,20 @@
 package model
 
 type ApplicationReport struct {
-	ApplicationReportID uint              `gorm:"primaryKey"`
-	ApplicantID         uint              `gorm:"foreignKey:ApplicantID"`
-	ApplicationRoundsID uint              `gorm:"foreignKey:ApplicationRoundsID"`
-	FacultyID           uint              `gorm:"foreignKey:FacultyID"`
-	DepartmentID        uint              `gorm:"foreignKey:DepartmentID"`
+	ApplicationReportID uint `gorm:"primaryKey"`
+
+	ApplicantID uint
+	Applicant   Applicant `gorm:"foreignKey:ApplicantID;references:ApplicantID"`
+
+	ApplicationRoundsID uint
+	ApplicationRound    ApplicationRound `gorm:"foreignKey:ApplicationRoundsID;references:RoundID"`
+
+	FacultyID uint
+	Faculty   Faculty `gorm:"foreignKey:FacultyID;references:FacultyID"`
+
+	DepartmentID uint
+	Department   Department `gorm:"foreignKey:DepartmentID;references:DepartmentID"`
+
 	ApplicationStatuses ApplicationStatus `gorm:"type:varchar(20)"`
 }
 

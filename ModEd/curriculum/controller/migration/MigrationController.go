@@ -2,8 +2,10 @@ package migration
 
 import (
 	// modelCommon "ModEd/common/model"
+	modelCommon "ModEd/common/model"
 	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
+	modelInternShip "ModEd/curriculum/model/Internship"
 
 	// modelInternShip "ModEd/curriculum/model/Internship"
 
@@ -30,13 +32,12 @@ func (c *MigrationController) MigrateToDB() error {
 		&model.WILProjectApplication{},
 		&model.WILProject{},
 		&model.IndependentStudy{},
-		// &modelInternShip.InternStudent{},
-		// &modelInternShip.Company{},
-		// &modelInternShip.InternshipSchedule{},
-		// &modelInternShip.SupervisorReview{},
-		// &modelCommon.Student{},
-		// &modelInternShip.InternshipReport{},
-		// &modelInternShip.InternshipApplication{},
+		&modelInternShip.InternStudent{},
+		&modelInternShip.Company{},
+		&modelInternShip.SupervisorReview{},
+		&modelCommon.Student{},
+		&modelInternShip.InternshipReport{},
+		&modelInternShip.InternshipApplication{},
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
@@ -56,13 +57,12 @@ func (c *MigrationController) DropAllTables() error {
 		&model.WILProjectApplication{},
 		&model.WILProject{},
 		&model.IndependentStudy{},
-		// &modelInternShip.InternStudent{},
-		// &modelInternShip.Company{},
-		// &modelInternShip.InternshipSchedule{},
-		// &modelInternShip.SupervisorReview{},
-		// &modelCommon.Student{},
-		// &modelInternShip.InternshipReport{},
-		// &modelInternShip.InternshipApplication{},
+		&modelInternShip.InternStudent{},
+		&modelInternShip.Company{},
+		&modelInternShip.SupervisorReview{},
+		&modelCommon.Student{},
+		&modelInternShip.InternshipReport{},
+		&modelInternShip.InternshipApplication{},
 	)
 	if err != nil {
 		return err
