@@ -1,19 +1,52 @@
 package handler
 
 import (
+	"ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
+	"time"
+
+	commonModel "ModEd/common/model"
 )
 
-func RunAdminstrativeWorkloadHandler() {
+func RunStudentAdvisorWorkloadHandler(controller controller.StudentWorkloadService) {
 	for {
-		DisplayAdminstrativeWorkloadModuleMenu()
+		DisplayStudentAdvisorWorkloadModuleMenu()
 		choice := utils.GetUserChoice()
 		fmt.Println("choice: ", choice)
 
 		switch choice {
 		case "1":
-			fmt.Println("Add Student Advisor Not implemented yet...")
+			mockStudentAdvisor := &model.StudentAdvisor{
+				InstructorId: 1,
+				Instructor: commonModel.Instructor{
+					InstructorCode: "I001",
+					FirstName:      "John",
+					LastName:       "Doe",
+					Email:          "",
+					StartDate:      nil,
+					Department:     nil,
+				},
+				Students: []commonModel.Student{
+					{
+						StudentCode: "S001",
+						FirstName:   "Jane",
+						LastName:    "Smith",
+						Email:       "",
+						StartDate:   time.Time{},
+						BirthDate:   time.Time{},
+						Program:     commonModel.REGULAR,
+						Status:      nil,
+					},
+				},
+			}
+			err := controller.CreateStudentAdvisor(*mockStudentAdvisor)
+			if err != nil {
+				fmt.Println("Error creating student advisor:", err)
+			} else {
+				fmt.Println("Student advisor created successfully")
+			}
 		case "2":
 			fmt.Println("Edit Student Advisor Not implemented yet...")
 		case "3":
@@ -45,8 +78,8 @@ func RunAdminstrativeWorkloadHandler() {
 	}
 }
 
-func DisplayAdminstrativeWorkloadModuleMenu() {
-	fmt.Println("\nAdminstrative Workload Module Menu:")
+func DisplayStudentAdvisorWorkloadModuleMenu() {
+	fmt.Println("\nStudentAdvisor Workload Module Menu:")
 	fmt.Println("1. Add Student Advisor")
 	fmt.Println("2. Edit Student Advisor")
 	fmt.Println("3. Delete Student Advisor")

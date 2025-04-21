@@ -18,6 +18,7 @@ func RunInstructorWorkloadModuleCLI(
 ) {
 
 	seniorProjectWorkloadController := controller.NewProjectController(db)
+	studentWorkloadController := controller.NewStudentWorkloadController(db)
 
 	input := ""
 	for input != "exit" {
@@ -27,8 +28,8 @@ func RunInstructorWorkloadModuleCLI(
 		switch choice {
 		case "1": // Teaching Responsibility
 			handler.RunAcademicWorkloadHandler()
-		case "2": // Administrative Tasks
-			handler.RunAdminstrativeWorkloadHandler()
+		case "2": // StudentAdvisor Workload
+			handler.RunStudentAdvisorWorkloadHandler(studentWorkloadController)
 		case "4": // Senior Projects
 			handler.RunSeniorProjectWorkloadHandler(seniorProjectWorkloadController.(*controller.ProjectController))
 		case "exit":
