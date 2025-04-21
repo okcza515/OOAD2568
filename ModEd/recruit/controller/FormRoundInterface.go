@@ -1,5 +1,5 @@
 // MEP-1003 Student Recruitment
-package form
+package controller
 
 import (
 	"ModEd/recruit/model"

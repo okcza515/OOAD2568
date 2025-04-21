@@ -3,7 +3,6 @@ package cli
 
 import (
 	"ModEd/recruit/controller"
-	form "ModEd/recruit/controller/FormRound"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
@@ -69,8 +68,8 @@ func registerFromFile(
 			continue
 		}
 
-		var strategy form.FormRound
-		strategy, err = form.GetFormStrategy(round.RoundName)
+		var strategy controller.FormRound
+		strategy, err = controller.GetFormStrategy(round.RoundName)
 		if err == nil && strategy != nil {
 			if applyErr := strategy.ApplyForm(&a); applyErr != nil {
 				fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, applyErr)
@@ -159,9 +158,9 @@ func registerManually(
 		return
 	}
 
-	var strategy form.FormRound
+	var strategy controller.FormRound
 
-	strategy, err := form.GetFormStrategy(round.RoundName)
+	strategy, err := controller.GetFormStrategy(round.RoundName)
 	if err == nil && strategy != nil {
 		if err := strategy.ApplyForm(&applicant); err != nil {
 			fmt.Println("Error applying additional form:", err)
@@ -190,7 +189,7 @@ func registerManually(
 
 	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
-	time.Sleep(8 * time.Second) 
+	time.Sleep(8 * time.Second)
 }
 
 func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController) *model.ApplicationRound {

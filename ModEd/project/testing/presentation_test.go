@@ -43,7 +43,7 @@ func TestInsertPresentation(t *testing.T) {
 	t.Cleanup(func() { cleanup(dbName) })
 
 	presentation := model.Presentation{}
-	err := presentationCtrl.InsertPresentation(presentation)
+	err := presentationCtrl.InsertPresentation(&presentation)
 	if err != nil {
 		t.Errorf("Failed to insert presentation: %v", err)
 	}

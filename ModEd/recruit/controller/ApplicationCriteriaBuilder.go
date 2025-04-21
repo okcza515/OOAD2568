@@ -1,5 +1,5 @@
 // MEP-1003 Student Recruitment
-package criteria
+package controller
 
 type ApplicationCriteriaBuilder struct {
 	criteriaList []Criteria

@@ -3,6 +3,7 @@ package main
 import (
 	"ModEd/curriculum/cli/curriculum"
 	migrationcli "ModEd/curriculum/cli/migration"
+	wilproject "ModEd/curriculum/cli/wil-project"
 	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/controller/migration"
 	"ModEd/curriculum/utils"
@@ -46,6 +47,8 @@ func main() {
 			curriculum.RunClassCLI(classController)
 		case "4":
 			curriculum.RunCourseCLI(courseController)
+		case "5":
+			wilproject.RunWILModuleCLI(db)
 		case "0":
 			fmt.Println("Exiting...")
 			return
@@ -61,6 +64,7 @@ func displayMainMenu() {
 	fmt.Println("2. Curriculum")
 	fmt.Println("3. Class")
 	fmt.Println("4. Course")
+	fmt.Println("5. WIL-Project")
 	fmt.Println("0. Exit")
 }
 
