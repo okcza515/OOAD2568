@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
+	projectModel "ModEd/project/model"
 	"fmt"
 )
 
-func RunSeniorProjectWorkloadHandler() {
+func RunSeniorProjectWorkloadHandler(controller *controller.ProjectController) {
 	for {
 		DisplaySeniorProjectWorkloadModuleMenu()
 		choice := utils.GetUserChoice()
@@ -17,7 +20,27 @@ func RunSeniorProjectWorkloadHandler() {
 		case "2":
 			fmt.Println("Get All Projects By Committee ID Not implemented yet...")
 		case "3":
-			fmt.Println("Evaluate Project as Advisor Not implemented yet...")
+
+			mockEvaluation := &model.ProjectEvaluation{
+				GroupId:        1,
+				AssignmentId:   1,
+				AssignmentType: "mockAssignmentType",
+				Score:          95.0,
+				Comment:        "mockComment",
+			}
+
+			mockCriteria := []projectModel.AssessmentCriteria{
+				{AssessmentCriteriaId: 1, CriteriaName: "mockCriteriaName1"},
+				{AssessmentCriteriaId: 2, CriteriaName: "mockCriteriaName2"},
+			}
+
+			err := controller.CreateEvaluation(mockEvaluation, "mockStrategy", mockCriteria)
+			if err != nil {
+				fmt.Println("Error creating evaluation:", err)
+			} else {
+				fmt.Println("Mock evaluation created successfully")
+			}
+			controller.CreateEvaluation(mockEvaluation, "mockStrategy", mockCriteria)
 		case "4":
 			fmt.Println("Evaluate Project as Committee Not implemented yet...")
 		case "exit":
