@@ -41,9 +41,9 @@ func (c *StudentHRController) insert(info *model.StudentInfo) error {
 
 // Update updates an existing StudentInfo record.
 func (c *StudentHRController) update(info *model.StudentInfo) error {
-    return c.db.Model(&model.StudentInfo{}).
-        Where("student_code = ?", info.StudentCode).
-        Updates(info).Error
+	return c.db.Model(&model.StudentInfo{}).
+		Where("student_code = ?", info.StudentCode).
+		Updates(info).Error
 }
 
 // Delete deletes a student's HR information by SID.
@@ -64,22 +64,4 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 
 	// Save the updated record
 	return c.db.Save(&studentInfo).Error
-}
-
-// Upsert inserts or updates a StudentInfo record.
-func (c *StudentHRController) upsert(info *model.StudentInfo) error {
-    var existingInfo model.StudentInfo
-
-    // Check if the record exists
-    if err := c.db.Where("student_code = ?", info.StudentCode).First(&existingInfo).Error; err != nil {
-        if err == gorm.ErrRecordNotFound {
-            // If the record does not exist, create it
-            return c.db.Create(info).Error
-        }
-        // Return other errors
-        return err
-    }
-
-    // If the record exists, update it
-    return c.db.Model(&existingInfo).Updates(info).Error
 }
