@@ -39,9 +39,9 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 		return
 	}
 	status, err := applicationReportCtrl.GetApplicationStatusByID(uint(convApplicantID))
-	if status != "Interview" {
+	if status != "Pending" {
 		fmt.Println("\n\033[1;33m⚠ You cannot assign interview details at this stage.\033[0m")
-		fmt.Printf("%s current application status is: \033[1;31m%s\031[0m\n", applicantID, status)
+		fmt.Printf("%s current application status is: \033[1;31m%s \031[0m \n", applicantID, status)
 		scanner.Scan()
 		return
 	}

@@ -2,6 +2,7 @@
 package procurement
 
 import (
+	asset "ModEd/asset/model"
 	model "ModEd/asset/model/Procurement"
 	"errors"
 
@@ -13,7 +14,7 @@ type MigrationController struct {
 }
 
 func (c *MigrationController) migrateToDB() error {
-	err := c.db.AutoMigrate(&model.InstrumentRequest{})
+	err := c.db.AutoMigrate(&model.InstrumentRequest{}, &model.InstrumentDetail{}, &asset.Category{})
 
 	if err != nil {
 		return errors.New("err: migration failed")

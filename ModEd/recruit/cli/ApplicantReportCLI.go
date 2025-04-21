@@ -30,36 +30,34 @@ func ShowApplicantReportCLI(
 		return
 	}
 
-	applicant, err := applicantCtrl.GetApplicantByID(uint(applicantID))
-	if err != nil {
-		fmt.Println("Error fetching applicant details:", err)
-		return
-	}
-
-	report, err := applicationReportCtrl.GetApplicationReportByApplicantID(uint(applicantID))
+	report, err := applicationReportCtrl.GetFullApplicationReportByApplicantID(uint(applicantID))
 	if err != nil {
 		fmt.Println("Error fetching application report:", err)
 		return
 	}
 
-	displayApplicantReport(applicant, report)
+	displayApplicantReport(report)
 
 	if report != nil && report.ApplicationStatuses == model.InterviewStage {
 		ReportInterviewDetails(applicationReportCtrl.DB, uint(applicantID))
 	}
 }
 
-func displayApplicantReport(applicant *model.Applicant, report *model.ApplicationReport) {
+func displayApplicantReport(report *model.ApplicationReport) {
 	fmt.Println("\n==== Applicant Report ====")
-	fmt.Printf("Applicant ID: %d\n", applicant.ApplicantID)
-	fmt.Printf("Full Name: %s %s\n", applicant.FirstName, applicant.LastName)
+	fmt.Printf("Applicant ID: %d\n", report.Applicant.ApplicantID)
+	fmt.Printf("Full Name: %s %s\n", report.Applicant.FirstName, report.Applicant.LastName)
+	fmt.Printf("Email: %s\n", report.Applicant.Email)
+	fmt.Printf("Phone: %s\n", report.Applicant.Phonenumber)
+	fmt.Printf("GPA: %.2f\n", report.Applicant.GPAX)
 
-	if report != nil {
-		fmt.Printf("\n\033[1;37;48m==== Status ==== \033[0m\n")
-		printStatus(report.ApplicationStatuses)
-	} else {
-		fmt.Println("No application report found for this applicant.")
-	}
+	fmt.Println("\n==== Application Info ====")
+	fmt.Printf("Round: %s\n", report.ApplicationRound.RoundName)
+	fmt.Printf("Faculty: %s\n", report.Faculty.Name)
+	fmt.Printf("Department: %s\n", report.Department.Name)
+
+	fmt.Printf("\n\033[1;37;48m==== Status ==== \033[0m\n")
+	printStatus(report.ApplicationStatuses)
 }
 
 func printStatus(status model.ApplicationStatus) {

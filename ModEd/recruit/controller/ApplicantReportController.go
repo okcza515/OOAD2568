@@ -51,3 +51,17 @@ func (ctrl *ApplicationReportController) GetApplicationStatusByID(applicantID ui
 
 	return status, err
 }
+
+func (ctrl *ApplicationReportController) GetFullApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
+	var report model.ApplicationReport
+	err := ctrl.DB.Preload("Applicant").
+		Preload("ApplicationRound").
+		Preload("Faculty").
+		Preload("Department").
+		Where("applicant_id = ?", applicantID).
+		First(&report).Error
+	if err != nil {
+		return nil, err
+	}
+	return &report, nil
+}

@@ -22,7 +22,7 @@ func main() {
 
 		switch inputBuffer {
 		case "1":
-			handler.RequestItemHandler(facade)
+			handler.InstrumentRequestHandler(facade)
 		case "2":
 			fmt.Println("Not implemented yet...")
 		case "3":
@@ -50,16 +50,16 @@ func initProgram() *controller.ProcurementControllerFacade {
 }
 
 func printOption() {
-	fmt.Println(":/RequestItem")
+	fmt.Println(":/Procurement")
 	fmt.Println()
 	fmt.Println("Welcome to ModEd Procurement Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
-	fmt.Println("  1:\tRequest Item Page")
-	fmt.Println("  2:\t<null> Page")
-	fmt.Println("  3:\t<null> Page")
-	fmt.Println("  4:\t<null> Page")
-	fmt.Println("  5:\t<null> Page")
-	fmt.Println("  6:\t<null> Page")
+	fmt.Println("  1:\tRequest Instrument Page")
+	fmt.Println("  2:\tNot implemented yet... Page")
+	fmt.Println("  3:\tNot implemented yet... Page")
+	fmt.Println("  4:\tNot implemented yet... Page")
+	fmt.Println("  5:\tNot implemented yet... Page")
+	fmt.Println("  6:\tNot implemented yet... Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
