@@ -22,7 +22,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 			newRequest := &model.InstrumentRequest{
 				DepartmentID: deptID,
-				Status:       model.StatusDraft,
+				Status:       model.InstrumentRequestStatusDraft,
 			}
 
 			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)

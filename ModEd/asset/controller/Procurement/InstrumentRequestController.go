@@ -65,7 +65,7 @@ func (c *InstrumentRequestController) UpdateInstrumentRequest(id uint, updated *
 func (c *InstrumentRequestController) SubmitForApproval(id uint) error {
 	return c.db.Model(&model.InstrumentRequest{}).
 		Where("instrument_request_id = ?", id).
-		Update("status", model.StatusPending).Error // use enum
+		Update("status", model.InstrumentRequestStatusPending).Error // use enum
 }
 
 // Delete a request (soft delete or real delete)
