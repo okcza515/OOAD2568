@@ -106,6 +106,8 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	endTime, err2 := time.Parse("2006-01-02 15:04", endStr)
 	if err1 != nil || err2 != nil {
 		fmt.Println("Invalid time format.")
+		fmt.Println(err1)
+		fmt.Println(err2)
 		util.PressEnterToContinue()
 		return
 	}
