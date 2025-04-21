@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func RequestResignationStudent(args []string, tx *gorm.DB) error {
+func requestResignationStudent(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
 	ID := fs.String("id", "", "ID")
 	reason := fs.String("reason", "", "Reason for resignation")

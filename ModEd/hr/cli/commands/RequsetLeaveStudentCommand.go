@@ -11,7 +11,7 @@ import (
 )
 
 // usage: go run hr/cli/HumanResourceCLI.go requestLeaveStudent -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
-func RequestLeaveStudent(args []string, tx *gorm.DB) error {
+func requestLeaveStudent(args []string, tx *gorm.DB) error {
 	// fmt.Printf("asdjoasjdojaodjsaojdoasjodsjodasj")
 	fs := flag.NewFlagSet("requestLeave", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")

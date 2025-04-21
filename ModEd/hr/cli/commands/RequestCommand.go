@@ -19,20 +19,20 @@ func (c *RequestCommand) Execute(args []string, tx *gorm.DB) error {
     case "student":
         switch action {
         case "resign":
-            return RequestResignationStudent(args[2:], tx)
+            return requestResignationStudent(args[2:], tx)
         case "leave":
-            return RequestLeaveStudent(args[2:], tx)
+            return requestLeaveStudent(args[2:], tx)
         default:
             return fmt.Errorf("unknown action for student: %s", action)
         }
     case "instructor":
         switch action {
         case "resign":
-            return RequestResignationInstructor(args[2:], tx)
+            return requestResignationInstructor(args[2:], tx)
 		case "leave":
-            return RequestLeaveInstructor(args[2:], tx)
+            return requestLeaveInstructor(args[2:], tx)
 		case "raise":
-			return RequestRaiseInstructor(args[2:], tx)
+			return requestRaiseInstructor(args[2:], tx)
         default:
             return fmt.Errorf("unknown action for instructor: %s", action)
         }

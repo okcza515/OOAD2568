@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func RequestRaiseInstructor(args []string, tx *gorm.DB) error {
+func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestRaise", flag.ExitOnError)
 	ID := fs.String("id", "", "Instructor ID")
 	amount := fs.Int("amount", 0, "Raise amount")
