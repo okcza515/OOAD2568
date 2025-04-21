@@ -19,6 +19,7 @@ func NewMigrationController(db *gorm.DB) *MigrationController {
 func (c *MigrationController) MigrateToDB() error {
 	err := c.db.AutoMigrate(
 		&model.Examination{},
+		&model.Question{},
 	)
 
 	if err != nil {

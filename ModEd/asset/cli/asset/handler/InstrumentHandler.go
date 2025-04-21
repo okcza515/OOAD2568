@@ -6,7 +6,6 @@ import (
 	"ModEd/asset/controller"
 	"ModEd/asset/model"
 	"ModEd/asset/util"
-	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"fmt"
 )
@@ -45,12 +44,7 @@ func InstrumentHandler(facade *controller.AssetControllerFacade) {
 				break
 			}
 
-			records := make([]core.RecordInterface, len(insModel))
-			for i, inst := range insModel {
-				records[i] = &inst
-			}
-
-			err = facade.Instrument.InsertMany(records)
+			err = facade.Instrument.InsertMany(insModel)
 			if err != nil {
 				fmt.Println(err)
 				util.PressEnterToContinue()

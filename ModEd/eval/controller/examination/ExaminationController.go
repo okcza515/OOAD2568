@@ -26,12 +26,12 @@ func (c *ExaminationController) CreateExam(exam *model.Examination) error{
 	return nil
 }
 
-func (c *ExaminationController) GetAllExam() error {
+func (c *ExaminationController) GetAllExam() ([]model.Examination, error) {
 	var exam []model.Examination
-	if err := c.db.Find(exam).Error; err != nil {
-		return err
+	if err := c.db.Find(&exam).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return exam, nil
 }
 
 func (c *ExaminationController) UpdateExam(id uint , exam *model.Examination)  error {

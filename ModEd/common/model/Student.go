@@ -47,9 +47,6 @@ func TruncateStudents(db *gorm.DB) error {
 }
 
 func RegisterStudents(db *gorm.DB, students []*Student) error {
-	if err := TruncateStudents(db); err != nil {
-		return err
-	}
 	for _, s := range students {
 		if err := db.Create(s).Error; err != nil {
 			return err

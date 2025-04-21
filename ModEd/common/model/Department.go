@@ -9,9 +9,9 @@ import (
 type Department struct {
 	gorm.Model
 	Name        string        `gorm:"not null" csv:"name" json:"name"`
-	Faculty     Faculty       `gorm:"foreignKey:ParentId" json:"parent"`
-	Students    []Student     `gorm:"foreignKey:DepartmentId" json:"students"`
-	Instructors *[]Instructor `gorm:"foreignKey:DepartmentId" json:"instructors"`
+	Faculty     Faculty       `gorm:"foreignKey:ParentId" csv:"faculty" json:"parent"`
+	Students    []Student     `gorm:"foreignKey:DepartmentId" csv:"students" json:"students"`
+	Instructors *[]Instructor `gorm:"foreignKey:DepartmentId" csv:"instructors" json:"instructors"`
 	Budget      int           `gorm:"default:0" csv:"budget" json:"budget"`
 }
 

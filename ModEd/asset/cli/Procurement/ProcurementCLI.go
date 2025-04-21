@@ -2,7 +2,7 @@ package main
 
 import (
 	handler "ModEd/asset/cli/Procurement/handler"
-	controller "ModEd/asset/controller/Procurement"
+	controller "ModEd/asset/controller"
 	util "ModEd/asset/util"
 	"fmt"
 )
@@ -14,7 +14,6 @@ func main() {
 
 	for inputBuffer != "exit" {
 		util.ClearScreen()
-		util.PrintBanner()
 
 		printOption()
 
@@ -24,7 +23,7 @@ func main() {
 		case "1":
 			handler.InstrumentRequestHandler(facade)
 		case "2":
-			fmt.Println("Not implemented yet...")
+			handler.ProcurementHandler(facade)
 		case "3":
 			fmt.Println("Not implemented yet...")
 		case "4":
@@ -55,7 +54,7 @@ func printOption() {
 	fmt.Println("Welcome to ModEd Procurement Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
 	fmt.Println("  1:\tRequest Instrument Page")
-	fmt.Println("  2:\tNot implemented yet... Page")
+	fmt.Println("  2:\tProcurement Page")
 	fmt.Println("  3:\tNot implemented yet... Page")
 	fmt.Println("  4:\tNot implemented yet... Page")
 	fmt.Println("  5:\tNot implemented yet... Page")

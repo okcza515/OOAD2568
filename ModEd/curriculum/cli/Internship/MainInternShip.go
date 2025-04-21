@@ -1,7 +1,9 @@
+//MEP-1009 Student Internship
 package Internship
 
 import (
-	controller "ModEd/curriculum/controller/Internship"
+	handler "ModEd/curriculum/cli/Internship/handler"
+	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 
@@ -34,13 +36,13 @@ func RunInterShipCLI(
 		choice := utils.GetUserChoice()
 		switch choice {
 		case "1":
-			InternshipApplication(CreateInternshipApplicationController, db)
+			handler.InternshipApplication(CreateInternshipApplicationController, db)
 		case "2":
-			InternshipReview(CreateReviewController)
+			handler.InternshipReview(CreateReviewController)
 		case "3":
-			InternshipReport(CreateReportController)
+			handler.InternshipReport(CreateReportController)
 		case "4":
-			InternShipApproved(CreateAprovedController)
+			handler.InternShipApproved(CreateAprovedController)
 		case "5":
 			fmt.Println("Exiting the system. Goodbye!")
 			return

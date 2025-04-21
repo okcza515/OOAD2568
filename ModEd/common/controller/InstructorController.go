@@ -35,6 +35,10 @@ func (c *InstructorController) DeleteByCode(code string) error {
 	return model.DeleteInstructorByCode(c.DB, code)
 }
 
-func (c *InstructorController) Register(instructors *[]model.Instructor) error {
+func (c *InstructorController) Register(instructors []*model.Instructor) error {
 	return model.RegisterInstructors(c.DB, instructors)
+}
+
+func (c *InstructorController) Truncate() error {
+	return model.TruncateInstructors(c.DB)
 }
