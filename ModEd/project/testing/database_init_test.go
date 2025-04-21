@@ -43,7 +43,7 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssignmentC
 	presentationController := controller.NewPresentationController(db)
 	reportController := controller.NewReportController(db)
 
-	return db, assessmentController.(*controller.AssessmentController), assignmentController.(*controller.AssignmentController), presentationController, reportController, dbName
+	return db, assessmentController.(*controller.AssessmentController), assignmentController.(*controller.AssignmentController), presentationController.(*controller.PresentationController), reportController, dbName
 }
 
 func cleanup(dbName string) {
