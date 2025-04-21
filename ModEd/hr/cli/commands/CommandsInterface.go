@@ -3,7 +3,6 @@ package commands
 type UpdateCommand struct{}
 type ImportCommand struct{}
 type ListCommand struct{}
-type ListStudentsCommand struct{}
 type AddStudentCommand struct{}
 type DeleteStudentCommand struct{}
 
