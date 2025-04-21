@@ -20,9 +20,10 @@ func InstrumentHandler(facade *controller.AssetControllerFacade) {
 		printOption()
 		inputBuffer = util.GetCommandInput()
 
+		util.ClearScreen()
+
 		switch inputBuffer {
 		case "1":
-			util.ClearScreen()
 			fmt.Println("Add new Instrument")
 
 			path := ""
@@ -60,7 +61,6 @@ func InstrumentHandler(facade *controller.AssetControllerFacade) {
 			util.PressEnterToContinue()
 
 		case "2":
-			util.ClearScreen()
 			fmt.Println("List all Instrument")
 
 			instList, err := facade.Instrument.ListAll()
@@ -80,6 +80,8 @@ func InstrumentHandler(facade *controller.AssetControllerFacade) {
 			fmt.Println("Update an Instrument")
 		case "5":
 			fmt.Println("Delete an Instrument")
+		default:
+			fmt.Println("Invalid Command")
 		}
 
 		util.ClearScreen()
