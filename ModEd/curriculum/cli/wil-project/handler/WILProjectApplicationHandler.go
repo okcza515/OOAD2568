@@ -16,6 +16,14 @@ func RunWILProjectApplicationHandler(controller *controller.WILProjectApplicatio
 			controller.RegisterWILProjectsApplication()
 		case "2":
 			fmt.Println("2 Not implemented yet...")
+		case "3":
+			fmt.Println("3 Not implemented yet...")
+		case "4":
+			fmt.Println("4 Not implemented yet...")
+		case "5":
+			fmt.Println("5 Not implemented yet...")
+		case "6":
+			fmt.Println("6 Not implemented yet...")
 		case "0":
 			fmt.Println("Exiting...")
 			return
