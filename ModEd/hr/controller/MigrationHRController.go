@@ -41,7 +41,5 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 		// fmt.Printf("Migrated student %s successfully\n", s.SID)
 	}
 
-	fmt.Println("Migration completed successfully.")
-
 	return nil
 }

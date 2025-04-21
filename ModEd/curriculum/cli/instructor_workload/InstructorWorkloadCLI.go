@@ -17,8 +17,9 @@ func RunInstructorWorkloadModuleCLI(
 	curriculumController *curriculumController.CurriculumController,
 ) {
 
-	seniorProjectWorkloadController := controller.NewProjectController(db)
-	studentWorkloadController := controller.NewStudentWorkloadController(db)
+	seniorProjectWorkloadController := controller.CreateProjectController(db)
+	studentWorkloadController := controller.CreateStudentWorkloadController(db)
+	administrativeWorkloadController := controller.CreateMeetingController(db)
 
 	input := ""
 	for input != "exit" {
@@ -30,8 +31,10 @@ func RunInstructorWorkloadModuleCLI(
 			handler.RunAcademicWorkloadHandler()
 		case "2": // StudentAdvisor Workload
 			handler.RunStudentAdvisorWorkloadHandler(studentWorkloadController)
+		case "3": // Administrative Task
+			handler.RunAdministrativeWorkloadHandler(administrativeWorkloadController)
 		case "4": // Senior Projects
-			handler.RunSeniorProjectWorkloadHandler(seniorProjectWorkloadController.(*controller.ProjectController))
+			handler.RunSeniorProjectWorkloadHandler(seniorProjectWorkloadController)
 		case "exit":
 			fmt.Println("Exiting...")
 			return

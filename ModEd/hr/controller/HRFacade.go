@@ -12,7 +12,9 @@ type HRFacade struct {
 	Instructor            *InstructorHRController
 	ResignationStudent    *ResignationStudentHRController
 	ResignationInstructor *ResignationInstructorHRController
-	Leave                 *LeaveHRController
+	LeaveStudent                 *LeaveStudentHRController
+	Raise                 *RaiseHRController
+	LeaveInstructor 			*LeaveInstructorHRController	
 }
 
 func NewHRFacade(db *gorm.DB) *HRFacade {
@@ -21,7 +23,9 @@ func NewHRFacade(db *gorm.DB) *HRFacade {
 		Instructor:            CreateInstructorHRController(db),
 		ResignationStudent:    CreateResignationStudentHRController(db),
 		ResignationInstructor: CreateResignationInstructorHRController(db),
-		Leave:                 CreateLeaveHRController(db),
+		LeaveStudent:                 CreateLeaveStudentHRController(db),
+		LeaveInstructor: 			CreateLeaveInstructorHRController(db),
+		Raise:                 CreateRaiseHRController(db),
 	}
 }
 
@@ -92,8 +96,11 @@ func (f *HRFacade) SubmitResignationInstructorRequest(info *model.RequestResigna
 }
 
 // Leave-related facade methods
-func (f *HRFacade) SubmitLeaveRequest(info *model.RequestLeave) error {
-	return f.Leave.Insert(info)
+func (f *HRFacade) SubmitLeaveStudentRequest(info *model.RequestLeaveStudent) error {
+	return f.LeaveStudent.Insert(info)
+}
+func (f *HRFacade) SubmitLeaveInstructorRequest(info *model.RequestLeaveInstructor) error {
+	return f.LeaveInstructor.Insert(info)
 }
 
 func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reason string) error {
@@ -106,4 +113,18 @@ func (f *HRFacade) UpdateResignationStudentStatus(id string, status string, reas
 		req.Reason = reason
 	}
 	return f.ResignationStudent.Update(req)
+}
+
+//Raise-related facade methods
+
+func (f *HRFacade) SubmitRaiseInstructorRequest(request *model.RequestRaise) error {
+	return f.Raise.Insert(request)
+}
+
+func (f *HRFacade) ApproveRaise(id uint) error {
+	return f.Raise.UpdateStatus(id, "Approved")
+}
+
+func (f *HRFacade) RejectRaise(id uint) error {
+	return f.Raise.UpdateStatus(id, "Rejected")
 }

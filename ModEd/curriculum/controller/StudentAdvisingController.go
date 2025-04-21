@@ -1,3 +1,4 @@
+// MEP-1008
 package controller
 
 import (
@@ -11,7 +12,6 @@ import (
 type StudentWorkloadService interface {
 	CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error
 	GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error)
-
 	CreateStudentRequest(studentRequest model.StudentRequest) error
 	GetStudentRequestsByInstructorId(instructorId uint) ([]model.StudentRequest, error)
 	ReviewStudentRequest(id uint, review string, comment string) error
@@ -22,7 +22,7 @@ type StudentWorkloadController struct {
 	Connector *gorm.DB
 }
 
-func NewStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
+func CreateStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
 	return &StudentWorkloadController{
 		BaseController: core.NewBaseController("StudentWorkload", db),
 		Connector:      db,
