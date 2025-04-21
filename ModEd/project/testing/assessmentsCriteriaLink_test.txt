@@ -1,0 +1,173 @@
+package testing
+
+import (
+	"ModEd/project/model"
+	"errors"
+	"fmt"
+	"testing"
+
+	"gorm.io/gorm"
+)
+
+func TestListAllAssessmentCriteriaLinks(t *testing.T) {
+	fmt.Printf("AssessmentCriteriaLink")
+	db, _, _, assessmentCriteriaLinkCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessment := model.Assessment{}
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink := model.AssessmentCriteriaLink{
+		AssessmentId:         assessment.ID,
+		AssessmentCriteriaId: assessmentCriteria.ID,
+	}
+	if err := db.Create(&assessmentCriteriaLink).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLinks, err := assessmentCriteriaLinkCtrl.ListAllAssessmentCriteriaLinks()
+	if err != nil || len(assessmentCriteriaLinks) == 0 {
+		t.Errorf("Expected assessmentCriteriaLinks, got error: %v", err)
+	}
+
+	for _, a := range assessmentCriteriaLinks {
+		fmt.Printf("AssessmentCriteriaLink ID: %v", a.ID)
+	}
+}
+
+func TestRetrieveAssessmentCriteriaLink(t *testing.T) {
+	db, _, _, assessmentCriteriaLinkCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessment := model.Assessment{}
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink := model.AssessmentCriteriaLink{
+		AssessmentId:         assessment.ID,
+		AssessmentCriteriaId: assessmentCriteria.ID,
+	}
+	if err := db.Create(&assessmentCriteriaLink).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	res, err := assessmentCriteriaLinkCtrl.RetrieveAssessmentCriteriaLink(assessmentCriteriaLink.ID)
+	if err != nil || res == nil {
+		t.Errorf("Failed to retrieve assessmentCriteriaLink: %v", err)
+	}
+	fmt.Printf("AssessmentCriteriaLink ID: %v", res.ID)
+}
+
+func TestInsertAssessmentCriteriaLink(t *testing.T) {
+	db, _, _, assessmentCriteriaLinkCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessment := model.Assessment{}
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink := model.AssessmentCriteriaLink{
+		AssessmentId:         assessment.ID,
+		AssessmentCriteriaId: assessmentCriteria.ID,
+	}
+	// if err := db.Create(&assessmentCriteriaLink).Error; err != nil {
+	// 	t.Error(err)
+	// 	return
+	// }
+
+	err := assessmentCriteriaLinkCtrl.InsertAssessmentCriteriaLink(assessmentCriteriaLink)
+	if err != nil {
+		t.Errorf("Failed to insert assessmentCriteriaLink: %v", err)
+	}
+}
+
+func TestDeleteAssessmentCriteriaLink(t *testing.T) {
+	db, _, _, assessmentCriteriaLinkCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessment := model.Assessment{}
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink := model.AssessmentCriteriaLink{
+		AssessmentId:         assessment.ID,
+		AssessmentCriteriaId: assessmentCriteria.ID,
+	}
+	if err := db.Create(&assessmentCriteriaLink).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	err := assessmentCriteriaLinkCtrl.DeleteAssessmentCriteriaLink(assessmentCriteriaLink.ID)
+	if err != nil {
+		t.Errorf("Failed to delete assessmentCriteriaLink: %v", err)
+	}
+
+	var deletedAssessmentCriteriaLink model.AssessmentCriteriaLink
+	err = db.First(&deletedAssessmentCriteriaLink, assessmentCriteriaLink.ID).Error
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		t.Errorf("Expected record to be deleted, but it still exists")
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	db, _, _, assessmentCriteriaLinkCtrl, _, _, _, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	assessment := model.Assessment{}
+	assessmentCriteria := model.AssessmentCriteria{}
+	if err := db.Create(&assessment).Error; err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.Create(&assessmentCriteria).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink := model.AssessmentCriteriaLink{
+		AssessmentId:         assessment.ID,
+		AssessmentCriteriaId: assessmentCriteria.ID,
+	}
+	if err := db.Create(&assessmentCriteriaLink).Error; err != nil {
+		t.Error(err)
+		return
+	}
+
+	assessmentCriteriaLink.AssessmentId = 2
+	err := assessmentCriteriaLinkCtrl.UpdateAssessmentCriteriaLink(assessmentCriteriaLink.ID, &assessmentCriteriaLink)
+	if err != nil {
+		t.Errorf("Failed to update assessmentCriteriaLink: %v", err)
+	}
+}

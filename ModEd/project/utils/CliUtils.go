@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"ModEd/project/model"
 	"fmt"
 	"os"
 
@@ -14,6 +15,32 @@ func OpenDatabase(database string) *gorm.DB {
 		fmt.Printf("Failed to connect to database: %v\n", err)
 		os.Exit(1)
 	}
+
+	err = db.AutoMigrate(
+		&model.Advisor{},
+		&model.Assessment{},
+		&model.AssessmentCriteria{},
+		&model.Assignment{},
+		&model.Committee{},
+		&model.GroupMember{},
+		&model.Presentation{},
+		&model.Progress{},
+		&model.Report{},
+		&model.ScoreAssessmentAdvisor{},
+		&model.ScoreAssessmentCommittee{},
+		&model.ScoreAssignmentAdvisor{},
+		&model.ScoreAssignmentCommittee{},
+		&model.ScorePresentationAdvisor{},
+		&model.ScorePresentationCommittee{},
+		&model.ScoreReportAdvisor{},
+		&model.ScoreReportCommittee{},
+		&model.SeniorProject{},
+	)
+	if err != nil {
+		fmt.Printf("AutoMigrate failed: %v\n", err)
+		os.Exit(1)
+	}
+
 	return db
 }
 
