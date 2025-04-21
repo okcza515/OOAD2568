@@ -2,14 +2,11 @@ package model
 
 import (
 	"time"
-
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type IndependentStudy struct {
-	gorm.Model
-	IndependentStudyId      uuid.UUID  `gorm:"primaryKey;unique"`
+	core.BaseModel
 	IndependentStudyTopic   string     `gorm:"not null"`
 	IndependentStudyContent string     `gorm:"not null"`
 	EvaluationFromAdvisor   int        `gorm:"not null;default:0"`
