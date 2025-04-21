@@ -1,11 +1,9 @@
 package commands
 
 import (
-	commonController "ModEd/common/controller"
 	"ModEd/core"
 	"ModEd/hr/controller"
 	"ModEd/hr/model"
-	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
 	"errors"
 	"flag"
@@ -29,47 +27,28 @@ func importInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("*** Error: File %s does not exist.\n", *filePath)
 	}
 
+	// Use CreateMapper to get the appropriate mapper
 	hrMapper, err := core.CreateMapper[model.InstructorInfo](*filePath)
 	if err != nil {
 		return fmt.Errorf("Failed to create HR mapper: %v\n", err)
 	}
 
-	hrRecords := hrMapper.Deserialize()
-	hrRecordsMap := make(map[string]model.InstructorInfo)
-	for _, hrRec := range hrRecords {
-		idStr := fmt.Sprintf("%d", hrRec.ID)
-		if _, exists := hrRecordsMap[idStr]; exists {
-			return fmt.Errorf("Duplicate instructor code found: %s\n", idStr)
-		}
-		hrRecordsMap[idStr] = *hrRec
-	}
+	// Deserialize the data
+	instructors := hrMapper.Deserialize()
 
-	db := util.OpenDatabase(*util.DatabasePath)
-	hrFacade := controller.NewHRFacade(db)
-
-	for _, hrRec := range hrRecordsMap {
-		commonInstructorController := commonController.CreateInstructorController(db)
-		commonInstructor, err := commonInstructorController.GetByInstructorId(fmt.Sprintf("%d", hrRec.ID)) // Convert uint to string
-		if err != nil {
-			fmt.Printf("Failed to retrieve instructor %d from common data: %v\n", hrRec.ID, err) // Use %d for uint in the error message
-			continue
+	// Validate and insert each instructor
+	hrFacade := controller.NewHRFacade(tx)
+	for _, instructor := range instructors {
+		if instructor.ID == 0 || instructor.FirstName == "" {
+			return fmt.Errorf("Invalid instructor data: %+v\n", instructor)
 		}
 
-		newInstructor := hrModel.NewInstructorInfoBuilder().
-			WithInstructor(*commonInstructor).
-			WithGender(hrRec.Gender).
-			WithCitizenID(hrRec.CitizenID).
-			WithPhoneNumber(hrRec.PhoneNumber).
-			WithSalary(hrRec.Salary).
-			WithAcademicPosition(hrRec.AcademicPosition).
-			WithDepartmentPosition(hrRec.DepartmentPosition).
-			Build()
-		fmt.Printf("Importing instructor")
-
-		if err := hrFacade.UpsertInstructor(newInstructor); err != nil {
-			return fmt.Errorf("Failed to upsert instructor %d: %v\n", newInstructor.ID, err)
+		// Insert instructor into the database
+		if err := hrFacade.InsertInstructor(instructor); err != nil {
+			return fmt.Errorf("Failed to insert instructor %d: %v\n", instructor.ID, err)
 		}
 	}
+
 	fmt.Println("Instructors imported successfully!")
 	return nil
 }
