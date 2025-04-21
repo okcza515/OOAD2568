@@ -32,7 +32,7 @@ func NewInvoker() *Invoker {
 			"update":             &commands.UpdateCommand{},
 			"status":             &commands.UpdateStudentStatusCommand{},
 			"updateStatus":       &commands.UpdateStudentStatusCommand{},
-			"import":             &commands.ImportStudentsCommand{},
+			"import":             &commands.ImportCommand{},
 			"migrate":            &commands.MigrateStudentsCommand{},
 			"export":             &commands.ExportStudentsCommand{},
 			"requestResignation": &commands.RequestResignationCommand{},
