@@ -37,10 +37,11 @@ func importInstructor(args []string, tx *gorm.DB) error {
 	hrRecords := hrMapper.Deserialize()
 	hrRecordsMap := make(map[string]model.InstructorInfo)
 	for _, hrRec := range hrRecords {
-		if _, exists := hrRecordsMap[hrRec.InstructorCode]; exists {
-			return fmt.Errorf("Duplicate instructor code found: %s\n", hrRec.InstructorCode)
+		idStr := fmt.Sprintf("%d", hrRec.ID)
+		if _, exists := hrRecordsMap[idStr]; exists {
+			return fmt.Errorf("Duplicate instructor code found: %s\n", idStr)
 		}
-		hrRecordsMap[hrRec.InstructorCode] = *hrRec
+		hrRecordsMap[idStr] = *hrRec
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
@@ -48,9 +49,9 @@ func importInstructor(args []string, tx *gorm.DB) error {
 
 	for _, hrRec := range hrRecordsMap {
 		commonInstructorController := commonController.CreateInstructorController(db)
-		commonInstructor, err := commonInstructorController.GetByInstructorId(hrRec.InstructorCode)
+		commonInstructor, err := commonInstructorController.GetByInstructorId(fmt.Sprintf("%d", hrRec.ID)) // Convert uint to string
 		if err != nil {
-			fmt.Printf("Failed to retrieve instructor %s from common data: %v\n", hrRec.InstructorCode, err)
+			fmt.Printf("Failed to retrieve instructor %d from common data: %v\n", hrRec.ID, err) // Use %d for uint in the error message
 			continue
 		}
 
@@ -66,7 +67,7 @@ func importInstructor(args []string, tx *gorm.DB) error {
 		fmt.Printf("Importing instructor")
 
 		if err := hrFacade.UpsertInstructor(newInstructor); err != nil {
-			return fmt.Errorf("Failed to upsert instructor %s: %v\n", newInstructor.InstructorCode, err)
+			return fmt.Errorf("Failed to upsert instructor %d: %v\n", newInstructor.ID, err)
 		}
 	}
 	fmt.Println("Instructors imported successfully!")
