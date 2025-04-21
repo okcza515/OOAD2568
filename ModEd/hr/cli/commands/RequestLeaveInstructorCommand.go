@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go requestLeaveInstructor -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
-func RequestLeaveInstructor(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go request instructor leave -id="66050001" -type="sick" -reason="ไม่สบาย" -date="2025-04-20"
+func requestLeaveInstructor(args []string, tx *gorm.DB) error {
 	// fmt.Printf("asdjoasjdojaodjsaojdoasjodsjodasj")
 	fs := flag.NewFlagSet("requestLeave", flag.ExitOnError)
 	InstructorID := fs.String("id", "", "Instructor ID")

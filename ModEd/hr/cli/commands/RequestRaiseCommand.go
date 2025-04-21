@@ -11,7 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func RequestRaiseInstructor(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go request instructor raise -id="66050001" -amount=10000 -reason="ดีมาก"
+func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestRaise", flag.ExitOnError)
 	ID := fs.String("id", "", "Instructor ID")
 	amount := fs.Int("amount", 0, "Raise amount")

@@ -27,6 +27,7 @@ func NewResultController(db *gorm.DB) *ResultController {
 // func (c *ResultController) CreateResults() error {
 // 	var exams []model.Examination
 // 	var students []commonmodel.Student
+//  var count uint
 
 // 	if err := c.db.Find(&exams).Error; err != nil {
 // 		return err
@@ -47,8 +48,8 @@ func NewResultController(db *gorm.DB) *ResultController {
 // 				Feedback:      "",
 // 				Score:         0,
 // 			}
+//          count = 0
 
-// 			var count uint
 // 			for _, question := range questions {
 // 				if question.Question_type == "Multiple_choice" || question.Question_type == "True_false" {
 // 					answer, err := c.AnswerController.GetAnswerByQuestionAndStudent(question.ID, student.ID)

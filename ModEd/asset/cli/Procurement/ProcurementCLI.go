@@ -40,43 +40,26 @@ func main() {
 }
 
 func initProgram() *controller.ProcurementControllerFacade {
-	// resetFlag := flag.Bool("reset", false, "Reset database")
-	// blankFlag := flag.Bool("blank", false, "Load seed data to database")
-
-	// flag.Parse()
-
 	facade, err := controller.CreateProcurementControllerFacade()
 	if err != nil {
 		fmt.Printf("Init failed: %v\n", err)
 		panic(err)
 	}
 
-	// if *blankFlag {
-	// 	err = facade.ResetDB()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// } else if *resetFlag {
-	// 	err = facade.ResetAndLoadDB()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
-
 	return facade
 }
 
 func printOption() {
-	fmt.Println(":/asset")
+	fmt.Println(":/RequestItem")
 	fmt.Println()
-	fmt.Println("Welcome to ModEd Asset Service CLI!")
+	fmt.Println("Welcome to ModEd Procurement Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
-	fmt.Println("  1:\tCategory Page")
-	fmt.Println("  2:\tInstrument Page")
-	fmt.Println("  3:\tSupply Page")
-	fmt.Println("  4:\tBorrow Page")
-	fmt.Println("  5:\tInstrument Log Page")
-	fmt.Println("  6:\tSupply Log Page")
+	fmt.Println("  1:\tRequest Item Page")
+	fmt.Println("  2:\t<null> Page")
+	fmt.Println("  3:\t<null> Page")
+	fmt.Println("  4:\t<null> Page")
+	fmt.Println("  5:\t<null> Page")
+	fmt.Println("  6:\t<null> Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }

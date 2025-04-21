@@ -10,7 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func RequestResignationStudent(args []string, tx *gorm.DB) error {
+// usage: go run hr/cli/HumanResourceCLI.go request student resign -id="66050001" -reason="อยากลาออกโว้ย"
+func requestResignationStudent(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestResignation", flag.ExitOnError)
 	ID := fs.String("id", "", "ID")
 	reason := fs.String("reason", "", "Reason for resignation")

@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// usage : go run hr/cli/HumanResourceCLI.go updateStatus -field="value"
+// usage : go run hr/cli/HumanResourceCLI.go status -field="value"
 // required field : id, status !!
 func (c *UpdateStudentStatusCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("updateStatus", flag.ExitOnError)
