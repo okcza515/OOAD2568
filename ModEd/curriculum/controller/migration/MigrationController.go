@@ -5,7 +5,7 @@ import (
 	modelCommon "ModEd/common/model"
 	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
-	modelInternShip "ModEd/curriculum/model/Internship"
+	modelInternShip "ModEd/curriculum/model"
 
 	// modelInternShip "ModEd/curriculum/model/Internship"
 

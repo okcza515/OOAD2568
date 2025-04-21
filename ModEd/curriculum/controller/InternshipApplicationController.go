@@ -1,8 +1,9 @@
+//MEP-1009 Student Internship
 package controller
 
 import (
 	"ModEd/core"
-	model "ModEd/curriculum/model/Internship"
+	model "ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )

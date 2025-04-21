@@ -1,9 +1,10 @@
+//MEP-1009 Student Internship
 package controller
 
 import (
 	commonmodel "ModEd/common/model"
 	"ModEd/core"
-	model "ModEd/curriculum/model/Internship"
+	model "ModEd/curriculum/model"
 	util "ModEd/utils/deserializer"
 	"fmt"
 

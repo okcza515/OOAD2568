@@ -1,13 +1,14 @@
+//MEP-1009 Student Internship
 package Internship
 
 import (
-	controller "ModEd/curriculum/controller/Internship"
+	controller "ModEd/curriculum/controller"
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
 
-	model "ModEd/curriculum/model/Internship"
+	model "ModEd/curriculum/model"
 )
 
 func InternShipApproved(Approved *controller.ApprovedController) {

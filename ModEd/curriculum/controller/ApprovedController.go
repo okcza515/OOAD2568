@@ -1,8 +1,9 @@
+//MEP-1009 Student Internship
 package controller
 
 import (
 	"ModEd/core"
-	model "ModEd/curriculum/model/Internship"
+	model "ModEd/curriculum/model"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -75,7 +76,7 @@ func (ac *ApprovedController) UpdateApprovalStatuses(studentCode string, advisor
 			return fmt.Errorf("failed to find student: %w", err)
 		}
 
-		student.InternStatus = model.ACTIVE
+		student.InternStatus = model.ACTIVES
 
 		if err := ac.Connector.Save(&student).Error; err != nil {
 			return fmt.Errorf("failed to update student intern status: %w", err)
