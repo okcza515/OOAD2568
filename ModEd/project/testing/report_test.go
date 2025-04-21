@@ -63,8 +63,11 @@ func TestListAllReports(t *testing.T) {
 	}
 
 	reports, err := reportCtrl.ListAllReports()
-	if err != nil || len(reports) == 0 {
-		t.Errorf("Expected reports, got error: %v", err)
+	if err != nil {
+		t.Errorf("Expected no error, got: %v", err)
+	}
+	if len(reports) == 0 {
+		t.Errorf("Expected reports, got none")
 	}
 }
 
@@ -149,7 +152,6 @@ func TestSubmitReport(t *testing.T) {
 		t.Errorf("Expected SubmissionDate to be set, but it was nil")
 	}
 }
-
 
 func TestLoadReportsFromCSV(t *testing.T) {
 	db, _, _, _, reportCtrl, dbName := Init()
