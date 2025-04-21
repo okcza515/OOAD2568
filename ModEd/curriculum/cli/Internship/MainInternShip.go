@@ -14,15 +14,23 @@ func RunInterShipCLI(
 	db *gorm.DB,
 ) {
 
+	const (
+		defaultStudentPath = "../../data/StudentList.csv"
+	)
+
+	const (
+		defaultCompaniesPath = "../../data/Internship/Company.csv"
+	)
+
 	CreateInternshipApplicationController := controller.CreateInternshipApplicationController(db)
 	CreateReviewController := controller.CreateReviewController(db)
 	CreateReportController := controller.CreateReportController(db)
 	CreateAprovedController := controller.CreateApprovedController(db)
-	CreateCompanyController := controller.CreateCompanyDataController(db)
 	CreateInternStudentController := controller.CreateInternStudentController(db)
+	CreateGenericImportController := controller.CreateGenericImportController(db)
 
-	CreateCompanyController.ImportCompaniesFromCSV("")
-	CreateInternStudentController.RegisterInternStudentsFromFile("")
+	CreateGenericImportController.ImportCompaniesFromCSV(defaultCompaniesPath)
+	CreateInternStudentController.RegisterInternStudentsFromFile(defaultStudentPath)
 
 	for {
 		fmt.Println("\n==== Internship Application System ====")
