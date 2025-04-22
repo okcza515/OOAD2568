@@ -1,4 +1,4 @@
-package model
+package assignment
 
 import (
 	"time"

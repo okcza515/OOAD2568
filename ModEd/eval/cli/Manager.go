@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello from InterfaceManager")
+	fmt.Println("Hello from Manager")
 }
