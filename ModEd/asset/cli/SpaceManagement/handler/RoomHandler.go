@@ -2,7 +2,7 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller/spacemanagement"
+	controller "ModEd/asset/controller"
 	model "ModEd/asset/model/spacemanagement"
 	"ModEd/asset/util"
 	"fmt"

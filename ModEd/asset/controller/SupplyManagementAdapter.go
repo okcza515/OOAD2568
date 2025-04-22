@@ -1,5 +1,5 @@
 // MEP-1013
-package spacemanagement
+package controller
 
 import (
 	model "ModEd/asset/model/spacemanagement"

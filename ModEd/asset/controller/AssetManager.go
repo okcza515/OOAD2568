@@ -1,6 +1,6 @@
 // MEP-1013
 
-package spacemanagement
+package controller
 
 type AssetManager interface {
 	GetAllAsset() ([]interface{}, error)

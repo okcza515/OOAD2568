@@ -1,5 +1,5 @@
 // MEP-1013
-package spacemanagement
+package controller
 
 import (
 	model "ModEd/asset/model/spacemanagement"
@@ -8,11 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type MigrationController struct {
+type SpaceManagementMigrationController struct {
 	db *gorm.DB
 }
 
-func (c *MigrationController) MigrateToDB() error {
+func (c *SpaceManagementMigrationController) MigrateToDB() error {
 	err := c.db.AutoMigrate(
 		&model.InstrumentManagement{},
 		&model.SupplyManagement{},
