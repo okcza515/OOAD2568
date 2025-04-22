@@ -2,6 +2,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 	"fmt"
@@ -11,11 +12,15 @@ import (
 )
 
 type CourseController struct {
-	db *gorm.DB
+	db   *gorm.DB
+	core *core.BaseController
 }
 
 func NewCourseController(db *gorm.DB) *CourseController {
-	return &CourseController{db: db}
+	return &CourseController{
+		db:   db,
+		core: core.NewBaseController("Course", db),
+	}
 }
 
 func (c *CourseController) CreateCourse(course *model.Course) (courseId uint, err error) {

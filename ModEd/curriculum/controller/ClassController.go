@@ -7,16 +7,21 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
+	"ModEd/core"
 	"ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 )
 
 type ClassController struct {
-	db *gorm.DB
+	db   *gorm.DB
+	core *core.BaseController
 }
 
 func NewClassController(db *gorm.DB) *ClassController {
-	return &ClassController{db: db}
+	return &ClassController{
+		db:   db,
+		core: core.NewBaseController("Class", db),
+	}
 }
 
 func (c *ClassController) CreateClass(class *model.Class) (classId uint, err error) {
