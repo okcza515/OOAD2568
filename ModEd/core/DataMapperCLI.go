@@ -11,6 +11,9 @@ import (
 )
 
 // fix: Please Check @NoCODEEE
+// I dont know bro I dont understand a single bit (by @NoCODEEE)
+
+
 // ========== Strategy Pattern Interfaces ==========
 
 // LoadStrategy defines a strategy for loading data from a file
