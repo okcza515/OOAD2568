@@ -1,11 +1,12 @@
 package main
 
 import (
+	"ModEd/eval/cli/assignment"
 	"fmt"
-	// "ModEd/eval/cli"
 	// "gorm.io/gorm"
 )
 
 func main() {
 	fmt.Println("Hello from Manager")
+	assignment.PrintAssignment()
 }

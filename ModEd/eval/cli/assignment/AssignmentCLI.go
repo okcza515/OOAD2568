@@ -5,6 +5,6 @@ import (
 	// "gorm.io/gorm"
 )
 
-func main() {
-	fmt.Println("hello world")
+func PrintAssignment() {
+	fmt.Println("hello assignment")
 }
