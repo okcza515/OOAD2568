@@ -19,19 +19,19 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "status"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	newStatus, err := util.StatusFromString(*status)
 	if err != nil {
-		return fmt.Errorf("Error: %v\n", err)
+		return fmt.Errorf("error: %v", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
 	if err := hrFacade.UpdateStudentStatus(*studentID, newStatus); err != nil {
-		return fmt.Errorf("Failed to update student status: %v\n", err)
+		return fmt.Errorf("failed to update student status: %v", err)
 	}
 
 	fmt.Printf("Student %s status successfully updated to %s!\n", *studentID, *status)

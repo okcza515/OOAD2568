@@ -19,7 +19,7 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 
 	if err := hrUtil.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
@@ -49,7 +49,7 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("Failed to delete student: %v\n", err)
+		return fmt.Errorf("failed to delete student: %v", err)
 	}
 
 	fmt.Println("Student deleted successfully!")

@@ -39,7 +39,9 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 		}
 
 		// Create updated student info using non-empty flag values.
-		updatedStudent := model.NewStudentInfoBuilder().
+		builder := model.NewStudentInfoBuilder()
+	
+		updatedStudent, err := builder.
 			WithStudentCode(*studentID).
 			WithFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).
 			WithLastName(ifNotEmpty(*lastName, studentInfo.LastName)).

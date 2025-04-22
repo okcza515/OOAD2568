@@ -24,7 +24,7 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"path", "format"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	fileInfo, err := os.Stat(*filePath)
@@ -36,7 +36,7 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 		case "json":
 			*filePath = fmt.Sprintf("%s/studentinfo.json", *filePath)
 		default:
-			return fmt.Errorf("Invalid format. Supported formats are 'csv' and 'json'.")
+			return fmt.Errorf("invalid format. Supported formats are 'csv' and 'json'")
 		}
 	}
 
@@ -45,7 +45,7 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	hrFacade := controller.NewHRFacade(db)
 	studentInfos, err := hrFacade.GetAllStudents()
 	if err != nil {
-		return fmt.Errorf("Error fetching students: %v\n", err)
+		return fmt.Errorf("error fetching students: %v", err)
 	}
 
 	var exportErr error
@@ -54,7 +54,7 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 		// Use gocsv directly for CSV serialization
 		file, err := os.OpenFile(*filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 		if err != nil {
-			return fmt.Errorf("Error opening file: %v\n", err)
+			return fmt.Errorf("error opening file: %v", err)
 		}
 		defer file.Close()
 
@@ -65,7 +65,7 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 		// Use encoding/json directly for JSON serialization
 		file, err := os.OpenFile(*filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 		if err != nil {
-			return fmt.Errorf("Error opening file: %v\n", err)
+			return fmt.Errorf("error opening file: %v", err)
 		}
 		defer file.Close()
 
@@ -74,11 +74,11 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 			exportErr = err
 		}
 	default:
-		return fmt.Errorf("Invalid format. Supported formats are 'csv' and 'json'.")
+		return fmt.Errorf("invalid format. Supported formats are 'csv' and 'json'")
 	}
 
 	if exportErr != nil {
-		return fmt.Errorf("Error exporting data: %v\n", exportErr)
+		return fmt.Errorf("error exporting data: %v", exportErr)
 	}
 
 	fmt.Println("Student info exported successfully!")

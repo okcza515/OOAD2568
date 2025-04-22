@@ -26,23 +26,23 @@ func importStudents(args []string, tx *gorm.DB) error {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
-		return fmt.Errorf("*** Error: File %s does not exist.\n", *filePath)
+		return fmt.Errorf("*** Error: File %s does not exist", *filePath)
 	}
 
 	hrMapper, err := core.CreateMapper[model.StudentInfo](*filePath)
 	if err != nil {
-		return fmt.Errorf("Failed to create HR mapper: %v\n", err)
+		return fmt.Errorf("failed to create HR mapper: %v", err)
 	}
 
 	hrRecords := hrMapper.Deserialize()
 	hrRecordsMap := make(map[string]model.StudentInfo)
 	for _, hrRec := range hrRecords {
 		if _, exists := hrRecordsMap[hrRec.StudentCode]; exists {
-			return fmt.Errorf("Duplicate student code found: %s\n", hrRec.StudentCode)
+			return fmt.Errorf("duplicate student code found: %s", hrRec.StudentCode)
 		}
 		hrRecordsMap[hrRec.StudentCode] = *hrRec
 	}
@@ -57,19 +57,20 @@ func importStudents(args []string, tx *gorm.DB) error {
 			commonStudentController := commonController.CreateStudentController(db)
 			commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
 			if err != nil {
-				fmt.Printf("Failed to retrieve student %s from common data: %v\n", hrRec.StudentCode, err)
+				fmt.Printf("failed to retrieve student %s from common data: %v", hrRec.StudentCode, err)
 				continue
 			}
 
-			newStudent := hrModel.NewStudentInfoBuilder().
+			builder := hrModel.NewStudentInfoBuilder()
+			req, err := builder.WithStudentCode(hrRec.StudentCode).
 				WithStudent(*commonStudent).
 				WithGender(hrRec.Gender).
 				WithCitizenID(hrRec.CitizenID).
 				WithPhoneNumber(hrRec.PhoneNumber).
 				Build()
 
-			if err := hrFacade.UpsertStudent(newStudent); err != nil {
-				return fmt.Errorf("Failed to upsert student %s: %v\n", newStudent.StudentCode, err)
+			if err := hrFacade.UpsertStudent(req); err != nil {
+				return fmt.Errorf("failed to upsert student %s: %v", req.StudentCode, err)
 			}
 		}
 		fmt.Println("Students imported successfully!")

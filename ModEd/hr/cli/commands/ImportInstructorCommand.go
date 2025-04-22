@@ -39,11 +39,11 @@ func importInstructor(args []string, tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 		for _, instructor := range instructors {
 			if instructor.ID == 0 || instructor.FirstName == "" {
-				return fmt.Errorf("Invalid instructor data: %+v\n", instructor)
+				return fmt.Errorf("invalid instructor data: %+v", instructor)
 			}
 
 			if err := hrFacade.InsertInstructor(instructor); err != nil {
-				return fmt.Errorf("Failed to insert instructor %d: %v\n", instructor.ID, err)
+				return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
 			}
 		}
 

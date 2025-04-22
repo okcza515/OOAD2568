@@ -29,12 +29,17 @@ func requestResignationStudent(args []string, tx *gorm.DB) error {
 	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 
-		request := model.NewRequestResignationStudentBuilder().
-			WithStudentID(*ID).
+		builder := model.NewRequestResignationBuilder(true)
+		req, err := builder.
+			WithID(*ID).
 			WithReason(*reason).
 			Build()
 
-		if err := hrFacade.SubmitResignationStudentRequest(request); err != nil {
+		if err != nil {
+			return fmt.Errorf("failed to build resignation request: %v", err)
+		}
+
+		if err := hrFacade.SubmitResignationStudentRequest(req.(*model.RequestResignationStudent)); err != nil {
 			return fmt.Errorf("failed to submit resignation request: %v", err)
 		}
 

@@ -29,12 +29,16 @@ func requestResignationInstructor(args []string, tx *gorm.DB) error {
 	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 
-		request := model.NewRequestResignationInstructorBuilder().
-			WithInstructorID(*ID).
+		builder := model.NewRequestResignationBuilder(false)
+		req, err := builder.WithID(*ID).
 			WithReason(*reason).
 			Build()
 
-		if err := hrFacade.SubmitResignationInstructorRequest(request); err != nil {
+		if err != nil {
+			return fmt.Errorf("failed to build resignation request: %v", err)
+		}
+
+		if err := hrFacade.SubmitResignationInstructorRequest(req.(*model.RequestResignationInstructor)); err != nil {
 			return fmt.Errorf("failed to submit resignation request: %v", err)
 		}
 

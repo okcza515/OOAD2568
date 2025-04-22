@@ -20,26 +20,27 @@ func requestLeaveStudent(args []string, tx *gorm.DB) error {
 	leaveDateStr := fs.String("date", "", "Leave date (YYYY-MM-DD)")
 	fs.Parse(args)
 
-
-
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "type", "reason", "date"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
-	
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	request := hrModel.NewRequestLeaveStudentBuilder().
-		WithStudentID(*studentID).
+	builder := hrModel.NewRequestLeaveBuilder(true)
+	req, err := builder.WithID(*studentID).
 		WithLeaveType(*leaveType).
 		WithReason(*reason).
 		WithLeaveDate(*leaveDateStr).
 		Build()
 
-	if err := hrFacade.SubmitLeaveStudentRequest(request); err != nil {
-		return fmt.Errorf("Failed to submit leave request: %v\n", err)
+	if err != nil {
+		return fmt.Errorf("failed to build leave request: %v", err)
+	}
+
+	if err := hrFacade.SubmitLeaveStudentRequest(req.(*hrModel.RequestLeaveStudent)); err != nil {
+		return fmt.Errorf("failed to submit leave request: %v", err)
 	}
 
 	fmt.Println("Leave request submitted successfully.")

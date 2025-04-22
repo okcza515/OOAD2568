@@ -13,9 +13,9 @@ func (c *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	db := util.OpenDatabase(*util.DatabasePath)
 
 	if err := controller.MigrateStudentsToHR(db); err != nil {
-		return fmt.Errorf("Migration failed: %v\n", err)
+		return fmt.Errorf("migration failed: %v", err)
 	}
 
-	fmt.Println("Migration completed successfully!")
+	fmt.Println("migration completed successfully!")
 	return nil
 }

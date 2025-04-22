@@ -22,21 +22,25 @@ func requestLeaveInstructor(args []string, tx *gorm.DB) error {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "type", "reason", "date"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
 	hrFacade := controller.NewHRFacade(db)
 
-	request := hrModel.NewRequestLeaveInstructorBuilder().
-	WithInstructorID(*InstructorID).
-	WithLeaveType(*leaveType).
-	WithReason(*reason).
-	WithLeaveDate(*leaveDateStr).
-	Build()
+	builder := hrModel.NewRequestLeaveBuilder(false)
+	req, err := builder.WithID(*InstructorID).
+		WithLeaveType(*leaveType).
+		WithReason(*reason).
+		WithLeaveDate(*leaveDateStr).
+		Build()
 
-	if err := hrFacade.SubmitLeaveInstructorRequest(request); err != nil {
-		return fmt.Errorf("Failed to submit leave request: %v\n", err)
+	if err != nil {
+		return fmt.Errorf("failed to build leave request: %v", err)
+	}
+
+	if err := hrFacade.SubmitLeaveInstructorRequest(req.(*hrModel.RequestLeaveInstructor)); err != nil {
+		return fmt.Errorf("failed to submit leave request: %v", err)
 	}
 
 	fmt.Println("Leave request submitted successfully.")

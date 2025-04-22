@@ -110,6 +110,6 @@ func (b *StudentInfoBuilder) WithStudent(student commonModel.Student) *StudentIn
 	return b
 }
 
-func (b *StudentInfoBuilder) Build() *StudentInfo {
-	return b.info
+func (b *StudentInfoBuilder) Build() (*StudentInfo, error) {
+	return b.info, b.err
 }

@@ -24,7 +24,7 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 
 	if err := util.ValidateRequiredFlags(fs, []string{"id", "fname", "lname"}); err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
@@ -52,7 +52,8 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 
 		// Update HR‑specific information.
 		hrFacade := controller.NewHRFacade(tx)
-		newStudent := hrModel.NewStudentInfoBuilder().
+		builder := hrModel.NewStudentInfoBuilder()
+		newStudent, err := builder.
 			WithStudentCode(*studentID).
 			WithFirstName(*firstName).
 			WithLastName(*lastName).
@@ -60,6 +61,10 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 			WithCitizenID(*citizenID).
 			WithPhoneNumber(*phoneNumber).
 			Build()
+
+		if err != nil {
+			return fmt.Errorf("failed to build student info: %w", err)
+		}
 
 		if err := hrFacade.UpdateStudent(newStudent); err != nil {
 			return fmt.Errorf("failed to update student info: %w", err)
@@ -69,7 +74,7 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("Transaction failed: %v\n", err)
+		return fmt.Errorf("transaction failed: %v", err)
 	}
 
 	fmt.Println("Student added and HR info updated successfully!")

@@ -24,7 +24,7 @@ func listStudents(args []string, tx *gorm.DB) error {
 	hrFacade := controller.NewHRFacade(db)
 	studentInfos, err := hrFacade.GetAllStudents()
 	if err != nil {
-		return fmt.Errorf("Error listing students: %v\n", err)
+		return fmt.Errorf("error listing students: %v", err)
 	}
 
 	fmt.Println("Human Resource Student Info:")

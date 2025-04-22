@@ -1,67 +1,80 @@
 package model
 
-type RequestResignationStudentBuilder struct {
-	studentReq *RequestResignationStudent
+import "fmt"
+
+type RequestResignationBuilder struct {
+	req       interface{}
+	isStudent bool
+	err       error
 }
 
-type RequestResignationInstructorBuilder struct {
-	instructorReq *RequestResignationInstructor
-}
-
-func NewRequestResignationStudentBuilder() *RequestResignationStudentBuilder {
-	return &RequestResignationStudentBuilder{
-		studentReq: &RequestResignationStudent{
+// NewRequestResignationBuilder creates a new builder instance.
+// Pass true for a student resignation request; false for an instructor.
+func NewRequestResignationBuilder(isStudent bool) *RequestResignationBuilder {
+	if isStudent {
+		return &RequestResignationBuilder{
+			req: &RequestResignationStudent{
+				Status: "Pending",
+			},
+			isStudent: true,
+		}
+	}
+	return &RequestResignationBuilder{
+		req: &RequestResignationInstructor{
 			Status: "Pending",
 		},
+		isStudent: false,
 	}
 }
 
-func NewRequestResignationInstructorBuilder() *RequestResignationInstructorBuilder {
-	return &RequestResignationInstructorBuilder{
-		instructorReq: &RequestResignationInstructor{
-			Status: "Pending",
-		},
+// WithID sets the proper ID field based on resignation type.
+func (b *RequestResignationBuilder) WithID(id string) *RequestResignationBuilder {
+	if b.err != nil {
+		return b
 	}
-}
 
-// for student
+	if id == "" {
+		b.err = fmt.Errorf("id cannot be empty")
+		return b
+	}
 
-func (b *RequestResignationStudentBuilder) WithStudentID(id string) *RequestResignationStudentBuilder {
-	b.studentReq.StudentCode = id
+	if b.isStudent {
+		b.req.(*RequestResignationStudent).StudentCode = id
+	} else {
+		b.req.(*RequestResignationInstructor).InstructorCode = id
+	}
 	return b
 }
 
-func (b *RequestResignationStudentBuilder) WithReason(reason string) *RequestResignationStudentBuilder {
-	b.studentReq.Reason = reason
+// WithReason sets the resignation reason.
+func (b *RequestResignationBuilder) WithReason(reason string) *RequestResignationBuilder {
+	if b.err != nil {
+		return b
+	}
+
+	if b.isStudent {
+		b.req.(*RequestResignationStudent).Reason = reason
+	} else {
+		b.req.(*RequestResignationInstructor).Reason = reason
+	}
 	return b
 }
 
-func (b *RequestResignationStudentBuilder) WithStatus(status string) *RequestResignationStudentBuilder {
-	b.studentReq.Status = status
+// WithStatus sets the resignation status.
+func (b *RequestResignationBuilder) WithStatus(status string) *RequestResignationBuilder {
+	if b.err != nil {
+		return b
+	}
+
+	if b.isStudent {
+		b.req.(*RequestResignationStudent).Status = status
+	} else {
+		b.req.(*RequestResignationInstructor).Status = status
+	}
 	return b
 }
 
-func (b *RequestResignationStudentBuilder) Build() *RequestResignationStudent {
-	return b.studentReq
-}
-
-// for instructor
-
-func (b *RequestResignationInstructorBuilder) WithInstructorID(id string) *RequestResignationInstructorBuilder {
-	b.instructorReq.InstructorCode = id
-	return b
-}
-
-func (b *RequestResignationInstructorBuilder) WithReason(reason string) *RequestResignationInstructorBuilder {
-	b.instructorReq.Reason = reason
-	return b
-}
-
-func (b *RequestResignationInstructorBuilder) WithStatus(status string) *RequestResignationInstructorBuilder {
-	b.instructorReq.Status = status
-	return b
-}
-
-func (b *RequestResignationInstructorBuilder) Build() *RequestResignationInstructor {
-	return b.instructorReq
+// Build returns the built resignation request.
+func (b *RequestResignationBuilder) Build() (interface{}, error) {
+	return b.req, b.err
 }
