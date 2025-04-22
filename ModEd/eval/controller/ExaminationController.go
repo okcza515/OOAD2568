@@ -28,7 +28,7 @@ func (c *ExaminationController) CreateExam(exam *model.Examination) error{
 	return nil
 }
 
-func (c *ExaminationController) GetAllExam() ([]model.Examination, error) {
+func (c *ExaminationController) GetAll() ([]model.Examination, error) {
 	var exam []model.Examination
 	if err := c.db.Find(&exam).Error; err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *ExaminationController) GetAllExam() ([]model.Examination, error) {
 	return exam, nil
 }
 
-func (c *ExaminationController) UpdateExam(id uint , exam *model.Examination)  error {
+func (c *ExaminationController) Update(id uint , exam *model.Examination)  error {
 
 if err := c.db.Model(&exam).Where("id = ?", id).Updates(exam).Error; err != nil {
 	return err

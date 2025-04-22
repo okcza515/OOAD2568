@@ -48,7 +48,7 @@ func RunExaminationCLI(db *gorm.DB) {
 }
 
 func DisplayAllExams(db *gorm.DB, examController *controllerExamination.ExaminationController) {
-	exams,err := examController.GetAllExam()
+	exams,err := examController.GetAll()
 	if err != nil {
 		fmt.Println("Error fetching exams:", err)
 		return
@@ -129,7 +129,7 @@ func UpdateExam(db *gorm.DB, examController *controllerExamination.ExaminationCo
 		return
 	}
 
-	if err := examController.UpdateExam(examId, exam); err != nil {
+	if err := examController.Update(examId, exam); err != nil {
 		fmt.Println("Error:", err)
 	} else {
 		fmt.Println("Examination updated successfully!")
