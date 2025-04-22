@@ -26,8 +26,10 @@ type WILProjectApplicationControllerInterface interface {
 }
 
 func CreateWILProjectApplicationController(connector *gorm.DB) *WILProjectApplicationController {
-	wil := WILProjectApplicationController{connector: connector, BaseController: core.NewBaseController("WILProjectApplication", connector)}
-	return &wil
+	return &WILProjectApplicationController{
+		connector: connector, 
+		BaseController: core.NewBaseController("WILProjectApplication", connector),
+	}
 }
 
 /*
@@ -93,9 +95,10 @@ func (controller WILProjectApplicationController) RegisterWILProjectsApplication
 	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
 	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
 
-	result := controller.connector.Create(&WILProjectApplicationModel)
-	if result.Error != nil {
-		return result.Error
+	// result := controller.connector.Create(&WILProjectApplicationModel)
+	resultError := controller.Insert(&WILProjectApplicationModel)
+	if resultError != nil {
+		return resultError
 	}
 
 	for _, studentId := range StudentsId {

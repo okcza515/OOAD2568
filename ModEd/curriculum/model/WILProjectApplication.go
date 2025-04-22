@@ -2,12 +2,11 @@ package model
 
 import (
 	commonModel "ModEd/common/model"
-
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type WILProjectApplication struct {
-	gorm.Model
+	core.BaseModel
 	ProjectName       string                 `gorm:"not null"`
 	ProjectDetail     string                 `gorm:"not null"`
 	Semester          string                 `gorm:"not null"`
