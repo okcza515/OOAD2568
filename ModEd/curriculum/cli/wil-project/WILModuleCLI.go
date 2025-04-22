@@ -2,7 +2,6 @@ package wilproject
 
 import (
 	"ModEd/curriculum/cli/wil-project/handler"
-	"ModEd/curriculum/controller"
 	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
@@ -16,23 +15,20 @@ func RunWILModuleCLI(
 	classController curriculumController.ClassControllerInterface,
 ) {
 
-	wilprojectController := controller.CreateWILProjectController(db)
-	wilprojectApplicationController := controller.CreateWILProjectApplicationController(db)
-	wilprojectCurriculumController := controller.CreateWILProjectCurriculumController(db, courseController, classController)
-	independentStudyController := controller.CreateIndependentStudyController(db)
+	facade := curriculumController.NewWILModuleFacade(db, courseController, classController)
 
 	for {
 		printWILModuleMenu()
 		choice := utils.GetUserChoice()
 		switch choice {
 		case "1":
-			handler.RunWILProjectCurriculumHandler(wilprojectCurriculumController)
+			handler.RunWILProjectCurriculumHandler(facade.WILProjectCurriculumController)
 		case "2":
-			handler.RunWILProjectApplicationHandler(wilprojectApplicationController)
+			handler.RunWILProjectApplicationHandler(facade.WILProjectApplicationController)
 		case "3":
-			handler.RunWILProjectHandler(wilprojectController)
+			handler.RunWILProjectHandler(facade.WILProjectController)
 		case "4":
-			handler.RunIndependentStudyHandler(independentStudyController)
+			handler.RunIndependentStudyHandler(facade.IndependentStudyController)
 		case "0":
 			fmt.Println("Exiting...")
 			return
