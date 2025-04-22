@@ -9,7 +9,7 @@ import (
 	"fmt"
 )
 
-func RunIndependentStudyHandler(controller *controller.IndependentStudyController) {
+func RunIndependentStudyHandler(controller *controller.WILModuleFacade) {
 	for {
 		printIndependentMenu()
 		choice := utils.GetUserChoice()
@@ -30,7 +30,7 @@ func RunIndependentStudyHandler(controller *controller.IndependentStudyControlle
 				continue
 			}
 			for _, is := range *isModel {
-				controller.Insert(&is)
+				controller.IndependentStudyController.Insert(&is)
 			}
 			fmt.Println("Migration Success!")
 		case "0":

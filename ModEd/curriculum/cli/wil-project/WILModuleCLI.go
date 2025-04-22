@@ -23,13 +23,13 @@ func RunWILModuleCLI(
 		choice := utils.GetUserChoice()
 		switch choice {
 		case "1":
-			handler.RunWILProjectCurriculumHandler(facade.WILProjectCurriculumController)
+			handler.RunWILProjectCurriculumHandler(facade)
 		case "2":
-			handler.RunWILProjectApplicationHandler(facade.WILProjectApplicationController)
+			handler.RunWILProjectApplicationHandler(facade)
 		case "3":
-			handler.RunWILProjectHandler(facade.WILProjectController)
+			handler.RunWILProjectHandler(facade)
 		case "4":
-			handler.RunIndependentStudyHandler(facade.IndependentStudyController)
+			handler.RunIndependentStudyHandler(facade)
 		case "0":
 			fmt.Println("Exiting...")
 			return

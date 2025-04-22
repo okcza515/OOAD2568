@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func RunWILProjectApplicationHandler(controller *controller.WILProjectApplicationController) {
+func RunWILProjectApplicationHandler(controller *controller.WILModuleFacade) {
 	for {
 		printWILProjectApplicationModuleMenu()
 		choice := utils.GetUserChoice()
@@ -57,7 +57,7 @@ func printWILProjectApplicationModuleMenu() {
 	fmt.Println("0. Exit WIL Module")
 }
 
-func createWILProjectApplication(controller *controller.WILProjectApplicationController) error {
+func createWILProjectApplication(controller *controller.WILModuleFacade) error {
 	WILProjectApplicationModel := model.WILProjectApplication{}
 
 	fmt.Println("\nRegistering WILProjectApplication model")
@@ -89,7 +89,7 @@ func createWILProjectApplication(controller *controller.WILProjectApplicationCon
 	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
 	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
 
-	result := controller.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
+	result := controller.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
 	if result != nil {
 		fmt.Println("\nError for WIL Project Application:", result)
 		return errors.New("Error! cannot create a WIL Project application")
@@ -97,8 +97,8 @@ func createWILProjectApplication(controller *controller.WILProjectApplicationCon
 	return nil
 }
 
-func listAllWILProjectApplication(controller *controller.WILProjectApplicationController) error {
-	applications, err := controller.ListWILProjectApplication()
+func listAllWILProjectApplication(controller *controller.WILModuleFacade) error {
+	applications, err := controller.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
 		return errors.New("Error! cannot retrieve WIL Project application data")
 	}

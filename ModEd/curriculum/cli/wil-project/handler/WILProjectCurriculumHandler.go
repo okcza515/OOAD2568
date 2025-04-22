@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumController) {
+func RunWILProjectCurriculumHandler(controller *controller.WILModuleFacade) {
 	for {
 		printWILProjectCurriculumMenu()
 		choice := utils.GetUserChoice()
@@ -25,7 +25,7 @@ func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumC
 				CourseStatus: model.ACTIVE,
 			}
 
-			courseId, err := controller.CreateNewWILCourse(course, semester)
+			courseId, err := controller.WILProjectCurriculumController.CreateNewWILCourse(course, semester)
 			if err != nil {
 				fmt.Println("Error! cannot create WIL course:", err)
 			} else {
@@ -41,14 +41,14 @@ func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumC
 				Section:  int(section),
 			}
 
-			classId, err := controller.CreateNewWILClass(class)
+			classId, err := controller.WILProjectCurriculumController.CreateNewWILClass(class)
 			if err != nil {
 				fmt.Println("Error! cannot create WIL class:", err)
 			} else {
 				fmt.Printf("WIL Class created successfully with ID: %d\n", classId)
 			}
 		case "3":
-			courses, err := controller.RetrieveAllWILCourses()
+			courses, err := controller.WILProjectCurriculumController.RetrieveAllWILCourses()
 			if err != nil {
 				fmt.Println("Error! cannot retrieve WIL courses")
 			}
@@ -59,7 +59,7 @@ func RunWILProjectCurriculumHandler(controller *controller.WILProjectCurriculumC
 			}
 
 		case "4":
-			classes, err := controller.RetrieveAllWILClasses()
+			classes, err := controller.WILProjectCurriculumController.RetrieveAllWILClasses()
 			if err != nil {
 				fmt.Println("Error! cannot retrieve WIL classes")
 			}

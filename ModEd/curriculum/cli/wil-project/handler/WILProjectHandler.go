@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func RunWILProjectHandler(controller *controller.WILProjectController) {
+func RunWILProjectHandler(controller *controller.WILModuleFacade) {
 	for {
 		printWILProjectModuleMenu()
 		choice := utils.GetUserChoice()
