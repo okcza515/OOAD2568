@@ -46,8 +46,6 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelInstructorWorkload.StudentRequest{},
 		&modelInstructorWorkload.Meeting{},
 		&modelInstructorWorkload.ProjectEvaluation{},
-		&modelInstructorWorkload.ProjectAdvisor{},
-		&modelInstructorWorkload.ProjectCommittee{},
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
@@ -80,8 +78,6 @@ func (c *MigrationController) DropAllTables() error {
 		&modelInstructorWorkload.StudentRequest{},
 		&modelInstructorWorkload.Meeting{},
 		&modelInstructorWorkload.ProjectEvaluation{},
-		&modelInstructorWorkload.ProjectAdvisor{},
-		&modelInstructorWorkload.ProjectCommittee{},
 	)
 	if err != nil {
 		return err
