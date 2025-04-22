@@ -44,16 +44,12 @@ func main() {
 		case "1":
 			migrationcli.RunMigrationCLI(migrationController)
 		case "2":
-			curriculum.RunCurriculumCLI(curriculumController)
+			curriculum.RunCurriculumModuleCLI(db, courseController, classController, curriculumController)
 		case "3":
-			curriculum.RunClassCLI(classController)
-		case "4":
-			curriculum.RunCourseCLI(courseController)
-		case "5":
 			wilproject.RunWILModuleCLI(db, courseController, classController)
-		case "6":
+		case "4":
 			instructorWorkload.RunInstructorWorkloadModuleCLI(db, courseController, classController, curriculumController)
-		case "7":
+		case "5":
 			internship.RunInterShipCLI(db)
 		case "0":
 			fmt.Println("Exiting...")
@@ -68,11 +64,9 @@ func displayMainMenu() {
 	fmt.Println("\nModEd CLI Menu")
 	fmt.Println("1. Migration")
 	fmt.Println("2. Curriculum")
-	fmt.Println("3. Class")
-	fmt.Println("4. Course")
-	fmt.Println("5. WIL-Project")
-	fmt.Println("6. Instructor Workload")
-	fmt.Println("7. Internship")
+	fmt.Println("3. WIL-Project")
+	fmt.Println("4. Instructor Workload")
+	fmt.Println("5. Internship")
 	fmt.Println("0. Exit")
 }
 

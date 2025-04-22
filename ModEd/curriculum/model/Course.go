@@ -1,6 +1,8 @@
+// MEP-1002
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -19,4 +21,9 @@ type Course struct {
 	DeletedAt    gorm.DeletedAt `csv:"-" json:"-"`
 	ClassList    []Class        `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
 	Prerequisite []Course       `gorm:"many2many:course_prerequisites;foreignKey:CourseId;joinForeignKey:CourseId;References:CourseId;joinReferences:PrerequisiteId" csv:"-" json:"-"`
+}
+
+func (c *Course) Print() {
+	fmt.Printf("Course Id: %d, Name: %s, Description: %s, Curriculum Id: %d, Optional: %t, Course Status: %d\n",
+		c.CourseId, c.Name, c.Description, c.CurriculumId, c.Optional, c.CourseStatus)
 }

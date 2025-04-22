@@ -1,3 +1,4 @@
+// MEP-1002
 package model
 
 type CourseStatus int

@@ -1,7 +1,9 @@
+// MEP-1002
 package model
 
 import (
 	"ModEd/common/model"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -27,4 +29,9 @@ type Curriculum struct {
 	CreatedAt   time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
 	UpdatedAt   time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
 	DeletedAt   gorm.DeletedAt    `csv:"-" json:"-"`
+}
+
+func (c *Curriculum) Print() {
+	fmt.Printf("Curriculum Id: %d, Name: %s, Start Year: %d, End Year: %d, Department Name: %s, Program Type: %s\n",
+		c.CurriculumId, c.Name, c.StartYear, c.EndYear, c.DepartmentName, c.ProgramType)
 }
