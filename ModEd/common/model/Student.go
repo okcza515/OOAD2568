@@ -15,6 +15,7 @@ type Student struct {
 	StartDate   time.Time      `csv:"start_date" json:"start_date"`
 	BirthDate   time.Time      `csv:"birth_date" json:"birth_date"`
 	Program     ProgramType    `csv:"program" json:"program"`
+	Department  string         `csv:"department" json:"department"`
 	Status      *StudentStatus `csv:"status" json:"status"`
 }
 

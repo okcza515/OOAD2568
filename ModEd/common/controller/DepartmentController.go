@@ -22,11 +22,6 @@ func (c *DepartmentController) GetAll() ([]*model.Department, error) {
 func (c *DepartmentController) GetByName(name string) (*model.Department, error) {
 	return model.GetDepartmentByName(c.DB, name)
 }
-
-func (c *DepartmentController) Create(dept *model.Department) error {
-	return model.CreateDepartment(c.DB, dept)
-}
-
 func (c *DepartmentController) SetBudget(name string, budget int) error {
 	return model.SetDepartmentBudget(c.DB, name, budget)
 }

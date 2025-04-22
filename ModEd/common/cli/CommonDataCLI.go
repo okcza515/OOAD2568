@@ -83,7 +83,7 @@ func main() {
 
 	case TEST:
 		departmentController := controller.CreateDepartmentController(db)
-		departmentController.Create(&model.Department{Name: "CS", Budget: 100})
+		departmentController.Register([]*model.Department{{Name: "CS", Budget: 100}})
 	}
 
 }
