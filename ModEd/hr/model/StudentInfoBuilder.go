@@ -2,11 +2,13 @@ package model
 
 import (
 	commonModel "ModEd/common/model"
+	"fmt"
 	"time"
 )
 
 type StudentInfoBuilder struct {
 	info *StudentInfo
+	err  error
 }
 
 func NewStudentInfoBuilder() *StudentInfoBuilder {
@@ -36,20 +38,28 @@ func (b *StudentInfoBuilder) WithEmail(email string) *StudentInfoBuilder {
 }
 
 func (b *StudentInfoBuilder) WithStartDate(startDate string) *StudentInfoBuilder {
-	parsedDate, err := time.Parse("2006-01-02", startDate)
-	if err != nil {
-		panic("Invalid start date format: " + startDate)
+	if b.err != nil {
+		return b
 	}
-	b.info.StartDate = parsedDate
+	t, err := time.Parse("2006-01-02", startDate)
+	if err != nil {
+		b.err = fmt.Errorf("invalid start date %q: %w", startDate, err)
+	} else {
+		b.info.StartDate = t
+	}
 	return b
 }
 
 func (b *StudentInfoBuilder) WithBirthDate(birthDate string) *StudentInfoBuilder {
-	parsedDate, err := time.Parse("2006-01-02", birthDate)
-	if err != nil {
-		panic("Invalid birth date format: " + birthDate)
+	if b.err != nil {
+		return b
 	}
-	b.info.BirthDate = parsedDate
+	t, err := time.Parse("2006-01-02", birthDate)
+	if err != nil {
+		b.err = fmt.Errorf("invalid birth date %q: %w", birthDate, err)
+	} else {
+		b.info.BirthDate = t
+	}
 	return b
 }
 
