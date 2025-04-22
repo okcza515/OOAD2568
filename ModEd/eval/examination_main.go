@@ -2,7 +2,7 @@ package main
 
 import (
 	cli_examination "ModEd/eval/cli/examination"
-	migration_controller "ModEd/eval/controller/migration"
+	migration_controller "ModEd/eval/controller"
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

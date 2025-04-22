@@ -1,7 +1,7 @@
 package examination
 
 import (
-	question_controller "ModEd/eval/controller/examination"
+	question_controller "ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/eval/util"
 	"fmt"

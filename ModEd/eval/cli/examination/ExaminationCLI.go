@@ -1,7 +1,7 @@
 package examination
 
 import (
-	controllerExamination "ModEd/eval/controller/examination"
+	controllerExamination "ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/eval/util"
 

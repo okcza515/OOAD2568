@@ -1,7 +1,7 @@
 package examination
 
 import (
-	answer_controller "ModEd/eval/controller/examination"
+	answer_controller "ModEd/eval/controller"
 	"ModEd/eval/util"
 	// "bufio"
 	// "os"

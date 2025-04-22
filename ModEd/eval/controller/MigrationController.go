@@ -1,4 +1,4 @@
-package migration
+package controller
 
 import (
 	model "ModEd/eval/model"
