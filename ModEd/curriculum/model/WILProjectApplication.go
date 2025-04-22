@@ -1,13 +1,13 @@
+// MEP-1010 Work Integrated Learning (WIL)
 package model
 
 import (
 	commonModel "ModEd/common/model"
-
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type WILProjectApplication struct {
-	gorm.Model
+	core.BaseModel
 	ProjectName       string                 `gorm:"not null"`
 	ProjectDetail     string                 `gorm:"not null"`
 	Semester          string                 `gorm:"not null"`
@@ -15,7 +15,7 @@ type WILProjectApplication struct {
 	Mentor            string                 `gorm:"not null"`
 	Students          []WILProjectMember     `gorm:"foreignKey:WILProjectApplicationId"`
 	AdvisorId         uint                   `json:"AdvisorId"`
-	Advisor           commonModel.Instructor `json:"Advisor" gorm:"foreignKey:AdvisorId"`
+	Advisor           commonModel.Instructor `json:"Advisor" gorm:"foreignKey:AdvisorId;references:InstructorCode"`
 	ApplicationStatus string                 `gorm:"not null"`
 	TurninDate        string                 `gorm:"not null"`
 }

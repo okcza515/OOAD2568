@@ -1,3 +1,4 @@
+// MEP-1002
 package controller
 
 import (
@@ -6,16 +7,30 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
+	"ModEd/core"
 	"ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 )
 
 type ClassController struct {
-	db *gorm.DB
+	db   *gorm.DB
+	core *core.BaseController
+}
+
+type ClassControllerInterface interface {
+	CreateClass(class *model.Class) (classId uint, err error)
+	GetClass(classId uint) (class *model.Class, err error)
+	GetClasses() (classes []*model.Class, err error)
+	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
+	DeleteClass(classId uint) (class *model.Class, err error)
+	CreateSeedClass(path string) (classes []*model.Class, err error)
 }
 
 func NewClassController(db *gorm.DB) *ClassController {
-	return &ClassController{db: db}
+	return &ClassController{
+		db:   db,
+		core: core.NewBaseController("Class", db),
+	}
 }
 
 func (c *ClassController) CreateClass(class *model.Class) (classId uint, err error) {

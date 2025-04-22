@@ -2,7 +2,7 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller/spacemanagement"
+	controller "ModEd/asset/controller"
 	"ModEd/asset/util"
 	"fmt"
 	"strconv"

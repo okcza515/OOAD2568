@@ -8,22 +8,24 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
-	var username, password string
-	fmt.Print("Enter admin username: ")
-	fmt.Scanln(&username)
-	fmt.Print("Enter admin password: ")
-	fmt.Scanln(&password)
-	if username != "admin" || password != "admin123" {
-		fmt.Println("Invalid credentials. Access denied.")
-		return
-	}
-	fmt.Println("Login successful. Welcome, admin!")
-	for {
+		var username, password string
+		fmt.Print("Enter admin username: ")
+		fmt.Scanln(&username)
+		fmt.Print("Enter admin password: ")
+		fmt.Scanln(&password)
+		csvPath := "data/AdminMockup.csv"
+		if !util.ValidateAdminLoginFromCSV(username, password, csvPath) {
+			fmt.Println("Invalid credentials. Access denied.")
+			time.Sleep(3 * time.Second) 
+			
+			return
+		}
 		util.ClearScreen()
-
+		fmt.Println("Login successful. Welcome,", username)
 		fmt.Println("==== Admin Menu ====")
 		fmt.Println("1. Manage Applicants")
 		fmt.Println("2. View Application Reports")
@@ -48,9 +50,11 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 			return
 		default:
 			fmt.Println("Invalid option. Try again.")
-		}
+
 	}
 }
+
+
 
 func DeleteInterview(interviewCtrl *controller.InterviewController) {
 	var interviewID uint
@@ -79,3 +83,4 @@ func DeleteInterview(interviewCtrl *controller.InterviewController) {
 func ManageApplicants(applicantController *controller.ApplicantController) {
 	fmt.Println("Managing Applicants...")
 }
+

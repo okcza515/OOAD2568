@@ -1,45 +1,47 @@
+// MEP-1002
 package curriculum
 
 import (
-	controller "ModEd/curriculum/controller/curriculum"
+	"ModEd/curriculum/cli/curriculum/handler"
+	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
-const (
-	defaultCurriculumDataPath = "../../data/curriculum/curriculum.json"
-)
+func RunCurriculumModuleCLI(
+	db *gorm.DB,
+	courseController curriculumController.CourseControllerInterface,
+	classController curriculumController.ClassControllerInterface,
+	curriculumController curriculumController.CurriculumControllerInterface,
+) {
 
-func RunCurriculumCLI(curriculumController *controller.CurriculumController) {
-	for {
-		printCurriculumMenu()
+	input := ""
+	for input != "exit" {
+		displayOptions()
 		choice := utils.GetUserChoice()
-
+		fmt.Println("choice: ", choice)
 		switch choice {
 		case "1":
-			dataPath := utils.GetInputDataPath("curriculum", defaultCurriculumDataPath)
-			_, err := curriculumController.CreateSeedCurriculum(dataPath)
-			if err != nil {
-				fmt.Println("Error creating seed curriculum:", err)
-			}
-			return
+			handler.RunCurriculumCLIHandler(curriculumController)
 		case "2":
-			fmt.Println("Not implemented yet...")
+			handler.RunCourseCLIHandler(courseController)
 		case "3":
-			fmt.Println("Not implemented yet...")
+			handler.RunClassCLIHandler(classController)
 		case "0":
 			fmt.Println("Exiting...")
 			return
 		default:
-			fmt.Println("Invalid option")
+			fmt.Println("Invalid option. Please try again.")
 		}
 	}
 }
 
-func printCurriculumMenu() {
-	fmt.Println("\nCurriculum Menu:")
-	fmt.Println("1. Create Seed Curriculum")
-	fmt.Println("2. Not implemented yet...")
-	fmt.Println("3. Not implemented yet...")
+func displayOptions() {
+	fmt.Println("\nCurriculum Module Menu:")
+	fmt.Println("1. Curriculum")
+	fmt.Println("2. Course")
+	fmt.Println("3. Class")
 	fmt.Println("0. Exit")
 }

@@ -1,7 +1,7 @@
 package migration
 
 import (
-	controller "ModEd/curriculum/controller/migration"
+	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 )

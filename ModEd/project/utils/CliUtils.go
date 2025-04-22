@@ -17,12 +17,13 @@ func OpenDatabase(database string) *gorm.DB {
 	}
 
 	err = db.AutoMigrate(
+		&model.SeniorProject{},
+		&model.GroupMember{},
 		&model.Advisor{},
 		&model.Assessment{},
 		&model.AssessmentCriteria{},
 		&model.Assignment{},
 		&model.Committee{},
-		&model.GroupMember{},
 		&model.Presentation{},
 		&model.Progress{},
 		&model.Report{},
@@ -34,7 +35,6 @@ func OpenDatabase(database string) *gorm.DB {
 		&model.ScorePresentationCommittee{},
 		&model.ScoreReportAdvisor{},
 		&model.ScoreReportCommittee{},
-		&model.SeniorProject{},
 	)
 	if err != nil {
 		fmt.Printf("AutoMigrate failed: %v\n", err)

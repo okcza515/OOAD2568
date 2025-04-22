@@ -1,5 +1,5 @@
 // MEP-1013
-package spacemanagement
+package controller
 
 import (
 	"errors"
@@ -31,8 +31,8 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	AssetManagementController := NewAssetManagementController(InstrumentManagementAdapter, SupplyManagementAdapter)
 
 	facade := SpaceManagementControllerFacade{Db: db}
-	migrationController := MigrationController{db: db}
-	err = migrationController.MigrateToDB()
+	SpaceManagementMigrationController := SpaceManagementMigrationController{db: db}
+	err = SpaceManagementMigrationController.MigrateToDB()
 	if err != nil {
 		return nil, errors.New("failed to migrate schema")
 	}

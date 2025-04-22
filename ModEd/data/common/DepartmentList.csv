@@ -1,9 +1,9 @@
-name,faculty,students,instructors,budget
-Computer Engineering,Engineering,64070501002;64070503461;65070501011;65070501018;65070503412,Alice Johnson,300000
-Mechanical Engineering,Engineering,64070501078;64070501092;65070501038;65070503466,Bob Smith,250000
-Physics,Science,65070501009;65070503403;65070503407,Carol Lee,200000
-Chemistry,Science,64070507207;64070507210;65070501042,David Wong,180000
-Marketing,Business,64070501023;65070501014,Eva Brown,150000
-Finance,Business,64070501025;65070501008,Frank Green,140000
-Interior Design,Architecture,64070501039;65070503427,Grace Miller,100000
-Urban Planning,Architecture,64070501043;65070503445,Henry Davis,120000
+name,faculty,budget
+Computer Engineering,Engineering,300000
+Mechanical Engineering,Engineering,250000
+Physics,Science,200000
+Chemistry,Science,180000
+Marketing,Business,150000
+Finance,Business,140000
+Interior Design,Architecture,100000
+Urban Planning,Architecture,120000

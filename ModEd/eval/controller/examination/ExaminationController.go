@@ -9,6 +9,8 @@ import (
 
 type IExaminationController interface {
 	CreateExam(exam *model.Examination) error
+	GetAll() ([]model.Examination, error)
+	Update(id uint, exam *model.Examination) error
 }
 
 type ExaminationController struct {

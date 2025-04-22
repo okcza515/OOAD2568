@@ -13,7 +13,9 @@ import (
 
 func main() {
 	db := utils.OpenDatabase("project.db")
+	db.Exec("PRAGMA foreign_keys = ON;")
 
+	seniorProjectController := controller.NewSeniorProjectController(db)
 	advisorController := controller.NewAdvisorController(db)
 	committeeController := controller.NewCommitteeController(db)
 	reportController := controller.NewReportController(db)
@@ -156,8 +158,19 @@ func main() {
 					{
 						Title: "Create Senior Project",
 						Action: func(io *utils.MenuIO) {
-							io.Println("Creating Senior Project...")
-							// Add logic to create senior project เพิ่มแล้วลบด้วย
+							io.Print("Enter the group name (-1 to cancel): ")
+							groupNameStr, err := io.ReadInput()
+							if err != nil || groupNameStr == "-1" {
+								io.Println("Cancelled.")
+								return
+							}
+
+							if err := seniorProjectController.InsertSeniorProject(model.SeniorProject{
+								GroupName: groupNameStr,
+							}); err != nil {
+								io.Println(err.Error())
+								return
+							}
 						},
 					},
 					{
@@ -200,7 +213,7 @@ func main() {
 									}
 									isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
-									advisor, err := advisorController.AssignAdvisor(projectId, instructorId, isPrimary)
+									advisor, err := advisorController.AssignAdvisor(uint(projectId), uint(instructorId), isPrimary)
 									if err != nil {
 										io.Println(fmt.Sprintf("Error assigning advisor: %v", err))
 									} else {
@@ -233,7 +246,7 @@ func main() {
 									}
 									isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
-									err = advisorController.UpdateAdvisorRole(advisorId, isPrimary)
+									err = advisorController.UpdateAdvisorRole(uint(advisorId), isPrimary)
 									if err != nil {
 										io.Println(fmt.Sprintf("Error updating advisor role: %v", err))
 									} else {
@@ -258,7 +271,7 @@ func main() {
 										return
 									}
 
-									err = advisorController.RemoveAdvisor(advisorId)
+									err = advisorController.RemoveAdvisor(uint(advisorId))
 									if err != nil {
 										io.Println(fmt.Sprintf("Error removing advisor: %v", err))
 									} else {
@@ -372,7 +385,7 @@ func main() {
 									}
 
 									committee := &model.Committee{
-										SeniorProjectId: projectId,
+										SeniorProjectId: uint(projectId),
 										InstructorId:    instructorId,
 									}
 
@@ -1053,7 +1066,7 @@ func main() {
 												} else {
 													for _, cs := range *scoreList {
 														if cs.AssessmentCriteriaLinkId == link.ID {
-															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.ComitteeId))
+															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.CommitteeId))
 														}
 													}
 												}

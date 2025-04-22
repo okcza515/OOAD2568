@@ -7,10 +7,10 @@ import (
 	"gorm.io/gorm"
 
 	commonModel "ModEd/common/model"
-	controller "ModEd/curriculum/controller/curriculum"
-	"ModEd/curriculum/controller/migration"
+	controller "ModEd/curriculum/controller"
 	model "ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
+	"ModEd/eval/controller/migration"
 )
 
 func TestCreateCurriculum(t *testing.T) {
@@ -234,7 +234,7 @@ func TestMigration(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	migrationController := migration.NewMigrationController(db)
+	migrationController := controller.NewMigrationController(db)
 	if err := migrationController.MigrateToDB(); err != nil {
 		t.Fatalf("Failed to migrate to db: %v", err)
 	}

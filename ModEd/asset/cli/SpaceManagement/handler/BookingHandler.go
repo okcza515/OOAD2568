@@ -2,7 +2,7 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller/spacemanagement"
+	controller "ModEd/asset/controller"
 	model "ModEd/asset/model/spacemanagement"
 	"ModEd/asset/util"
 	"fmt"
@@ -99,13 +99,13 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	}
 
 	var startTime, endTime time.Time
-	
+
 	fmt.Println("For start time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	startDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	startTimeStr := util.GetCommandInput()
-	
+
 	startFullStr := startDateStr + " " + startTimeStr
 	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
 	if err != nil {
@@ -113,13 +113,13 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	fmt.Println("For end time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	endDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	endTimeStr := util.GetCommandInput()
-	
+
 	endFullStr := endDateStr + " " + endTimeStr
 	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
 	if err != nil {
@@ -127,7 +127,7 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	if endTime.Before(startTime) || endTime.Equal(startTime) {
 		fmt.Println("End time must be after start time.")
 		util.PressEnterToContinue()
@@ -157,11 +157,11 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Attempting to book room...")
 	fmt.Printf("Room ID: %d, User ID: %d, Role: %s, Event: %s\n", roomID, 1, roleStr, eventName)
 	fmt.Printf("Time: %s to %s\n", startTime.Format("2006-01-02 15:04"), endTime.Format("2006-01-02 15:04"))
-	
+
 	time.Sleep(2000 * time.Millisecond)
-	
+
 	booking, err := facade.Booking.BookRoom(uint(roomID), uint(1), role, eventName, startTime, endTime)
-	
+
 	fmt.Println("\n----- BOOKING RESULT -----")
 	if err != nil {
 		fmt.Println("Booking failed:", err)
@@ -176,7 +176,7 @@ func handleBookRoom(facade *controller.SpaceManagementControllerFacade) {
 		}
 	}
 	fmt.Println("--------------------------")
-	
+
 	fmt.Println("\nPress Enter to continue...")
 	util.PressEnterToContinue()
 }
@@ -214,13 +214,13 @@ func handleUpdateBooking(facade *controller.SpaceManagementControllerFacade) {
 	}
 
 	var startTime, endTime time.Time
-	
+
 	fmt.Println("For new start time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	startDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	startTimeStr := util.GetCommandInput()
-	
+
 	startFullStr := startDateStr + " " + startTimeStr
 	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
 	if err != nil {
@@ -228,13 +228,13 @@ func handleUpdateBooking(facade *controller.SpaceManagementControllerFacade) {
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	fmt.Println("For new end time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	endDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	endTimeStr := util.GetCommandInput()
-	
+
 	endFullStr := endDateStr + " " + endTimeStr
 	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
 	if err != nil {
@@ -242,7 +242,7 @@ func handleUpdateBooking(facade *controller.SpaceManagementControllerFacade) {
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	if endTime.Before(startTime) || endTime.Equal(startTime) {
 		fmt.Println("End time must be after start time.")
 		util.PressEnterToContinue()
@@ -316,7 +316,7 @@ func handleResetAllBookings(facade *controller.SpaceManagementControllerFacade) 
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	err := facade.Booking.ResetAllBookings()
 	if err != nil {
 		fmt.Println("Error resetting all bookings:", err)
@@ -338,13 +338,13 @@ func handleCheckRoomAvailability(facade *controller.SpaceManagementControllerFac
 	}
 
 	var startTime, endTime time.Time
-	
+
 	fmt.Println("For start time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	startDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	startTimeStr := util.GetCommandInput()
-	
+
 	startFullStr := startDateStr + " " + startTimeStr
 	startTime, err = time.Parse("2006-01-02 15:04", startFullStr)
 	if err != nil {
@@ -352,13 +352,13 @@ func handleCheckRoomAvailability(facade *controller.SpaceManagementControllerFac
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	fmt.Println("For end time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	endDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	endTimeStr := util.GetCommandInput()
-	
+
 	endFullStr := endDateStr + " " + endTimeStr
 	endTime, err = time.Parse("2006-01-02 15:04", endFullStr)
 	if err != nil {
@@ -380,15 +380,15 @@ func handleCheckRoomAvailability(facade *controller.SpaceManagementControllerFac
 
 func handleGetAvailableRooms(facade *controller.SpaceManagementControllerFacade) {
 	fmt.Println("Get Available Rooms")
-	
+
 	var startTime, endTime time.Time
-	
+
 	fmt.Println("For start time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	startDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	startTimeStr := util.GetCommandInput()
-	
+
 	startFullStr := startDateStr + " " + startTimeStr
 	startTime, err1 := time.Parse("2006-01-02 15:04", startFullStr)
 	if err1 != nil {
@@ -396,13 +396,13 @@ func handleGetAvailableRooms(facade *controller.SpaceManagementControllerFacade)
 		util.PressEnterToContinue()
 		return
 	}
-	
+
 	fmt.Println("For end time:")
 	fmt.Print("Enter date (YYYY-MM-DD): ")
 	endDateStr := util.GetCommandInput()
 	fmt.Print("Enter time (HH:MM): ")
 	endTimeStr := util.GetCommandInput()
-	
+
 	endFullStr := endDateStr + " " + endTimeStr
 	endTime, err2 := time.Parse("2006-01-02 15:04", endFullStr)
 	if err2 != nil {

@@ -9,12 +9,13 @@ import (
 
 type Report struct {
 	gorm.Model
-	SeniorProjectId       uint                   `gorm:"not null"`
 	ReportType            ReportType             `gorm:"type:varchar(50);not null"`
 	SubmissionDate        *time.Time             `gorm:"type:date"`
 	DueDate               time.Time              `gorm:"type:date;not null"`
 	ScoreReportAdvisors   []ScoreReportAdvisor   `gorm:"foreignKey:ReportId;references:ID"`
 	ScoreReportCommittees []ScoreReportCommittee `gorm:"foreignKey:ReportId;references:ID"`
+	SeniorProjectId       uint
+	SeniorProject         SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }
 
 func (r *Report) GetID() uint {

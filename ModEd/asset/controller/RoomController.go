@@ -1,4 +1,4 @@
-package spacemanagement
+package controller
 
 import (
 	model "ModEd/asset/model/spacemanagement"
