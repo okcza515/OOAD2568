@@ -20,6 +20,8 @@ func (c *MigrationController) MigrateToDB() error {
 	err := c.db.AutoMigrate(
 		&model.Examination{},
 		&model.Question{},
+		&model.Answer{},
+		&model.Result{},
 	)
 
 	if err != nil {

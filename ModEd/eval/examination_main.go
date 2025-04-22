@@ -2,6 +2,7 @@ package main
 
 import (
 	cli_examination "ModEd/eval/cli/examination"
+	migration_controller "ModEd/eval/controller/migration"
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -22,6 +23,11 @@ func main() {
 		log.Fatal("Connection failed:", err)
 	}
 
+	migrationController := migration_controller.NewMigrationController(db)
+	err = migrationController.MigrateToDB()
+	if err != nil {
+		panic("err: migration failed")
+	}
 
 	fmt.Println("Starting Examination CLI...")
 	for {
