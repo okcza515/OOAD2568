@@ -1,3 +1,4 @@
+// MEP-1010 Work Integrated Learning (WIL)
 package controller
 
 import (
@@ -13,8 +14,8 @@ type WILModuleFacade struct {
 
 func NewWILModuleFacade(
 	db *gorm.DB,
-	courseController *CourseController,
-	classController *ClassController,
+	courseController CourseControllerInterface,
+	classController ClassControllerInterface,
 ) *WILModuleFacade {
 	return &WILModuleFacade{
 		WILProjectController:            CreateWILProjectController(db),
