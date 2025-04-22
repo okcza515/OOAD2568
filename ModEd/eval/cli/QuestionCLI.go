@@ -1,4 +1,4 @@
-package examination
+package cli
 
 import (
 	question_controller "ModEd/eval/controller"
