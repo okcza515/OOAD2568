@@ -200,7 +200,7 @@ func main() {
 									}
 									isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
-									advisor, err := advisorController.AssignAdvisor(projectId, instructorId, isPrimary)
+									advisor, err := advisorController.AssignAdvisor(uint(projectId), uint(instructorId), isPrimary)
 									if err != nil {
 										io.Println(fmt.Sprintf("Error assigning advisor: %v", err))
 									} else {
@@ -233,7 +233,7 @@ func main() {
 									}
 									isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
-									err = advisorController.UpdateAdvisorRole(advisorId, isPrimary)
+									err = advisorController.UpdateAdvisorRole(uint(advisorId), isPrimary)
 									if err != nil {
 										io.Println(fmt.Sprintf("Error updating advisor role: %v", err))
 									} else {
@@ -258,7 +258,7 @@ func main() {
 										return
 									}
 
-									err = advisorController.RemoveAdvisor(advisorId)
+									err = advisorController.RemoveAdvisor(uint(advisorId))
 									if err != nil {
 										io.Println(fmt.Sprintf("Error removing advisor: %v", err))
 									} else {
@@ -372,7 +372,7 @@ func main() {
 									}
 
 									committee := &model.Committee{
-										SeniorProjectId: projectId,
+										SeniorProjectId: uint(projectId),
 										InstructorId:    instructorId,
 									}
 
@@ -1053,7 +1053,7 @@ func main() {
 												} else {
 													for _, cs := range *scoreList {
 														if cs.AssessmentCriteriaLinkId == link.ID {
-															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.ComitteeId))
+															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.CommitteeId))
 														}
 													}
 												}
@@ -1109,7 +1109,7 @@ func main() {
 															} else if scorer == "committee" {
 																score := model.ScoreAssessmentCommittee{
 																	AssessmentCriteriaLinkId: uint(cid),
-																	ComitteeId:               uint(scorerIdVal),
+																	CommitteeId:              uint(scorerIdVal),
 																	Score:                    scoreVal,
 																}
 																if err := scoreCommitteeController.InsertCommitteeScore(&score); err != nil {

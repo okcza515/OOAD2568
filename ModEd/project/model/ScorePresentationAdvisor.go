@@ -7,9 +7,11 @@ import (
 
 type ScorePresentationAdvisor struct {
 	gorm.Model
-	PresentationId uint    `gorm:"not null;index"`
-	AdvisorId      uint    `gorm:"not null;index"`
-	Score          float64 `gorm:"not null"`
+	PresentationId uint
+	Presentation   Presentation `gorm:"foreignKey:PresentationId"`
+	AdvisorId      uint
+	Advisor        Advisor `gorm:"foreignKey:AdvisorId"`
+	Score          float64
 }
 
 func (s *ScorePresentationAdvisor) GetID() uint {

@@ -2,7 +2,7 @@ package controller
 
 import (
 	"ModEd/project/model"
-	utils "ModEd/project/util"
+	utils "ModEd/project/utils"
 	"errors"
 
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ func NewAdvisorController(db *gorm.DB) *AdvisorController {
 	return &AdvisorController{DB: db}
 }
 
-func (ac *AdvisorController) AssignAdvisor(projectId, instructorId int, isPrimary bool) (*model.Advisor, error) {
+func (ac *AdvisorController) AssignAdvisor(projectId, instructorId uint, isPrimary bool) (*model.Advisor, error) {
 	if err := validateAdvisorAssignment(ac.DB, projectId, instructorId, isPrimary); err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (ac *AdvisorController) AssignAdvisor(projectId, instructorId int, isPrimar
 	return advisor, nil
 }
 
-func (ac *AdvisorController) UpdateAdvisorRole(advisorId int, isPrimary bool) error {
+func (ac *AdvisorController) UpdateAdvisorRole(advisorId uint, isPrimary bool) error {
 	advisor, err := getAdvisorByID(ac.DB, advisorId)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (ac *AdvisorController) UpdateAdvisorRole(advisorId int, isPrimary bool) er
 	return ac.DB.Model(advisor).Update("isPrimary", isPrimary).Error
 }
 
-func (ac *AdvisorController) RemoveAdvisor(advisorId int) error {
+func (ac *AdvisorController) RemoveAdvisor(advisorId uint) error {
 	advisor, err := getAdvisorByID(ac.DB, advisorId)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (ac *AdvisorController) ListAdvisorsByInstructor(instructorId int) ([]model
 	return advisors, err
 }
 
-func advisorExists(db *gorm.DB, projectId, instructorId int) (bool, error) {
+func advisorExists(db *gorm.DB, projectId, instructorId uint) (bool, error) {
 	var exists bool
 	err := db.Raw(`
 		SELECT EXISTS (
@@ -93,7 +93,7 @@ func advisorExists(db *gorm.DB, projectId, instructorId int) (bool, error) {
 	return exists, err
 }
 
-func hasPrimaryAdvisor(db *gorm.DB, projectId int) (bool, error) {
+func hasPrimaryAdvisor(db *gorm.DB, projectId uint) (bool, error) {
 	var exists bool
 	err := db.Raw(`
 		SELECT EXISTS (
@@ -104,7 +104,7 @@ func hasPrimaryAdvisor(db *gorm.DB, projectId int) (bool, error) {
 	return exists, err
 }
 
-func getAdvisorByID(db *gorm.DB, advisorId int) (*model.Advisor, error) {
+func getAdvisorByID(db *gorm.DB, advisorId uint) (*model.Advisor, error) {
 	var advisor model.Advisor
 	if err := db.First(&advisor, "advisorId = ?", advisorId).Error; err != nil {
 		return nil, errors.New("advisor not found")
@@ -112,7 +112,7 @@ func getAdvisorByID(db *gorm.DB, advisorId int) (*model.Advisor, error) {
 	return &advisor, nil
 }
 
-func validateAdvisorAssignment(db *gorm.DB, projectId, instructorId int, isPrimary bool) error {
+func validateAdvisorAssignment(db *gorm.DB, projectId, instructorId uint, isPrimary bool) error {
 	if exists, _ := advisorExists(db, projectId, instructorId); exists {
 		return errors.New("instructor is already assigned to this project")
 	}
@@ -126,7 +126,7 @@ func validateAdvisorAssignment(db *gorm.DB, projectId, instructorId int, isPrima
 	return nil
 }
 
-func validatePrimaryAdvisorChange(db *gorm.DB, projectId, advisorId int) error {
+func validatePrimaryAdvisorChange(db *gorm.DB, projectId, advisorId uint) error {
 	hasPrimary, err := hasPrimaryAdvisor(db, projectId)
 	if err != nil {
 		return err

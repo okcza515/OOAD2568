@@ -6,7 +6,8 @@ import (
 
 type Advisor struct {
 	gorm.Model
-	SeniorProjectId int  `gorm:"type:text;not null;index"`
-	InstructorId    int  `gorm:"type:text;not null;index"`
 	IsPrimary       bool `gorm:"not null"`
+	SeniorProjectId uint
+	InstructorId    uint
+	SeniorProject   SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }

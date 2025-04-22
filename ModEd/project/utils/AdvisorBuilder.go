@@ -15,12 +15,12 @@ func NewAdvisorBuilder() *AdvisorBuilder {
 	}
 }
 
-func (b *AdvisorBuilder) SetProjectID(projectId int) *AdvisorBuilder {
+func (b *AdvisorBuilder) SetProjectID(projectId uint) *AdvisorBuilder {
 	b.advisor.SeniorProjectId = projectId
 	return b
 }
 
-func (b *AdvisorBuilder) SetInstructorID(instructorId int) *AdvisorBuilder {
+func (b *AdvisorBuilder) SetInstructorID(instructorId uint) *AdvisorBuilder {
 	b.advisor.InstructorId = instructorId
 	return b
 }

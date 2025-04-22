@@ -2,14 +2,17 @@ package model
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
 type ScoreAssignmentCommittee struct {
 	gorm.Model
-	AssignmentId uint    `gorm:"not null;index"`
-	CommitteeId  uint    `gorm:"not null;index"`
-	Score        float64 `gorm:"not null"`
+	AssignmentId uint       `gorm:"not null;index"`
+	CommitteeId  uint       `gorm:"not null;index"`
+	Score        float64    `gorm:"not null"`
+	Assignment   Assignment `gorm:"foreignKey:AssignmentId"`
+	Committee    Committee  `gorm:"foreignKey:CommitteeId"`
 }
 
 func (s *ScoreAssignmentCommittee) GetID() uint {

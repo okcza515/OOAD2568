@@ -2,14 +2,17 @@ package model
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
 type ScoreAssignmentAdvisor struct {
 	gorm.Model
-	AssignmentId             uint    `gorm:"not null;index"`
-	AdvisorId                uint    `gorm:"not null;index"`
-	Score                    float64 `gorm:"not null"`
+	AssignmentId uint       `gorm:"not null;index"`
+	AdvisorId    uint       `gorm:"not null;index"`
+	Score        float64    `gorm:"not null"`
+	Assignment   Assignment `gorm:"foreignKey:AssignmentId"`
+	Advisor      Advisor    `gorm:"foreignKey:AdvisorId"`
 }
 
 func (s *ScoreAssignmentAdvisor) GetID() uint {

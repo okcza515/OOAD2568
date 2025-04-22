@@ -8,9 +8,10 @@ import (
 
 type Presentation struct {
 	gorm.Model
-	SeniorProjectId  uint             `gorm:"type:text;not null;index"`
 	PresentationType PresentationType `gorm:"type:varchar(50);not null"`
 	Date             time.Time        `gorm:"type:date;not null"`
+	SeniorProjectId  uint
+	SeniorProject    SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }
 
 func (p Presentation) GetID() uint {

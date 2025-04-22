@@ -8,9 +8,11 @@ import (
 
 type ScoreReportAdvisor struct {
 	gorm.Model
-	ReportId             uint    `gorm:"not null"`
-	AdvisorId            uint    `gorm:"not null"`
-	Score                float64 `gorm:"not null"`
+	ReportId  uint    `gorm:"not null"`
+	AdvisorId uint    `gorm:"not null"`
+	Score     float64 `gorm:"not null"`
+	Report    Report  `gorm:"foreignKey:ReportId"`
+	Advisor   Advisor `gorm:"foreignKey:AdvisorId"`
 }
 
 func (s *ScoreReportAdvisor) GetID() uint {

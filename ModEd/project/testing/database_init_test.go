@@ -4,6 +4,7 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"os"
+	"testing"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -16,12 +17,13 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentC
 	db.Exec("PRAGMA foreign_keys = ON;")
 
 	if err := db.AutoMigrate(
+		&model.SeniorProject{},
+		&model.GroupMember{},
 		&model.Advisor{},
 		&model.Assessment{},
 		&model.AssessmentCriteria{},
 		&model.Assignment{},
 		&model.Committee{},
-		&model.GroupMember{},
 		&model.Presentation{},
 		&model.Progress{},
 		&model.Report{},
@@ -33,7 +35,6 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentC
 		&model.ScorePresentationCommittee{},
 		&model.ScoreReportAdvisor{},
 		&model.ScoreReportCommittee{},
-		&model.SeniorProject{},
 	); err != nil {
 		panic(err)
 	}
@@ -50,4 +51,8 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentC
 
 func cleanup(dbName string) {
 	os.Remove(dbName)
+}
+
+func TestDatabase(t *testing.T) {
+	Init()
 }
