@@ -1109,7 +1109,7 @@ func main() {
 															} else if scorer == "committee" {
 																score := model.ScoreAssessmentCommittee{
 																	AssessmentCriteriaLinkId: uint(cid),
-																	ComitteeId:               uint(scorerIdVal),
+																	CommitteeId:              uint(scorerIdVal),
 																	Score:                    scoreVal,
 																}
 																if err := scoreCommitteeController.InsertCommitteeScore(&score); err != nil {
