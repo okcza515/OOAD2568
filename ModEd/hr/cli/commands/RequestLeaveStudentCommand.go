@@ -26,21 +26,23 @@ func requestLeaveStudent(args []string, tx *gorm.DB) error {
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
-	hrFacade := controller.NewHRFacade(db)
+	tm := &util.TransactionManager{DB: tx}
 
-	builder := hrModel.NewRequestLeaveBuilder(true)
-	req, err := builder.WithID(*studentID).
-		WithLeaveType(*leaveType).
-		WithReason(*reason).
-		WithLeaveDate(*leaveDateStr).
-		Build()
+	err := tm.Execute(func(tx *gorm.DB) error {
+		hrFacade := controller.NewHRFacade(db)
+		factory := &hrModel.RequestLeaveFactory{}
+		req, err := factory.Create("student", *studentID, *leaveType, *reason, *leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to build leave request: %v", err)
+		}
 
+		if err := hrFacade.SubmitLeaveStudentRequest(req.(*hrModel.RequestLeaveStudent)); err != nil {
+			return fmt.Errorf("failed to submit leave request: %v", err)
+		}
+		return nil
+	})
 	if err != nil {
-		return fmt.Errorf("failed to build leave request: %v", err)
-	}
-
-	if err := hrFacade.SubmitLeaveStudentRequest(req.(*hrModel.RequestLeaveStudent)); err != nil {
-		return fmt.Errorf("failed to submit leave request: %v", err)
+		return err
 	}
 
 	fmt.Println("Leave request submitted successfully.")
