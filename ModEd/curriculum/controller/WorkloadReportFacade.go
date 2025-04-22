@@ -1,23 +1,22 @@
 package controller
 
 import (
-	controller "ModEd/curriculum/controller"
 	"fmt"
 )
 
 type WorkloadReportControllerFacade struct {
 	title                    string
-	classWorkloadService     controller.ClassWorkloadService
-	meetingControllerService controller.MeetingControllerService
-	projectControllerService controller.ProjectControllerService
-	studentWorkloadService   controller.StudentWorkloadService
+	classWorkloadService     ClassWorkloadService
+	meetingControllerService MeetingControllerService
+	projectControllerService ProjectControllerService
+	studentWorkloadService   StudentWorkloadService
 }
 
 func CreateWorkloadReportFacade(
-	classWorkload controller.ClassWorkloadService,
-	meetingController controller.MeetingControllerService,
-	projectController controller.ProjectControllerService,
-	studentWorkload controller.StudentWorkloadService,
+	classWorkload ClassWorkloadService,
+	meetingController MeetingControllerService,
+	projectController ProjectControllerService,
+	studentWorkload StudentWorkloadService,
 ) *WorkloadReportControllerFacade {
 	return &WorkloadReportControllerFacade{
 		title:                    "Workload Report",
@@ -32,8 +31,12 @@ func (f *WorkloadReportControllerFacade) GenerateReport(instructorID uint) {
 	fmt.Println("==========", f.title, "==========")
 
 	fmt.Println("\n[1] Academic Class Workload:")
-	lectures := f.classWorkloadService.GetClassLecturesByClassId(1)
-	fmt.Println(lectures)
+	lectures, err := f.classWorkloadService.GetClassLecturesByClassId(1)
+	if err != nil {
+		fmt.Println("Error getting lectures:", err)
+	} else {
+		fmt.Println(lectures)
+	}
 
 	fmt.Println("\n[2] Administrative Meetings:")
 	meetings, err := f.meetingControllerService.GetAll()
