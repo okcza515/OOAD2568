@@ -47,3 +47,4 @@ go.sum
 .qodo/
 ModEd/go.sum
 ModEd/go.mod
+.qodo
