@@ -12,11 +12,12 @@ import (
 
 type Progress struct {
 	gorm.Model
-	StudentCode commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
-	Title       evalModel.Assignment
-	Status      string
-	LastUpdate  time.Time `gorm:"autoUpdateTime"`
-	TotalSubmit uint
+	StudentCode  commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
+	Title        evalModel.Assignment
+	AssignmentId evalModel.Assignment
+	Status       evalModel.Assignment
+	LastUpdate   time.Time `gorm:"autoUpdateTime"`
+	TotalSubmit  uint
 }
 
 type ProgressController struct {
