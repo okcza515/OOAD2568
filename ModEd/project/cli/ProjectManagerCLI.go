@@ -498,9 +498,9 @@ func main() {
 				Title: "Project Execution and Monitoring",
 				Children: []*utils.MenuItem{
 					{
-						Title: "View Schedule",
+						Title: "View Reports",
 						Action: func(io *utils.MenuIO) {
-							io.Println("Viewing Schedule...")
+							io.Println("Viewing Report...")
 
 							formattedReports, err := reportController.GetFormattedReportList()
 							if err != nil {
@@ -511,7 +511,7 @@ func main() {
 								io.Println("No reports found.")
 								return
 							}
-							io.Println("Schedule (Based on Due Dates):")
+							io.Println("Report (Based on Due Dates):")
 							for _, report := range formattedReports {
 								io.Println(report)
 							}
