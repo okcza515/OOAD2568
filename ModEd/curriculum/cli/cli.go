@@ -6,8 +6,7 @@ import (
 	instructorWorkload "ModEd/curriculum/cli/instructor_workload"
 	migrationcli "ModEd/curriculum/cli/migration"
 	wilproject "ModEd/curriculum/cli/wil-project"
-	controller "ModEd/curriculum/controller/curriculum"
-	"ModEd/curriculum/controller/migration"
+	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 
@@ -34,7 +33,7 @@ func main() {
 	curriculumController := controller.NewCurriculumController(db)
 	classController := controller.NewClassController(db)
 	courseController := controller.NewCourseController(db)
-	migrationController := migration.NewMigrationController(db)
+	migrationController := controller.NewMigrationController(db)
 
 	for {
 		displayMainMenu()

@@ -7,8 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
-	controller "ModEd/curriculum/controller/curriculum"
-	"ModEd/curriculum/controller/migration"
+	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 )
@@ -223,7 +222,7 @@ func TestSeedCourse(t *testing.T) {
 		DBPath: "../../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
-	migrationController := migration.NewMigrationController(db)
+	migrationController := controller.NewMigrationController(db)
 	if err := migrationController.MigrateToDB(); err != nil {
 		t.Fatalf("Failed to migrate to db: %v", err)
 	}

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"ModEd/core"
-	controller "ModEd/curriculum/controller/curriculum"
 	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
@@ -10,8 +9,8 @@ import (
 
 type WILProjectCurriculumController struct {
 	connector        *gorm.DB
-	courseController *controller.CourseController
-	classController  *controller.ClassController
+	courseController *CourseController
+	classController  *ClassController
 }
 
 type WILProjectCurriculumControllerInterface interface {
@@ -20,8 +19,8 @@ type WILProjectCurriculumControllerInterface interface {
 
 func CreateWILProjectCurriculumController(
 	connector *gorm.DB,
-	courseController *controller.CourseController,
-	classController *controller.ClassController,
+	courseController *CourseController,
+	classController *ClassController,
 ) *WILProjectCurriculumController {
 
 	return &WILProjectCurriculumController{

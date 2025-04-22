@@ -4,8 +4,7 @@ package instructorworkload
 import (
 	"ModEd/curriculum/cli/instructor_workload/handler"
 	controller "ModEd/curriculum/controller"
-	curriculumController "ModEd/curriculum/controller/curriculum"
-	migrationController "ModEd/curriculum/controller/migration"
+	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"ModEd/utils/deserializer"
@@ -34,7 +33,7 @@ func RunInstructorWorkloadModuleCLI(
 		switch choice {
 		case "1": // Load CSV Seed Data
 			fmt.Println("Loading CSV Seed Data...")
-			migrationController := migrationController.NewMigrationController(db)
+			migrationController := controller.NewMigrationController(db)
 			migrationController.DropAllTables() // Drop
 			migrationController.MigrateToDB()   // Migrate
 			seedData := map[string]interface{}{

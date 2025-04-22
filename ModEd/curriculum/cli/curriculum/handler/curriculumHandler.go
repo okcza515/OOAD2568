@@ -2,7 +2,7 @@
 package handler
 
 import (
-	controller "ModEd/curriculum/controller/curriculum"
+	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 )

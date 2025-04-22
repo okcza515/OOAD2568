@@ -3,7 +3,7 @@ package wilproject
 import (
 	"ModEd/curriculum/cli/wil-project/handler"
 	"ModEd/curriculum/controller"
-	curriculumController "ModEd/curriculum/controller/curriculum"
+	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 

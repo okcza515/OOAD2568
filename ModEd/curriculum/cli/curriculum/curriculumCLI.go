@@ -3,7 +3,7 @@ package curriculum
 
 import (
 	"ModEd/curriculum/cli/curriculum/handler"
-	curriculumController "ModEd/curriculum/controller/curriculum"
+	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
 
