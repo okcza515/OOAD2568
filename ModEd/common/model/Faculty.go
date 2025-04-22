@@ -49,11 +49,12 @@ func TruncateFaculties(db *gorm.DB) error {
 }
 
 func RegisterFaculties(db *gorm.DB, faculties []*Faculty) error {
-	if err := TruncateFaculties(db); err != nil {
-		return err
-	}
-	for _, faculty := range faculties {
-		if err := db.Create(faculty).Error; err != nil {
+	for _, f := range faculties {
+		newFaculty, err := NewFaculty(db, *f)
+		if err != nil {
+			return err
+		}
+		if err := db.Create(newFaculty).Error; err != nil {
 			return err
 		}
 	}
