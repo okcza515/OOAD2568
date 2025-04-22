@@ -1,6 +1,5 @@
 [
   {
-    "room_id": 1,
     "room_name": "Conference Room A",
     "room_type": "MEETING",
     "description": "Spacious room with projector and whiteboard",
@@ -13,7 +12,6 @@
     "supply": []
   },
   {
-    "room_id": 2,
     "room_name": "Lecture Hall 101",
     "room_type": "LECTURE",
     "description": "Large hall with seating for 100",
@@ -26,7 +24,6 @@
     "supply": []
   },
   {
-    "room_id": 3,
     "room_name": "Laboratory B",
     "room_type": "LAB",
     "description": "Chemistry lab with fume hood",
@@ -39,7 +36,6 @@
     "supply": []
   },
   {
-    "room_id": 4,
     "room_name": "Private Office 205",
     "room_type": "OFFICE",
     "description": "Executive office with attached restroom",
@@ -52,7 +48,6 @@
     "supply": []
   },
   {
-    "room_id": 5,
     "room_name": "Auditorium",
     "room_type": "AUDITORIUM",
     "description": "Fully equipped for presentations",
@@ -65,7 +60,6 @@
     "supply": []
   },
   {
-    "room_id": 6,
     "room_name": "Storage Room 12",
     "room_type": "STORAGE",
     "description": "Used for equipment storage",
@@ -78,7 +72,6 @@
     "supply": []
   },
   {
-    "room_id": 7,
     "room_name": "IT Server Room",
     "room_type": "SERVER",
     "description": "Restricted access to IT personnel",
@@ -91,7 +84,6 @@
     "supply": []
   },
   {
-    "room_id": 8,
     "room_name": "Meeting Room Delta",
     "room_type": "MEETING",
     "description": "Small meeting room with video conferencing",
@@ -104,7 +96,6 @@
     "supply": []
   },
   {
-    "room_id": 9,
     "room_name": "Studio Room",
     "room_type": "STUDIO",
     "description": "Recording studio with soundproof walls",
@@ -117,7 +108,6 @@
     "supply": []
   },
   {
-    "room_id": 10,
     "room_name": "Break Room",
     "room_type": "LOUNGE",
     "description": "Employee relaxation area",

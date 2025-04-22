@@ -215,6 +215,8 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 				}
 				util.PressEnterToContinue()
 			}
+		case "back":
+			util.PressEnterToContinue()
 		default:
 			fmt.Println("Invalid Command")
 			util.PressEnterToContinue()
