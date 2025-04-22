@@ -11,11 +11,18 @@ import (
 )
 
 func TestInsertReport(t *testing.T) {
-	_, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -31,11 +38,18 @@ func TestInsertReport(t *testing.T) {
 }
 
 func TestRetrieveReport(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -50,11 +64,18 @@ func TestRetrieveReport(t *testing.T) {
 }
 
 func TestListAllReports(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -72,11 +93,18 @@ func TestListAllReports(t *testing.T) {
 }
 
 func TestUpdateReport(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -101,11 +129,18 @@ func TestUpdateReport(t *testing.T) {
 }
 
 func TestDeleteReport(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -126,11 +161,18 @@ func TestDeleteReport(t *testing.T) {
 }
 
 func TestSubmitReport(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
+	seniorProject := model.SeniorProject{
+		GroupName: "Test Group",
+	}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		t.Fatalf("Failed to create senior project: %v", err)
+	}
+
 	report := model.Report{
-		SeniorProjectId: 1,
+		SeniorProjectId: seniorProject.ID,
 		ReportType:      model.ReportTypeProposal,
 		DueDate:         time.Now().AddDate(0, 1, 0),
 	}
@@ -154,7 +196,7 @@ func TestSubmitReport(t *testing.T) {
 }
 
 func TestLoadReportsFromCSV(t *testing.T) {
-	db, _, _, _, reportCtrl, dbName := Init()
+	db, _, _, _, _, _, reportCtrl, dbName := Init()
 	t.Cleanup(func() { cleanup(dbName) })
 
 	filePath := "test_reports.csv"

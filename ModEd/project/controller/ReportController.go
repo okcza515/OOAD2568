@@ -4,6 +4,7 @@ import (
 	"ModEd/core"
 	"ModEd/project/model"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -27,7 +28,7 @@ func NewReportController(db *gorm.DB) *ReportController {
 func (c *ReportController) ListAllReports() ([]model.Report, error) {
 	var reports []model.Report
 	if err := c.db.Model(&model.Report{}).Find(&reports).Error; err != nil {
-			return nil, err
+		return nil, err
 	}
 	return reports, nil
 }
@@ -56,7 +57,10 @@ func (c *ReportController) UpdateReport(report *model.Report) error {
 }
 
 func (c *ReportController) DeleteReport(id uint) error {
-	return c.DeleteByID(id)
+	if err := c.db.Delete(&model.Report{}, id).Error; err != nil {
+		return fmt.Errorf("failed to delete report: %w", err)
+	}
+	return nil
 }
 
 func (c *ReportController) GetFormattedReportList() ([]string, error) {
@@ -115,34 +119,44 @@ func (c *ReportController) LoadReportsFromCSV(filePath string) error {
 	reader := csv.NewReader(file)
 	rows, err := reader.ReadAll()
 	if err != nil {
-		return fmt.Errorf("failed to read CSV: %w", err)
-	}
-
-	if err := c.db.Exec("DELETE FROM reports").Error; err != nil {
-		return fmt.Errorf("failed to clear reports table: %w", err)
+		return fmt.Errorf("failed to read CSV file: %w", err)
 	}
 
 	for _, row := range rows {
 		if len(row) < 3 {
-			continue
+			return fmt.Errorf("invalid CSV format")
 		}
 
 		seniorProjectID, err := strconv.Atoi(row[0])
 		if err != nil {
-			return fmt.Errorf("invalid SeniorProjectId: %w", err)
+			return fmt.Errorf("invalid senior project ID: %w", err)
 		}
-
+		reportType := row[1]
 		dueDate, err := time.Parse("2006-01-02", row[2])
 		if err != nil {
-			return fmt.Errorf("invalid DueDate format: %w", err)
+			return fmt.Errorf("invalid due date: %w", err)
+		}
+
+		var seniorProject model.SeniorProject
+		if err := c.db.First(&seniorProject, seniorProjectID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				seniorProject = model.SeniorProject{
+					Model:     gorm.Model{ID: uint(seniorProjectID)},
+					GroupName: fmt.Sprintf("Auto-Generated Group %d", seniorProjectID),
+				}
+				if err := c.db.Create(&seniorProject).Error; err != nil {
+					return fmt.Errorf("failed to create senior project: %w", err)
+				}
+			} else {
+				return fmt.Errorf("failed to retrieve senior project: %w", err)
+			}
 		}
 
 		report := model.Report{
 			SeniorProjectId: uint(seniorProjectID),
-			ReportType:      model.ReportType(row[1]),
+			ReportType:      model.ReportType(reportType),
 			DueDate:         dueDate,
 		}
-
 		if err := c.db.Create(&report).Error; err != nil {
 			return fmt.Errorf("failed to insert report: %w", err)
 		}
