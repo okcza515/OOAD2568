@@ -5,6 +5,7 @@ import (
 	modelCommon "ModEd/common/model"
 	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
+	modelInstructorWorkload "ModEd/curriculum/model"
 	modelInternShip "ModEd/curriculum/model"
 
 	// modelInternShip "ModEd/curriculum/model/Internship"
@@ -38,6 +39,15 @@ func (c *MigrationController) MigrateToDB() error {
 		&modelCommon.Student{},
 		&modelInternShip.InternshipReport{},
 		&modelInternShip.InternshipApplication{},
+		&modelInstructorWorkload.ClassLecture{},
+		&modelInstructorWorkload.ClassMaterial{},
+		&modelInstructorWorkload.CoursePlan{},
+		&modelInstructorWorkload.StudentAdvisor{},
+		&modelInstructorWorkload.StudentRequest{},
+		&modelInstructorWorkload.Meeting{},
+		&modelInstructorWorkload.ProjectEvaluation{},
+		&modelInstructorWorkload.ProjectAdvisor{},
+		&modelInstructorWorkload.ProjectCommittee{},
 	)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
@@ -63,6 +73,15 @@ func (c *MigrationController) DropAllTables() error {
 		&modelCommon.Student{},
 		&modelInternShip.InternshipReport{},
 		&modelInternShip.InternshipApplication{},
+		&modelInstructorWorkload.ClassLecture{},
+		&modelInstructorWorkload.ClassMaterial{},
+		&modelInstructorWorkload.CoursePlan{},
+		&modelInstructorWorkload.StudentAdvisor{},
+		&modelInstructorWorkload.StudentRequest{},
+		&modelInstructorWorkload.Meeting{},
+		&modelInstructorWorkload.ProjectEvaluation{},
+		&modelInstructorWorkload.ProjectAdvisor{},
+		&modelInstructorWorkload.ProjectCommittee{},
 	)
 	if err != nil {
 		return err

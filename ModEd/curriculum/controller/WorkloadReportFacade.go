@@ -57,7 +57,7 @@ func (f *WorkloadReportControllerFacade) GenerateReport(instructorID uint) {
 	}
 
 	fmt.Println("\n[4] Student Advisor Info:")
-	advisingInfo, err := f.studentWorkloadService.GetByInstructorID(instructorID)
+	advisingInfo, err := f.studentWorkloadService.GetStudentRequestsByInstructorId(instructorID)
 	if err != nil {
 		fmt.Println("Error getting student advisor info:", err)
 	} else {
