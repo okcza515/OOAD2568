@@ -13,7 +13,7 @@ type Instructor struct {
 	LastName       string     `gorm:"not null" csv:"last_name" json:"last_name"`
 	Email          string     `gorm:"not null" csv:"email" json:"email"`
 	StartDate      *time.Time `csv:"start_date" json:"start_date"`
-	Department     string    `csv:"department" json:"department"`
+	Department     *string    `csv:"department" json:"department"`
 }
 
 func GetAllInstructors(db *gorm.DB) ([]*Instructor, error) {
