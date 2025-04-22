@@ -41,6 +41,7 @@ func main() {
 		}
 	}
 
+	seniorProjectController := controller.NewSeniorProjectController(db)
 	advisorController := controller.NewAdvisorController(db)
 	committeeController := controller.NewCommitteeController(db)
 	reportController := controller.NewReportController(db)
@@ -183,8 +184,19 @@ func main() {
 					{
 						Title: "Create Senior Project",
 						Action: func(io *utils.MenuIO) {
-							io.Println("Creating Senior Project...")
-							// Add logic to create senior project เพิ่มแล้วลบด้วย
+							io.Print("Enter the group name (-1 to cancel): ")
+							groupNameStr, err := io.ReadInput()
+							if err != nil || groupNameStr == "-1" {
+								io.Println("Cancelled.")
+								return
+							}
+
+							if err := seniorProjectController.InsertSeniorProject(model.SeniorProject{
+								GroupName: groupNameStr,
+							}); err != nil {
+								io.Println(err.Error())
+								return
+							}
 						},
 					},
 					{
