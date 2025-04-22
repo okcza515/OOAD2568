@@ -140,6 +140,7 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 		if err := deserializer.Deserialize(&departments); err != nil {
 			panic(err)
 		}
+		fmt.Println(departments)
 		departmentController.Register(departments)
 		fmt.Println("Department data updated successfully.")
 	} else if choice == 3 {

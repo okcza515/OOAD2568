@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -52,7 +54,8 @@ func RegisterDepartments(db *gorm.DB, departments []*Department) error {
 		if err != nil {
 			return err
 		}
-		if err := db.Create(newDept).Error; err != nil {
+		fmt.Println("\n", newDept)
+		if err := db.Create(dept).Error; err != nil {
 			return err
 		}
 	}
