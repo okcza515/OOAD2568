@@ -1,7 +1,7 @@
 //Chanawat Limpanatewin 65070503445
 //MEP-1006
 
-package evaluation
+package cli
 
 import (
 	"fmt"

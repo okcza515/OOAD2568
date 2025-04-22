@@ -1,16 +1,15 @@
-//MEP-1006
-
+// mep 1006
 package main
 
 import (
-	"ModEd/eval/cli/assignment"
-	"ModEd/eval/cli/evaluation"
+	"ModEd/eval/cli"
 	"fmt"
 	// "gorm.io/gorm"
 )
 
 func main() {
-	fmt.Println("Hello from Manager")
-	assignment.PrintAssignment()
-	evaluation.PrintEvaluation()
+	fmt.Println("Hello from Main")
+
+	cli.PrintAssignment()
+	cli.PrintEvaluation()
 }
