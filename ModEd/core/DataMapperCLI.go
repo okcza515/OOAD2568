@@ -1,4 +1,3 @@
-// MEP-1001
 package core
 
 import (
@@ -10,25 +9,14 @@ import (
 	"reflect"
 )
 
-// fix: Please Check @NoCODEEE
-// I dont know bro I dont understand a single bit (by @NoCODEEE)
-
-
-// ========== Strategy Pattern Interfaces ==========
-
-// LoadStrategy defines a strategy for loading data from a file
 type LoadStrategy interface {
 	Load(recordType reflect.Type) (interface{}, error)
 }
 
-// DisplayStrategy defines a strategy for displaying data
 type DisplayStrategy interface {
 	Display(results interface{})
 }
 
-// ========== Concrete Strategy Implementations ==========
-
-// CSVLoadStrategy implements LoadStrategy for CSV files
 type CSVLoadStrategy struct {
 	FilePath string
 }
@@ -40,7 +28,6 @@ func (s *CSVLoadStrategy) Load(recordType reflect.Type) (interface{}, error) {
 	return result, nil
 }
 
-// JSONLoadStrategy implements LoadStrategy for JSON files
 type JSONLoadStrategy struct {
 	FilePath string
 }
@@ -52,7 +39,6 @@ func (s *JSONLoadStrategy) Load(recordType reflect.Type) (interface{}, error) {
 	return result, nil
 }
 
-// TextDisplayStrategy implements DisplayStrategy for text output
 type TextDisplayStrategy struct{}
 
 func (s *TextDisplayStrategy) Display(results interface{}) {
@@ -72,7 +58,6 @@ func (s *TextDisplayStrategy) Display(results interface{}) {
 	}
 }
 
-// JSONDisplayStrategy implements DisplayStrategy for JSON output
 type JSONDisplayStrategy struct{}
 
 func (s *JSONDisplayStrategy) Display(results interface{}) {
@@ -84,9 +69,6 @@ func (s *JSONDisplayStrategy) Display(results interface{}) {
 	fmt.Println(string(jsonData))
 }
 
-// ========== Factory Methods ==========
-
-// LoadStrategyFactory creates the appropriate LoadStrategy based on file extension
 type LoadStrategyFactory struct{}
 
 func (f *LoadStrategyFactory) CreateLoadStrategy(filePath string) (LoadStrategy, error) {
@@ -101,20 +83,15 @@ func (f *LoadStrategyFactory) CreateLoadStrategy(filePath string) (LoadStrategy,
 	return nil, fmt.Errorf("unsupported file extension: %s", ext)
 }
 
-// DisplayStrategyFactory creates the appropriate DisplayStrategy based on format
 type DisplayStrategyFactory struct{}
 
 func (f *DisplayStrategyFactory) CreateDisplayStrategy(format string) DisplayStrategy {
 	if format == "json" {
 		return &JSONDisplayStrategy{}
 	}
-	// Default to text display
 	return &TextDisplayStrategy{}
 }
 
-// ========== Main CLI Implementation ==========
-
-// DataMapperCLI provides a command line interface for interacting with DataMapper
 type DataMapperCLI struct {
 	FilePath       string
 	OutputFormat   string
@@ -122,7 +99,6 @@ type DataMapperCLI struct {
 	displayFactory DisplayStrategyFactory
 }
 
-// NewDataMapperCLI creates a new CLI instance with the specified configuration
 func NewDataMapperCLI() *DataMapperCLI {
 	return &DataMapperCLI{
 		loadFactory:    LoadStrategyFactory{},
@@ -130,7 +106,6 @@ func NewDataMapperCLI() *DataMapperCLI {
 	}
 }
 
-// ParseArgs parses command line arguments
 func (cli *DataMapperCLI) ParseArgs() {
 	flag.StringVar(&cli.FilePath, "file", "", "Path to data file (.csv or .json)")
 	flag.StringVar(&cli.OutputFormat, "format", "text", "Output format (text or json)")
@@ -143,7 +118,6 @@ func (cli *DataMapperCLI) ParseArgs() {
 	}
 }
 
-// PrintUsage prints usage information
 func (cli *DataMapperCLI) PrintUsage() {
 	fmt.Println("Usage: program -file=<file_path> [-format=<format>]")
 	fmt.Println("Options:")
@@ -151,27 +125,22 @@ func (cli *DataMapperCLI) PrintUsage() {
 	fmt.Println("  -format   Output format: 'text' (default) or 'json'")
 }
 
-// Run executes the CLI application with the specified data type
 func (cli *DataMapperCLI) Run(recordType reflect.Type) {
 	cli.ParseArgs()
 
-	// Create load strategy using factory
 	loadStrategy, err := cli.loadFactory.CreateLoadStrategy(cli.FilePath)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Create display strategy using factory
 	displayStrategy := cli.displayFactory.CreateDisplayStrategy(cli.OutputFormat)
 
-	// Load data
 	results, err := loadStrategy.Load(recordType)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Display results
 	displayStrategy.Display(results)
 }

@@ -1,3 +1,4 @@
+// MEP-1010 Work Integrated Learning (WIL)
 package controller
 
 import (
@@ -9,8 +10,8 @@ import (
 
 type WILProjectCurriculumController struct {
 	connector        *gorm.DB
-	courseController *CourseController
-	classController  *ClassController
+	courseController CourseControllerInterface
+	classController  ClassControllerInterface
 }
 
 type WILProjectCurriculumControllerInterface interface {
@@ -19,8 +20,8 @@ type WILProjectCurriculumControllerInterface interface {
 
 func CreateWILProjectCurriculumController(
 	connector *gorm.DB,
-	courseController *CourseController,
-	classController *ClassController,
+	courseController CourseControllerInterface,
+	classController ClassControllerInterface,
 ) *WILProjectCurriculumController {
 
 	return &WILProjectCurriculumController{

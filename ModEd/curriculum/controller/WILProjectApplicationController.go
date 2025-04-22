@@ -1,14 +1,13 @@
+// MEP-1010 Work Integrated Learning (WIL)
 package controller
 
 import (
-	"ModEd/core"
 	commonModel "ModEd/common/model"
+	"ModEd/core"
 	model "ModEd/curriculum/model"
-	utils "ModEd/curriculum/utils"
-	"fmt"
-	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type WILProjectApplicationController struct {
@@ -27,83 +26,25 @@ type WILProjectApplicationControllerInterface interface {
 
 func CreateWILProjectApplicationController(connector *gorm.DB) *WILProjectApplicationController {
 	return &WILProjectApplicationController{
-		connector: connector, 
+		connector:      connector,
 		BaseController: core.NewBaseController("WILProjectApplication", connector),
 	}
 }
 
-/*
-func (repo WILProjectApplicationController) RegisterWILProjectApplication(application *model.WILProjectApplication) {
-	repo.connector.Create(application)
-}
-
-func (repo WILProjectApplicationController) RegisterWILProjectApplications(applications []*model.WILProjectApplication) {
-	for _, application := range applications {
-		repo.connector.Create(application)
-	}
-}
-
-func (repo WILProjectApplicationController) GetAllWILProjectApplications() ([]*model.WILProjectApplication, error) {
-	applications := []*model.WILProjectApplication{}
-	result := repo.connector.Find(&applications)
-	return applications, result.Error
-}
-
-func (repo WILProjectApplicationController) GetWILProjectApplicationByID(id uint) (*model.WILProjectApplication, error) {
-	application := &model.WILProjectApplication{}
-	result := repo.connector.Where("WILProjectApplicationId = ?", id).First(application)
-	return application, result.Error
-}
-
-func (repo WILProjectApplicationController) UpdateWILProjectApplication(application *model.WILProjectApplication) error {
-	result := repo.connector.Save(application)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
-*/
-
-func (controller WILProjectApplicationController) RegisterWILProjectsApplication() error {
-	WILProjectApplicationModel := model.WILProjectApplication{}
-
-	fmt.Println("\nRegistering WILProjectApplication model")
-
-	numStudents := int(utils.GetUserInputUint("\nHow many students are in the project? 2 or 3: "))
-	var StudentsId []string
-	for len(StudentsId) < numStudents {
-		studentId := utils.GetUserInput("\nEnter Student ID: ")
-		for _, id := range StudentsId {
-			if id == studentId {
-				fmt.Println("\nStudent ID already exists. Please enter a different ID.")
-				continue
-			}
-		}
-
-		// TODO: Check if the student ID is valid
-		// If valid, append to the slice
-		// Else continue
-		StudentsId = append(StudentsId, studentId)
-	}
-	WILProjectApplicationModel.ProjectName = utils.GetUserInput("\nEnter Project Name: ")
-	WILProjectApplicationModel.ProjectDetail = utils.GetUserInput("\nEnter Project Detail: ")
-	WILProjectApplicationModel.Semester = utils.GetUserInput("\nEnter Semester: ")
-	WILProjectApplicationModel.CompanyId = uint(utils.GetUserInputUint("\nEnter Company Id: "))
-	WILProjectApplicationModel.Mentor = utils.GetUserInput("\nEnter Mentor Name: ")
-	WILProjectApplicationModel.AdvisorId = utils.GetUserInputUint("\nEnter Advisor Id: ")
-
-	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
-	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
+func (controller WILProjectApplicationController) RegisterWILProjectsApplication(
+	wilprojectApplication model.WILProjectApplication,
+	studentIds []string,
+) error {
 
 	// result := controller.connector.Create(&WILProjectApplicationModel)
-	resultError := controller.Insert(&WILProjectApplicationModel)
+	resultError := controller.Insert(&wilprojectApplication)
 	if resultError != nil {
 		return resultError
 	}
 
-	for _, studentId := range StudentsId {
+	for _, studentId := range studentIds {
 		WILProjectMemberModel := model.WILProjectMember{
-			WILProjectApplicationId: WILProjectApplicationModel.ID,
+			WILProjectApplicationId: wilprojectApplication.ID,
 			StudentId:               studentId,
 			Student: commonModel.Student{
 				StudentCode: studentId,
@@ -116,4 +57,18 @@ func (controller WILProjectApplicationController) RegisterWILProjectsApplication
 	}
 
 	return nil
+}
+
+func (controller WILProjectApplicationController) ListWILProjectApplication() ([]model.WILProjectApplication, error) {
+	var applications []model.WILProjectApplication
+
+	result := controller.connector.
+		Preload(clause.Associations).
+		Find(&applications)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return applications, nil
 }

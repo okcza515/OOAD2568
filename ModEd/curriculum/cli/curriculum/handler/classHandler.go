@@ -11,7 +11,7 @@ const (
 	defaultClassDataPath = "../../data/curriculum/class.json"
 )
 
-func RunClassCLIHandler(classController *controller.ClassController) {
+func RunClassCLIHandler(classController controller.ClassControllerInterface) {
 	for {
 		printClassMenu()
 		choice := utils.GetUserChoice()
@@ -63,7 +63,7 @@ func printClassMenu() {
 	fmt.Println("0. Exit")
 }
 
-func listClasses(classController *controller.ClassController) (err error) {
+func listClasses(classController controller.ClassControllerInterface) (err error) {
 	classes, err := classController.GetClasses()
 	if err != nil {
 		fmt.Println("Error getting classes:", err)
@@ -76,7 +76,7 @@ func listClasses(classController *controller.ClassController) (err error) {
 	return nil
 }
 
-func getClassById(classController *controller.ClassController) (err error) {
+func getClassById(classController controller.ClassControllerInterface) (err error) {
 	classId := utils.GetUserInputUint("Enter the class ID: ")
 	class, err := classController.GetClass(classId)
 	if err != nil {
@@ -87,12 +87,12 @@ func getClassById(classController *controller.ClassController) (err error) {
 	return nil
 }
 
-func updateClassById(classController *controller.ClassController) (err error) {
+func updateClassById(classController controller.ClassControllerInterface) (err error) {
 
 	return nil
 }
 
-func deleteClassById(classController *controller.ClassController) (err error) {
+func deleteClassById(classController controller.ClassControllerInterface) (err error) {
 	classes, err := classController.GetClasses()
 	if err != nil {
 		fmt.Println("Error getting classes:", err)

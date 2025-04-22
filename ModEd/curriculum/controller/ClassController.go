@@ -17,6 +17,15 @@ type ClassController struct {
 	core *core.BaseController
 }
 
+type ClassControllerInterface interface {
+	CreateClass(class *model.Class) (classId uint, err error)
+	GetClass(classId uint) (class *model.Class, err error)
+	GetClasses() (classes []*model.Class, err error)
+	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
+	DeleteClass(classId uint) (class *model.Class, err error)
+	CreateSeedClass(path string) (classes []*model.Class, err error)
+}
+
 func NewClassController(db *gorm.DB) *ClassController {
 	return &ClassController{
 		db:   db,
