@@ -13,7 +13,12 @@ func RunWILProjectApplicationHandler(controller *controller.WILProjectApplicatio
 
 		switch choice {
 		case "1":
-			controller.RegisterWILProjectsApplication()
+			result := controller.RegisterWILProjectsApplication()
+			if result != nil {
+				fmt.Println("\nError for WIL Project Application:", result)
+				continue
+			}
+			fmt.Println("\nWIL Project Application created successfully")
 		case "2":
 			fmt.Println("2 Not implemented yet...")
 		case "3":
