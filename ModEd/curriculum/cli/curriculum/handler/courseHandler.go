@@ -11,7 +11,7 @@ const (
 	defaultCourseDataPath = "../../data/curriculum/course.json"
 )
 
-func RunCourseCLIHandler(courseController *controller.CourseController) {
+func RunCourseCLIHandler(courseController controller.CourseControllerInterface) {
 	for {
 		printCourseMenu()
 		choice := utils.GetUserChoice()
@@ -63,7 +63,7 @@ func printCourseMenu() {
 	fmt.Println("0. Exit")
 }
 
-func listCourses(courseController *controller.CourseController) (err error) {
+func listCourses(courseController controller.CourseControllerInterface) (err error) {
 	courses, err := courseController.ListCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)
@@ -76,7 +76,7 @@ func listCourses(courseController *controller.CourseController) (err error) {
 	return nil
 }
 
-func getCourseById(courseController *controller.CourseController) (err error) {
+func getCourseById(courseController controller.CourseControllerInterface) (err error) {
 	courseId := utils.GetUserInputUint("Enter the course ID: ")
 	course, err := courseController.GetCourseByID(courseId)
 	if err != nil {
@@ -87,12 +87,12 @@ func getCourseById(courseController *controller.CourseController) (err error) {
 	return nil
 }
 
-func updateCourseById(courseController *controller.CourseController) (err error) {
+func updateCourseById(courseController controller.CourseControllerInterface) (err error) {
 
 	return nil
 }
 
-func deleteCourseById(courseController *controller.CourseController) (err error) {
+func deleteCourseById(courseController controller.CourseControllerInterface) (err error) {
 	courses, err := courseController.ListCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)

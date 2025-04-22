@@ -12,9 +12,9 @@ import (
 
 func RunCurriculumModuleCLI(
 	db *gorm.DB,
-	courseController *curriculumController.CourseController,
-	classController *curriculumController.ClassController,
-	curriculumController *curriculumController.CurriculumController,
+	courseController curriculumController.CourseControllerInterface,
+	classController curriculumController.ClassControllerInterface,
+	curriculumController curriculumController.CurriculumControllerInterface,
 ) {
 
 	input := ""

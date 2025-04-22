@@ -12,8 +12,8 @@ import (
 
 func RunWILModuleCLI(
 	db *gorm.DB,
-	courseController *curriculumController.CourseController,
-	classController *curriculumController.ClassController,
+	courseController curriculumController.CourseControllerInterface,
+	classController curriculumController.ClassControllerInterface,
 ) {
 
 	wilprojectController := controller.CreateWILProjectController(db)

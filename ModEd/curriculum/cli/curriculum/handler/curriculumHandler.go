@@ -11,7 +11,7 @@ const (
 	defaultCurriculumDataPath = "../../data/curriculum/curriculum.json"
 )
 
-func RunCurriculumCLIHandler(curriculumController *controller.CurriculumController) {
+func RunCurriculumCLIHandler(curriculumController controller.CurriculumControllerInterface) {
 	for {
 		printCurriculumMenu()
 		choice := utils.GetUserChoice()
@@ -63,7 +63,7 @@ func printCurriculumMenu() {
 	fmt.Println("0. Exit")
 }
 
-func listCurriculums(curriculumController *controller.CurriculumController) (err error) {
+func listCurriculums(curriculumController controller.CurriculumControllerInterface) (err error) {
 	curriculums, err := curriculumController.GetCurriculums()
 	if err != nil {
 		fmt.Println("Error getting curriculums:", err)
@@ -76,7 +76,7 @@ func listCurriculums(curriculumController *controller.CurriculumController) (err
 	return nil
 }
 
-func getCurriculumById(curriculumController *controller.CurriculumController) (err error) {
+func getCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
 	curriculumId := utils.GetUserInputUint("Enter the curriculum ID: ")
 	curriculum, err := curriculumController.GetCurriculum(curriculumId)
 	if err != nil {
@@ -87,10 +87,10 @@ func getCurriculumById(curriculumController *controller.CurriculumController) (e
 	return nil
 }
 
-func updateCurriculumById(curriculumController *controller.CurriculumController) (err error) {
+func updateCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
 	return nil
 }
-func deleteCurriculumById(curriculumController *controller.CurriculumController) (err error) {
+func deleteCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
 	curriculums, err := curriculumController.GetCurriculums()
 	if err != nil {
 		fmt.Println("Error getting curriculums:", err)

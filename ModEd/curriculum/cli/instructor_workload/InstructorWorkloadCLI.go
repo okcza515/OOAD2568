@@ -4,7 +4,6 @@ package instructorworkload
 import (
 	"ModEd/curriculum/cli/instructor_workload/handler"
 	controller "ModEd/curriculum/controller"
-	curriculumController "ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"ModEd/utils/deserializer"
@@ -15,9 +14,9 @@ import (
 
 func RunInstructorWorkloadModuleCLI(
 	db *gorm.DB,
-	courseController *curriculumController.CourseController,
-	classController *curriculumController.ClassController,
-	curriculumController *curriculumController.CurriculumController,
+	courseController controller.CourseControllerInterface,
+	classController controller.ClassControllerInterface,
+	curriculumController controller.CurriculumControllerInterface,
 ) {
 	coursePlanController := controller.CreateCoursePlanController(db)
 	classWorkloadController := controller.CreateClassWorkloadController(db)

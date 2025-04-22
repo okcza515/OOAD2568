@@ -17,6 +17,15 @@ type CurriculumController struct {
 	core *core.BaseController
 }
 
+type CurriculumControllerInterface interface {
+	CreateSeedCurriculum(path string) (curriculums []*model.Curriculum, err error)
+	CreateCurriculum(curriculum *model.Curriculum) (curriculumId uint, err error)
+	GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
+	GetCurriculums() (curriculums []*model.Curriculum, err error)
+	UpdateCurriculum(updated *model.Curriculum) (curriculum *model.Curriculum, err error)
+	DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
+}
+
 func NewCurriculumController(db *gorm.DB) *CurriculumController {
 	return &CurriculumController{
 		db:   db,

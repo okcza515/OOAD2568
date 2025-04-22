@@ -16,7 +16,16 @@ type CourseController struct {
 	core *core.BaseController
 }
 
-func NewCourseController(db *gorm.DB) *CourseController {
+type CourseControllerInterface interface {
+	CreateCourse(course *model.Course) (courseId uint, err error)
+	GetCourseByID(courseId uint) (course *model.Course, err error)
+	UpdateCourse(updatedCourse *model.Course) (*model.Course, error)
+	DeleteCourse(courseId uint) (course *model.Course, err error)
+	ListCourses() (courses []*model.Course, err error)
+	CreateSeedCourse(path string) (courses []*model.Course, err error)
+}
+
+func NewCourseController(db *gorm.DB) CourseControllerInterface {
 	return &CourseController{
 		db:   db,
 		core: core.NewBaseController("Course", db),
