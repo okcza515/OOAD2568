@@ -47,7 +47,6 @@ func TruncateDepartments(db *gorm.DB) error {
 	return db.Exec("DELETE FROM departments").Error
 }
 
-
 func RegisterDepartments(db *gorm.DB, departments []*Department) error {
 	for _, dept := range departments {
 		newDept, err := NewDepartment(db, *dept)
@@ -60,4 +59,10 @@ func RegisterDepartments(db *gorm.DB, departments []*Department) error {
 		}
 	}
 	return nil
+}
+
+func GetDepartmentsByFaculty(db *gorm.DB, faculty string) ([]*Department, error) {
+	var departments []*Department
+	result := db.Where("faculty = ?", faculty).Find(&departments)
+	return departments, result.Error
 }

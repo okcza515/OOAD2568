@@ -22,6 +22,7 @@ func (c *DepartmentController) GetAll() ([]*model.Department, error) {
 func (c *DepartmentController) GetByName(name string) (*model.Department, error) {
 	return model.GetDepartmentByName(c.DB, name)
 }
+
 func (c *DepartmentController) SetBudget(name string, budget int) error {
 	return model.SetDepartmentBudget(c.DB, name, budget)
 }
@@ -36,4 +37,8 @@ func (c *DepartmentController) Register(departments []*model.Department) error {
 
 func (c *DepartmentController) Truncate() error {
 	return model.TruncateDepartments(c.DB)
+}
+
+func (c *DepartmentController) GetByFaculty(faculty string) ([]*model.Department, error) {
+	return model.GetDepartmentsByFaculty(c.DB, faculty)
 }
