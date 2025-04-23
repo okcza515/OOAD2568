@@ -10,7 +10,6 @@ import (
 	controller "ModEd/curriculum/controller"
 	model "ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
-	"ModEd/eval/controller/migration"
 )
 
 func TestCreateCurriculum(t *testing.T) {
@@ -199,7 +198,7 @@ func TestSeedCurriculum(t *testing.T) {
 		DBPath: "../../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
-	migrationController := migration.NewMigrationController(db)
+	migrationController := controller.NewMigrationController(db)
 	if err := migrationController.MigrateToDB(); err != nil {
 		t.Fatalf("Failed to migrate to db: %v", err)
 	}
