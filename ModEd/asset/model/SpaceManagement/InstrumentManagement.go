@@ -5,7 +5,7 @@ import (
 	"ModEd/asset/model"
 	"gorm.io/gorm"
 )
-
+      
 type InstrumentManagement struct {
 	gorm.Model
 	AssetManagementID  uint                   `gorm:"type:integer" json:"asset_management_id" csv:"asset_management_id"`
