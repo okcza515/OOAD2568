@@ -86,3 +86,17 @@ func (c *RoomController) DeleteRoom(Id uint) error {
 	result := c.db.Model(&existingRoom).UpdateColumn("DeletedAt", time.Now())
 	return result.Error
 }
+
+func (c *RoomController) DeleteAllRooms() error {
+	allRooms := new([]model.Room)
+	result := c.db.Find(&allRooms)
+	if result.Error != nil {
+		return result.Error
+	}
+	for _, room := range *allRooms {
+		if err := c.db.Model(&room).UpdateColumn("DeletedAt", time.Now()).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

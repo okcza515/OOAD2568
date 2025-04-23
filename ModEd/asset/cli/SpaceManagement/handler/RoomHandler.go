@@ -16,7 +16,8 @@ func printRoomMenuOption() {
 	fmt.Println("3. Get detail of a Room")
 	fmt.Println("4. Update a Room")
 	fmt.Println("5. Delete a Room")
-	fmt.Println("6. Seed Rooms Data")
+	fmt.Println("6. Delete all Rooms")
+	fmt.Println("7. Seed Rooms Data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("===========================")
 }
@@ -27,6 +28,7 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 	for inputBuffer != "back" {
 		util.ClearScreen()
 		util.PrintSpaceManagementBanner()
+		fmt.Println()
 		printRoomMenuOption()
 		inputBuffer = util.GetCommandInput()
 
@@ -201,8 +203,16 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 				fmt.Println("Room deleted successfully")
 				util.PressEnterToContinue()
 			}
-
 		case "6":
+			fmt.Println()
+			err := facade.Room.DeleteAllRooms()
+			if err != nil {
+				fmt.Println("Failed to delete all rooms")
+			} else {
+				fmt.Println("Deleted all rooms succeed!")
+			}
+			util.PressEnterToContinue()
+		case "7":
 			fmt.Println("Seed Rooms Data")
 			data, err := facade.Room.SeedRoomsDatabase("data/asset/Room.json")
 			if err != nil {
@@ -216,7 +226,6 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 				util.PressEnterToContinue()
 			}
 		case "back":
-			util.PressEnterToContinue()
 		default:
 			fmt.Println("Invalid Command")
 			util.PressEnterToContinue()
