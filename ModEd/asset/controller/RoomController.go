@@ -5,6 +5,8 @@ import (
 	"ModEd/utils/deserializer"
 	"errors"
 
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -75,12 +77,12 @@ func (c *RoomController) UpdateRoom(Id uint, payload *model.Room) error {
 
 func (c *RoomController) DeleteRoom(Id uint) error {
 	if Id == 0 {
-		return errors.New("no ID provides")
+		return errors.New("no ID provided")
 	}
 	existingRoom := new(model.Room)
-	if err := c.db.First(existingRoom, Id).Error; err != nil {
-		return err
+	if err := c.db.Unscoped().First(existingRoom, Id).Error; err != nil {
+		return errors.New("room not found, please check the ID")
 	}
-	result := c.db.Delete(existingRoom)
+	result := c.db.Model(&existingRoom).UpdateColumn("DeletedAt", time.Now())
 	return result.Error
 }
