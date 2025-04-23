@@ -16,7 +16,7 @@ func RunExaminationCLI(db *gorm.DB) {
 
 	examController := controllerExamination.NewExaminationController(db)
 
-	for{
+	for {
 		fmt.Println("\nExamination CLI")
 		fmt.Println("1. Create Examination")
 		fmt.Println("2. Display All Examination")
@@ -28,9 +28,9 @@ func RunExaminationCLI(db *gorm.DB) {
 
 		switch choice {
 		case 1:
-			CreateExamination(db,examController)
+			CreateExamination(db, examController)
 		case 2:
-			DisplayAllExams(db,examController)
+			DisplayAllExams(db, examController)
 		case 3:
 			var examID uint
 			fmt.Print("Enter Examination ID to update: ")
@@ -48,7 +48,7 @@ func RunExaminationCLI(db *gorm.DB) {
 }
 
 func DisplayAllExams(db *gorm.DB, examController *controllerExamination.ExaminationController) {
-	exams,err := examController.GetAll()
+	exams, err := examController.GetAll()
 	if err != nil {
 		fmt.Println("Error fetching exams:", err)
 		return
