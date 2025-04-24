@@ -19,6 +19,7 @@ type Assignment struct {
 	AssignmentId   uint
 	Title          string
 	Description    string
+	Released       bool
 	StartDate      time.Time
 	DueDate        time.Time
 	Status         string

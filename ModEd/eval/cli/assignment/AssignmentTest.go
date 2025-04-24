@@ -3,13 +3,28 @@ package main
 
 import (
 	"ModEd/eval/cli"
+	"ModEd/eval/controller"
 	"fmt"
-	// "gorm.io/gorm"
+	"log"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
 	fmt.Println("Hello from Main")
 
-	cli.PrintAssignment()
-	cli.PrintEvaluation()
+	db, err := gorm.Open(sqlite.Open("assignment.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal("failed to connect database:", err)
+	}
+
+	err = db.AutoMigrate(&controller.QuizInput{})
+	if err != nil {
+		fmt.Println("Migration error:", err)
+	}
+
+	quizController := controller.NewQuizController(db)
+	app := cli.NewQuizCLI(quizController)
+	app.Run()
 }
