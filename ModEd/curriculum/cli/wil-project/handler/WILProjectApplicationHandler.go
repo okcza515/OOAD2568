@@ -98,6 +98,7 @@ func createWILProjectApplication(controller *controller.WILModuleFacade) error {
 }
 
 func listAllWILProjectApplication(controller *controller.WILModuleFacade) error {
+	fmt.Println("\nWIL Project Application List\n")
 	applications, err := controller.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
 		return errors.New("Error! cannot retrieve WIL Project application data")
@@ -109,6 +110,7 @@ func listAllWILProjectApplication(controller *controller.WILModuleFacade) error 
 		for _, student := range application.Students {
 			fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)
 		}
+		fmt.Println("===========================================================")
 	}
 	return nil
 }
