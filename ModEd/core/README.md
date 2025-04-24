@@ -48,10 +48,14 @@ func (c *ArticleController) RetrieveArticleWithPreloads(id uint) (*model.Article
 }
 
 func (c *ArticleController) InsertArticle(article model.Article) error {
-	return c.Insert(article)
+	return c.Insert(&article)
 }
 
-func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error 
+func (c *ArticleController) InsertArticles(articles []model.Article) error {
+	return c.InsertMany(articles)
+}
+
+func (c *ArticleController) UpdateArticle(id uint, article *model.Article) error  {
 	return c.UpdateByID(id, article)
 }
 
