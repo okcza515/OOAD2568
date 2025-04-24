@@ -95,8 +95,8 @@ func TestRetrieveByID(t *testing.T) {
 		assert.NoError(t, err)
 	}
 
-	assert.Equal(t, testData.ID, (*result).ID)
-	assert.Equal(t, "TestName", (*result).Name)
+	assert.Equal(t, testData.ID, result.ID)
+	assert.Equal(t, "TestName", result.Name)
 }
 
 func TestUpdateByID(t *testing.T) {
@@ -154,4 +154,56 @@ func TestListPagination(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, result, 3)
 	assert.Equal(t, 3, len(result))
+}
+
+func TestInsertNonPointerShouldFail(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+	testData := TestModel{Name: "FailInsert"}
+
+	// ส่งแบบ non-pointer ควรจะ panic หรือ error เพราะ GORM ต้องการ pointer
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected panic when using non-pointer in Insert, but did not panic")
+		}
+	}()
+	// แปลงเป็น interface แต่ intentionally wrong
+	_ = controller.Insert(any(testData).(*TestModel))
+}
+
+func TestUpdateByIDNonPointerShouldFail(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+	testData := TestModel{Name: "Old"}
+	db.Create(&testData)
+
+	updated := TestModel{Model: gorm.Model{ID: testData.ID}, Name: "New"}
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected panic when using non-pointer in UpdateByID, but did not panic")
+		}
+	}()
+	_ = controller.UpdateByID(any(updated).(*TestModel))
+}
+
+func TestDeleteByIDNonPointerInstanceInternalHandling(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+	testData := TestModel{Name: "DeleteMe"}
+	db.Create(&testData)
+
+	// ลบแบบใช้ ID โดย controller จะจัดการ pointer เอง
+	err := controller.DeleteByID(testData.ID)
+	assert.NoError(t, err)
+
+	var result TestModel
+	db.First(&result, testData.ID)
+	assert.Zero(t, result.ID)
 }

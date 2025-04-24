@@ -1,6 +1,8 @@
 package core
 
 import (
+	"reflect"
+
 	"gorm.io/gorm"
 )
 
@@ -24,19 +26,21 @@ func (controller *BaseController[T]) UpdateByID(data T) error {
 	return controller.db.Model(data).Where("id = ?", data.GetID()).Updates(data).Error
 }
 
-func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error) {
-	var record T
+func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (T, error) {
+	var zero T
+
+	ptr := reflect.New(reflect.TypeOf(zero).Elem()).Interface().(T)
 
 	query := controller.db
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
 
-	if err := query.Where("id = ?", id).First(&record).Error; err != nil {
-		return nil, err
+	if err := query.Where("id = ?", id).First(ptr).Error; err != nil {
+		return zero, err
 	}
 
-	return &record, nil
+	return ptr, nil
 }
 
 func (controller *BaseController[T]) DeleteByID(id uint) error {
