@@ -4,35 +4,30 @@ import (
 	"gorm.io/gorm"
 )
 
-type BaseController struct {
-	db        *gorm.DB
-	modelName string
+type BaseController[T RecordInterface] struct {
+	db *gorm.DB
 }
 
-func NewBaseController(modelName string, db *gorm.DB) *BaseController {
-	controller := &BaseController{
-		modelName: modelName,
-		db:        db,
-	}
-	return controller
+func NewBaseController[T RecordInterface](db *gorm.DB) *BaseController[T] {
+	return &BaseController[T]{db: db}
 }
 
-func (controller *BaseController) Insert(data RecordInterface) error {
+func (c *BaseController[T]) Insert(data *T) error {
+	return c.db.Create(data).Error
+}
+
+func (controller *BaseController[T]) InsertMany(data []T) error {
 	return controller.db.Create(data).Error
 }
 
-func (controller *BaseController) InsertMany(data interface{}) error {
-	return controller.db.Create(data).Error
+func (c *BaseController[T]) UpdateByID(data *T) error {
+	return c.db.Model(data).Where("id = ?", (*data).GetID()).Updates(data).Error
 }
 
-func (controller *BaseController) UpdateByID(data RecordInterface) error {
-	return controller.db.Model(data).Where("id = ?", (data).GetID()).Updates(data).Error
-}
+func (c *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error) {
+	var record T
 
-func (controller *BaseController) RetrieveByID(id uint, preloads ...string) (*RecordInterface, error) {
-	record := CreateRecord(controller.modelName)
-
-	query := controller.db
+	query := c.db
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
@@ -41,22 +36,17 @@ func (controller *BaseController) RetrieveByID(id uint, preloads ...string) (*Re
 		return nil, err
 	}
 
-	return record, nil
+	return &record, nil
 }
 
-func (controller *BaseController) DeleteByID(id uint) error {
-	var record RecordInterface
-	return controller.db.Where("id = ?", id).Delete(&record).Error
+func (c *BaseController[T]) DeleteByID(id uint) error {
+	var record T
+	return c.db.Where("id = ?", id).Delete(&record).Error
 }
 
-func (controller *BaseController) Delete(data *RecordInterface) error {
-	return controller.db.Where("id = ?", (*data).GetID()).Delete(data).Error
-}
-
-func (controller *BaseController) List(condition map[string]interface{}) ([]RecordInterface, error) {
-	var records []RecordInterface
-	query := controller.db
-	query.Model(CreateRecord(controller.modelName))
+func (c *BaseController[T]) List(condition map[string]interface{}) ([]T, error) {
+	var records []T
+	query := c.db
 
 	if condition != nil {
 		query = query.Where(condition)
@@ -68,26 +58,24 @@ func (controller *BaseController) List(condition map[string]interface{}) ([]Reco
 	return records, nil
 }
 
-func (controller *BaseController) ListPagination(condition map[string]interface{}, page int, pageSize int) (*PaginationResult, error) {
-	query := controller.db
-	var result PaginationResult
-	result.Page = page
-	result.PageSize = pageSize
-	query.Model(CreateRecord(controller.modelName))
+func (c *BaseController[T]) ListPagination(condition map[string]interface{}, page, pageSize int) ([]T, error) {
+	var records []T
+	var totalCount int64
+	query := c.db
 
 	if condition != nil {
 		query = query.Where(condition)
 	}
 
-	if err := query.Count(&result.TotalCount).Error; err != nil {
+	if err := query.Model(new(T)).Count(&totalCount).Error; err != nil {
 		return nil, err
 	}
 
 	offset := (page - 1) * pageSize
 
-	if err := query.Offset(offset).Limit(pageSize).Find(&result.Records).Error; err != nil {
+	if err := query.Offset(offset).Limit(pageSize).Find(&records).Error; err != nil {
 		return nil, err
 	}
 
-	return &result, nil
+	return records, nil
 }

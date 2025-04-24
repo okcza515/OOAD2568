@@ -3,11 +3,11 @@ package core
 import "fmt"
 
 type DataConvertor struct {
-	Controller *BaseController
+	Controller *StagingBaseController
 	Mapper     DataMapper[RecordInterface]
 }
 
-func CreateConvertor[T RecordInterface](controller *BaseController) *DataConvertor {
+func CreateConvertor[T RecordInterface](controller *StagingBaseController) *DataConvertor {
 	convertor := DataConvertor{
 		Controller: controller,
 		Mapper:     nil,

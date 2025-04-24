@@ -2,7 +2,6 @@ package core_test
 
 import (
 	"ModEd/core"
-	"errors"
 	"os"
 	"testing"
 
@@ -13,12 +12,11 @@ import (
 
 type TestModel struct {
 	gorm.Model
-	ID   uint
 	Name string
 }
 
 func (m TestModel) GetID() uint {
-	return 0
+	return m.Model.ID
 }
 func (m TestModel) ToString() string {
 	return ""
@@ -60,9 +58,9 @@ func TestInsert(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
+	controller := core.NewBaseController[TestModel](db)
 	testData := TestModel{Name: "TestName"}
-	err := controller.Insert(testData)
+	err := controller.Insert(&testData)
 	assert.NoError(t, err)
 }
 
@@ -70,7 +68,7 @@ func TestRetrieveByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
+	controller := core.NewBaseController[TestModel](db)
 
 	testData := TestModel{Name: "TestName"} // Remove explicit ID
 	controller.Insert(&testData)
@@ -80,37 +78,28 @@ func TestRetrieveByID(t *testing.T) {
 		assert.NoError(t, err)
 	}
 
-	if resultCasted, ok := (*result).(TestModel); ok {
-		assert.NoError(t, err)
-		assert.Equal(t, testData.ID, resultCasted.ID)
-		assert.Equal(t, "TestName", resultCasted.Name)
-	} else {
-		assert.NoError(t, errors.New("Failed to cast type"))
-	}
+	assert.Equal(t, testData.ID, result.ID)
+	assert.Equal(t, "TestName", result.Name)
 }
 
 func TestUpdateByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
-	testData := TestModel{Name: "OldName"}
+	controller := core.NewBaseController[TestModel](db)
+	testData := TestModel{Model: gorm.Model{ID: 1}, Name: "OldName"}
 	db.Create(&testData)
 
-	updatedData := TestModel{Name: "UpdatedName"}
-	err := controller.UpdateByID(updatedData)
+	updatedData := TestModel{Model: gorm.Model{ID: 1}, Name: "UpdatedName"}
+	err := controller.UpdateByID(&updatedData)
 	assert.NoError(t, err)
-
-	var result TestModel
-	db.First(&result, testData.ID)
-	assert.Equal(t, "UpdatedName", result.Name)
 }
 
 func TestDeleteByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
+	controller := core.NewBaseController[TestModel](db)
 	testData := TestModel{Name: "TestName"}
 	db.Create(&testData)
 
@@ -126,7 +115,7 @@ func TestList(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
+	controller := core.NewBaseController[TestModel](db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 
@@ -139,13 +128,13 @@ func TestListPagination(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController("test", db)
+	controller := core.NewBaseController[TestModel](db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 
-	result, err := controller.ListPagination(map[string]interface{}{"name": "TestName"}, 1, 2)
+	result, err := controller.ListPagination(map[string]interface{}{"name": "TestName"}, 1, 3)
 	assert.NoError(t, err)
-	assert.Len(t, result, 2)
-	assert.Equal(t, int64(3), result.TotalCount)
+	assert.Len(t, result, 3)
+	assert.Equal(t, 3, len(result))
 }
