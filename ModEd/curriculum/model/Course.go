@@ -2,6 +2,7 @@
 package model
 
 import (
+	"ModEd/core"
 	"fmt"
 	"time"
 
@@ -21,8 +22,32 @@ type Course struct {
 	DeletedAt    gorm.DeletedAt `csv:"-" json:"-"`
 	ClassList    []Class        `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
 	Prerequisite []Course       `gorm:"many2many:course_prerequisites;foreignKey:CourseId;joinForeignKey:CourseId;References:CourseId;joinReferences:PrerequisiteId" csv:"-" json:"-"`
+	*core.SerializableRecord
 }
 
+func (c *Course) GetID() uint {
+	return c.CourseId
+}
+func (c *Course) ToString() string {
+	return fmt.Sprintf("%+v", c)
+}
+func (c *Course) Validate() error {
+	if c.CourseId == 0 {
+		return fmt.Errorf("Course ID cannot be zero")
+	}
+	if c.Name == "" {
+		return fmt.Errorf("Course Name cannot be empty")
+	}
+	if c.Description == "" {
+		return fmt.Errorf("Course Description cannot be empty")
+	}
+	if c.CurriculumId == 0 {
+		return fmt.Errorf("Curriculum ID cannot be zero")
+	}
+	return nil
+}
+
+// Testing functions
 func (c *Course) Print() {
 	fmt.Printf("Course Id: %d, Name: %s, Description: %s, Curriculum Id: %d, Optional: %t, Course Status: %d\n",
 		c.CourseId, c.Name, c.Description, c.CurriculumId, c.Optional, c.CourseStatus)
