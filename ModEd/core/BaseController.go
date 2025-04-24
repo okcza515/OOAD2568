@@ -12,22 +12,22 @@ func NewBaseController[T RecordInterface](db *gorm.DB) *BaseController[T] {
 	return &BaseController[T]{db: db}
 }
 
-func (c *BaseController[T]) Insert(data *T) error {
-	return c.db.Create(data).Error
+func (controller *BaseController[T]) Insert(data T) error {
+	return controller.db.Create(data).Error
 }
 
 func (controller *BaseController[T]) InsertMany(data []T) error {
 	return controller.db.Create(data).Error
 }
 
-func (c *BaseController[T]) UpdateByID(data *T) error {
-	return c.db.Model(data).Where("id = ?", (*data).GetID()).Updates(data).Error
+func (controller *BaseController[T]) UpdateByID(data T) error {
+	return controller.db.Model(data).Where("id = ?", data.GetID()).Updates(data).Error
 }
 
-func (c *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error) {
+func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error) {
 	var record T
 
-	query := c.db
+	query := controller.db
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
@@ -39,14 +39,14 @@ func (c *BaseController[T]) RetrieveByID(id uint, preloads ...string) (*T, error
 	return &record, nil
 }
 
-func (c *BaseController[T]) DeleteByID(id uint) error {
+func (controller *BaseController[T]) DeleteByID(id uint) error {
 	var record T
-	return c.db.Where("id = ?", id).Delete(&record).Error
+	return controller.db.Where("id = ?", id).Delete(&record).Error
 }
 
-func (c *BaseController[T]) List(condition map[string]interface{}) ([]T, error) {
+func (controller *BaseController[T]) List(condition map[string]interface{}) ([]T, error) {
 	var records []T
-	query := c.db
+	query := controller.db
 
 	if condition != nil {
 		query = query.Where(condition)
@@ -58,10 +58,10 @@ func (c *BaseController[T]) List(condition map[string]interface{}) ([]T, error) 
 	return records, nil
 }
 
-func (c *BaseController[T]) ListPagination(condition map[string]interface{}, page, pageSize int) ([]T, error) {
+func (controller *BaseController[T]) ListPagination(condition map[string]interface{}, page, pageSize int) ([]T, error) {
 	var records []T
 	var totalCount int64
-	query := c.db
+	query := controller.db
 
 	if condition != nil {
 		query = query.Where(condition)

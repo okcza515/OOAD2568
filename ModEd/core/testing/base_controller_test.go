@@ -15,25 +15,25 @@ type TestModel struct {
 	Name string
 }
 
-func (m TestModel) GetID() uint {
+func (m *TestModel) GetID() uint {
 	return m.Model.ID
 }
-func (m TestModel) ToString() string {
+func (m *TestModel) ToString() string {
 	return ""
 }
-func (m TestModel) Validate() error {
+func (m *TestModel) Validate() error {
 	return nil
 }
-func (m TestModel) ToCSVRow() string {
+func (m *TestModel) ToCSVRow() string {
 	return ""
 }
-func (m TestModel) FromCSV(raw string) error {
+func (m *TestModel) FromCSV(raw string) error {
 	return nil
 }
-func (m TestModel) ToJSON() string {
+func (m *TestModel) ToJSON() string {
 	return ""
 }
-func (m TestModel) FromJSON(raw string) error {
+func (m *TestModel) FromJSON(raw string) error {
 	return nil
 }
 
@@ -58,9 +58,26 @@ func TestInsert(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 	testData := TestModel{Name: "TestName"}
 	err := controller.Insert(&testData)
+	assert.NoError(t, err)
+}
+
+func TestInsertMany(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+	records := []*TestModel{
+		{Name: "A"},
+		{Name: "B"},
+		{Name: "C"},
+		{Name: "D"},
+		{Name: "E"},
+	}
+
+	err := controller.InsertMany(records)
 	assert.NoError(t, err)
 }
 
@@ -68,7 +85,7 @@ func TestRetrieveByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 
 	testData := TestModel{Name: "TestName"} // Remove explicit ID
 	controller.Insert(&testData)
@@ -78,15 +95,15 @@ func TestRetrieveByID(t *testing.T) {
 		assert.NoError(t, err)
 	}
 
-	assert.Equal(t, testData.ID, result.ID)
-	assert.Equal(t, "TestName", result.Name)
+	assert.Equal(t, testData.ID, (*result).ID)
+	assert.Equal(t, "TestName", (*result).Name)
 }
 
 func TestUpdateByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 	testData := TestModel{Model: gorm.Model{ID: 1}, Name: "OldName"}
 	db.Create(&testData)
 
@@ -99,7 +116,7 @@ func TestDeleteByID(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 	testData := TestModel{Name: "TestName"}
 	db.Create(&testData)
 
@@ -115,7 +132,7 @@ func TestList(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 
@@ -128,7 +145,7 @@ func TestListPagination(t *testing.T) {
 	db, dbName := Init()
 	defer cleanup(db, dbName)
 
-	controller := core.NewBaseController[TestModel](db)
+	controller := core.NewBaseController[*TestModel](db)
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
 	db.Create(&TestModel{Name: "TestName"})
