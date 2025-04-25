@@ -28,19 +28,10 @@ func NewProgressController(db *gorm.DB) *ProgressController {
 	return &ProgressController{db: db}
 }
 
-func (controller *ProgressController) GetAllProgress() ([]Progress, error) {
+func (controller *ProgressController) GetAllProgress(AssignmentId uint) ([]Progress, error) {
 	var progressList []Progress
 
-	if err := controller.db.Preload("Student").Preload("Title").Find(&progressList).Error; err != nil {
-		return nil, err
-	}
-	return progressList, nil
-}
-
-func (controller *ProgressController) GetProgressByStudentCode(studentCode string) ([]Progress, error) {
-	var progressList []Progress
-
-	if err := controller.db.Where("student_code = ?", studentCode).
+	if err := controller.db.Where("assignment_id = ?", AssignmentId).
 		Preload("Student").Preload("Title").
 		Find(&progressList).Error; err != nil {
 		return nil, err
@@ -48,10 +39,10 @@ func (controller *ProgressController) GetProgressByStudentCode(studentCode strin
 	return progressList, nil
 }
 
-func (controller *ProgressController) GetProgressByStatus(status string) ([]Progress, error) {
+func (controller *ProgressController) GetProgressByStudentCode(AssignmentId uint, StudentCode string) ([]Progress, error) {
 	var progressList []Progress
 
-	if err := controller.db.Where("status = ?", status).
+	if err := controller.db.Where("assignment_id = ? AND student_code = ?", AssignmentId, StudentCode).
 		Preload("Student").Preload("Title").
 		Find(&progressList).Error; err != nil {
 		return nil, err
@@ -59,11 +50,22 @@ func (controller *ProgressController) GetProgressByStatus(status string) ([]Prog
 	return progressList, nil
 }
 
-func (controller *ProgressController) GetSubmitCountByAssignmentID(assignmentID uint) (uint, error) {
+func (controller *ProgressController) GetProgressByStatus(AssignmentId uint, status string) ([]Progress, error) {
+	var progressList []Progress
+
+	if err := controller.db.Where("assignment_id = ? AND status = ?", AssignmentId, status).
+		Preload("Student").Preload("Title").
+		Find(&progressList).Error; err != nil {
+		return nil, err
+	}
+	return progressList, nil
+}
+
+func (controller *ProgressController) GetSubmitCountByAssignmentID(assignmentId uint) (uint, error) {
 	var count int64
 
 	if err := controller.db.Model(&evalModel.AssignmentSubmission{}).
-		Where("assignment_id = ? AND submitted = ?", assignmentID, true).
+		Where("assignment_id = ? AND submitted = ?", assignmentId, true).
 		Count(&count).Error; err != nil {
 		return 0, err
 	}
