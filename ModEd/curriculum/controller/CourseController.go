@@ -13,7 +13,7 @@ import (
 
 type CourseController struct {
 	db   *gorm.DB
-	core *core.BaseController
+	core *core.BaseController[*model.Course]
 }
 
 type CourseControllerInterface interface {
@@ -28,7 +28,7 @@ type CourseControllerInterface interface {
 func NewCourseController(db *gorm.DB) CourseControllerInterface {
 	return &CourseController{
 		db:   db,
-		core: core.NewBaseController("Course", db),
+		core: core.NewBaseController[*model.Course](db),
 	}
 }
 

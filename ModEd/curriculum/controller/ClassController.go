@@ -14,7 +14,7 @@ import (
 
 type ClassController struct {
 	db   *gorm.DB
-	core *core.BaseController
+	core *core.BaseController[*model.Class]
 }
 
 type ClassControllerInterface interface {
@@ -29,7 +29,7 @@ type ClassControllerInterface interface {
 func NewClassController(db *gorm.DB) *ClassController {
 	return &ClassController{
 		db:   db,
-		core: core.NewBaseController("Class", db),
+		core: core.NewBaseController[*model.Class](db),
 	}
 }
 
