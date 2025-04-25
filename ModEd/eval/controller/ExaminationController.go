@@ -15,11 +15,18 @@ type IExaminationController interface {
 
 type ExaminationController struct {
 	db *gorm.DB
+	questionCtrl *QuestionController
 }
 
+
 func NewExaminationController(db *gorm.DB) *ExaminationController {
-	return &ExaminationController{db: db}
+	return &ExaminationController{
+		db: db,
+		questionCtrl: NewQuestionController(db),
+	}
 }
+
+
 
 func (c *ExaminationController) CreateExam(exam *model.Examination) error{
 	if err := c.db.Create(exam).Error; err != nil {
@@ -42,4 +49,12 @@ if err := c.db.Model(&exam).Where("id = ?", id).Updates(exam).Error; err != nil 
 	return err
 }
 	return nil ;
+}
+
+func (c *ExaminationController) CreateQuestion(q *model.Question) error {
+	return c.questionCtrl.CreateQuestion(q)
+}
+
+func (c *ExaminationController) UpdateQuestion(id uint, updatedQuestion *model.Question) error {
+	return c.questionCtrl.UpdateQuestion(id, updatedQuestion)
 }

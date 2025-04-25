@@ -29,7 +29,7 @@ func (c *AnswerController) SubmitAnswer(questionID, studentID uint, answerText s
 	var existingAnswer model.Answer
 
 	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).First(&existingAnswer).Error; err == nil {
-		return errors.New("Answer already submitted")
+		return errors.New("answer already submitted")
 	}
 
 	newAnswer := model.Answer{
@@ -67,7 +67,7 @@ func (c *AnswerController) GetAnswerByQuestionAndStudent(questionID uint, studen
 func (c *AnswerController) UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error {
 	var existingAnswer model.Answer
 	if err := c.db.Where("id = ?", answerID).First(&existingAnswer).Error; err != nil {
-		return errors.New("Answer not found")
+		return errors.New("answer not found")
 	}
 
 	if err := c.db.Model(&existingAnswer).Updates(updatedData).Error; err != nil {
