@@ -3,6 +3,7 @@ package model
 
 import (
 	"ModEd/common/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
@@ -23,6 +24,7 @@ type Curriculum struct {
 	CreatedAt   time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
 	UpdatedAt   time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
 	DeletedAt   gorm.DeletedAt    `csv:"-" json:"-"`
+	*core.SerializableRecord
 }
 
 func (c *Curriculum) GetID() uint {
