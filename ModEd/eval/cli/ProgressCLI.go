@@ -83,7 +83,7 @@ func DisplayProgressByStudentCode(controller *controllerProgress.ProgressControl
 		return
 	}
 
-	fmt.Println("\nDisplay selected Student ID progress by Assignment ID.")
+	fmt.Println("\nDisplaying progress of the selected student for the given Assignment ID:")
 	fmt.Println("-----------------------------------------------------")
 	for _, p := range progressList {
 		fmt.Printf("Student ID: %s | Assignment ID: %d | Assignment Title: %s | Status: %s | Last Update: %v",
@@ -111,6 +111,8 @@ func DisplayProgressByStatus(controller *controllerProgress.ProgressController) 
 		return
 	}
 
+	fmt.Printf("\nDisplaying progress for Assignment ID %d with status '%s':\n", AssignmentId, Status)
+	fmt.Println("-----------------------------------------------------")
 	for _, p := range progressList {
 		fmt.Printf("Student ID: %s | Assignment ID: %d | Assignment Title: %s | Status: %s | Last Update: %v",
 			p.StudentCode.StudentCode, p.AssignmentId.AssignmentId, p.Title.Title, p.Status.Status, p.LastUpdate.Format("2006-01-02"))
