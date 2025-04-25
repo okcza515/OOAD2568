@@ -4,56 +4,103 @@
 package controller
 
 import (
-	commonModel "ModEd/common/model"
-
-	evalModel "ModEd/eval/model"
-
+	"ModEd/eval/model"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-type Evaluation struct {
-	gorm.Model
-	Student    commonModel.Student    `gorm:"foreignKey:StudentCode;references:StudentCode"`
-	Instructor commonModel.Instructor `gorm:"foreignKey:InstructorCode;references:InstructorCode"`
-	Assignment evalModel.Assignment   `gorm:"foreignKey:AssignmentId;references:AssignmentId"`
-	Quiz       evalModel.Quiz         `gorm:"foreignKey:QuizId;references:QuizId"`
-
-	StudentCode    string `gorm:"not null"`
-	InstructorCode string `gorm:"not null"`
-	AssignmentId   *uint
-	QuizId         *uint
-
-	Score       float64 `gorm:"not null"`
-	Comment     string
-	EvaluatedAt time.Time `gorm:"not null"`
-}
-
 type EvaluationController struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
-func (ec *EvaluationController) SaveEvaluation(studentCode string, instructorCode string, assignmentID, quizID *uint, score float64, comment string) error {
-	e := Evaluation{
+func NewEvaluationController(db *gorm.DB) *EvaluationController {
+	return &EvaluationController{DB: db}
+}
+
+func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
+	eval := model.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssignmentId:   assignmentID,
-		QuizId:         quizID,
+		AssignmentId:   &assignmentId,
 		Score:          score,
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
 	}
-	return ec.db.Create(&e).Error
+	return ec.DB.Create(&eval).Error
 }
 
-func (ec *EvaluationController) ListEvaluations() ([]Evaluation, error) {
-	var evals []Evaluation
-	err := ec.db.
-		Preload("Student").
-		Preload("Instructor").
-		Preload("Assignment").
-		Preload("Quiz").
-		Find(&evals).Error
-	return evals, err
+func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizId uint, score uint, comment string) error {
+	eval := model.Evaluation{
+		StudentCode:    studentCode,
+		InstructorCode: instructorCode,
+		QuizId:         &quizId,
+		Score:          score,
+		Comment:        comment,
+		EvaluatedAt:    time.Now(),
+	}
+	return ec.DB.Create(&eval).Error
 }
+
+func (ec *EvaluationController) ListEvaluations(studentCode string) ([]model.Evaluation, error) {
+	var results []model.Evaluation
+	err := ec.DB.Where("student_code = ?", studentCode).Find(&results).Error
+	return results, err
+}
+
+// package controller
+
+// import (
+// 	commonModel "ModEd/common/model"
+
+// 	evalModel "ModEd/eval/model"
+
+// 	"time"
+
+// 	"gorm.io/gorm"
+// )
+
+// type Evaluation struct {
+// 	gorm.Model
+// 	Student    commonModel.Student    `gorm:"foreignKey:StudentCode;references:StudentCode"`
+// 	Instructor commonModel.Instructor `gorm:"foreignKey:InstructorCode;references:InstructorCode"`
+// 	Assignment evalModel.Assignment   `gorm:"foreignKey:AssignmentId;references:AssignmentId"`
+// 	Quiz       evalModel.Quiz         `gorm:"foreignKey:QuizId;references:QuizId"`
+
+// 	StudentCode    string `gorm:"not null"`
+// 	InstructorCode string `gorm:"not null"`
+// 	AssignmentId   *uint
+// 	QuizId         *uint
+
+// 	Score       float64 `gorm:"not null"`
+// 	Comment     string
+// 	EvaluatedAt time.Time `gorm:"not null"`
+// }
+
+// type EvaluationController struct {
+// 	db *gorm.DB
+// }
+
+// func (ec *EvaluationController) SaveEvaluation(studentCode string, instructorCode string, assignmentID, quizID *uint, score float64, comment string) error {
+// 	e := Evaluation{
+// 		StudentCode:    studentCode,
+// 		InstructorCode: instructorCode,
+// 		AssignmentId:   assignmentID,
+// 		QuizId:         quizID,
+// 		Score:          score,
+// 		Comment:        comment,
+// 		EvaluatedAt:    time.Now(),
+// 	}
+// 	return ec.db.Create(&e).Error
+// }
+
+// func (ec *EvaluationController) ListEvaluations() ([]Evaluation, error) {
+// 	var evals []Evaluation
+// 	err := ec.db.
+// 		Preload("Student").
+// 		Preload("Instructor").
+// 		Preload("Assignment").
+// 		Preload("Quiz").
+// 		Find(&evals).Error
+// 	return evals, err
+// }
