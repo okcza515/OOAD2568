@@ -9,7 +9,7 @@ import (
 )
 
 type IndependentStudyController struct {
-	*core.BaseController
+	*core.BaseController[model.IndependentStudy]
 	Connector *gorm.DB
 }
 
@@ -24,14 +24,18 @@ type IndependentStudyControllerInterface interface {
 func CreateIndependentStudyController(connector *gorm.DB) *IndependentStudyController {
 	return &IndependentStudyController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("IndependentStudy", connector),
+		BaseController: core.NewBaseController[model.IndependentStudy](connector),
 	}
 }
 
-func (repo IndependentStudyController) CreateIndependentStudy(independentStudies *[]model.IndependentStudy) {
+func (controller IndependentStudyController) CreateIndependentStudy(independentStudies *[]model.IndependentStudy) error {
 	for _, independentStudy := range *independentStudies {
-		repo.BaseController.Insert(&independentStudy)
+		err := controller.BaseController.Insert(independentStudy)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // func (repo IndependentStudyController) GetIndenpendentStudyByID(id uint) (*model.IndependentStudy, error) {

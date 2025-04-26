@@ -16,20 +16,20 @@ func RunWILModuleCLI(
 	classController curriculumController.ClassControllerInterface,
 ) {
 
-	facade := curriculumController.NewWILModuleFacade(db, courseController, classController)
+	proxy := curriculumController.NewWILModuleProxy(db, courseController, classController)
 
 	for {
 		printWILModuleMenu()
 		choice := utils.GetUserChoice()
 		switch choice {
 		case "1":
-			handler.RunWILProjectCurriculumHandler(facade)
+			handler.RunWILProjectCurriculumHandler(proxy)
 		case "2":
-			handler.RunWILProjectApplicationHandler(facade)
+			handler.RunWILProjectApplicationHandler(proxy)
 		case "3":
-			handler.RunWILProjectHandler(facade)
+			handler.RunWILProjectHandler(proxy)
 		case "4":
-			handler.RunIndependentStudyHandler(facade)
+			handler.RunIndependentStudyHandler(proxy)
 		case "0":
 			fmt.Println("Exiting...")
 			return

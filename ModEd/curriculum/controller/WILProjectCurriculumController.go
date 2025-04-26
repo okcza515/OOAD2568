@@ -8,30 +8,30 @@ import (
 	"gorm.io/gorm"
 )
 
-type WILProjectCurriculumController struct {
+type WILProjectCurriculumFacadeController struct {
 	connector        *gorm.DB
 	courseController CourseControllerInterface
 	classController  ClassControllerInterface
 }
 
-type WILProjectCurriculumControllerInterface interface {
+type WILProjectCurriculumFacadeControllerInterface interface {
 	RegisterWILProjects(projects []core.RecordInterface)
 }
 
-func CreateWILProjectCurriculumController(
+func CreateWILProjectCurriculumFacadeController(
 	connector *gorm.DB,
 	courseController CourseControllerInterface,
 	classController ClassControllerInterface,
-) *WILProjectCurriculumController {
+) *WILProjectCurriculumFacadeController {
 
-	return &WILProjectCurriculumController{
+	return &WILProjectCurriculumFacadeController{
 		connector:        connector,
 		courseController: courseController,
 		classController:  classController,
 	}
 }
 
-func (controller WILProjectCurriculumController) CreateNewWILCourse(course *model.Course, semester string) (uint, error) {
+func (controller WILProjectCurriculumFacadeController) CreateNewWILCourse(course *model.Course, semester string) (uint, error) {
 	courseId, err := controller.courseController.CreateCourse(course)
 	if err != nil {
 		return 0, err
@@ -49,7 +49,7 @@ func (controller WILProjectCurriculumController) CreateNewWILCourse(course *mode
 	return courseId, nil
 }
 
-func (controller WILProjectCurriculumController) CreateNewWILClass(class *model.Class) (uint, error) {
+func (controller WILProjectCurriculumFacadeController) CreateNewWILClass(class *model.Class) (uint, error) {
 	classId, err := controller.classController.CreateClass(class)
 	if err != nil {
 		return 0, err
@@ -67,7 +67,7 @@ func (controller WILProjectCurriculumController) CreateNewWILClass(class *model.
 	return classId, nil
 }
 
-func (controller WILProjectCurriculumController) RetrieveAllWILCourses() ([]model.Course, error) {
+func (controller WILProjectCurriculumFacadeController) RetrieveAllWILCourses() ([]model.Course, error) {
 	var wilProjectCourses []model.WILProjectCourse
 
 	if err := controller.connector.Find(&wilProjectCourses).Error; err != nil {
@@ -87,7 +87,7 @@ func (controller WILProjectCurriculumController) RetrieveAllWILCourses() ([]mode
 	return courses, nil
 }
 
-func (controller WILProjectCurriculumController) RetrieveAllWILClasses() ([]model.Class, error) {
+func (controller WILProjectCurriculumFacadeController) RetrieveAllWILClasses() ([]model.Class, error) {
 	var wilProjectClasses []model.WILProjectClass
 
 	if err := controller.connector.Find(&wilProjectClasses).Error; err != nil {

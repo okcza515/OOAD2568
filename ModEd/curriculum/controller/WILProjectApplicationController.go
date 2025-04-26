@@ -12,7 +12,7 @@ import (
 
 type WILProjectApplicationController struct {
 	connector *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.WILProjectApplication]
 }
 
 type WILProjectApplicationControllerInterface interface {
@@ -27,7 +27,7 @@ type WILProjectApplicationControllerInterface interface {
 func CreateWILProjectApplicationController(connector *gorm.DB) *WILProjectApplicationController {
 	return &WILProjectApplicationController{
 		connector:      connector,
-		BaseController: core.NewBaseController("WILProjectApplication", connector),
+		BaseController: core.NewBaseController[model.WILProjectApplication](connector),
 	}
 }
 
@@ -36,8 +36,7 @@ func (controller WILProjectApplicationController) RegisterWILProjectsApplication
 	studentIds []string,
 ) error {
 
-	// result := controller.connector.Create(&WILProjectApplicationModel)
-	resultError := controller.Insert(&wilprojectApplication)
+	resultError := controller.Insert(wilprojectApplication)
 	if resultError != nil {
 		return resultError
 	}
