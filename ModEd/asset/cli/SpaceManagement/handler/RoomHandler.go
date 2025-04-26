@@ -24,14 +24,12 @@ func printRoomMenuOption() {
 
 func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 	inputBuffer := ""
-
 	for inputBuffer != "back" {
 		util.ClearScreen()
 		util.PrintSpaceManagementBanner()
 		fmt.Println()
 		printRoomMenuOption()
 		inputBuffer = util.GetCommandInput()
-
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Add new Room")
@@ -230,9 +228,7 @@ func RoomHandler(facade *controller.SpaceManagementControllerFacade) {
 			fmt.Println("Invalid Command")
 			util.PressEnterToContinue()
 		}
-
 		util.ClearScreen()
 	}
-
 	util.ClearScreen()
 }
