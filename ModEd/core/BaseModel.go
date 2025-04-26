@@ -1,5 +1,7 @@
 package core
 
+// Wrote by MEP-12
+
 import (
 	"errors"
 	"fmt"
@@ -11,14 +13,14 @@ type BaseModel struct {
 	*SerializableRecord
 }
 
-func (base *BaseModel) GetID() uint {
+func (base BaseModel) GetID() uint {
 	return base.ID
 }
 
-func (base *BaseModel) ToString() string {
+func (base BaseModel) ToString() string {
 	return fmt.Sprintf("%+v", base)
 }
 
-func (base *BaseModel) Validate() error {
+func (base BaseModel) Validate() error {
 	return errors.New("err: unimplemented validation")
 }
