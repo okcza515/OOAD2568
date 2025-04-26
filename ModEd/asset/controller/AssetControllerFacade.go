@@ -5,17 +5,11 @@ package controller
 import (
 	"ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/core/migration"
 	"ModEd/utils/deserializer"
-	"errors"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 type AssetControllerFacade struct {
-	db        *gorm.DB
-	migration MigrationControllerInterface
-
 	BorrowInstrument BorrowInstrumentControllerInterface
 	Category         CategoryControllerInterface
 	Instrument       InstrumentControllerInterface
@@ -24,17 +18,19 @@ type AssetControllerFacade struct {
 	SupplyLog        SupplyLogControllerInterface
 }
 
-func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
-	database := "data/ModEd.bin"
+func NewAssetControllerFacade() (*AssetControllerFacade, error) {
+	_, err := migration.GetInstance().
+		MigrateModule(migration.MODULE_ASSET).
+		BuildDB()
 
-	db, err := gorm.Open(sqlite.Open(database), &gorm.Config{})
 	if err != nil {
-		return nil, errors.New("err: failed to connect database")
+		return nil, err
 	}
 
-	facade := AssetControllerFacade{db: db}
+	db := migration.GetInstance().DB
 
-	facade.migration = &MigrationController{db: db}
+	facade := AssetControllerFacade{}
+
 	//facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
 	//facade.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
 	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController[model.Instrument](db)}
@@ -42,15 +38,10 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController[model.Supply](db)}
 	//facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
 
-	err = facade.migration.migrateToDB()
-	if err != nil {
-		return nil, errors.New("err: failed to migrate schema")
-	}
-
 	return &facade, nil
 }
 
-func (facade *AssetControllerFacade) loadSeedData() error {
+func (facade *AssetControllerFacade) LoadSeedData() error {
 	seedData := map[string]interface{}{
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
 		"Category":       &[]model.Category{},
@@ -71,7 +62,7 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 			return err
 		}
 
-		result := facade.db.Create(m)
+		result := migration.GetInstance().DB.Create(m)
 		if result.Error != nil {
 			return result.Error
 		}
@@ -81,7 +72,12 @@ func (facade *AssetControllerFacade) loadSeedData() error {
 }
 
 func (facade *AssetControllerFacade) ResetDB() error {
-	err := facade.migration.resetDB()
+	err := migration.GetInstance().DropAllTables()
+	if err != nil {
+		return err
+	}
+
+	_, err = migration.GetInstance().MigrateModule(migration.MODULE_ASSET).BuildDB()
 	if err != nil {
 		return err
 	}
@@ -90,12 +86,12 @@ func (facade *AssetControllerFacade) ResetDB() error {
 }
 
 func (facade *AssetControllerFacade) ResetAndLoadDB() error {
-	err := facade.migration.resetDB()
+	err := facade.ResetDB()
 	if err != nil {
 		return err
 	}
 
-	err = facade.loadSeedData()
+	err = facade.LoadSeedData()
 	if err != nil {
 		return err
 	}

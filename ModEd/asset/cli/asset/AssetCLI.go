@@ -45,7 +45,7 @@ func newAssetControllerFacade() *controller.AssetControllerFacade {
 
 	flag.Parse()
 
-	facade, err := controller.CreateAssetControllerFacade()
+	facade, err := controller.NewAssetControllerFacade()
 	if err != nil {
 		panic(err)
 	}
