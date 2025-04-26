@@ -12,6 +12,8 @@ type WILModuleMenuStateHandler struct {
 
 	WILProjectApplicationMenuStateHandler *WILProjectApplicationMenuStateHandler
 	WILProjectCurriculumMenuStateHandler  *WILProjectCurriculumMenuStateHandler
+	WILProjectMenuStateHandler            *WILProjectMenuStateHandler
+	IndependentStudyMenuStateHandler	*IndependentStudyMenuStateHandler
 }
 
 func NewWILModuleMenuStateHandler(manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy) *WILModuleMenuStateHandler {
@@ -22,6 +24,8 @@ func NewWILModuleMenuStateHandler(manager *cli.CLIMenuStateManager, proxy *contr
 
 	wilmoduleHandler.WILProjectApplicationMenuStateHandler = NewWILProjectApplicationMenuStateHandler(manager, proxy, wilmoduleHandler)
 	wilmoduleHandler.WILProjectCurriculumMenuStateHandler = NewWILProjectCurriculumMenuStateHandler(manager, proxy, wilmoduleHandler)
+	wilmoduleHandler.WILProjectMenuStateHandler = NewWILProjectMenuStateHandler(manager, proxy, wilmoduleHandler)
+	wilmoduleHandler.IndependentStudyMenuStateHandler = NewIndependentStudyMenuStateHandler(manager, proxy, wilmoduleHandler)
 
 	return wilmoduleHandler
 }
@@ -41,15 +45,10 @@ func (handler *WILModuleMenuStateHandler) HandleUserInput(input string) error {
 		handler.menuManger.SetState(handler.WILProjectCurriculumMenuStateHandler)
 	case "2":
 		handler.menuManger.SetState(handler.WILProjectApplicationMenuStateHandler)
-	//case "3":
-	//	//SupplyHandler(menu.controllerFacade)
-	//	handler.menuManger.SetState(handler.instrumentMenu)
-	//case "4":
-	//	handler.menuManger.SetState(handler.instrumentMenu)
-	case "5":
-		fmt.Println("Not implemented yet...")
-	case "6":
-		fmt.Println("Not implemented yet...")
+	case "3":
+		handler.menuManger.SetState(handler.WILProjectMenuStateHandler)
+	case "4":
+		handler.menuManger.SetState(handler.IndependentStudyMenuStateHandler)
 	default:
 		fmt.Println("invalid input")
 	}
