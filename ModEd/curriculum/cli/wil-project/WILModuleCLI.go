@@ -16,8 +16,7 @@ func RunWILModuleCLI(
 	classController curriculumController.ClassControllerInterface,
 ) {
 
-	manager := migration.MigrationManager{}
-	db, err := manager.
+	db, err := migration.GetInstance().
 		MigrateModule(migration.MODULE_COMMON).
 		MigrateModule(migration.MODULE_CURRICULUM).
 		MigrateModule(migration.MODULE_WILPROJECT).
