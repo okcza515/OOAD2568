@@ -4,6 +4,7 @@ package cli
 import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
+	recruitUtil "ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
@@ -54,6 +55,7 @@ func AdminScheduleInterviewCLI(interviewCtrl *controller.InterviewController, ap
 	scheduledTimeParsed, err := time.Parse("2006-01-02 15:04:05", scheduledTime)
 	if err != nil {
 		fmt.Println("Invalid date format. Use YYYY-MM-DD HH:MM:SS.")
+		recruitUtil.WaitForEnter()
 		return
 	}
 

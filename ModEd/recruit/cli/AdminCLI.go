@@ -78,9 +78,11 @@ func DeleteInterview(interviewCtrl *controller.InterviewController) {
 	}
 
 	fmt.Println("Interview deleted successfully!")
+	util.WaitForEnter()
 }
 
 func ManageApplicants(applicantController *controller.ApplicantController) {
 	fmt.Println("Managing Applicants...")
+	util.WaitForEnter()
 }
 

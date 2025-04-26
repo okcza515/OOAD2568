@@ -58,10 +58,10 @@ func main() {
 
 	facultyCtrl := common.CreateFacultyController(db.DB)
 
-	departmentCtrl := controller.NewDepartmentController(db.DB)
-	if err := departmentCtrl.ReadDepartmentFromCSV(departmentCSVPath); err != nil {
-		fmt.Println(err)
-	}
+	departmentCtrl := common.CreateDepartmentController(db.DB)
+	// if err := departmentCtrl.ReadDepartmentFromCSV(departmentCSVPath); err != nil {
+	// 	fmt.Println(err)
+	// }
 
 	instructorController := controller.CreateInstructorController(db.DB)
 
