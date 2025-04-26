@@ -35,12 +35,12 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	facade := AssetControllerFacade{db: db}
 
 	facade.migration = &MigrationController{db: db}
-	facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController("BorrowInstrument", db)}
-	facade.Category = &CategoryController{db: db, BaseController: core.NewBaseController("Category", db)}
-	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController("Instrument", db)}
-	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController("InstrumentLog", db)}
-	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
-	facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
+	//facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
+	//facade.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
+	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController[model.Instrument](db)}
+	//facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController[model.InstrumentLog]("InstrumentLog", db)}
+	//facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
+	//facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
 
 	err = facade.migration.migrateToDB()
 	if err != nil {
