@@ -39,7 +39,7 @@ func CreateAssetControllerFacade() (*AssetControllerFacade, error) {
 	//facade.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
 	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController[model.Instrument](db)}
 	//facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController[model.InstrumentLog]("InstrumentLog", db)}
-	//facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController("Supply", db)}
+	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController[model.Supply](db)}
 	//facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
 
 	err = facade.migration.migrateToDB()

@@ -4,6 +4,7 @@ package model
 
 import (
 	"ModEd/core"
+	"fmt"
 )
 
 type Supply struct {
@@ -14,4 +15,8 @@ type Supply struct {
 	CategoryID  *uint
 	Quantity    int         `gorm:"not null"`
 	SupplyLog   []SupplyLog `gorm:"foreignKey:ID;references:ID"`
+}
+
+func (supp Supply) ToString() string {
+	return fmt.Sprintf("[%v]\t%v\t%v", supp.SupplyLabel, supp.Description, supp.Quantity)
 }

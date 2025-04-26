@@ -14,6 +14,7 @@ type AssetMenuState struct {
 
 	// Add more menu here
 	instrumentMenu *InstrumentMenuState
+	supplyMenu     *SupplyMenuState
 }
 
 func NewAssetMenuState(manager *cli.CLIMenuStateManager, controllerFacade *controller.AssetControllerFacade) *AssetMenuState {
@@ -24,6 +25,7 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager, controllerFacade *contr
 
 	// Add more menu here
 	assetMenu.instrumentMenu = NewInstrumentMenuState(manager, controllerFacade, assetMenu)
+	assetMenu.supplyMenu = NewSupplyMenuState(manager, controllerFacade, assetMenu)
 
 	return assetMenu
 }
@@ -51,8 +53,7 @@ func (menu *AssetMenuState) HandleUserInput(input string) error {
 	case "2":
 		menu.manager.SetState(menu.instrumentMenu)
 	case "3":
-		//SupplyHandler(menu.controllerFacade)
-		fmt.Println("Not refactored yet...")
+		menu.manager.SetState(menu.supplyMenu)
 	case "4":
 		fmt.Println("Not implemented yet...")
 	case "5":
