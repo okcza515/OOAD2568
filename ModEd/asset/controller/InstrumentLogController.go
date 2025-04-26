@@ -11,14 +11,14 @@ import (
 
 type InstrumentLogController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.InstrumentLog]
 }
 
 type InstrumentLogControllerInterface interface {
 	getAll() ([]model.InstrumentLog, error)
 	ListAll() ([]string, error)
 	Insert(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	RetrieveByID(id uint, preloads ...string) (model.InstrumentLog, error)
 }
 
 func (c *InstrumentLogController) getAll() ([]model.InstrumentLog, error) {

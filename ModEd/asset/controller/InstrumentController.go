@@ -11,16 +11,17 @@ import (
 
 type InstrumentController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.Instrument]
 }
 
 type InstrumentControllerInterface interface {
 	ListAll() ([]string, error)
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
-	Insert(data core.RecordInterface) error
-	UpdateByID(data core.RecordInterface) error
+	List(condition map[string]interface{}) ([]model.Instrument, error)
+	RetrieveByID(id uint, preloads ...string) (model.Instrument, error)
+	Insert(data model.Instrument) error
+	UpdateByID(data model.Instrument) error
 	DeleteByID(id uint) error
-	InsertMany(data interface{}) error
+	InsertMany(data []model.Instrument) error
 }
 
 func (c *InstrumentController) ListAll() ([]string, error) {
