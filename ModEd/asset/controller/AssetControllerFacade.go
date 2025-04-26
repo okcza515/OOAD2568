@@ -19,9 +19,7 @@ type AssetControllerFacade struct {
 }
 
 func NewAssetControllerFacade() (*AssetControllerFacade, error) {
-	db, err := migration.GetInstance().
-		MigrateModule(migration.MODULE_ASSET).
-		BuildDB()
+	db, err := migration.GetInstance().MigrateModule(migration.MODULE_ASSET).BuildDB()
 
 	if err != nil {
 		return nil, err
