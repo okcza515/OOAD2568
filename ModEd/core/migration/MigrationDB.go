@@ -8,12 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var SingletonDB *gorm.DB
+var instance *MigrationManager = &MigrationManager{}
 
 type MigrationManager struct {
+	DB     *gorm.DB
 	err    error
 	pathDB string
 	Models []interface{}
+}
+
+func GetInstance() *MigrationManager {
+	return instance
 }
 
 func (m *MigrationManager) SetPathDB(pathDB string) *MigrationManager {
@@ -38,14 +43,14 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 		return nil, errors.New("err: failed to connect database")
 	}
 
-	SingletonDB = db
+	m.DB = db
 
 	err = m.migrateToDB()
 	if err != nil {
 		return nil, err
 	}
 
-	return SingletonDB, nil
+	return m.DB, nil
 }
 
 func (m *MigrationManager) MigrateModule(module ModuleOptionEnum) *MigrationManager {
@@ -53,7 +58,7 @@ func (m *MigrationManager) MigrateModule(module ModuleOptionEnum) *MigrationMana
 
 	switch module {
 	case MODULE_ASSET:
-		panic("not implemented")
+		strategy = &AssetMigrationStrategy{}
 	case MODULE_PROCUREMENT:
 		panic("not implemented")
 	case MODULE_SPACEMANAGEMENT:
@@ -87,7 +92,7 @@ func (m *MigrationManager) MigrateModule(module ModuleOptionEnum) *MigrationMana
 }
 
 func (m *MigrationManager) migrateToDB() error {
-	err := SingletonDB.AutoMigrate(m.Models...)
+	err := m.DB.AutoMigrate(m.Models...)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
 	}
@@ -96,11 +101,11 @@ func (m *MigrationManager) migrateToDB() error {
 
 func (m *MigrationManager) DropAllTables() error {
 
-	if SingletonDB == nil {
+	if m.DB == nil {
 		return errors.New("db not initialize")
 	}
 
-	err := SingletonDB.Migrator().DropTable(m.Models...)
+	err := m.DB.Migrator().DropTable(m.Models...)
 	if err != nil {
 		return err
 	}
