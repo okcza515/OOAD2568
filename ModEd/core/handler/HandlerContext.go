@@ -2,6 +2,8 @@ package handler
 
 import "errors"
 
+// Wrote by MEP-1012
+
 type HandlerContext struct {
 	strategy HandlerStrategy
 }
