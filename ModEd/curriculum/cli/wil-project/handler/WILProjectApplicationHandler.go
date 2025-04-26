@@ -2,6 +2,8 @@
 package handler
 
 import (
+	"ModEd/asset/util"
+	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
@@ -10,43 +12,24 @@ import (
 	"time"
 )
 
-func RunWILProjectApplicationHandler(controller *controller.WILModuleFacade) {
-	for {
-		printWILProjectApplicationModuleMenu()
-		choice := utils.GetUserChoice()
+type WILProjectApplicationMenuStateHandler struct {
+	manager *cli.CLIMenuStateManager
+	proxy   *controller.WILModuleProxy
 
-		switch choice {
-		case "1":
-			err := createWILProjectApplication(controller)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Println("\nWIL Project Application created successfully")
-		case "2":
-			fmt.Println("2 Not implemented yet...")
-		case "3":
-			fmt.Println("3 Not implemented yet...")
-		case "4":
-			err := listAllWILProjectApplication(controller)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-		case "5":
-			fmt.Println("5 Not implemented yet...")
-		case "6":
-			fmt.Println("6 Not implemented yet...")
-		case "0":
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option")
-		}
+	wilModuleMenuStateHandler *WILModuleMenuStateHandler
+}
+
+func NewWILProjectApplicationMenuStateHandler(
+	manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
+) *WILProjectApplicationMenuStateHandler {
+	return &WILProjectApplicationMenuStateHandler{
+		manager:                   manager,
+		proxy:                     proxy,
+		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 	}
 }
 
-func printWILProjectApplicationModuleMenu() {
+func (menu *WILProjectApplicationMenuStateHandler) Render() {
 	fmt.Println("\nWIL Project Application Menu:")
 	fmt.Println("1. Create WIL Project Application")
 	fmt.Println("2. Edit WIL Project Application")
@@ -57,7 +40,38 @@ func printWILProjectApplicationModuleMenu() {
 	fmt.Println("0. Exit WIL Module")
 }
 
-func createWILProjectApplication(controller *controller.WILModuleFacade) error {
+func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string) error {
+
+	switch input {
+	case "1":
+		err := menu.createWILProjectApplication()
+		if err != nil {
+			fmt.Println("error! cannot use this function")
+		}
+	case "2":
+		err := menu.listAllWILProjectApplication()
+		if err != nil {
+			fmt.Println("error! cannot use this function")
+		}
+	case "3":
+		fmt.Println("Get detail of an Instrument")
+	case "4":
+		fmt.Println("Update an Instrument")
+	case "5":
+		fmt.Println("Delete an Instrument")
+	case "0":
+		menu.manager.SetState(menu.wilModuleMenuStateHandler)
+		return nil
+	default:
+		fmt.Println("Invalid Command")
+	}
+
+	util.PressEnterToContinue()
+
+	return nil
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication() error {
 	WILProjectApplicationModel := model.WILProjectApplication{}
 
 	fmt.Println("\nRegistering WILProjectApplication model")
@@ -89,7 +103,7 @@ func createWILProjectApplication(controller *controller.WILModuleFacade) error {
 	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
 	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
 
-	result := controller.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
+	result := menu.proxy.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
 	if result != nil {
 		fmt.Println("\nError for WIL Project Application:", result)
 		return errors.New("Error! cannot create a WIL Project application")
@@ -97,9 +111,9 @@ func createWILProjectApplication(controller *controller.WILModuleFacade) error {
 	return nil
 }
 
-func listAllWILProjectApplication(controller *controller.WILModuleFacade) error {
+func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() error {
 	fmt.Println("\nWIL Project Application List\n")
-	applications, err := controller.WILProjectApplicationController.ListWILProjectApplication()
+	applications, err := menu.proxy.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
 		return errors.New("Error! cannot retrieve WIL Project application data")
 	}

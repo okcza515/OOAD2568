@@ -2,11 +2,9 @@
 package wilproject
 
 import (
+	"ModEd/core/cli"
 	"ModEd/curriculum/cli/wil-project/handler"
 	curriculumController "ModEd/curriculum/controller"
-	"ModEd/curriculum/utils"
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -16,34 +14,16 @@ func RunWILModuleCLI(
 	classController curriculumController.ClassControllerInterface,
 ) {
 
+	menuManager := cli.NewCLIMenuManager()
 	proxy := curriculumController.NewWILModuleProxy(db, courseController, classController)
+	wilmoduleState := handler.NewWILModuleMenuStateHandler(menuManager, proxy)
+	menuManager.SetState(wilmoduleState)
 
 	for {
-		printWILModuleMenu()
-		choice := utils.GetUserChoice()
-		switch choice {
-		case "1":
-			handler.RunWILProjectCurriculumHandler(proxy)
-		case "2":
-			handler.RunWILProjectApplicationHandler(proxy)
-		case "3":
-			handler.RunWILProjectHandler(proxy)
-		case "4":
-			handler.RunIndependentStudyHandler(proxy)
-		case "0":
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option")
+		menuManager.Render()
+		err := menuManager.HandleUserInput()
+		if err != nil {
+			panic(err)
 		}
 	}
-}
-
-func printWILModuleMenu() {
-	fmt.Println("\nWIL Module Menu:")
-	fmt.Println("1. WIL Project Curriculum")
-	fmt.Println("2. WIL Project Application")
-	fmt.Println("3. WIL Project")
-	fmt.Println("4. Independent Study")
-	fmt.Println("0. Exit WIL Module")
 }
