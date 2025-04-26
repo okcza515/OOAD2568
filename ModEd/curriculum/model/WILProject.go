@@ -2,11 +2,11 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type WILProject struct {
-	gorm.Model
+	core.BaseModel
 	ClassId         uint   `gorm:"not null"`
 	SeniorProjectId uint   `gorm:"not null"`
 	Company         uint   `gorm:"not null"`

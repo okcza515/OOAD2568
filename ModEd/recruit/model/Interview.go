@@ -2,18 +2,19 @@
 package model
 
 import (
+	"ModEd/common/model"
 	"time"
 )
 
 type Interview struct {
-	ID                   uint       `gorm:"primaryKey"`
-	InstructorID         uint       `gorm:"not null"` // Foreign key referencing Instructor
-	Instructor           Instructor `gorm:"foreignKey:InstructorID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	ApplicantID          uint       `gorm:"not null"` // Foreign key referencing Applicant
-	Applicant            Applicant  `gorm:"foreignKey:ApplicantID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ID                   uint       		`gorm:"primaryKey"`
+	InstructorID         uint       		`gorm:"not null"` // Foreign key referencing Instructor
+	Instructor  		 *model.Instructor  `gorm:"foreignKey:InstructorID;references:InstructorCode"`     
+	ApplicantID          uint       		`gorm:"not null"` // Foreign key referencing Applicant
+	Applicant            Applicant  		`gorm:"foreignKey:ApplicantID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ScheduledAppointment time.Time
-	InterviewScore       *float64          `gorm:"default:null"` // Nullable score
-	InterviewStatus      ApplicationStatus `gorm:"type:varchar(20)"`
+	InterviewScore       *float64          	`gorm:"default:null"` // Nullable score
+	InterviewStatus      ApplicationStatus 	`gorm:"type:varchar(20)"`
 }
 
 func (i *Interview) GetID() uint {

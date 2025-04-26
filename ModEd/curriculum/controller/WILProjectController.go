@@ -3,12 +3,13 @@ package controller
 
 import (
 	"ModEd/core"
+	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
 
 type WILProjectController struct {
-	*core.BaseController
+	*core.BaseController[model.WILProject]
 	Connector *gorm.DB
 }
 
@@ -24,12 +25,10 @@ type WILProjectControllerInterface interface {
 func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
 	return &WILProjectController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("WILProject", connector),
+		BaseController: core.NewBaseController[model.WILProject](connector),
 	}
 }
 
-func (repo WILProjectController) RegisterWILProjects(projects []core.RecordInterface) {
-	for _, project := range projects {
-		repo.Insert(project)
-	}
+func (controller WILProjectController) RegisterWILProjects(projects []core.RecordInterface) {
+	//controller.InsertMany()
 }

@@ -191,7 +191,7 @@ func registerManually(
 
 	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty, department, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
-	time.Sleep(8 * time.Second)
+	util.WaitForEnter()
 }
 
 func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController) *model.ApplicationRound {
@@ -255,9 +255,9 @@ func selectFacultyAndDepartment(
 		fmt.Println("Invalid department.")
 		return nil, nil
 	}
-	selectedDepartments := departments[deptChoice-1]
+	selectedDepartment := departments[deptChoice-1]
 
-	return selectedFaculty, selectedDepartments
+	return selectedFaculty, selectedDepartment
 }
 
 func saveReportForApplicant(
@@ -282,4 +282,5 @@ func saveReportForApplicant(
 	} else {
 		fmt.Printf("Application report saved for applicant ID %d\n", applicantID)
 	}
+	time.Sleep(2 * time.Second)
 }

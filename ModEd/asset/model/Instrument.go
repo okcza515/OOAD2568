@@ -4,6 +4,7 @@ package model
 
 import (
 	"ModEd/core"
+	"fmt"
 )
 
 type Instrument struct {
@@ -22,4 +23,8 @@ type Instrument struct {
 	InstrumentBrand    *string              `gorm:"type:text"`
 	InstrumentModel    *string              `gorm:"type:text"`
 	Category           Category             `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE;"`
+}
+
+func (inst Instrument) ToString() string {
+	return fmt.Sprintf("[%v]\t%v\t%v", inst.InstrumentStatus, inst.InstrumentCode, inst.InstrumentLabel)
 }

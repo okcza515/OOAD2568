@@ -30,6 +30,7 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 		switch choice {
 		case 1:
 			ApplicantRegistrationCLI(applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+			// util.WaitForEnter()
 		case 2:
 			ShowApplicantReportCLI(applicantCtrl, applicationReportCtrl)
 		case 3:
@@ -41,6 +42,6 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 		}
 		fmt.Println("\nPress Enter to return to the menu...")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
-		util.ClearScreen()
+		// util.ClearScreen()
 	}
 }

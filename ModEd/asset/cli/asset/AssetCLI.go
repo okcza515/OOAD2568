@@ -3,46 +3,43 @@ package main
 // MEP-1012 Asset
 
 import (
-	"ModEd/asset/cli/asset/handler"
+	menu "ModEd/asset/cli/asset/menu"
 	"ModEd/asset/controller"
-	util "ModEd/asset/util"
+	"ModEd/asset/util"
+	"ModEd/core/cli"
 	"flag"
-	"fmt"
 )
 
 func main() {
-	facade := initProgram()
+	assetControllerFacade := newAssetControllerFacade()
+	manager := cli.NewCLIMenuManager()
+	assetMenu := menu.NewAssetMenuState(manager, assetControllerFacade)
 
-	inputBuffer := ""
+	manager.SetState(assetMenu)
 
-	for inputBuffer != "exit" {
+	for {
 		util.ClearScreen()
 		util.PrintBanner()
 
-		printOption()
+		manager.Render()
 
-		inputBuffer = util.GetCommandInput()
+		manager.UserInput = util.GetCommandInput()
+		if manager.UserInput == "exit" {
+			break
+		}
 
-		switch inputBuffer {
-		case "1":
-			fmt.Println("Not implemented yet...")
-		case "2":
-			handler.InstrumentHandler(facade)
-		case "3":
-			handler.SupplyHandler(facade)
-		case "4":
-			fmt.Println("Not implemented yet...")
-		case "5":
-			fmt.Println("Not implemented yet...")
-		case "6":
-			fmt.Println("Not implemented yet...")
+		util.ClearScreen()
+
+		err := manager.HandleUserInput()
+		if err != nil {
+			panic(err)
 		}
 	}
 
 	util.PrintByeBye()
 }
 
-func initProgram() *controller.AssetControllerFacade {
+func newAssetControllerFacade() *controller.AssetControllerFacade {
 	resetFlag := flag.Bool("reset", false, "Reset database")
 	blankFlag := flag.Bool("blank", false, "Load seed data to database")
 
@@ -66,19 +63,4 @@ func initProgram() *controller.AssetControllerFacade {
 	}
 
 	return facade
-}
-
-func printOption() {
-	fmt.Println(":/asset")
-	fmt.Println()
-	fmt.Println("Welcome to ModEd Asset Service CLI!")
-	fmt.Println("Here is the list of page you can use, choose wisely!")
-	fmt.Println("  1:\tCategory Page")
-	fmt.Println("  2:\tInstrument Page")
-	fmt.Println("  3:\tSupply Page")
-	fmt.Println("  4:\tBorrow Page")
-	fmt.Println("  5:\tInstrument Log Page")
-	fmt.Println("  6:\tSupply Log Page")
-	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
-	fmt.Println()
 }

@@ -3,6 +3,7 @@ package cli
 
 import (
 	"ModEd/recruit/controller"
+	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
@@ -16,6 +17,7 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
+		util.ClearScreen()
 		fmt.Println("\n==== Instructor Menu ====")
 		fmt.Println("1. View Interview Details")
 		fmt.Println("2. Evaluate an Applicant")
@@ -33,6 +35,7 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 		switch choice {
 		case 1:
 			ViewInterviewDetails(instructorCtrl, instructorID)
+			util.WaitForEnter()
 		case 2:
 			EvaluateApplicant(instructorCtrl)
 		case 3:
