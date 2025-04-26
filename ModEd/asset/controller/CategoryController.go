@@ -11,13 +11,13 @@ import (
 
 type CategoryController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.Category]
 }
 
 type CategoryControllerInterface interface {
 	getAll() (*[]model.Category, error)
 	Insert(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	RetrieveByID(id uint, preloads ...string) (core.RecordInterface, error)
 }
 
 func (c *CategoryController) getAll() (*[]model.Category, error) {
