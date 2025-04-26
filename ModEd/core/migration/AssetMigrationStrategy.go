@@ -1,5 +1,7 @@
 package migration
 
+// MEP-1012 Asset
+
 import (
 	"ModEd/asset/model"
 )
