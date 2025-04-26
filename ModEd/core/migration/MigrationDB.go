@@ -1,0 +1,108 @@
+package migration
+
+// Wrote By : MEP-1010, MEP-1012
+
+import (
+	"github.com/cockroachdb/errors"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+var SingletonDB *gorm.DB
+
+type MigrationManager struct {
+	err    error
+	pathDB string
+	Models []interface{}
+}
+
+func (m *MigrationManager) SetPathDB(pathDB string) *MigrationManager {
+	m.pathDB = pathDB
+	return m
+}
+
+func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+
+	dbPath := ""
+	defaultPath := "data/ModEd.bin"
+
+	if m.pathDB == "" {
+		dbPath = defaultPath
+	}
+
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	if err != nil {
+		return nil, errors.New("err: failed to connect database")
+	}
+
+	SingletonDB = db
+
+	err = m.migrateToDB()
+	if err != nil {
+		return nil, err
+	}
+
+	return SingletonDB, nil
+}
+
+func (m *MigrationManager) MigrateModule(module ModuleOptionEnum) *MigrationManager {
+	var strategy MigrationStrategy
+
+	switch module {
+	case MODULE_ASSET:
+		panic("not implemented")
+	case MODULE_PROCUREMENT:
+		panic("not implemented")
+	case MODULE_SPACEMANAGEMENT:
+		panic("not implemented")
+	case MODULE_COMMON:
+		panic("not implemented")
+	case MODULE_CURRICULUM:
+		strategy = &CurriculumMigrationStrategy{}
+	case MODULE_INSTRUCTOR:
+		panic("not implemented")
+	case MODULE_INTERNSHIP:
+		panic("not implemented")
+	case MODULE_WILPROJECT:
+		strategy = &WILProjectMigrationStrategy{}
+	case MODULE_QUIZ:
+		panic("not implemented")
+	case MODULE_EVAL:
+		panic("not implemented")
+	case MODULE_HR:
+		panic("not implemented")
+	case MODULE_PROJECT:
+		panic("not implemented")
+	case MODULE_RECRUIT:
+		panic("not implemented")
+	default:
+		return m
+	}
+
+	m.Models = append(m.Models, strategy.GetModels()...)
+	return m
+}
+
+func (m *MigrationManager) migrateToDB() error {
+	err := SingletonDB.AutoMigrate(m.Models...)
+	if err != nil {
+		return errors.Wrap(err, "failed to migrate to db")
+	}
+	return nil
+}
+
+func (m *MigrationManager) DropAllTables() error {
+
+	if SingletonDB == nil {
+		return errors.New("db not initialize")
+	}
+
+	err := SingletonDB.Migrator().DropTable(m.Models...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
