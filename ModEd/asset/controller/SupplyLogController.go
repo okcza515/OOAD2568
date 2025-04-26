@@ -11,13 +11,13 @@ import (
 
 type SupplyLogController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.SupplyLog]
 }
 
 type SupplyLogControllerInterface interface {
 	GetAll() (*[]model.SupplyLog, error)
 	Insert(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	RetrieveByID(id uint, preloads ...string) (core.RecordInterface, error)
 }
 
 func (c *SupplyLogController) GetAll() (*[]model.SupplyLog, error) {

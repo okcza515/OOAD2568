@@ -11,14 +11,14 @@ import (
 
 type SupplyController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.Supply]
 }
 
 type SupplyControllerInterface interface {
 	getAll() ([]model.Supply, error)
 	ListAll() ([]string, error)
 	Insert(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	RetrieveByID(id uint, preloads ...string) (core.RecordInterface, error)
 	UpdateByID(data core.RecordInterface) error
 	DeleteByID(id uint) error
 	InsertMany(data interface{}) error

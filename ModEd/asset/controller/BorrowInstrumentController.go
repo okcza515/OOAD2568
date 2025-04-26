@@ -10,7 +10,7 @@ import (
 
 type BorrowInstrumentController struct {
 	db *gorm.DB
-	*core.BaseController
+	*core.BaseController[model.BorrowInstrument]
 }
 
 type BorrowInstrumentControllerInterface interface {
