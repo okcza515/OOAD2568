@@ -3,7 +3,6 @@ package controller
 import (
 	// modelCommon "ModEd/common/model"
 	modelCommon "ModEd/common/model"
-	"ModEd/curriculum/model"
 	modelCurriculum "ModEd/curriculum/model"
 	modelInstructorWorkload "ModEd/curriculum/model"
 	modelInternShip "ModEd/curriculum/model"
@@ -24,19 +23,19 @@ func NewMigrationController(db *gorm.DB) *MigrationController {
 
 func (c *MigrationController) MigrateToDB() error {
 	err := c.Db.AutoMigrate(
+		&modelCommon.Student{},
 		&modelCurriculum.Curriculum{},
 		&modelCurriculum.Class{},
 		&modelCurriculum.Course{},
-		&model.WILProjectCourse{},
-		&model.WILProjectClass{},
-		&model.WILProjectMember{},
-		&model.WILProjectApplication{},
-		&model.WILProject{},
-		&model.IndependentStudy{},
+		&modelCurriculum.WILProjectCourse{},
+		&modelCurriculum.WILProjectClass{},
+		&modelCurriculum.WILProjectMember{},
+		&modelCurriculum.WILProjectApplication{},
+		&modelCurriculum.WILProject{},
+		&modelCurriculum.IndependentStudy{},
 		&modelInternShip.InternStudent{},
 		&modelInternShip.Company{},
 		&modelInternShip.SupervisorReview{},
-		&modelCommon.Student{},
 		&modelInternShip.InternshipReport{},
 		&modelInternShip.InternshipApplication{},
 		&modelInstructorWorkload.ClassLecture{},
@@ -56,19 +55,19 @@ func (c *MigrationController) MigrateToDB() error {
 
 func (c *MigrationController) DropAllTables() error {
 	err := c.Db.Migrator().DropTable(
+		&modelCommon.Student{},
 		&modelCurriculum.Curriculum{},
 		&modelCurriculum.Class{},
 		&modelCurriculum.Course{},
-		&model.WILProjectCourse{},
-		&model.WILProjectClass{},
-		&model.WILProjectMember{},
-		&model.WILProjectApplication{},
-		&model.WILProject{},
-		&model.IndependentStudy{},
+		&modelCurriculum.WILProjectCourse{},
+		&modelCurriculum.WILProjectClass{},
+		&modelCurriculum.WILProjectMember{},
+		&modelCurriculum.WILProjectApplication{},
+		&modelCurriculum.WILProject{},
+		&modelCurriculum.IndependentStudy{},
 		&modelInternShip.InternStudent{},
 		&modelInternShip.Company{},
 		&modelInternShip.SupervisorReview{},
-		&modelCommon.Student{},
 		&modelInternShip.InternshipReport{},
 		&modelInternShip.InternshipApplication{},
 		&modelInstructorWorkload.ClassLecture{},
