@@ -11,13 +11,13 @@ import (
 )
 
 type ApplicationRoundController struct {
-	Base *core.BaseController
+	Base *core.BaseController[*model.ApplicationRound]
 	DB   *gorm.DB
 }
 
 func CreateApplicationRoundController(db *gorm.DB) *ApplicationRoundController {
 	return &ApplicationRoundController{
-		Base: core.NewBaseController("ApplicationRound", db),
+		Base: core.NewBaseController[*model.ApplicationRound](db),
 		DB:   db,
 	}
 }
@@ -27,13 +27,14 @@ func (controller *ApplicationRoundController) CreateApplicationRound(round *mode
 }
 
 func (c *ApplicationRoundController) GetAllRounds() ([]*model.ApplicationRound, error) {
-	var rounds []*model.ApplicationRound
+	return c.Base.List(nil)
+	// var rounds []*model.ApplicationRound
 
-	if err := c.DB.Find(&rounds).Error; err != nil {
-		return nil, fmt.Errorf("failed to query application rounds: %w", err)
-	}
+	// if err := c.DB.Find(&rounds).Error; err != nil {
+	// 	return nil, fmt.Errorf("failed to query application rounds: %w", err)
+	// }
 
-	return rounds, nil
+	// return rounds, nil
 }
 
 func (c *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {

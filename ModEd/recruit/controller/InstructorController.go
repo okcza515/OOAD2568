@@ -10,14 +10,14 @@ import (
 )
 
 type InstructorController struct {
-	*core.BaseController
-	DB *gorm.DB
+	Base *core.BaseController[*model.Interview]
+	DB   *gorm.DB
 }
 
 func CreateInstructorController(db *gorm.DB) *InstructorController {
 	return &InstructorController{
-		BaseController: core.NewBaseController("Interview", db),
-		DB:             db,
+		Base: core.NewBaseController[*model.Interview](db),
+		DB:   db,
 	}
 }
 

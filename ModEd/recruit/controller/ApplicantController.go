@@ -10,13 +10,13 @@ import (
 )
 
 type ApplicantController struct {
-	Base *core.BaseController
+	Base *core.BaseController[*model.Applicant]
 	DB   *gorm.DB
 }
 
 func NewApplicantController(db *gorm.DB) *ApplicantController {
 	return &ApplicantController{
-		Base: core.NewBaseController("Applicant", db),
+		Base: core.NewBaseController[*model.Applicant](db),
 		DB:   db,
 	}
 }
@@ -26,26 +26,11 @@ func (c *ApplicantController) RegisterApplicant(applicant *model.Applicant) erro
 }
 
 func (c *ApplicantController) GetAllApplicants() ([]*model.Applicant, error) {
-	records, err := c.Base.List(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var applicants []*model.Applicant
-	for _, record := range records {
-		if applicant, ok := record.(*model.Applicant); ok {
-			applicants = append(applicants, applicant)
-		}
-	}
-	return applicants, nil
+	return c.Base.List(nil)
 }
 
 func (c *ApplicantController) GetApplicantByID(id uint) (*model.Applicant, error) {
-	var applicant model.Applicant
-	if err := c.DB.Where("applicant_id = ?", id).First(&applicant).Error; err != nil {
-		return nil, err
-	}
-	return &applicant, nil
+	return c.Base.RetrieveByID(id)
 }
 
 func (c *ApplicantController) UpdateApplicant(applicant *model.Applicant) error {

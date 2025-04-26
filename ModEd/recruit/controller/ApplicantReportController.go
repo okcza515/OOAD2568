@@ -10,12 +10,12 @@ import (
 
 type ApplicationReportController struct {
 	DB   *gorm.DB
-	Base *core.BaseController
+	Base *core.BaseController[*model.ApplicationReport]
 }
 
 func CreateApplicationReportController(db *gorm.DB) *ApplicationReportController {
 	return &ApplicationReportController{
-		Base: core.NewBaseController("ApplicationReport", db),
+		Base: core.NewBaseController[*model.ApplicationReport](db),
 		DB:   db,
 	}
 }

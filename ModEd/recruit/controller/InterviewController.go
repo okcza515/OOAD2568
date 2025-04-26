@@ -10,23 +10,23 @@ import (
 )
 
 type InterviewController struct {
-	*core.BaseController
-	DB *gorm.DB
+	Base *core.BaseController[*model.Interview]
+	DB   *gorm.DB
 }
 
 func CreateInterviewController(db *gorm.DB) *InterviewController {
 	return &InterviewController{
-		DB:             db,
-		BaseController: core.NewBaseController("Interview", db),
+		DB:   db,
+		Base: core.NewBaseController[*model.Interview](db),
 	}
 }
 
 func (c *InterviewController) CreateInterview(interview *model.Interview) error {
-	return c.Insert(interview)
+	return c.Base.Insert(interview)
 }
 
 func (c *InterviewController) DeleteInterview(id uint) error {
-	return c.DeleteByID(id)
+	return c.Base.DeleteByID(id)
 }
 
 func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {

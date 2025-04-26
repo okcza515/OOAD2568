@@ -11,13 +11,13 @@ import (
 )
 
 type AdminController struct {
-	Base *core.BaseController
+	Base *core.BaseController[*model.Admin]
 	DB   *gorm.DB
 }
 
 func CreateAdminController(db *gorm.DB) *AdminController {
 	return &AdminController{
-		Base: core.NewBaseController("Admin", db),
+		Base: core.NewBaseController[*model.Admin](db),
 		DB:   db,
 	}
 }
@@ -27,13 +27,7 @@ func (controller *AdminController) CreateAdmin(admin *model.Admin) error {
 }
 
 func (c *AdminController) GetAllAdmins() ([]*model.Admin, error) {
-	var admins []*model.Admin
-
-	if err := c.DB.Find(&admins).Error; err != nil {
-		return nil, fmt.Errorf("failed to query admins: %w", err)
-	}
-
-	return admins, nil
+	return c.Base.List(nil)
 }
 
 func (c *AdminController) ReadAdminsFromCSV(filePath string) error {

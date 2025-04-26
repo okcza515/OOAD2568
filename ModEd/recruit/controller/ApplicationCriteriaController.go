@@ -13,11 +13,6 @@ func (ctrl *ApplicationCriteriaController) BuildCriteriaForApplicant(
 	departmentName string,
 ) Criteria {
 	builder := NewApplicationCriteriaBuilder()
-
-	builder.
-		AddRoundCriteria(roundName).
-		AddFacultyCriteria(facultyName).
-		AddDepartmentCriteria(departmentName)
-
-	return builder.Build()
+	director := NewApplicationCriteriaDirector(builder)
+	return director.BuildCriteria(roundName, facultyName, departmentName)
 }
