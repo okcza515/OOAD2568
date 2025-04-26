@@ -2,6 +2,8 @@
 package cli
 
 import (
+	common "ModEd/common/controller"
+	commonModel "ModEd/common/model"
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
@@ -16,7 +18,7 @@ func ApplicantRegistrationCLI(
 	applicantCtrl *controller.ApplicantController,
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
-	facultyCtrl *controller.FacultyController,
+	facultyCtrl *common.FacultyController,
 	departmentCtrl *controller.DepartmentController,
 ) {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -47,7 +49,7 @@ func registerFromFile(
 	applicantCtrl *controller.ApplicantController,
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
-	facultyCtrl *controller.FacultyController,
+	facultyCtrl *common.FacultyController,
 	departmentCtrl *controller.DepartmentController,
 	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
@@ -96,7 +98,7 @@ func registerFromFile(
 			status = model.Rejected
 		}
 
-		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
+		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty, department.DepartmentID, string(status))
 		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
 }
@@ -106,7 +108,7 @@ func registerManually(
 	applicantCtrl *controller.ApplicantController,
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
-	facultyCtrl *controller.FacultyController,
+	facultyCtrl *common.FacultyController,
 	departmentCtrl *controller.DepartmentController,
 	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
@@ -187,7 +189,7 @@ func registerManually(
 		status = model.Rejected
 	}
 
-	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty.FacultyID, department.DepartmentID, string(status))
+	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty, department.DepartmentID, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
 	time.Sleep(8 * time.Second)
 }
@@ -215,10 +217,10 @@ func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController)
 }
 
 func selectFacultyAndDepartment(
-	facultyCtrl *controller.FacultyController,
+	facultyCtrl *common.FacultyController,
 	departmentCtrl *controller.DepartmentController,
-) (*model.Faculty, *model.Department) {
-	faculties, err := facultyCtrl.GetAllFaculties()
+) (*commonModel.Faculty, *model.Department) {
+	faculties, err := facultyCtrl.GetAll()
 	if err != nil || len(faculties) == 0 {
 		fmt.Println("Error retrieving faculties.")
 		return nil, nil
@@ -237,7 +239,7 @@ func selectFacultyAndDepartment(
 	}
 	selectedFaculty := faculties[facultyChoice-1]
 
-	departments, err := departmentCtrl.GetDepartmentsByFacultyID(selectedFaculty.FacultyID)
+	departments, err := departmentCtrl.GetDepartmentsByFacultyID(selectedFaculty.ID)
 	if err != nil || len(departments) == 0 {
 		fmt.Println("Error retrieving departments.")
 		return nil, nil
@@ -253,14 +255,14 @@ func selectFacultyAndDepartment(
 		fmt.Println("Invalid department.")
 		return nil, nil
 	}
-	return &selectedFaculty, &departments[deptChoice-1]
+	return selectedFaculty, &departments[deptChoice-1]
 }
 
 func saveReportForApplicant(
 	appReportCtrl *controller.ApplicationReportController,
 	applicantID uint,
 	roundID uint,
-	facultyID uint,
+	faculty *commonModel.Faculty,
 	departmentID uint,
 	status string,
 ) {
@@ -268,7 +270,7 @@ func saveReportForApplicant(
 		ApplicationReportID: 0,
 		ApplicantID:         applicantID,
 		ApplicationRoundsID: roundID,
-		FacultyID:           facultyID,
+		Faculty:             faculty,
 		DepartmentID:        departmentID,
 		ApplicationStatuses: model.ApplicationStatus(status),
 	}

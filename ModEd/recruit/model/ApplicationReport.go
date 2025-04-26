@@ -1,6 +1,8 @@
 // MEP-1003 Student Recruitment
 package model
 
+import "ModEd/common/model"
+
 type ApplicationReport struct {
 	ApplicationReportID uint `gorm:"primaryKey"`
 
@@ -11,7 +13,7 @@ type ApplicationReport struct {
 	ApplicationRound    ApplicationRound `gorm:"foreignKey:ApplicationRoundsID;references:RoundID"`
 
 	FacultyID uint
-	Faculty   Faculty `gorm:"foreignKey:FacultyID;references:FacultyID"`
+	Faculty   *model.Faculty `gorm:"foreignKey:FacultyID;references:ID"`
 
 	DepartmentID uint
 	Department   Department `gorm:"foreignKey:DepartmentID;references:DepartmentID"`

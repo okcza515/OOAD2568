@@ -2,6 +2,7 @@
 package main
 
 import (
+	common "ModEd/common/controller"
 	"ModEd/recruit/cli"
 	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
@@ -55,10 +56,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	facultyCtrl := controller.NewFacultyController(db.DB)
-	if err := facultyCtrl.ReadFacultyFromCSV(facultyCSVPath); err != nil {
-		fmt.Println(err)
-	}
+	facultyCtrl := common.CreateFacultyController(db.DB)
 
 	departmentCtrl := controller.NewDepartmentController(db.DB)
 	if err := departmentCtrl.ReadDepartmentFromCSV(departmentCSVPath); err != nil {
