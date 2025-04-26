@@ -19,7 +19,7 @@ func ApplicantRegistrationCLI(
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
 	facultyCtrl *common.FacultyController,
-	departmentCtrl *controller.DepartmentController,
+	departmentCtrl *common.DepartmentController,
 ) {
 	scanner := bufio.NewScanner(os.Stdin)
 	util.ClearScreen()
@@ -50,7 +50,7 @@ func registerFromFile(
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
 	facultyCtrl *common.FacultyController,
-	departmentCtrl *controller.DepartmentController,
+	departmentCtrl *common.DepartmentController,
 	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
 	fmt.Print("Enter CSV or JSON file path: ")
@@ -98,7 +98,7 @@ func registerFromFile(
 			status = model.Rejected
 		}
 
-		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty, department.DepartmentID, string(status))
+		saveReportForApplicant(applicationReportCtrl, a.ApplicantID, round.RoundID, faculty, department, string(status))
 		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
 }
@@ -109,7 +109,7 @@ func registerManually(
 	applicationRoundCtrl *controller.ApplicationRoundController,
 	applicationReportCtrl *controller.ApplicationReportController,
 	facultyCtrl *common.FacultyController,
-	departmentCtrl *controller.DepartmentController,
+	departmentCtrl *common.DepartmentController,
 	criteriaCtrl *controller.ApplicationCriteriaController,
 ) {
 	var applicant model.Applicant
@@ -189,7 +189,7 @@ func registerManually(
 		status = model.Rejected
 	}
 
-	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty, department.DepartmentID, string(status))
+	saveReportForApplicant(applicationReportCtrl, applicant.ApplicantID, round.RoundID, faculty, department, string(status))
 	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
 	time.Sleep(8 * time.Second)
 }
@@ -218,8 +218,8 @@ func selectApplicationRound(appRoundCtrl *controller.ApplicationRoundController)
 
 func selectFacultyAndDepartment(
 	facultyCtrl *common.FacultyController,
-	departmentCtrl *controller.DepartmentController,
-) (*commonModel.Faculty, *model.Department) {
+	departmentCtrl *common.DepartmentController,
+) (*commonModel.Faculty, *commonModel.Department) {
 	faculties, err := facultyCtrl.GetAll()
 	if err != nil || len(faculties) == 0 {
 		fmt.Println("Error retrieving faculties.")
@@ -239,7 +239,7 @@ func selectFacultyAndDepartment(
 	}
 	selectedFaculty := faculties[facultyChoice-1]
 
-	departments, err := departmentCtrl.GetDepartmentsByFacultyID(selectedFaculty.ID)
+	departments, err := departmentCtrl.GetByFaculty(selectedFaculty.Name)
 	if err != nil || len(departments) == 0 {
 		fmt.Println("Error retrieving departments.")
 		return nil, nil
@@ -255,7 +255,9 @@ func selectFacultyAndDepartment(
 		fmt.Println("Invalid department.")
 		return nil, nil
 	}
-	return selectedFaculty, &departments[deptChoice-1]
+	selectedDepartments := departments[deptChoice-1]
+
+	return selectedFaculty, selectedDepartments
 }
 
 func saveReportForApplicant(
@@ -263,7 +265,7 @@ func saveReportForApplicant(
 	applicantID uint,
 	roundID uint,
 	faculty *commonModel.Faculty,
-	departmentID uint,
+	department *commonModel.Department,
 	status string,
 ) {
 	report := model.ApplicationReport{
@@ -271,7 +273,7 @@ func saveReportForApplicant(
 		ApplicantID:         applicantID,
 		ApplicationRoundsID: roundID,
 		Faculty:             faculty,
-		DepartmentID:        departmentID,
+		Department:          department,
 		ApplicationStatuses: model.ApplicationStatus(status),
 	}
 	err := appReportCtrl.SaveApplicationReport(&report)

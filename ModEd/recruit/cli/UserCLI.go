@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl *controller.ApplicationRoundController, applicationReportCtrl *controller.ApplicationReportController, facultyCtrl *common.FacultyController, departmentCtrl *controller.DepartmentController) {
+func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl *controller.ApplicationRoundController, applicationReportCtrl *controller.ApplicationReportController, facultyCtrl *common.FacultyController, departmentCtrl *common.DepartmentController) {
 
 	for {
 		util.ClearScreen()

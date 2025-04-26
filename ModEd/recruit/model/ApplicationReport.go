@@ -16,7 +16,7 @@ type ApplicationReport struct {
 	Faculty   *model.Faculty `gorm:"foreignKey:FacultyID;references:ID"`
 
 	DepartmentID uint
-	Department   Department `gorm:"foreignKey:DepartmentID;references:DepartmentID"`
+	Department   *model.Department `gorm:"foreignKey:DepartmentID;references:ID"`
 
 	ApplicationStatuses ApplicationStatus `gorm:"type:varchar(20)"`
 }
