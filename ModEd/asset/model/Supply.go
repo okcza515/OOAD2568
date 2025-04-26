@@ -18,5 +18,5 @@ type Supply struct {
 }
 
 func (supp Supply) ToString() string {
-	return fmt.Sprintf("[%v]\t%v\t%v", supp.SupplyLabel, supp.Description, supp.Quantity)
+	return fmt.Sprintf("[%d] \t%v\t%v", supp.ID, supp.Quantity, supp.SupplyLabel)
 }
