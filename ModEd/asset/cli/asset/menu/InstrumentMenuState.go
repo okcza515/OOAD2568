@@ -19,6 +19,7 @@ type InstrumentMenuState struct {
 
 	insertHandlerStrategy *handler.InsertHandlerStrategy[model.Instrument]
 	listHandlerStrategy   *handler.ListHandlerStrategy[model.Instrument]
+	updateHandlerStrategy *handler.UpdateHandlerStrategy[model.Instrument]
 }
 
 func NewInstrumentMenuState(
@@ -30,6 +31,7 @@ func NewInstrumentMenuState(
 		assetMainMenu:         assetMainMenu,
 		insertHandlerStrategy: handler.NewInsertHandlerStrategy[model.Instrument](controllerFacade.Instrument),
 		listHandlerStrategy:   handler.NewListHandlerStrategy[model.Instrument](controllerFacade.Instrument),
+		updateHandlerStrategy: handler.NewUpdateHandlerStrategy[model.Instrument](controllerFacade.Instrument),
 	}
 }
 
@@ -64,6 +66,7 @@ func (menu *InstrumentMenuState) HandleUserInput(input string) error {
 		fmt.Println("Get detail of an Instrument")
 	case "4":
 		fmt.Println("Update an Instrument")
+		context.SetStrategy(menu.updateHandlerStrategy)
 	case "5":
 		fmt.Println("Delete an Instrument")
 	case "back":

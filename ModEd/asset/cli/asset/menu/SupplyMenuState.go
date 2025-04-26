@@ -20,6 +20,7 @@ type SupplyMenuState struct {
 	insertHandlerStrategy *handler.InsertHandlerStrategy[model.Supply]
 	listHandlerStrategy   *handler.ListHandlerStrategy[model.Supply]
 	deleteHandlerStrategy *handler.DeleteHandlerStrategy[model.Supply]
+	updateHandlerStrategy *handler.UpdateHandlerStrategy[model.Supply]
 }
 
 func NewSupplyMenuState(
@@ -32,6 +33,7 @@ func NewSupplyMenuState(
 		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerFacade.Supply),
 		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerFacade.Supply),
 		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerFacade.Supply),
+		updateHandlerStrategy: handler.NewUpdateHandlerStrategy(controllerFacade.Supply),
 	}
 }
 
@@ -66,6 +68,7 @@ func (menu *SupplyMenuState) HandleUserInput(input string) error {
 		fmt.Println("Get detail of an Supply")
 	case "4":
 		fmt.Println("Update an Supply")
+		context.SetStrategy(menu.updateHandlerStrategy)
 	case "5":
 		fmt.Println("Delete an Supply")
 		context.SetStrategy(menu.deleteHandlerStrategy)
