@@ -2,6 +2,7 @@
 package wilproject
 
 import (
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/migration"
 	"ModEd/curriculum/cli/wil-project/handler"
@@ -17,9 +18,9 @@ func RunWILModuleCLI(
 ) {
 
 	db, err := migration.GetInstance().
-		MigrateModule(migration.MODULE_COMMON).
-		MigrateModule(migration.MODULE_CURRICULUM).
-		MigrateModule(migration.MODULE_WILPROJECT).
+		MigrateModule(core.MODULE_COMMON).
+		MigrateModule(core.MODULE_CURRICULUM).
+		MigrateModule(core.MODULE_WILPROJECT).
 		BuildDB()
 
 	if err != nil {

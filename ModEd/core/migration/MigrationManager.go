@@ -3,6 +3,7 @@ package migration
 // Wrote By : MEP-1010, MEP-1012
 
 import (
+	"ModEd/core"
 	"github.com/cockroachdb/errors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -53,35 +54,35 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 	return m.DB, nil
 }
 
-func (m *MigrationManager) MigrateModule(module ModuleOptionEnum) *MigrationManager {
+func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *MigrationManager {
 	var strategy MigrationStrategy
 
 	switch module {
-	case MODULE_ASSET:
+	case core.MODULE_ASSET:
 		strategy = &AssetMigrationStrategy{}
-	case MODULE_PROCUREMENT:
+	case core.MODULE_PROCUREMENT:
 		panic("not implemented")
-	case MODULE_SPACEMANAGEMENT:
+	case core.MODULE_SPACEMANAGEMENT:
 		panic("not implemented")
-	case MODULE_COMMON:
+	case core.MODULE_COMMON:
 		panic("not implemented")
-	case MODULE_CURRICULUM:
+	case core.MODULE_CURRICULUM:
 		strategy = &CurriculumMigrationStrategy{}
-	case MODULE_INSTRUCTOR:
+	case core.MODULE_INSTRUCTOR:
 		panic("not implemented")
-	case MODULE_INTERNSHIP:
+	case core.MODULE_INTERNSHIP:
 		panic("not implemented")
-	case MODULE_WILPROJECT:
+	case core.MODULE_WILPROJECT:
 		strategy = &WILProjectMigrationStrategy{}
-	case MODULE_QUIZ:
+	case core.MODULE_QUIZ:
 		panic("not implemented")
-	case MODULE_EVAL:
+	case core.MODULE_EVAL:
 		panic("not implemented")
-	case MODULE_HR:
+	case core.MODULE_HR:
 		panic("not implemented")
-	case MODULE_PROJECT:
+	case core.MODULE_PROJECT:
 		panic("not implemented")
-	case MODULE_RECRUIT:
+	case core.MODULE_RECRUIT:
 		panic("not implemented")
 	default:
 		return m
