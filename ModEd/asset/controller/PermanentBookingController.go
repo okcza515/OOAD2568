@@ -2,7 +2,7 @@
 package controller
 
 import (
-	model "ModEd/asset/model/spacemanagement"
+	model "ModEd/asset/model"
 	"fmt"
 	"time"
 

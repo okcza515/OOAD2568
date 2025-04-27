@@ -1,6 +1,6 @@
 // MEP-1013
-//not sure if needed
-package spacemanagement
+// not sure if needed
+package model
 
 type AssetManagementTypeEnum string
 

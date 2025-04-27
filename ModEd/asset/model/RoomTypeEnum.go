@@ -1,5 +1,5 @@
 // MEP-1013
-package spacemanagement
+package model
 
 type RoomTypeEnum string
 

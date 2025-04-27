@@ -1,10 +1,15 @@
 // MEP-1013
-package spacemanagement
+package model
 
-import "gorm.io/gorm"
+import (
+	"ModEd/core"
+
+	"gorm.io/gorm"
+)
 
 type Room struct {
 	gorm.Model
+	core.BaseModel
 	RoomName           string                 `gorm:"type:varchar(255);not null" json:"room_name" csv:"room_name"`
 	RoomType           RoomTypeEnum           `gorm:"type:text;not null" json:"room_type" csv:"room_type"`
 	Description        string                 `gorm:"type:text" json:"description,omitempty" csv:"description,omitempty"`
