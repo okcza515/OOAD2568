@@ -5,6 +5,7 @@ import (
 	model "ModEd/asset/model"
 
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -89,6 +90,8 @@ func (ctrl *ProcurementApprovalController) UpdateApprovalStatus(c *gin.Context) 
 		return
 	}
 
+	input.Status = strings.ToLower(input.Status)
+
 	var approval model.ProcurementApproval
 	if err := ctrl.DB.First(&approval, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Approval not found"})
@@ -118,4 +121,21 @@ func (ctrl *ProcurementApprovalController) DeleteApproval(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Approval deleted"})
+}
+
+func (ctrl *ProcurementApprovalController) OnApproved(id uint) error {
+	var approval model.ProcurementApproval
+	if err := ctrl.DB.First(&approval, id).Error; err != nil {
+		return err
+	}
+	approval.Status = "approved"
+	now := time.Now()
+	approval.ApprovalTime = &now
+	return ctrl.DB.Save(&approval).Error
+}
+
+func (ctrl *ProcurementApprovalController) OnRejected(id uint) error {
+	return ctrl.DB.Model(&model.ProcurementApproval{}).
+		Where("procurement_approval_id = ?", id).
+		Update("status", "rejected").Error
 }
