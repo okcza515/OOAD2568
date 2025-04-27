@@ -13,13 +13,13 @@ import (
 )
 
 type ProcurementApprovalController struct {
-	DB *gorm.DB
+	db *gorm.DB
 }
 
 func (ctrl *ProcurementApprovalController) ListApprovals(c *gin.Context) {
 	var approvals []model.ProcurementApproval
 
-	if err := ctrl.DB.Unscoped().Find(&approvals).Error; err != nil {
+	if err := ctrl.db.Unscoped().Find(&approvals).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch approvals"})
 		return
 	}
@@ -49,7 +49,7 @@ func (ctrl *ProcurementApprovalController) GetApprovalByID(c *gin.Context) {
 	id := c.Param("id")
 	var approval model.ProcurementApproval
 
-	if err := ctrl.DB.First(&approval, id).Error; err != nil {
+	if err := ctrl.db.First(&approval, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Approval not found"})
 		return
 	}
@@ -62,7 +62,7 @@ func (ctrl *ProcurementApprovalController) FilterApprovals(c *gin.Context) {
 	approverID := c.Query("approver_id")
 	status := c.Query("status")
 
-	query := ctrl.DB.Model(&model.ProcurementApproval{})
+	query := ctrl.db.Model(&model.ProcurementApproval{})
 
 	if approverID != "" {
 		query = query.Where("approver_id = ?", approverID)
@@ -93,7 +93,7 @@ func (ctrl *ProcurementApprovalController) UpdateApprovalStatus(c *gin.Context) 
 	input.Status = strings.ToLower(input.Status)
 
 	var approval model.ProcurementApproval
-	if err := ctrl.DB.First(&approval, id).Error; err != nil {
+	if err := ctrl.db.First(&approval, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Approval not found"})
 		return
 	}
@@ -104,7 +104,7 @@ func (ctrl *ProcurementApprovalController) UpdateApprovalStatus(c *gin.Context) 
 		approval.ApprovalTime = &now
 	}
 
-	if err := ctrl.DB.Save(&approval).Error; err != nil {
+	if err := ctrl.db.Save(&approval).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status"})
 		return
 	}
@@ -115,7 +115,7 @@ func (ctrl *ProcurementApprovalController) UpdateApprovalStatus(c *gin.Context) 
 func (ctrl *ProcurementApprovalController) DeleteApproval(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := ctrl.DB.Delete(&model.ProcurementApproval{}, id).Error; err != nil {
+	if err := ctrl.db.Delete(&model.ProcurementApproval{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete approval"})
 		return
 	}
@@ -125,17 +125,17 @@ func (ctrl *ProcurementApprovalController) DeleteApproval(c *gin.Context) {
 
 func (ctrl *ProcurementApprovalController) OnApproved(id uint) error {
 	var approval model.ProcurementApproval
-	if err := ctrl.DB.First(&approval, id).Error; err != nil {
+	if err := ctrl.db.First(&approval, id).Error; err != nil {
 		return err
 	}
 	approval.Status = "approved"
 	now := time.Now()
 	approval.ApprovalTime = &now
-	return ctrl.DB.Save(&approval).Error
+	return ctrl.db.Save(&approval).Error
 }
 
 func (ctrl *ProcurementApprovalController) OnRejected(id uint) error {
-	return ctrl.DB.Model(&model.ProcurementApproval{}).
+	return ctrl.db.Model(&model.ProcurementApproval{}).
 		Where("procurement_approval_id = ?", id).
 		Update("status", "rejected").Error
 }
