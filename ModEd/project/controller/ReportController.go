@@ -14,31 +14,37 @@ import (
 )
 
 type ReportController struct {
-	*core.BaseController
+	*core.BaseController[*model.Report]
 	db *gorm.DB
 }
 
 func NewReportController(db *gorm.DB) *ReportController {
 	return &ReportController{
 		db:             db,
-		BaseController: core.NewBaseController("reports", db),
+		BaseController: core.NewBaseController[*model.Report](db),
 	}
 }
 
 func (c *ReportController) ListAllReports() ([]model.Report, error) {
-	var reports []model.Report
-	if err := c.db.Model(&model.Report{}).Find(&reports).Error; err != nil {
+	reportPtrs, err := c.List(nil)
+	if err != nil {
 		return nil, err
 	}
+
+	reports := make([]model.Report, len(reportPtrs))
+	for i, rPtr := range reportPtrs {
+		reports[i] = *rPtr
+	}
+
 	return reports, nil
 }
 
+func (c *ReportController) DeleteReport(id uint) error {
+	return c.DeleteByID(id)
+}
+
 func (c *ReportController) RetrieveReport(id uint) (*model.Report, error) {
-	var report model.Report
-	if err := c.db.First(&report, id).Error; err != nil {
-		return nil, err
-	}
-	return &report, nil
+	return c.RetrieveByID(id)
 }
 
 func (c *ReportController) InsertReport(report model.Report) error {
@@ -49,18 +55,12 @@ func (c *ReportController) InsertReport(report model.Report) error {
 	if report.DueDate.IsZero() {
 		return fmt.Errorf("due date cannot be empty")
 	}
-	return c.Insert(&report)
+	reportCopy := report
+	return c.Insert(&reportCopy)
 }
 
 func (c *ReportController) UpdateReport(report *model.Report) error {
 	return c.UpdateByID(report)
-}
-
-func (c *ReportController) DeleteReport(id uint) error {
-	if err := c.db.Delete(&model.Report{}, id).Error; err != nil {
-		return fmt.Errorf("failed to delete report: %w", err)
-	}
-	return nil
 }
 
 func (c *ReportController) GetFormattedReportList() ([]string, error) {
