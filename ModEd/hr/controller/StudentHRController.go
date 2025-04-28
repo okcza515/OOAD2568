@@ -4,7 +4,6 @@ import (
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
-	"ModEd/hr/util"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -120,14 +119,7 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 			return fmt.Errorf("error retrieving student with ID %s: %v", studentID, err)
 		}
 
-		// Update student info using non-empty values.
-		updatedStudent := studentInfo.
-			SetFirstName(util.IfNotEmpty(firstName, studentInfo.FirstName)).
-			SetLastName(util.IfNotEmpty(lastName, studentInfo.LastName)).
-			SetGender(util.IfNotEmpty(gender, studentInfo.Gender)).
-			SetCitizenID(util.IfNotEmpty(citizenID, studentInfo.CitizenID)).
-			SetPhoneNumber(util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber)).
-			SetEmail(util.IfNotEmpty(email, studentInfo.Email))
+		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
 
 		// 1) Update common student data.
 		studentData := map[string]any{
