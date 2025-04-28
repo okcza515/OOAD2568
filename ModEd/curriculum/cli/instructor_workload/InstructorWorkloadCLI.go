@@ -18,11 +18,21 @@ func RunInstructorWorkloadModuleCLI(
 	classController controller.ClassControllerInterface,
 	curriculumController controller.CurriculumControllerInterface,
 ) {
-	coursePlanController := controller.CreateCoursePlanController(db)
-	classWorkloadController := controller.CreateClassWorkloadController(db)
+	// coursePlanController := controller.CreateCoursePlanController(db)
+	// classWorkloadController := controller.CreateClassWorkloadController(db)
 	seniorProjectWorkloadController := controller.CreateProjectController(db)
 	studentWorkloadController := controller.CreateStudentWorkloadController(db)
 	administrativeWorkloadController := controller.CreateMeetingController(db)
+
+	// menuManager := cli.NewCLIMenuManager()
+	// proxy := controller.NewInstructorWorkloadModuleWrapper(
+	// 	db,
+	// 	courseController,
+	// 	classController,
+	// 	curriculumController,
+	// )
+	// insturtorWorkloadModuleState := handler.NewInstructorWorkloadModuleMenuStateHandler(menuManager, proxy)
+	// menuManager.SetState(insturtorWorkloadModuleState)
 
 	input := ""
 	for input != "exit" {
@@ -66,8 +76,8 @@ func RunInstructorWorkloadModuleCLI(
 			}
 
 			fmt.Println("CSV Seed Data Loaded Successfully.")
-		case "2": // Teaching Responsibility
-			handler.RunAcademicWorkloadHandler(coursePlanController, classWorkloadController)
+		// case "2": // Teaching Responsibility
+		// 	handler.RunAcademicWorkloadHandler(coursePlanController, classWorkloadController)
 		case "3": // StudentAdvisor Workload
 			handler.RunStudentAdvisorWorkloadHandler(studentWorkloadController)
 		case "4": // Administrative Task

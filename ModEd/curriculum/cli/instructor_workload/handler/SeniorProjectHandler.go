@@ -1,12 +1,18 @@
 package handler
 
 import (
+	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	projectModel "ModEd/project/model"
 	"fmt"
 )
+
+type SeniorProjectWorkloadMenuStateHandler struct {
+	manager *cli.CLIMenuStateManager
+	wrapper *controller.ProjectControllerService
+}
 
 func RunSeniorProjectWorkloadHandler(controller controller.ProjectControllerService) {
 	for {

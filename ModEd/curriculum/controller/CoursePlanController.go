@@ -24,7 +24,7 @@ type CoursePlanController struct {
 	Connector *gorm.DB
 }
 
-func CreateCoursePlanController(db *gorm.DB) *CoursePlanController {
+func CreateCoursePlanController(db *gorm.DB) CoursePlanService {
 	return &CoursePlanController{
 		BaseController: core.NewBaseController[*model.CoursePlan](db),
 		Connector:      db,
