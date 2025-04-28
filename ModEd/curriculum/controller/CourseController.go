@@ -47,6 +47,7 @@ func (c *CourseController) GetCourse(courseId uint, preload ...string) (course *
 	return course, nil
 }
 
+// TODO: Consider adding condtions or preload params
 func (c *CourseController) GetCourses() (courses []*model.Course, err error) {
 	courses, err = c.core.List(nil)
 	if err != nil {
