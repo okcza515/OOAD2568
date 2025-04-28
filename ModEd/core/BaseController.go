@@ -39,6 +39,21 @@ func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (
 	return record, nil
 }
 
+func (controller *BaseController[T]) RetrieveByCondition(condition map[string]interface{}, preloads ...string) (T, error) {
+	var record T
+
+	query := controller.db
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+
+	if err := query.Where(condition).First(&record).Error; err != nil {
+		return record, err
+	}
+
+	return record, nil
+}
+
 func (controller *BaseController[T]) DeleteByID(id uint) error {
 	var record T
 	return controller.db.Where("id = ?", id).Delete(&record).Error

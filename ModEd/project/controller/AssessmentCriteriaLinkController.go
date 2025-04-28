@@ -9,55 +9,55 @@ import (
 )
 
 type AssessmentCriteriaLinkController struct {
-	*core.BaseController
-	db *gorm.DB
+	*core.BaseController[*model.AssessmentCriteriaLink]
+	DB *gorm.DB
 }
 
 func NewAssessmentCriteriaLinkController(db *gorm.DB) *AssessmentCriteriaLinkController {
 	return &AssessmentCriteriaLinkController{
-		db:             db,
-		BaseController: core.NewBaseController("assessmentCriteriaLinks", db),
+		BaseController: core.NewBaseController[*model.AssessmentCriteriaLink](db),
+		DB:             db,
 	}
 }
 
-func (c *AssessmentCriteriaLinkController) ListAllAssessmentCriteriaLinks() ([]model.AssessmentCriteriaLink, error) {
-	var assessmentCriteriaLinks []model.AssessmentCriteriaLink
-	result := c.db.Find(&assessmentCriteriaLinks)
-	if result.Error != nil {
-		return nil, result.Error
+func (c *AssessmentCriteriaLinkController) ListAllAssessmentCriteriaLinks() ([]*model.AssessmentCriteriaLink, error) {
+	assessmentCriteriaLinks, err := c.List(map[string]interface{}{})
+	if assessmentCriteriaLinks != nil {
+		return nil, err
 	}
 	return assessmentCriteriaLinks, nil
 }
 
-func (c *AssessmentCriteriaLinkController) ListProjectAssessmentCriteriaLinks(seniorProjectId uint) ([]model.AssessmentCriteriaLink, error) {
+func (c *AssessmentCriteriaLinkController) ListProjectAssessmentCriteriaLinks(seniorProjectId uint) ([]*model.AssessmentCriteriaLink, error) {
 	var assessment model.Assessment
-	if err := c.db.First(&assessment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
+	if err := c.DB.First(&assessment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
 		return nil, err
 	}
-	var assessmentCriteriaLink []model.AssessmentCriteriaLink
-	result := c.db.Find(&assessmentCriteriaLink, "assessment_id = ?", assessment.ID)
-	if result.Error != nil {
-		return nil, result.Error
+
+	assessmentCriteriaLink, err := c.List(map[string]interface{}{"assessment_id": assessment.ID})
+	if err != nil {
+		return nil, err
 	}
+
 	return assessmentCriteriaLink, nil
 }
 
 func (c *AssessmentCriteriaLinkController) RetrieveAssessmentCriteriaLink(assessmentId uint, assessmentCriteriaId uint) (*model.AssessmentCriteriaLink, error) {
-	var assessmentCriteriaLink model.AssessmentCriteriaLink
-	if err := c.db.First(&assessmentCriteriaLink, "assessment_id = ? AND assessment_criteria_id = ?", assessmentId, assessmentCriteriaId).Error; err != nil {
+	assessmentCriteriaLink, err := c.RetrieveByCondition(map[string]interface{}{"assessment_id": assessmentId, "assessment_criteria_id": assessmentCriteriaId})
+	if err != nil {
 		return nil, err
 	}
-	return &assessmentCriteriaLink, nil
+	return assessmentCriteriaLink, nil
 }
 
 func (c *AssessmentCriteriaLinkController) InsertAssessmentCriteriaLink(assessmentId uint, assessmentCriteriaId uint) (*model.AssessmentCriteriaLink, error) {
 	var assessment model.Assessment
-	if err := c.db.First(&assessment, assessmentId).Error; err != nil {
+	if err := c.DB.First(&assessment, assessmentId).Error; err != nil {
 		return nil, fmt.Errorf("assessment does not exist: %w", err)
 	}
 
 	var assessmentCriteria model.AssessmentCriteria
-	if err := c.db.First(&assessmentCriteria, assessmentCriteriaId).Error; err != nil {
+	if err := c.DB.First(&assessmentCriteria, assessmentCriteriaId).Error; err != nil {
 		return nil, fmt.Errorf("assessment criteria does not exist: %w", err)
 	}
 
@@ -73,7 +73,7 @@ func (c *AssessmentCriteriaLinkController) UpdateAssessmentCriteriaLink(id uint,
 }
 
 func (c *AssessmentCriteriaLinkController) DeleteAssessmentCriteriaLink(assessmentID uint, criteriaID uint) error {
-	return c.db.
+	return c.DB.
 		Where("assessment_id = ? AND assessment_criteria_id = ?", assessmentID, criteriaID).
 		Delete(&model.AssessmentCriteriaLink{}).
 		Error
