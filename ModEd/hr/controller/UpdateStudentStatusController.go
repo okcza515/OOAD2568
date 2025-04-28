@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func UpdateStudentStatusBusinessLogic(tx *gorm.DB, studentID, statusStr string) error {
+func UpdateStudentStatus(tx *gorm.DB, studentID, statusStr string) error {
 	// Convert status string to the appropriate enum or type using our util layer.
 	newStatus, err := util.StatusFromString(statusStr)
 	if err != nil {

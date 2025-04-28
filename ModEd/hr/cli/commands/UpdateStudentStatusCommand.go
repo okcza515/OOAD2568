@@ -22,7 +22,7 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	if err := controller.UpdateStudentStatusBusinessLogic(tx, *studentID, *status); err != nil {
+	if err := controller.UpdateStudentStatus(tx, *studentID, *status); err != nil {
 		return fmt.Errorf("failed to update student status: %v", err)
 	}
 
