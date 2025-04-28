@@ -1,0 +1,157 @@
+package testing
+
+import (
+	"ModEd/project/controller"
+	"ModEd/project/model"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
+)
+
+func setupScoreCommitteeTest(db *gorm.DB) (*model.SeniorProject, *model.Assignment, *model.Committee) {
+	// Create SeniorProject
+	seniorProject := model.SeniorProject{GroupName: "Test Group"}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		panic(err)
+	}
+
+	// Create Assignment
+	assignment := model.Assignment{
+		Description:     "Test Assignment",
+		SeniorProjectId: seniorProject.ID,
+		DueDate:         seniorProject.CreatedAt,
+	}
+	if err := db.Create(&assignment).Error; err != nil {
+		panic(err)
+	}
+
+	// Create Committee
+	committee := model.Committee{
+		InstructorId:    1,
+		SeniorProjectId: seniorProject.ID,
+	}
+	if err := db.Create(&committee).Error; err != nil {
+		panic(err)
+	}
+
+	return &seniorProject, &assignment, &committee
+}
+
+func TestInsertScoreCommittee(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, committee := setupScoreCommitteeTest(db)
+
+	// Insert ScoreAssignmentCommittee
+	controller := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	score := &model.ScoreAssignmentCommittee{
+		AssignmentId: assignment.ID,
+		CommitteeId:  committee.ID,
+		Score:        85.0,
+	}
+	err := controller.InsertCommitteeScore(score)
+	assert.NoError(t, err)
+
+	// Verify insertion
+	var insertedScore model.ScoreAssignmentCommittee
+	err = db.First(&insertedScore, score.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, insertedScore.Score)
+}
+
+func TestRetrieveScoreCommitteeByID(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, committee := setupScoreCommitteeTest(db)
+
+	// Insert ScoreAssignmentCommittee
+	score := model.ScoreAssignmentCommittee{
+		AssignmentId: assignment.ID,
+		CommitteeId:  committee.ID,
+		Score:        90.0,
+	}
+	db.Create(&score)
+
+	// Retrieve by ID
+	controller := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	retrievedScore, err := controller.RetrieveCommitteeScore(score.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, retrievedScore.Score)
+}
+
+func TestUpdateScoreCommittee(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, committee := setupScoreCommitteeTest(db)
+
+	// Insert ScoreAssignmentCommittee
+	score := model.ScoreAssignmentCommittee{
+		AssignmentId: assignment.ID,
+		CommitteeId:  committee.ID,
+		Score:        80.0,
+	}
+	db.Create(&score)
+
+	// Update Score
+	controller := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	score.Score = 95.0
+	err := controller.UpdateCommitteeScore(&score)
+	assert.NoError(t, err)
+
+	// Verify update
+	var updatedScore model.ScoreAssignmentCommittee
+	err = db.First(&updatedScore, score.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, updatedScore.Score)
+}
+
+func TestDeleteScoreCommittee(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, committee := setupScoreCommitteeTest(db)
+
+	// Insert ScoreAssignmentCommittee
+	score := model.ScoreAssignmentCommittee{
+		AssignmentId: assignment.ID,
+		CommitteeId:  committee.ID,
+		Score:        75.0,
+	}
+	db.Create(&score)
+
+	// Delete Score
+	controller := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	err := controller.DeleteCommitteeScore(score.ID)
+	assert.NoError(t, err)
+
+	// Verify deletion
+	var deletedScore model.ScoreAssignmentCommittee
+	err = db.First(&deletedScore, score.ID).Error
+	assert.Error(t, err)
+	assert.Equal(t, gorm.ErrRecordNotFound, err)
+}
+
+func TestListScoreCommittees(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, committee := setupScoreCommitteeTest(db)
+
+	// Insert multiple ScoreAssignmentCommittee records
+	scores := []model.ScoreAssignmentCommittee{
+		{AssignmentId: assignment.ID, CommitteeId: committee.ID, Score: 85.0},
+		{AssignmentId: assignment.ID, CommitteeId: committee.ID, Score: 90.0},
+		{AssignmentId: assignment.ID, CommitteeId: committee.ID, Score: 95.0},
+	}
+	db.Create(&scores)
+
+	// List all scores
+	controller := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	result, err := controller.ListAllCommitteeScores()
+	assert.NoError(t, err)
+	assert.Len(t, result, len(scores))
+}

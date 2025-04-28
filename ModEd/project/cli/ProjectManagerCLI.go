@@ -23,8 +23,14 @@ func main() {
 	assessmentController := controller.NewAssessmentController(db)
 	assessmentCriteriaController := controller.NewAssessmentCriteriaController(db)
 	assessmentCriteriaLinkController := controller.NewAssessmentCriteriaLinkController(db)
-	scoreAdvisorController := controller.NewScoreAdvisorController(db)
-	scoreCommitteeController := controller.NewScoreCommitteeController(db)
+	scoreAssignmentAdvisorController := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	scoreAssignmentCommitteeController := controller.NewScoreCommitteeController[*model.ScoreAssignmentCommittee](db)
+	scoreReportAdvisorController := controller.NewScoreAdvisorController[*model.ScoreReportAdvisor](db)
+	scoreReportCommitteeController := controller.NewScoreCommitteeController[*model.ScoreReportCommittee](db)
+	scorePresentationAdvisorController := controller.NewScoreAdvisorController[*model.ScorePresentationAdvisor](db)
+	scorePresentationCommitteeController := controller.NewScoreCommitteeController[*model.ScorePresentationCommittee](db)
+	scoreAssessmentAdvisorController := controller.NewScoreAdvisorController[*model.ScoreAssessmentAdvisor](db)
+	scoreAssessmentCommitteeController := controller.NewScoreCommitteeController[*model.ScoreAssessmentCommittee](db)
 
 	utils.PrintTitle("Senior Project CLI")
 
@@ -504,28 +510,18 @@ func main() {
 			{
 				Title: "Evaluation & Assessment",
 				Children: []*utils.MenuItem{
-					{
-						Title: "Evaluate Presentation",
-						Action: func(io *utils.MenuIO) {
-							io.Println("Evaluating Presentation...")
-							io.Print("Enter Evaluation ID: ")
-
-							input, err := io.ReadInput()
-							if err != nil {
-								io.Println(fmt.Sprintf("Error reading input: %v", err))
-								return
-							}
-
-							evaluationID, err := strconv.ParseUint(input, 10, 32)
-							if err != nil {
-								io.Println(fmt.Sprintf("Invalid Evaluation ID: %v", err))
-								return
-							}
-
-							// Add logic to evaluate presentation เพิ่มแล้วลบด้วย
-							io.Println(fmt.Sprintf("Presentation with ID %d evaluated successfully!", evaluationID))
-						},
-					},
+					menus.BuildEvaluateAssignmentMenu(
+						scoreAssignmentAdvisorController,
+						scoreAssignmentCommitteeController,
+					),
+					menus.BuildEvaluateReportMenu(
+						scoreReportAdvisorController,
+						scoreReportCommitteeController,
+					),
+					menus.BuildEvaluatePresentationMenu(
+						scorePresentationAdvisorController,
+						scorePresentationCommitteeController,
+					),
 					{
 						Title: "Compile Final Scores",
 						Action: func(io *utils.MenuIO) {
@@ -892,37 +888,29 @@ func main() {
 												}
 												io.Println(fmt.Sprintf("Criteria ID: %d | Name: %s", criteria.ID, criteria.CriteriaName))
 
-												advisorScore, err := scoreAdvisorController.RetrieveAdvisorScoreByCondition(
-													"assessment", "assessment_criteria_link_id = ?", link.ID,
-												)
-												if err == nil {
-													if score, ok := advisorScore.(*model.ScoreAssessmentAdvisor); ok {
-														io.Println(fmt.Sprintf("  Advisor Score: %.2f, By Advisor ID: %d", score.Score, score.AdvisorId))
+													advisorScores, err := scoreAssessmentAdvisorController.ListAdvisorScoresByCondition(
+														"assessment_criteria_link_id", link.ID,
+													)
+													if err == nil && len(advisorScores) > 0 {
+														for _, score := range advisorScores {
+															io.Println(fmt.Sprintf("  Advisor Score: %.2f, By Advisor ID: %d", score.Score, score.AdvisorId))
+														}
 													} else {
 														io.Println("  Advisor Score: -")
 													}
-												} else {
-													io.Println("  Advisor Score: -")
-												}
 
-												committeeScores, err := scoreCommitteeController.ListCommitteeScoresByCondition(
-													"assessment", "assessment_criteria_link_id = ?", link.ID,
+												committeeScores, err := scoreAssessmentCommitteeController.ListCommitteeScoresByCondition(
+													"assessment_criteria_link_id", link.ID,
 												)
 												if err != nil {
 													io.Println("  Committee Score: -")
 													return
 												}
 
-												scoreList, ok := committeeScores.(*[]model.ScoreAssessmentCommittee)
-												if !ok {
-													io.Println("  Committee Score: -")
-													return
-												}
-
-												if len(*scoreList) == 0 {
+												if len(committeeScores) == 0 {
 													io.Println("  Committee Score: -")
 												} else {
-													for _, cs := range *scoreList {
+													for _, cs := range committeeScores {
 														if cs.AssessmentCriteriaLinkId == link.ID {
 															io.Println(fmt.Sprintf("  Committee Score: %.2f, By Committee ID: %d", cs.Score, cs.CommitteeId))
 														}
@@ -972,7 +960,7 @@ func main() {
 																	AdvisorId:                uint(scorerIdVal),
 																	Score:                    scoreVal,
 																}
-																if err := scoreAdvisorController.InsertAdvisorScore(&score); err != nil {
+																if err := scoreAssessmentAdvisorController.InsertAdvisorScore(&score); err != nil {
 																	io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
 																} else {
 																	io.Println("Advisor score submitted.")
@@ -983,7 +971,7 @@ func main() {
 																	CommitteeId:              uint(scorerIdVal),
 																	Score:                    scoreVal,
 																}
-																if err := scoreCommitteeController.InsertCommitteeScore(&score); err != nil {
+																if err := scoreAssessmentCommitteeController.InsertCommitteeScore(&score); err != nil {
 																	io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 																} else {
 																	io.Println("Committee score submitted.")
