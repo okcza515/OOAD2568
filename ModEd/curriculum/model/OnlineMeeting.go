@@ -1,10 +1,5 @@
 package model
 
-import (
-	commonModel "ModEd/common/model"
-	"time"
-)
-
 type OnlineMeeting struct {
 	Meeting
 	ZoomLink string `gorm:"type:varchar(255);not null"`
@@ -14,16 +9,16 @@ type OnlineMeetingFactory struct {
 	ZoomLink string
 }
 
-func (f OnlineMeetingFactory) CreateMeeting(title, description, location string, date, startTime, endTime time.Time, attendees []commonModel.Instructor) MeetingProductInterface {
+func (f OnlineMeetingFactory) CreateMeeting(meeting Meeting) MeetingProductInterface {
 	return &OnlineMeeting{
 		Meeting: Meeting{
-			Title:       title,
-			Description: description,
-			Location:    location,
-			Date:        date,
-			StartTime:   startTime,
-			EndTime:     endTime,
-			Attendees:   attendees,
+			Title:       meeting.Title,
+			Description: meeting.Description,
+			Location:    meeting.Location,
+			Date:        meeting.Date,
+			StartTime:   meeting.StartTime,
+			EndTime:     meeting.EndTime,
+			Attendees:   meeting.Attendees,
 		},
 		ZoomLink: f.ZoomLink,
 	}

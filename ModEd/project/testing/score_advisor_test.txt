@@ -1,0 +1,158 @@
+package testing
+
+import (
+	"ModEd/project/controller"
+	"ModEd/project/model"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
+)
+
+func setupScoreAdvisorTest(db *gorm.DB) (*model.SeniorProject, *model.Assignment, *model.Advisor) {
+	// Create SeniorProject
+	seniorProject := model.SeniorProject{GroupName: "Test Group"}
+	if err := db.Create(&seniorProject).Error; err != nil {
+		panic(err)
+	}
+
+	// Create Assignment
+	assignment := model.Assignment{
+		Description:     "Test Assignment",
+		SeniorProjectId: seniorProject.ID,
+		DueDate:         seniorProject.CreatedAt,
+	}
+	if err := db.Create(&assignment).Error; err != nil {
+		panic(err)
+	}
+
+	// Create Advisor
+	advisor := model.Advisor{
+		IsPrimary:       true,
+		SeniorProjectId: seniorProject.ID,
+		InstructorId:    1,
+	}
+	if err := db.Create(&advisor).Error; err != nil {
+		panic(err)
+	}
+
+	return &seniorProject, &assignment, &advisor
+}
+
+func TestInsertScoreAdvisor(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, advisor := setupScoreAdvisorTest(db)
+
+	// Insert ScoreAssignmentAdvisor
+	controller := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	score := &model.ScoreAssignmentAdvisor{
+		AssignmentId: assignment.ID,
+		AdvisorId:    advisor.ID,
+		Score:        85.0,
+	}
+	err := controller.InsertAdvisorScore(score)
+	assert.NoError(t, err)
+
+	// Verify insertion
+	var insertedScore model.ScoreAssignmentAdvisor
+	err = db.First(&insertedScore, score.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, insertedScore.Score)
+}
+
+func TestRetrieveScoreAdvisorByID(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, advisor := setupScoreAdvisorTest(db)
+
+	// Insert ScoreAssignmentAdvisor
+	score := model.ScoreAssignmentAdvisor{
+		AssignmentId: assignment.ID,
+		AdvisorId:    advisor.ID,
+		Score:        90.0,
+	}
+	db.Create(&score)
+
+	// Retrieve by ID
+	controller := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	retrievedScore, err := controller.RetrieveAdvisorScore(score.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, retrievedScore.Score)
+}
+
+func TestUpdateScoreAdvisor(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, advisor := setupScoreAdvisorTest(db)
+
+	// Insert ScoreAssignmentAdvisor
+	score := model.ScoreAssignmentAdvisor{
+		AssignmentId: assignment.ID,
+		AdvisorId:    advisor.ID,
+		Score:        80.0,
+	}
+	db.Create(&score)
+
+	// Update Score
+	controller := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	score.Score = 95.0
+	err := controller.UpdateAdvisorScore(&score)
+	assert.NoError(t, err)
+
+	// Verify update
+	var updatedScore model.ScoreAssignmentAdvisor
+	err = db.First(&updatedScore, score.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, score.Score, updatedScore.Score)
+}
+
+func TestDeleteScoreAdvisor(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, advisor := setupScoreAdvisorTest(db)
+
+	// Insert ScoreAssignmentAdvisor
+	score := model.ScoreAssignmentAdvisor{
+		AssignmentId: assignment.ID,
+		AdvisorId:    advisor.ID,
+		Score:        75.0,
+	}
+	db.Create(&score)
+
+	// Delete Score
+	controller := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	err := controller.DeleteAdvisorScore(score.ID)
+	assert.NoError(t, err)
+
+	// Verify deletion
+	var deletedScore model.ScoreAssignmentAdvisor
+	err = db.First(&deletedScore, score.ID).Error
+	assert.Error(t, err)
+	assert.Equal(t, gorm.ErrRecordNotFound, err)
+}
+
+func TestListScoreAdvisors(t *testing.T) {
+	db, dbName := Init()
+	t.Cleanup(func() { cleanup(dbName) })
+
+	_, assignment, advisor := setupScoreAdvisorTest(db)
+
+	// Insert multiple ScoreAssignmentAdvisor records
+	scores := []model.ScoreAssignmentAdvisor{
+		{AssignmentId: assignment.ID, AdvisorId: advisor.ID, Score: 85.0},
+		{AssignmentId: assignment.ID, AdvisorId: advisor.ID, Score: 90.0},
+		{AssignmentId: assignment.ID, AdvisorId: advisor.ID, Score: 95.0},
+	}
+	db.Create(&scores)
+
+	// List all scores
+	controller := controller.NewScoreAdvisorController[*model.ScoreAssignmentAdvisor](db)
+	result, err := controller.ListAllAdvisorScores()
+	assert.NoError(t, err)
+	assert.Len(t, result, len(scores))
+}

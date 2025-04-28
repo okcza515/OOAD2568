@@ -88,7 +88,7 @@ func getClassById(classController controller.ClassControllerInterface) (err erro
 }
 
 func updateClassById(classController controller.ClassControllerInterface) (err error) {
-
+	//TODO: Implement update class by ID
 	return nil
 }
 

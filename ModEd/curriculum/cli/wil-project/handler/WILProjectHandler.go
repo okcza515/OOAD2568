@@ -100,6 +100,64 @@ func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
 }
 
 func (menu *WILProjectMenuStateHandler) editWILProject() error {
+	WILProjectID := utils.GetUserInputUint("Enter WIL Project Id:")
+
+	WILProject, err := menu.wrapper.WILProjectController.RetrieveByID(WILProjectID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			fmt.Println("WIL Project Not Found")
+			return nil
+		} else {
+			return err
+		}
+	}
+
+	NewWILProject := &model.WILProject{}
+	NewWILProject.ID = WILProjectID
+
+	var msg string
+	msg = ""
+	for msg != "yes" && msg != "y" && msg != "no" && msg != "n" {
+		msg = utils.GetUserInput(fmt.Sprintf("\nClassId : %d | Want to change ClassId [yes/no]: ", WILProject.ClassId))
+	}
+	if msg == "yes" || msg == "y" {
+		temp := utils.GetUserInputUint("New Class Id: ")
+		NewWILProject.ClassId = temp
+	}
+
+	msg = ""
+	for msg != "yes" && msg != "y" && msg != "no" && msg != "n" {
+		msg = utils.GetUserInput(fmt.Sprintf("\nSeniorProjectId : %d | Want to change SeniorProjectId [yes/no]: ", WILProject.SeniorProjectId))
+	}
+	if msg == "yes" || msg == "y" {
+		temp := utils.GetUserInputUint("New Senior Project Id: ")
+		NewWILProject.SeniorProjectId = temp
+	}
+
+	msg = ""
+	for msg != "yes" && msg != "y" && msg != "no" && msg != "n" {
+		msg = utils.GetUserInput(fmt.Sprintf("\nCompany : %d | Want to change Company [yes/no]: ", WILProject.Company))
+	}
+	if msg == "yes" || msg == "y" {
+		temp := utils.GetUserInputUint("New Company: ")
+		NewWILProject.Company = temp
+	}
+
+	msg = ""
+	for msg != "yes" && msg != "y" && msg != "no" && msg != "n" {
+		msg = utils.GetUserInput(fmt.Sprintf("\nMentor : %s | Want to change Mentor [yes/no]: ", WILProject.Mentor))
+	}
+	if msg == "yes" || msg == "y" {
+		msg = utils.GetUserInput("New Mentor: ")
+		NewWILProject.Mentor = msg
+	}
+
+	if err := menu.wrapper.WILProjectController.UpdateByID(*NewWILProject); err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	fmt.Println("Update Success")
+
 	return nil
 }
 

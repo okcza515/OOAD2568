@@ -53,17 +53,8 @@ func (c *MeetingController) CreateMeeting(body *model.Meeting) error {
 }
 
 func (c *MeetingController) CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error {
-	meetingProduct := factory.CreateMeeting(
-		meeting.Title,
-		meeting.Description,
-		meeting.Location,
-		meeting.Date,
-		meeting.StartTime,
-		meeting.EndTime,
-		meeting.Attendees,
-	)
+	meetingProduct := factory.CreateMeeting(meeting)
 
-	// Store the created meeting in the database
 	switch m := meetingProduct.(type) {
 	case *model.Meeting:
 		return c.Connector.Create(m).Error
