@@ -12,7 +12,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 	for inputBuffer != "back" {
 		util.ClearScreen()
-		printOption()
+		printInstrumentRequestOption()
 		inputBuffer = util.GetCommandInput()
 
 		switch inputBuffer {
@@ -32,47 +32,100 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
 			}
 			WaitForEnter()
-			fmt.Println("\nPress Enter to continue...")
-			WaitForEnter()
 		case "2":
-			fmt.Println("Not implemented yet...")
+			fmt.Println("List All Instrument Requests")
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if err != nil {
+				fmt.Println("Failed to list requests:", err)
+			} else {
+				fmt.Println("Instrument Requests List:")
+				for _, request := range *requests {
+					fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+				}
+			}
+			WaitForEnter()
 		case "3":
-			fmt.Println("Not implemented yet...")
+			fmt.Println("Get Instrument Request by ID or Name")
+			idOrName := GetStringInput("Enter Instrument Request ID or Name: ")
+
+			var request *model.InstrumentRequest
+			id, err := parseUint(idOrName)
+			if err == nil {
+				request, err = facade.RequestedItem.GetInstrumentRequestByID(id)
+			} else {
+				request, err = facade.RequestedItem.GetInstrumentRequestByName(idOrName)
+			}
+
+			if err != nil {
+				fmt.Println("Failed to get request:", err)
+			} else {
+				fmt.Printf("Instrument Request found: ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+			}
+			WaitForEnter()
 		case "4":
-		// 	fmt.Println("Add Instrument to Existing Request")
+			fmt.Println("Add Instrument to Existing Request")
 
-		// 	requestID := GetUintInput("Enter Instrument Request ID: ")
-		// 	label := GetStringInput("Enter Instrument Label: ")
-		// 	desc := GetStringInput("Enter Description: ")
-		// 	categoryID := GetUintInput("Enter Category ID: ")
-		// 	quantity := GetUintInput("Enter Quantity: ")
+			requestID := GetUintInput("Enter Instrument Request ID: ")
+			label := GetStringInput("Enter Instrument Label: ")
+			desc := GetStringInput("Enter Description: ")
+			categoryID := GetUintInput("Enter Category ID: ")
+			estimatedPrice := GetFloatInput("Enter Estimated Price: ")
+			quantity := GetUintInput("Enter Quantity: ")
 
-		// 	detail := &model.InstrumentDetail{
-		// 		InstrumentLabel:     label,
-		// 		Description:         &desc,
-		// 		CategoryID:          categoryID,
-		// 		Quantity:            int(quantity),
-		// 		InstrumentRequestID: requestID,
-		// 	}
+			detail := &model.InstrumentDetail{
+				InstrumentLabel:     label,
+				Description:         &desc,
+				CategoryID:          categoryID,
+				EstimatedPrice:      estimatedPrice,
+				Quantity:            int(quantity),
+				InstrumentRequestID: requestID,
+			}
 
-		// 	err := facade.RequestedItem.AddInstrumentToRequest(requestID, detail)
-		// 	if err != nil {
-		// 		fmt.Println("Failed to add instrument:", err)
-		// 	} else {
-		// 		fmt.Println("Instrument added to request!")
-		// 	}
-		// 	WaitForEnter()
+			err := facade.RequestedItem.AddInstrumentToRequest(requestID, detail)
+			if err != nil {
+				fmt.Println("Failed to add instrument:", err)
+			} else {
+				fmt.Println("Instrument added to request!")
+			}
+			WaitForEnter()
 		case "5":
-			fmt.Println("Not implemented yet...")
-		}
+			fmt.Println("Show Instrument Request with Details")
+			requestID := GetUintInput("Enter Instrument Request ID: ")
 
+			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
+			if err != nil {
+				fmt.Println("Failed to get request with details:", err)
+			} else {
+				fmt.Printf("\nInstrument Request ID: %d\n", request.InstrumentRequestID)
+				fmt.Printf("Department ID: %d\n", request.DepartmentID)
+				fmt.Printf("Status: %s\n", request.Status)
+				fmt.Println("Instruments:")
+
+				if len(request.Instruments) == 0 {
+					fmt.Println("  No instruments found for this request.")
+				} else {
+					for _, instrument := range request.Instruments {
+						fmt.Printf("  - Instrument ID: %d\n", instrument.InstrumentDetailID)
+						fmt.Printf("    Label: %s\n", instrument.InstrumentLabel)
+						if instrument.Description != nil {
+							fmt.Printf("    Description: %s\n", *instrument.Description)
+						}
+						fmt.Printf("    Category ID: %d\n", instrument.CategoryID)
+						fmt.Printf("    Quantity: %d\n", instrument.Quantity)
+						fmt.Printf("    Estimated Price: %.2f\n", instrument.EstimatedPrice)
+						fmt.Println()
+					}
+				}
+			}
+			WaitForEnter()
+		}
 		util.ClearScreen()
 	}
 
 	util.ClearScreen()
 }
 
-func printOption() {
+func printInstrumentRequestOption() {
 	fmt.Println(":/Procurement/RequestItem")
 	fmt.Println()
 	fmt.Println("--RequestItem Function--")
@@ -85,13 +138,6 @@ func printOption() {
 	fmt.Println()
 }
 
-func GetUintInput(prompt string) uint {
-	var input uint
-	fmt.Print(prompt)
-	fmt.Scan(&input)
-	return input
-}
-
 func WaitForEnter() {
 	fmt.Println("\nPress Enter to continue...")
 	fmt.Scanln()
@@ -102,4 +148,10 @@ func GetStringInput(prompt string) string {
 	fmt.Print(prompt)
 	fmt.Scanln(&input)
 	return input
+}
+
+func parseUint(input string) (uint, error) {
+	var result uint
+	_, err := fmt.Sscanf(input, "%d", &result)
+	return result, err
 }

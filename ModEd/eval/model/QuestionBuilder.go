@@ -43,6 +43,6 @@ func (qb *QuestionBuilder) Score(score float64) *QuestionBuilder {
 	return qb
 }
 
-func (qb *QuestionBuilder) Build() Question {
-	return qb.question
+func (qb *QuestionBuilder) Build() *Question {
+	return &qb.question
 }

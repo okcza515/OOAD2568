@@ -1,4 +1,4 @@
-//MEP-1009 Student Internship
+// MEP-1009 Student Internship
 package controller
 
 import (
@@ -9,14 +9,14 @@ import (
 )
 
 type InternshipApplicationController struct {
-	*core.BaseController
+	*core.BaseController[model.InternshipApplication]
 	Connector *gorm.DB
 }
 
 func CreateInternshipApplicationController(connector *gorm.DB) *InternshipApplicationController {
 	return &InternshipApplicationController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("InternshipApplication", connector),
+		BaseController: core.NewBaseController[model.InternshipApplication](connector),
 	}
 }
 

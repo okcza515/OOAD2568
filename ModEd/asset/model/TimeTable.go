@@ -4,11 +4,11 @@ package model
 import (
 	"time"
 
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type TimeTable struct {
-	gorm.Model
+	core.BaseModel
 	StartDate   time.Time `gorm:"type:timestamp"`
 	EndDate     time.Time `gorm:"type:timestamp"`
 	RoomID      uint      `gorm:"type:integer"`

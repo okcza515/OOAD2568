@@ -6,21 +6,24 @@ import (
 
 type WorkloadReportControllerFacade struct {
 	title                    string
-	classWorkloadService     ClassWorkloadService
+	classMaterialService     ClassMaterialService
+	classLectureService      ClassLectureService
 	meetingControllerService MeetingControllerService
 	projectControllerService ProjectControllerService
 	studentWorkloadService   StudentWorkloadService
 }
 
 func CreateWorkloadReportFacade(
-	classWorkload ClassWorkloadService,
+	classMaterialService ClassMaterialService,
+	classLectureService ClassLectureService,
 	meetingController MeetingControllerService,
 	projectController ProjectControllerService,
 	studentWorkload StudentWorkloadService,
 ) *WorkloadReportControllerFacade {
 	return &WorkloadReportControllerFacade{
 		title:                    "Workload Report",
-		classWorkloadService:     classWorkload,
+		classMaterialService:     classMaterialService,
+		classLectureService:      classLectureService,
 		meetingControllerService: meetingController,
 		projectControllerService: projectController,
 		studentWorkloadService:   studentWorkload,
@@ -31,7 +34,7 @@ func (f *WorkloadReportControllerFacade) GenerateReport(instructorID uint) {
 	fmt.Println("==========", f.title, "==========")
 
 	fmt.Println("\n[1] Academic Class Workload:")
-	lectures, err := f.classWorkloadService.GetClassLecturesByClassId(1)
+	lectures, err := f.classLectureService.GetClassLecturesByClassId(1)
 	if err != nil {
 		fmt.Println("Error getting lectures:", err)
 	} else {

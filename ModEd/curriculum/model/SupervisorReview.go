@@ -1,12 +1,10 @@
-//MEP-1009 Student Internship
+// MEP-1009 Student Internship
 package model
 
-import (
-	"gorm.io/gorm"
-)
+import "ModEd/core"
 
 type SupervisorReview struct {
-	gorm.Model
+	core.BaseModel
 	InstructorScore int `gorm:"type:int"`
 	MentorScore     int `gorm:"type:int"`
 }

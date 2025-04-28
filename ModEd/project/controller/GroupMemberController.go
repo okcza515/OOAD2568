@@ -1,39 +1,36 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 
 	"gorm.io/gorm"
 )
 
-type IGroupMemberController interface {
-	ListAllGroupMembers() ([]model.GroupMember, error)
-	RetrieveGroupMember(id uint) (*model.GroupMember, error)
-	InsertGroupMember(GroupMember *model.GroupMember) error
-	UpdateGroupMember(GroupMember *model.GroupMember) error
-	DeleteGroupMember(id uint) error
-}
-
 type GroupMemberController struct {
+	*core.BaseController
 	db *gorm.DB
 }
 
-func NewGroupMemberController(db *gorm.DB) IGroupMemberController {
-	return &GroupMemberController{db: db}
+func NewGroupMemberController(db *gorm.DB) *GroupMemberController {
+	return &GroupMemberController{
+		db:             db,
+		BaseController: core.NewBaseController("groupMembers", db),
+	}
 }
 
 func (c *GroupMemberController) ListAllGroupMembers() ([]model.GroupMember, error) {
-	var GroupMembers []model.GroupMember
-	err := c.db.Find(&GroupMembers).Error
-	return GroupMembers, err
+	var groupMembers []model.GroupMember
+	err := c.db.Find(&groupMembers).Error
+	return groupMembers, err
 }
 
 func (c *GroupMemberController) RetrieveGroupMember(id uint) (*model.GroupMember, error) {
-	var GroupMember model.GroupMember
-	if err := c.db.Where("id = ?", id).First(&GroupMember).Error; err != nil {
+	var groupMember model.GroupMember
+	if err := c.db.Where("id = ?", id).First(&groupMember).Error; err != nil {
 		return nil, err
 	}
-	return &GroupMember, nil
+	return &groupMember, nil
 }
 
 func (c *GroupMemberController) InsertGroupMember(GroupMember *model.GroupMember) error {

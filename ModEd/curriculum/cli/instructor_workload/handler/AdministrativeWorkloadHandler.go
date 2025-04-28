@@ -38,22 +38,33 @@ func RunAdministrativeWorkloadHandler(controller controller.MeetingControllerSer
 		case "2":
 			fmt.Println("Enter meeting ID:")
 			var meetingID uint
-			meeting, err := controller.GetByID(meetingID)
+			meeting, err := controller.RetrieveByID(meetingID)
 			if err != nil {
 				println("Error fetching meeting:", err.Error())
 				continue
 			}
 			fmt.Printf("Meeting ID: %d, Title: %s, Date: %s\n", meeting.ID, meeting.Title, meeting.Date)
 		case "3":
-			err := controller.CreateMeeting(mockMeeting)
+			meetingFactory := model.RegularMeetingFactory{}
+			err := controller.CreateMeetingByFactory(meetingFactory, *mockMeeting)
 			if err != nil {
-				println("Error creating meeting:", err.Error())
-				continue
+				println("Error creating meeting:", err)
 			}
-			fmt.Println("Meeting created successfully")
+
+			externalMeetingFactory := model.ExternalMeetingFactory{CompanyName: "LineWomen Wongnok"}
+			err = controller.CreateMeetingByFactory(externalMeetingFactory, *mockMeeting)
+			if err != nil {
+				println("Error creating external meeting:", err)
+			}
+
+			onlineMeetingFactory := model.OnlineMeetingFactory{ZoomLink: "https://zoom.us/j/123456789"}
+			err = controller.CreateMeetingByFactory(onlineMeetingFactory, *mockMeeting)
+			if err != nil {
+				println("Error creating online meeting:", err)
+			}
+
 		case "4":
-			meetingID := uint(1)
-			err := controller.UpdateMeeting(meetingID, mockMeeting)
+			err := controller.UpdateByID(*mockMeeting)
 			if err != nil {
 				println("Error updating meeting:", err.Error())
 				continue
@@ -61,7 +72,7 @@ func RunAdministrativeWorkloadHandler(controller controller.MeetingControllerSer
 			fmt.Println("Meeting updated successfully")
 		case "5":
 			meetingID := uint(1)
-			err := controller.DeleteMeeting(meetingID)
+			err := controller.DeleteByID(meetingID)
 			if err != nil {
 				println("Error deleting meeting:", err.Error())
 				continue

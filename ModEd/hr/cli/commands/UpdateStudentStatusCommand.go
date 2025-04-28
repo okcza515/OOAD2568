@@ -1,6 +1,7 @@
 package commands
 
 import (
+	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
 	"ModEd/hr/util"
 	"flag"
@@ -17,7 +18,19 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "status"}); err != nil {
+	allowedStatuses := []string{
+		util.StatusToString(commonModel.ACTIVE),
+		util.StatusToString(commonModel.GRADUATED),
+		util.StatusToString(commonModel.DROP),
+	}
+
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Length("id", 11).
+		Required("status").
+		AllowedValues("status", allowedStatuses).
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
@@ -27,8 +40,7 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("error: %v", err)
 	}
 
-	db := util.OpenDatabase(*util.DatabasePath)
-	hrFacade := controller.NewHRFacade(db)
+	hrFacade := controller.NewHRFacade(tx)
 
 	if err := hrFacade.UpdateStudentStatus(*studentID, newStatus); err != nil {
 		return fmt.Errorf("failed to update student status: %v", err)

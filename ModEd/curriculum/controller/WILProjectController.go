@@ -14,12 +14,11 @@ type WILProjectController struct {
 }
 
 type WILProjectControllerInterface interface {
-	RegisterWILProjects(projects []core.RecordInterface)
-	Insert(data core.RecordInterface) error
-	UpdateByID(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	RetrieveAllWILProjects() ([]model.WILProject, error)
+	Insert(data model.WILProject) error
+	UpdateByID(data model.WILProject) error
+	RetrieveByID(id uint, preloads ...string) (*model.WILProject, error)
 	DeleteByID(id uint) error
-	ListPagination(condition map[string]interface{}, page int, pageSize int)
 }
 
 func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
@@ -29,6 +28,12 @@ func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
 	}
 }
 
-func (controller WILProjectController) RegisterWILProjects(projects []core.RecordInterface) {
-	//controller.InsertMany()
+func (controller *WILProjectController) RetrieveAllWILProjects() ([]model.WILProject, error) {
+	var wilProjects []model.WILProject
+
+	if err := controller.Connector.Find(&wilProjects).Error; err != nil {
+		return nil, err
+	}
+
+	return wilProjects, nil
 }

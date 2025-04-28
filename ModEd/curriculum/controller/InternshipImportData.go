@@ -1,4 +1,3 @@
-//MEP-1009 Student Internship
 package controller
 
 import (
@@ -12,14 +11,14 @@ import (
 )
 
 type GenericImportController struct {
-	*core.BaseController
+	*core.BaseController[model.InternStudent]
 	Connector *gorm.DB
 }
 
 func CreateGenericImportController(connector *gorm.DB) *GenericImportController {
 	return &GenericImportController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("GenericImportController", connector),
+		BaseController: core.NewBaseController[model.InternStudent](connector),
 	}
 }
 

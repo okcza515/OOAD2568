@@ -17,11 +17,9 @@ func main() {
 		return
 	}
 
-	db.AutoMigrate(&model.Examination{}, &model.Question{})
+	db.AutoMigrate(&model.Examination{}, &model.Question{}, &model.Answer{})
 
-	examController := controller.NewExaminationController(db) 
-
-	examFacade := controller.NewExaminationFacade(examController)
+	examFacade := controller.NewExaminationFacade(db)
 
 	loggingCtrl := controller.NewLoggingDecorator(examFacade)
 
@@ -43,5 +41,5 @@ func main() {
 		Score(10).
 		Build()
 
-	loggingCtrl.CreateExamAndQuestion(exam, &question)
+	loggingCtrl.CreateExamAndQuestion(exam, question)
 }

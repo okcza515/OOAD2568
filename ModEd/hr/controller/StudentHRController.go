@@ -1,8 +1,10 @@
 package controller
 
 import (
+	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -64,4 +66,105 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 
 	// Save the updated record
 	return c.db.Save(&studentInfo).Error
+}
+
+func AddStudent(tx *gorm.DB,
+	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
+) error {
+	// 1) common record
+	common := &commonModel.Student{
+		StudentCode: studentCode,
+		FirstName:   firstName,
+		LastName:    lastName,
+		Email:       email,
+	}
+	if err := commonController.CreateStudentController(tx).Create(common); err != nil {
+		return fmt.Errorf("common.Create failed: %w", err)
+	}
+
+	// 2) migrate to HR
+	if err := MigrateStudentsToHR(tx); err != nil {
+		return fmt.Errorf("MigrateStudentsToHR failed: %w", err)
+	}
+
+	// 3) build HR info & upsert
+	hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
+
+	// // Upsert so we handle both insert & update
+	if err := NewHRFacade(tx).UpsertStudent(hrInfo); err != nil {
+		return fmt.Errorf("HR.UpsertStudent failed: %w", err)
+	}
+	return nil
+}
+
+func DeleteStudent(tx *gorm.DB, studentID string) error {
+	// Delete student from common data.
+	studentController := commonController.CreateStudentController(tx)
+	if err := studentController.DeleteByCode(studentID); err != nil {
+		return fmt.Errorf("failed to delete student from common data: %w", err)
+	}
+
+	hrFacade := NewHRFacade(tx)
+
+	return hrFacade.DeleteStudent(studentID)
+}
+
+func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
+	// Wrap the business logic in a transaction.
+	return tx.Transaction(func(tx *gorm.DB) error {
+		// Use HRFacade to get the existing HR info.
+		hrFacade := NewHRFacade(tx)
+		studentInfo, err := hrFacade.GetStudentById(studentID)
+		if err != nil {
+			return fmt.Errorf("error retrieving student with ID %s: %v", studentID, err)
+		}
+
+		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
+
+		// 1) Update common student data.
+		studentData := map[string]any{
+			"FirstName": updatedStudent.FirstName,
+			"LastName":  updatedStudent.LastName,
+			"Email":     updatedStudent.Email,
+		}
+		studentController := commonController.CreateStudentController(tx)
+		if err := studentController.Update(studentID, studentData); err != nil {
+			return fmt.Errorf("failed to update common student data: %v", err)
+		}
+
+		// 2) Migrate students to HR.
+		if err := MigrateStudentsToHR(tx); err != nil {
+			return fmt.Errorf("failed to migrate student to HR module: %v", err)
+		}
+
+		// 3) Upsert HR-specific student info.
+		if err := hrFacade.UpsertStudent(updatedStudent); err != nil {
+			return fmt.Errorf("failed to update student HR info: %v", err)
+		}
+		return nil
+	})
+}
+
+func (f *HRFacade) ImportStudents(tx *gorm.DB, hrRecordsMap map[string]model.StudentInfo) error {
+	for _, hrRec := range hrRecordsMap {
+		studentInfo, err := f.GetStudentById(hrRec.StudentCode)
+		if err != nil {
+			return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
+		}
+
+		importStudent := model.NewUpdatedStudentInfo(
+			studentInfo,
+			studentInfo.FirstName,
+			studentInfo.LastName,
+			hrRec.Gender,
+			hrRec.CitizenID,
+			hrRec.PhoneNumber,
+			studentInfo.Email,
+		)
+
+		if err := f.UpsertStudent(importStudent); err != nil {
+			return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
+		}
+	}
+	return nil
 }

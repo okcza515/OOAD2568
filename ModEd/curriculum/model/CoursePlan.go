@@ -3,7 +3,9 @@ package model
 
 import (
 	common "ModEd/common/model"
+	"ModEd/core"
 
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -22,4 +24,32 @@ type CoursePlan struct {
 	Instructor   common.Instructor `gorm:"type:varchar(100);not null" json:"instructor"`
 	Topic        string            `gorm:"type:varchar(255);not null" json:"topic"`
 	Description  string            `gorm:"type:text" json:"description"`
+	*core.SerializableRecord
+}
+
+func (c *CoursePlan) GetID() uint {
+	return c.CourseId
+}
+
+func (c *CoursePlan) ToString() string {
+	return fmt.Sprintf("%+v", c)
+}
+
+func (c *CoursePlan) Validate() error {
+	if c.CourseId == 0 {
+		return fmt.Errorf("Course ID cannot be zero")
+	}
+	if c.Week == 0 {
+		return fmt.Errorf("Week cannot be zero")
+	}
+	if c.Date.IsZero() {
+		return fmt.Errorf("Date cannot be empty")
+	}
+	if c.InstructorId == 0 {
+		return fmt.Errorf("Instructor ID cannot be zero")
+	}
+	if c.Topic == "" {
+		return fmt.Errorf("Topic cannot be empty")
+	}
+	return nil
 }

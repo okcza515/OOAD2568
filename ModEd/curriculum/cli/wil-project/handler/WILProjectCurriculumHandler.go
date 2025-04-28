@@ -13,17 +13,17 @@ import (
 
 type WILProjectCurriculumMenuStateHandler struct {
 	manager *cli.CLIMenuStateManager
-	proxy   *controller.WILModuleProxy
+	wrapper *controller.WILModuleWrapper
 
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 }
 
 func NewWILProjectCurriculumMenuStateHandler(
-	manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
+	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *WILProjectCurriculumMenuStateHandler {
 	return &WILProjectCurriculumMenuStateHandler{
 		manager:                   manager,
-		proxy:                     proxy,
+		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 	}
 }
@@ -34,7 +34,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) Render() {
 	fmt.Println("2. Create WIL Class")
 	fmt.Println("3. List all of WIL Course")
 	fmt.Println("4. List all of WIL Class")
-	fmt.Println("0. Exit WIL Curriculum")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) error {
@@ -60,7 +60,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) 
 		if err != nil {
 			fmt.Println("error! cannot use this function")
 		}
-	case "0":
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:
@@ -83,7 +83,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) createWILCourse() error {
 		CourseStatus: model.ACTIVE,
 	}
 
-	courseId, err := menu.proxy.WILProjectCurriculumController.CreateNewWILCourse(course, semester)
+	courseId, err := menu.wrapper.WILProjectCurriculumController.CreateNewWILCourse(course, semester)
 	if err != nil {
 		return errors.New("error! cannot create WIL course: " + err.Error())
 	} else {
@@ -101,7 +101,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) createWILClass() error {
 		Section:  int(section),
 	}
 
-	classId, err := menu.proxy.WILProjectCurriculumController.CreateNewWILClass(class)
+	classId, err := menu.wrapper.WILProjectCurriculumController.CreateNewWILClass(class)
 	if err != nil {
 		return errors.New("error! cannot create WIL class: " + err.Error())
 	} else {
@@ -111,7 +111,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) createWILClass() error {
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) listWILCourse() error {
-	courses, err := menu.proxy.WILProjectCurriculumController.RetrieveAllWILCourses()
+	courses, err := menu.wrapper.WILProjectCurriculumController.RetrieveAllWILCourses()
 	if err != nil {
 		return errors.New("error! cannot retrieve WIL courses")
 	}
@@ -124,7 +124,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) listWILCourse() error {
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) listWILClass() error {
-	classes, err := menu.proxy.WILProjectCurriculumController.RetrieveAllWILClasses()
+	classes, err := menu.wrapper.WILProjectCurriculumController.RetrieveAllWILClasses()
 	if err != nil {
 		return errors.New("error! cannot retrieve WIL classes")
 	}

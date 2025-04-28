@@ -16,15 +16,11 @@ func CreateStudentController(db *gorm.DB) *StudentController {
 }
 
 func (c *StudentController) GetAll() ([]*model.Student, error) {
-	return model.GetAllStudents(c.DB)
+	return model.GetAllCommonModels[model.Student](c.DB)
 }
 
-func (c *StudentController) GetByCode(code string) (*model.Student, error) {
-	return model.GetStudentByCode(c.DB, code)
-}
-
-func (c *StudentController) Create(student *model.Student) error {
-	return model.CreateStudent(c.DB, student)
+func (c *StudentController) GetBy(field string, value interface{}) ([]*model.Student, error) {
+	return model.GetRecordByField[model.Student](c.DB, field, value)
 }
 
 func (c *StudentController) Update(code string, updatedData map[string]any) error {
@@ -36,9 +32,9 @@ func (c *StudentController) DeleteByCode(code string) error {
 }
 
 func (c *StudentController) Register(students []*model.Student) error {
-	return model.RegisterStudents(c.DB, students)
+	return model.CommonRegister(c.DB, students)
 }
 
 func (c *StudentController) Truncate() error {
-	return model.TruncateStudents(c.DB)
+	return model.TruncateModel(c.DB, "students")
 }

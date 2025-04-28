@@ -16,29 +16,29 @@ func RunStudentAdvisorWorkloadHandler(controller controller.StudentWorkloadServi
 		choice := utils.GetUserChoice()
 		fmt.Println("choice: ", choice)
 
-		mockStudentAdvisor := &model.StudentAdvisor{
-			InstructorId: 1,
-			Instructor: commonModel.Instructor{
-				InstructorCode: "I001",
-				FirstName:      "John",
-				LastName:       "Doe",
-				Email:          "",
-				StartDate:      nil,
-				Department:     nil,
-			},
-			Students: []commonModel.Student{
-				{
-					StudentCode: "S001",
-					FirstName:   "Jane",
-					LastName:    "Smith",
-					Email:       "",
-					StartDate:   time.Time{},
-					BirthDate:   time.Time{},
-					Program:     commonModel.REGULAR,
-					Status:      nil,
-				},
-			},
-		}
+		// mockStudentAdvisor := &model.StudentAdvisor{
+		// 	InstructorId: 1,
+		// 	Instructor: commonModel.Instructor{
+		// 		InstructorCode: "I001",
+		// 		FirstName:      "John",
+		// 		LastName:       "Doe",
+		// 		Email:          "",
+		// 		StartDate:      nil,
+		// 		Department:     nil,
+		// 	},
+		// 	Students: []commonModel.Student{
+		// 		{
+		// 			StudentCode: "S001",
+		// 			FirstName:   "Jane",
+		// 			LastName:    "Smith",
+		// 			Email:       "",
+		// 			StartDate:   time.Time{},
+		// 			BirthDate:   time.Time{},
+		// 			Program:     commonModel.REGULAR,
+		// 			Status:      nil,
+		// 		},
+		// 	},
+		// }
 
 		mockStudentRequest := &model.StudentRequest{
 			Student: commonModel.Student{
@@ -68,22 +68,8 @@ func RunStudentAdvisorWorkloadHandler(controller controller.StudentWorkloadServi
 		}
 
 		switch choice {
-		case "1":
-			err := controller.CreateStudentAdvisor(*mockStudentAdvisor)
-			if err != nil {
-				fmt.Println("Error creating student advisor:", err)
-			} else {
-				fmt.Println("Student advisor created successfully")
-			}
-		case "2":
-			err := controller.UpdateStudentAdvisor(*mockStudentAdvisor)
-			if err != nil {
-				fmt.Println("Error updating student advisor:", err)
-			} else {
-				fmt.Println("Student advisor updated successfully")
-			}
 		case "3":
-			err := controller.DeleteStudentAdvisor(1)
+			err := controller.DeleteByStudentId(1)
 			if err != nil {
 				fmt.Println("Error deleting student advisor:", err)
 			} else {

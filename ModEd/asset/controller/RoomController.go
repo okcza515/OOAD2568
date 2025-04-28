@@ -2,6 +2,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
 
@@ -10,8 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type RoomControllerInterface interface {
+	SeedRoomsDatabase(path string) ([]*model.Room, error)
+	GetAll() (*[]model.Room, error)
+	GetById(Id uint) (*model.Room, error)
+	CreateRoom(payload *model.Room) error
+	UpdateRoom(Id uint, payload *model.Room) error
+	DeleteRoom(Id uint) error
+	DeleteAllRooms() error
+}
+
 type RoomController struct {
 	db *gorm.DB
+	*core.BaseController[model.Room]
 }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
@@ -32,47 +44,42 @@ func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, er
 }
 
 func (c *RoomController) GetAll() (*[]model.Room, error) {
-	roomInfo := new([]model.Room)
-	result := c.db.Find(&roomInfo)
-	return roomInfo, result.Error
+	result, err := c.BaseController.List(nil)
+	return &result, err
 }
 
 func (c *RoomController) GetById(Id uint) (*model.Room, error) {
 	if Id == 0 {
 		return nil, errors.New("no Id provide")
 	}
-	roomInfo := new(model.Room)
-	result := c.db.First(&roomInfo, "ID = ?", Id)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	result, err := c.BaseController.RetrieveByID(Id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("room not found, please check the ID")
 		}
-		return nil, result.Error
+		return nil, err
 	}
-	if roomInfo.IsRoomOutOfService {
+	if result.IsRoomOutOfService {
 		return nil, errors.New("room is out of service")
 	}
-	return roomInfo, nil
+	return &result, nil
 }
 
 func (c *RoomController) CreateRoom(payload *model.Room) error {
 	if payload == nil {
 		return errors.New("invalid room data")
 	}
-	result := c.db.Create(payload)
-	return result.Error
+	err := c.BaseController.Insert(*payload)
+	return err
 }
 
-func (c *RoomController) UpdateRoom(Id uint, payload *model.Room) error {
-	if payload == nil || Id == 0 {
+func (c *RoomController) UpdateRoom(id uint, payload *model.Room) error {
+	if payload == nil || id == 0 {
 		return errors.New("invalid info")
 	}
-	existingRoom := new(model.Room)
-	if err := c.db.First(existingRoom, Id).Error; err != nil {
-		return err
-	}
-	result := c.db.Model(&existingRoom).Updates(payload)
-	return result.Error
+	payload.ID = id
+	err := c.BaseController.UpdateByID(*payload)
+	return err
 }
 
 func (c *RoomController) DeleteRoom(Id uint) error {
@@ -88,13 +95,12 @@ func (c *RoomController) DeleteRoom(Id uint) error {
 }
 
 func (c *RoomController) DeleteAllRooms() error {
-	allRooms := new([]model.Room)
-	result := c.db.Find(&allRooms)
-	if result.Error != nil {
-		return result.Error
+	result, err := c.BaseController.List(nil)
+	if err != nil {
+		return err
 	}
-	for _, room := range *allRooms {
-		if err := c.db.Model(&room).UpdateColumn("DeletedAt", time.Now()).Error; err != nil {
+	for _, room := range result {
+		if err := c.BaseController.DeleteByID(room.ID); err != nil {
 			return err
 		}
 	}

@@ -2,14 +2,33 @@
 package cli
 
 import (
-	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
+	"ModEd/recruit/controller"
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
-func InstructorCLI(instructorCtrl *controller.InstructorController) {
+func InstructorCLI(
+	instructorViewInterviewDetailsService InstructorViewInterviewDetailsService,
+	instructorEvaluateApplicantService InstructorEvaluateApplicantService,loginCtrl *controller.LoginController,) {
+
+	var username  string
+	fmt.Print("Enter Instructor username: ")
+	fmt.Scanln(&username)
+
+	ok, err := loginCtrl.CheckUsername(username)
+	if err != nil {
+		fmt.Println("An error occurred while checking credentials:", err)
+		time.Sleep(3 * time.Second)
+		return
+	}
+	if !ok {
+		fmt.Println("Invalid credentials. Access denied.")
+		time.Sleep(3 * time.Second)
+		return
+	}
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scanln(&instructorID)
@@ -34,10 +53,10 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 
 		switch choice {
 		case 1:
-			ViewInterviewDetails(instructorCtrl, instructorID)
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorID)
 			util.WaitForEnter()
 		case 2:
-			EvaluateApplicant(instructorCtrl)
+			EvaluateApplicant(instructorEvaluateApplicantService)
 		case 3:
 			fmt.Println("Exiting...")
 			return

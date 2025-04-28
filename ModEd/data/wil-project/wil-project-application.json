@@ -1,0 +1,56 @@
+[
+  {
+    "ID": 1,
+    "CreatedAt": "2025-04-29T02:18:05.130885+07:00",
+    "UpdatedAt": "2025-04-29T02:18:05.130885+07:00",
+    "DeletedAt": null,
+    "ProjectName": "AI Research Project",
+    "ProjectDetail": "A project focused on AI advancements.",
+    "Semester": "2023 Spring",
+    "CompanyId": 101,
+    "Mentor": "Santitham",
+    "Students": [],
+    "AdvisorId": 1,
+    "Advisor": {
+      "ID": 0,
+      "CreatedAt": "0001-01-01T00:00:00Z",
+      "UpdatedAt": "0001-01-01T00:00:00Z",
+      "DeletedAt": null,
+      "instructor_code": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "start_date": null,
+      "department": null
+    },
+    "ApplicationStatus": "Pending",
+    "TurninDate": "2025-04-29T02:18:05.130468+07:00"
+  },
+  {
+    "ID": 2,
+    "CreatedAt": "2025-04-29T02:18:05.130885+07:00",
+    "UpdatedAt": "2025-04-29T02:18:05.130885+07:00",
+    "DeletedAt": null,
+    "ProjectName": "Blockchain Project",
+    "ProjectDetail": "A project focused on Blockchain",
+    "Semester": "2023 Spring",
+    "CompanyId": 101,
+    "Mentor": "Kantapong",
+    "Students": [],
+    "AdvisorId": 1,
+    "Advisor": {
+      "ID": 0,
+      "CreatedAt": "0001-01-01T00:00:00Z",
+      "UpdatedAt": "0001-01-01T00:00:00Z",
+      "DeletedAt": null,
+      "instructor_code": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "start_date": null,
+      "department": null
+    },
+    "ApplicationStatus": "Pending",
+    "TurninDate": "2025-04-29T02:18:05.130468+07:00"
+  }
+]

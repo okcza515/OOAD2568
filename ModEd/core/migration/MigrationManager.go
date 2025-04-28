@@ -32,11 +32,11 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 		return nil, m.err
 	}
 
-	dbPath := ""
 	defaultPath := "data/ModEd.bin"
+	dbPath := defaultPath
 
-	if m.pathDB == "" {
-		dbPath = defaultPath
+	if m.pathDB != "" {
+		dbPath = m.pathDB
 	}
 
 	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
@@ -63,15 +63,15 @@ func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *Migratio
 	case core.MODULE_PROCUREMENT:
 		panic("not implemented")
 	case core.MODULE_SPACEMANAGEMENT:
-		panic("not implemented")
+		strategy = &SpaceManagementMigrationStrategy{}
 	case core.MODULE_COMMON:
 		panic("not implemented")
 	case core.MODULE_CURRICULUM:
 		strategy = &CurriculumMigrationStrategy{}
 	case core.MODULE_INSTRUCTOR:
-		panic("not implemented")
+		strategy = &InstructorWorkloadMigrationStrategy{}
 	case core.MODULE_INTERNSHIP:
-		panic("not implemented")
+		strategy = &InternshipMigrationStrategy{}
 	case core.MODULE_WILPROJECT:
 		strategy = &WILProjectMigrationStrategy{}
 	case core.MODULE_QUIZ:

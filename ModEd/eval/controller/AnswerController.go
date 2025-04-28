@@ -9,9 +9,9 @@ import (
 )
 
 type IAnswerController interface {
-	SubmitAnswer(answer *model.Answer) error
+	SubmitAnswer(questionID, studentID uint, answerText string) error
 	GetAnswersByQuestion(questionID uint) ([]model.Answer, error)
-	GetAnswersByStudent(studentID uint) ([]model.Answer, error)
+	// GetAnswersByStudent(studentID uint) ([]model.Answer, error)
 	GetAnswerByQuestionAndStudent(questionID uint, studentID uint) (*model.Answer, error)
 	UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error
 	DeleteAnswerByID(answerID uint) error
