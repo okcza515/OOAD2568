@@ -18,6 +18,9 @@ func NewStudentInfoBuilder() *StudentInfoBuilder {
 }
 
 func (b *StudentInfoBuilder) WithStudentCode(code string) *StudentInfoBuilder {
+	if len(b.info.StudentCode) != 11 {
+		b.err = fmt.Errorf("student code must be 11 characters long")
+	}
 	b.info.StudentCode = code
 	return b
 }

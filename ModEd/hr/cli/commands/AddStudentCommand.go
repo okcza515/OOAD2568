@@ -1,10 +1,7 @@
 package commands
 
 import (
-	commonController "ModEd/common/controller"
-	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
-	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
@@ -33,44 +30,15 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	tm := &util.TransactionManager{DB: db}
 
 	err := tm.Execute(func(tx *gorm.DB) error {
-		// Create common student record.
-		commonStudent := &commonModel.Student{
-			StudentCode: *studentID,
-			FirstName:   *firstName,
-			LastName:    *lastName,
-			// Populate additional fields if needed.
-		}
-		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.Create(commonStudent); err != nil {
-			return fmt.Errorf("failed to add student to common data: %w", err)
-		}
-
-		// Migrate the common student to HR.
-		if err := controller.MigrateStudentsToHR(tx); err != nil {
-			return fmt.Errorf("failed to migrate students to HR: %w", err)
-		}
-
-		// Update HR‑specific information.
-		hrFacade := controller.NewHRFacade(tx)
-		builder := hrModel.NewStudentInfoBuilder()
-		newStudent, err := builder.
-			WithStudentCode(*studentID).
-			WithFirstName(*firstName).
-			WithLastName(*lastName).
-			WithGender(*gender).
-			WithCitizenID(*citizenID).
-			WithPhoneNumber(*phoneNumber).
-			Build()
-
-		if err != nil {
-			return fmt.Errorf("failed to build student info: %w", err)
-		}
-
-		if err := hrFacade.UpdateStudent(newStudent); err != nil {
-			return fmt.Errorf("failed to update student info: %w", err)
-		}
-
-		return nil
+		return controller.AddStudent(
+			tx,
+			*studentID,
+			*firstName,
+			*lastName,
+			*gender,
+			*citizenID,
+			*phoneNumber,
+		)
 	})
 
 	if err != nil {
