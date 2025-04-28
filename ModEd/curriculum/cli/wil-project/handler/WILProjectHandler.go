@@ -38,7 +38,7 @@ func (menu *WILProjectMenuStateHandler) Render() {
 	fmt.Println("4. List all WIL Project")
 	fmt.Println("5. Get WIL Project Detail By ID")
 	fmt.Println("6. Delete WIL Project By ID")
-	fmt.Println("0. Exit WIL Module")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
@@ -63,7 +63,7 @@ func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
 		}
 	case "6":
 		fmt.Println("6 Not implemented yet...")
-	case "0":
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:
