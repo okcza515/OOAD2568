@@ -6,11 +6,10 @@ import (
 	"ModEd/core"
 	curriculum "ModEd/curriculum/model"
 
-	"gorm.io/gorm"
 )
 
 type PermanentSchedule struct {
-	gorm.Model
+
 	core.BaseModel
 	TimeTableID   uint      `gorm:"type:integer" json:"time_table_id" csv:"time_table_id"`
 	TimeTable     TimeTable `gorm:"foreignKey:ID;references:ID" json:"time_table"`

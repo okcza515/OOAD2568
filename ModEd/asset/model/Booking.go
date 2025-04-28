@@ -3,11 +3,9 @@ package model
 
 import (
 	"ModEd/core"
-	"gorm.io/gorm"
 )
 
 type Booking struct {
-	gorm.Model
 	core.BaseModel
 	TimeTableID uint      `gorm:"type:integer" json:"time_table_id" csv:"time_table_id"`
 	TimeTable   TimeTable `gorm:"foreignKey:ID;references:ID" json:"time_table"`
