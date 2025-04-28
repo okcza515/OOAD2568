@@ -17,9 +17,13 @@ func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 	reason := fs.String("reason", "", "Reason if rejected (optional)")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "answer"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("answer").
+		Required("reason").
+		Validate()
+	if err != nil {
 		fs.Usage()
-		return fmt.Errorf("validation error: %w", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	var status string
@@ -32,7 +36,7 @@ func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("invalid answer: --answer must be either 'approve' or 'reject'")
 	}
 
-	err := controller.HandleResignationStatus(tx, *id, status, *reason)
+	err = controller.HandleResignationStatus(tx, *id, status, *reason)
 	if err != nil {
 		return fmt.Errorf("failed to process resignation: %w", err)
 	}

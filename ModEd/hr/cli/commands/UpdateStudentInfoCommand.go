@@ -25,9 +25,13 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 	email := fs.String("email", "", "New email")
 	fs.Parse(args)
 
-	if *studentID == "" {
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Length("id", 11).
+		Validate()
+	if err != nil {
 		fs.Usage()
-		return fmt.Errorf("student id is required")
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	tm := &util.TransactionManager{DB: tx}
@@ -40,7 +44,7 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 
 		// Create updated student info using non-empty flag values.
 		builder := model.NewStudentInfoBuilder()
-	
+
 		updatedStudent, err := builder.
 			WithStudentCode(*studentID).
 			WithFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).

@@ -25,10 +25,22 @@ func requestLeaveStudent(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Length("id", 11).
+		Required("type").
+		Required("reason").
+		Required("date").
+		Validate()
+	if err != nil {
+		fs.Usage()
+		return fmt.Errorf("validation error: %v", err)
+	}
+
 	db := util.OpenDatabase(*util.DatabasePath)
 	tm := &util.TransactionManager{DB: tx}
 
-	err := tm.Execute(func(tx *gorm.DB) error {
+	err = tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(db)
 		factory := &hrModel.RequestLeaveFactory{}
 		req, err := factory.Create("student", *studentID, *leaveType, *reason, *leaveDateStr)

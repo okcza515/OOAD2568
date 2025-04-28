@@ -24,7 +24,10 @@ func importStudents(args []string, tx *gorm.DB) error {
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("path").
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}

@@ -22,7 +22,11 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	format := fs.String("format", "", "Export format (csv or json)")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"path", "format"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("path").
+		Required("format").
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}

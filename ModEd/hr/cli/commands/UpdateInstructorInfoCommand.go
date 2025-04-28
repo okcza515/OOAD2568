@@ -25,6 +25,17 @@ func updateInstructorInfo(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("instructor id, field, and value are required")
 	}
 
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Length("id", 11).
+		Required("field").
+		Required("value").
+		Validate()
+	if err != nil {
+		fs.Usage()
+		return fmt.Errorf("validation error: %v", err)
+	}
+
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
