@@ -11,8 +11,9 @@ type AssetMenuState struct {
 	manager *cli.CLIMenuStateManager
 
 	// Add more menu here
-	instrumentMenu *InstrumentMenuState
-	supplyMenu     *SupplyMenuState
+	instrumentMenu    *InstrumentMenuState
+	supplyMenu        *SupplyMenuState
+	instrumentLogMenu *InstrumentLogMenuState
 }
 
 func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
@@ -23,6 +24,7 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	// Add more menu here
 	assetMenu.instrumentMenu = NewInstrumentMenuState(manager, assetMenu)
 	assetMenu.supplyMenu = NewSupplyMenuState(manager, assetMenu)
+	assetMenu.instrumentLogMenu = NewInstrumentLogMenuState(manager, assetMenu)
 
 	return assetMenu
 }
@@ -54,7 +56,7 @@ func (menu *AssetMenuState) HandleUserInput(input string) error {
 	case "4":
 		fmt.Println("Not implemented yet...")
 	case "5":
-		fmt.Println("Not implemented yet...")
+		menu.manager.SetState(menu.instrumentLogMenu)
 	case "6":
 		fmt.Println("Not implemented yet...")
 	default:

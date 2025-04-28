@@ -77,7 +77,7 @@ func (controller WILProjectCurriculumFacadeController) RetrieveAllWILCourses() (
 	var courses []model.Course
 
 	for _, wilProjectCourse := range wilProjectCourses {
-		course, err := controller.courseController.GetCourseByID(wilProjectCourse.CourseId)
+		course, err := controller.courseController.GetCourse(wilProjectCourse.CourseId)
 		if err != nil {
 			return nil, err
 		}

@@ -89,9 +89,36 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			WaitForEnter()
 		case "5":
-			fmt.Println("Not implemented yet...")
-		}
+			fmt.Println("Show Instrument Request with Details")
+			requestID := GetUintInput("Enter Instrument Request ID: ")
 
+			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
+			if err != nil {
+				fmt.Println("Failed to get request with details:", err)
+			} else {
+				fmt.Printf("\nInstrument Request ID: %d\n", request.InstrumentRequestID)
+				fmt.Printf("Department ID: %d\n", request.DepartmentID)
+				fmt.Printf("Status: %s\n", request.Status)
+				fmt.Println("Instruments:")
+
+				if len(request.Instruments) == 0 {
+					fmt.Println("  No instruments found for this request.")
+				} else {
+					for _, instrument := range request.Instruments {
+						fmt.Printf("  - Instrument ID: %d\n", instrument.InstrumentDetailID)
+						fmt.Printf("    Label: %s\n", instrument.InstrumentLabel)
+						if instrument.Description != nil {
+							fmt.Printf("    Description: %s\n", *instrument.Description)
+						}
+						fmt.Printf("    Category ID: %d\n", instrument.CategoryID)
+						fmt.Printf("    Quantity: %d\n", instrument.Quantity)
+						fmt.Printf("    Estimated Price: %.2f\n", instrument.EstimatedPrice)
+						fmt.Println()
+					}
+				}
+			}
+			WaitForEnter()
+		}
 		util.ClearScreen()
 	}
 

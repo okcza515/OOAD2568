@@ -37,7 +37,7 @@ func (handler *WILModuleMenuStateHandler) Render() {
 	fmt.Println("2. WIL Project Application")
 	fmt.Println("3. WIL Project")
 	fmt.Println("4. Independent Study")
-	fmt.Println("0. Exit WIL Module")
+	fmt.Println("back: Exit the module")
 }
 
 func (handler *WILModuleMenuStateHandler) HandleUserInput(input string) error {
@@ -50,7 +50,7 @@ func (handler *WILModuleMenuStateHandler) HandleUserInput(input string) error {
 		handler.menuManger.SetState(handler.WILProjectMenuStateHandler)
 	case "4":
 		handler.menuManger.SetState(handler.IndependentStudyMenuStateHandler)
-	case "0":
+	case "back":
 		return errors.New("exited")
 	default:
 		fmt.Println("invalid input")

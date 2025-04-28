@@ -5,6 +5,8 @@ import (
 	"ModEd/core"
 	model "ModEd/curriculum/model"
 
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -28,32 +30,20 @@ func CreateIndependentStudyController(connector *gorm.DB) *IndependentStudyContr
 	}
 }
 
-func (controller IndependentStudyController) CreateIndependentStudy(independentStudies *[]model.IndependentStudy) error {
-	for _, independentStudy := range *independentStudies {
-		err := controller.BaseController.Insert(independentStudy)
+func (controller IndependentStudyController) CreateIndependentStudy(independentStudy *model.IndependentStudy, turnInDate string) error {
+
+	if turnInDate != "" {
+		t, err := time.Parse("2006-01-02 15:04:05", turnInDate)
 		if err != nil {
 			return err
 		}
+		independentStudy.TurnInDate = &t
+	}
+
+	independentStudy.CreatedAt = time.Now()
+	independentStudy.UpdatedAt = time.Now()
+	if err := controller.BaseController.Insert(*independentStudy); err != nil {
+		return err
 	}
 	return nil
 }
-
-// func (repo IndependentStudyController) GetIndenpendentStudyByID(id uint) (*model.IndependentStudy, error) {
-// 	independentStudy := new(model.IndependentStudy)
-// 	result := repo.Connector.First(&independentStudy, "id = ?", id)
-// 	return independentStudy, result.Error
-// }
-
-// func (repo IndependentStudyController) GetAllIndenpendentStudy() ([]*model.IndependentStudy, error) {
-// 	independentStudy := []*model.IndependentStudy{}
-// 	result := repo.Connector.Find(&independentStudy, "DeletedAt IS NULL")
-// 	return independentStudy, result.Error
-// }
-
-// func (repo IndependentStudyController) UpdateIndenpendentStudy(updatedStudy *model.IndependentStudy) error {
-// 	result := repo.Connector.Save(updatedStudy)
-// 	if result.Error != nil {
-// 		return result.Error
-// 	}
-// 	return nil
-// }

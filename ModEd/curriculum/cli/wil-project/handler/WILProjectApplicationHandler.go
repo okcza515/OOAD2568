@@ -37,7 +37,7 @@ func (menu *WILProjectApplicationMenuStateHandler) Render() {
 	fmt.Println("4. List all WIL Project Application")
 	fmt.Println("5. Get WIL Project Application By ID")
 	fmt.Println("6. Delete WIL Project Application")
-	fmt.Println("0. Exit WIL Module")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string) error {
@@ -54,12 +54,12 @@ func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string)
 			fmt.Println("error! cannot use this function")
 		}
 	case "3":
-		fmt.Println("Get detail of an Instrument")
+		panic("not implemented")
 	case "4":
-		fmt.Println("Update an Instrument")
+		panic("not implemented")
 	case "5":
-		fmt.Println("Delete an Instrument")
-	case "0":
+		panic("not implemented")
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:
@@ -107,20 +107,21 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 	result := menu.wrapper.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
 	if result != nil {
 		fmt.Println("\nError for WIL Project Application:", result)
-		return errors.New("Error! cannot create a WIL Project application")
+		return errors.New("error! cannot create a WIL Project application")
 	}
 	return nil
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() error {
-	fmt.Println("\nWIL Project Application List\n")
+	fmt.Println("WIL Project Application List")
 	applications, err := menu.wrapper.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
-		return errors.New("Error! cannot retrieve WIL Project application data")
+		return errors.New("error! cannot retrieve WIL Project application data")
 	}
 
 	for _, application := range applications {
-		fmt.Printf("%s %s %s\n", application.ProjectName, application.Advisor.FirstName, application.Advisor.LastName)
+		fmt.Printf("%s\n", application.ToString())
+		fmt.Printf("Advisor %s %s\n", application.Advisor.FirstName, application.Advisor.LastName)
 		fmt.Println("Students")
 		for _, student := range application.Students {
 			fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)

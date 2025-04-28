@@ -9,6 +9,8 @@ import (
 	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type WILProjectMenuStateHandler struct {
@@ -36,7 +38,7 @@ func (menu *WILProjectMenuStateHandler) Render() {
 	fmt.Println("4. List all WIL Project")
 	fmt.Println("5. Get WIL Project Detail By ID")
 	fmt.Println("6. Delete WIL Project By ID")
-	fmt.Println("0. Exit WIL Module")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
@@ -46,16 +48,22 @@ func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
 			fmt.Println("error! cannot use this function")
 		}
 	case "2":
-		fmt.Println("2 Not implemented yet...")
+		if err := menu.editWILProject(); err != nil {
+			fmt.Println("error! cannot use this function")
+		}
 	case "3":
 		fmt.Println("3 Not implemented yet...")
 	case "4":
-		fmt.Println("4 Not implemented yet...")
+		if err := menu.listAllWILProject(); err != nil {
+			fmt.Println("error! cannot use this function")
+		}
 	case "5":
-		fmt.Println("5 Not implemented yet...")
+		if err := menu.getWILProjectDetailByID(); err != nil {
+			fmt.Println("error! cannot use this function")
+		}
 	case "6":
 		fmt.Println("6 Not implemented yet...")
-	case "0":
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:
@@ -80,14 +88,46 @@ func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
 		Mentor:          mentor,
 	}
 
-	wil := make([]model.WILProject, 0)
-	wil = append(wil, WILProject)
-
-	err := menu.wrapper.WILProjectController.InsertMany(wil)
+	err := menu.wrapper.WILProjectController.Insert(WILProject)
 	if err != nil {
 		return errors.New("error! cannot create WIL Project: " + err.Error())
 	} else {
 		fmt.Printf("WIL Project created successfully")
 	}
+	return nil
+}
+
+func (menu *WILProjectMenuStateHandler) editWILProject() error {
+	return nil
+}
+
+func (menu *WILProjectMenuStateHandler) listAllWILProject() error {
+	fmt.Println("\nWIL Project List\n")
+	WILProjects, err := menu.wrapper.WILProjectController.RetrieveAllWILProjects()
+	if err != nil {
+		return err
+	}
+
+	for _, project := range WILProjects {
+		fmt.Printf("ID: %d, Class ID: %d, Senior Project ID: %d, Company ID: %d, Mentor: %s\n",
+			project.ID, project.ClassId, project.SeniorProjectId, project.Company, project.Mentor)
+	}
+
+	return nil
+}
+
+func (menu *WILProjectMenuStateHandler) getWILProjectDetailByID() error {
+	WILProjectID := utils.GetUserInputUint("Enter WIL Project Id:")
+
+	WILProject, err := menu.wrapper.WILProjectController.RetrieveByID(WILProjectID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		fmt.Println("WIL Project Not Found")
+	} else if err != nil {
+		return err
+	} else {
+		fmt.Printf("ID: %d, Class ID: %d, Senior Project ID: %d, Company ID: %d, Mentor: %s\n",
+			WILProject.ID, WILProject.ClassId, WILProject.SeniorProjectId, WILProject.Company, WILProject.Mentor)
+	}
+
 	return nil
 }
