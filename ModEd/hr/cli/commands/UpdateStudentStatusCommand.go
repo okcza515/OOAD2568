@@ -1,6 +1,7 @@
 package commands
 
 import (
+	commonModel "ModEd/common/model"
 	"ModEd/hr/controller"
 	"ModEd/hr/util"
 	"flag"
@@ -17,10 +18,17 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
+	allowedStatuses := []string{
+		util.StatusToString(commonModel.ACTIVE),
+		util.StatusToString(commonModel.GRADUATED),
+		util.StatusToString(commonModel.DROP),
+	}
+
 	err := util.NewValidationChain(fs).
 		Required("id").
 		Length("id", 11).
 		Required("status").
+		AllowedValues("status", allowedStatuses).
 		Validate()
 	if err != nil {
 		fs.Usage()

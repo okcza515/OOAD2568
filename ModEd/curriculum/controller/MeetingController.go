@@ -23,7 +23,7 @@ type MeetingController struct {
 	Connector *gorm.DB
 }
 
-func CreateMeetingController(db *gorm.DB) MeetingControllerService {
+func CreateMeetingController(db *gorm.DB) *MeetingController {
 	return &MeetingController{
 		BaseController: core.NewBaseController[*model.Meeting](db),
 		Connector:      db,

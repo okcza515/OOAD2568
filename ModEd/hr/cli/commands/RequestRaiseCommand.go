@@ -2,7 +2,6 @@ package commands
 
 import (
 	"ModEd/hr/controller"
-	model "ModEd/hr/model"
 
 	"ModEd/hr/util"
 	"flag"
@@ -14,7 +13,7 @@ import (
 // usage: go run hr/cli/HumanResourceCLI.go request instructor raise -id="66050001" -amount=10000 -reason="ดีมาก"
 func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestRaise", flag.ExitOnError)
-	ID := fs.String("id", "", "Instructor ID")
+	id := fs.String("id", "", "Instructor ID")
 	amount := fs.Int("amount", 0, "Raise amount")
 	reason := fs.String("reason", "", "Reason for raise")
 
@@ -27,21 +26,12 @@ func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	tm := &util.TransactionManager{DB: tx}
-	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(tx)
+	hrFacade := controller.NewHRFacade(tx)
+	if err := hrFacade.SubmitRaiseRequest(tx, *id, *amount, *reason); err != nil {
+		return err
+	}
 
-		request := model.NewRequestRaiseBuilder().
-			WithInstructorCode(*ID).
-			WithTargetSalary(int(*amount)).
-			WithReason(*reason).
-			Build()
-
-		if err := hrFacade.SubmitRaiseInstructorRequest(request); err != nil {
-			return fmt.Errorf("failed to submit raise request: %v", err)
-		}
-
-		fmt.Println("Raise request submitted successfully.")
-		return nil
-	})
+	fmt.Println("Raise request submitted successfully.")
+	return nil
 }
+

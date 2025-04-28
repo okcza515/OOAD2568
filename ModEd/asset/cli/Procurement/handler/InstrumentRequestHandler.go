@@ -12,7 +12,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 	for inputBuffer != "back" {
 		util.ClearScreen()
-		printOption()
+		printInstrumentRequestOption()
 		inputBuffer = util.GetCommandInput()
 
 		switch inputBuffer {
@@ -32,8 +32,6 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
 			}
 			WaitForEnter()
-			fmt.Println("\nPress Enter to continue...")
-			WaitForEnter()
 		case "2":
 			fmt.Println("List All Instrument Requests")
 			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
@@ -49,7 +47,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 		case "3":
 			fmt.Println("Get Instrument Request by ID or Name")
 			idOrName := GetStringInput("Enter Instrument Request ID or Name: ")
-		
+
 			var request *model.InstrumentRequest
 			id, err := parseUint(idOrName)
 			if err == nil {
@@ -57,13 +55,13 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			} else {
 				request, err = facade.RequestedItem.GetInstrumentRequestByName(idOrName)
 			}
-		
+
 			if err != nil {
 				fmt.Println("Failed to get request:", err)
 			} else {
 				fmt.Printf("Instrument Request found: ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
 			}
-			WaitForEnter()						
+			WaitForEnter()
 		case "4":
 			fmt.Println("Add Instrument to Existing Request")
 
@@ -71,12 +69,14 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			label := GetStringInput("Enter Instrument Label: ")
 			desc := GetStringInput("Enter Description: ")
 			categoryID := GetUintInput("Enter Category ID: ")
+			estimatedPrice := GetFloatInput("Enter Estimated Price: ")
 			quantity := GetUintInput("Enter Quantity: ")
 
 			detail := &model.InstrumentDetail{
 				InstrumentLabel:     label,
 				Description:         &desc,
 				CategoryID:          categoryID,
+				EstimatedPrice:      estimatedPrice,
 				Quantity:            int(quantity),
 				InstrumentRequestID: requestID,
 			}
@@ -89,16 +89,43 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			WaitForEnter()
 		case "5":
-			fmt.Println("Not implemented yet...")
-		}
+			fmt.Println("Show Instrument Request with Details")
+			requestID := GetUintInput("Enter Instrument Request ID: ")
 
+			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
+			if err != nil {
+				fmt.Println("Failed to get request with details:", err)
+			} else {
+				fmt.Printf("\nInstrument Request ID: %d\n", request.InstrumentRequestID)
+				fmt.Printf("Department ID: %d\n", request.DepartmentID)
+				fmt.Printf("Status: %s\n", request.Status)
+				fmt.Println("Instruments:")
+
+				if len(request.Instruments) == 0 {
+					fmt.Println("  No instruments found for this request.")
+				} else {
+					for _, instrument := range request.Instruments {
+						fmt.Printf("  - Instrument ID: %d\n", instrument.InstrumentDetailID)
+						fmt.Printf("    Label: %s\n", instrument.InstrumentLabel)
+						if instrument.Description != nil {
+							fmt.Printf("    Description: %s\n", *instrument.Description)
+						}
+						fmt.Printf("    Category ID: %d\n", instrument.CategoryID)
+						fmt.Printf("    Quantity: %d\n", instrument.Quantity)
+						fmt.Printf("    Estimated Price: %.2f\n", instrument.EstimatedPrice)
+						fmt.Println()
+					}
+				}
+			}
+			WaitForEnter()
+		}
 		util.ClearScreen()
 	}
 
 	util.ClearScreen()
 }
 
-func printOption() {
+func printInstrumentRequestOption() {
 	fmt.Println(":/Procurement/RequestItem")
 	fmt.Println()
 	fmt.Println("--RequestItem Function--")
@@ -124,7 +151,7 @@ func GetStringInput(prompt string) string {
 }
 
 func parseUint(input string) (uint, error) {
-    var result uint
-    _, err := fmt.Sscanf(input, "%d", &result)
-    return result, err
+	var result uint
+	_, err := fmt.Sscanf(input, "%d", &result)
+	return result, err
 }

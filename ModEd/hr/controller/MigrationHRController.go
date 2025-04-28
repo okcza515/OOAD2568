@@ -25,21 +25,15 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 
 	// Migrate data to HR StudentInfo.
 	for _, s := range students {
-		studentInfo, err := hr.NewStudentInfoBuilder().
-			WithStudent(s).
-			WithGender("").
-			WithCitizenID("").
-			WithPhoneNumber("").
-			// WithAdvisor(common.Instructor{}).
-			// WithDepartment(common.Department{}).
-			Build()
-
-		if err != nil {
-			return fmt.Errorf("failed to build student info for %s: %w", s.StudentCode, err)
+		migrateStudent := hr.StudentInfo{
+			Student:     s,  // Embed the common student data
+			Gender:      "", // Initialize HR fields as empty
+			CitizenID:   "",
+			PhoneNumber: "",
 		}
 
 		// Use FirstOrCreate to avoid duplicate unique errors.
-		if err := db.Where("student_code = ?", s.StudentCode).FirstOrCreate(&studentInfo).Error; err != nil {
+		if err := db.Where("student_code = ?", s.StudentCode).FirstOrCreate(&migrateStudent).Error; err != nil {
 			return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
 		}
 		// fmt.Printf("Migrated student %s successfully\n", s.SID)

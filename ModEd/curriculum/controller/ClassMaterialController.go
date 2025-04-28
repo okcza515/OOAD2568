@@ -21,7 +21,7 @@ type ClassMaterialController struct {
 	Connector *gorm.DB
 }
 
-func CreateClassMaterialController(db *gorm.DB) ClassMaterialService {
+func CreateClassMaterialController(db *gorm.DB) *ClassMaterialController {
 	return &ClassMaterialController{
 		BaseController: core.NewBaseController[*model.ClassMaterial](db),
 		Connector:      db,

@@ -80,6 +80,20 @@ func (vc *ValidationChain) Regex(flagName, pattern string) *ValidationChain {
 	return vc
 }
 
+func (vc *ValidationChain) AllowedValues(flagName string, allowed []string) *ValidationChain {
+	if vc.creationError != nil {
+		return vc
+	}
+	if len(allowed) == 0 {
+		// Optional: Could set creationError or just skip adding the validator
+		// For now, let's skip adding if 'allowed' is empty
+		return vc
+	}
+	validator := NewAllowedValuesFlagValidator(vc.fs, flagName, allowed)
+	vc.append(validator)
+	return vc
+}
+
 // Validate executes the entire validation chain.
 // It first checks for any errors during validator creation.
 func (vc *ValidationChain) Validate() error {

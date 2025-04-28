@@ -10,11 +10,12 @@ import (
 )
 
 type StudentWorkloadService interface {
-	CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error
-	UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error
-	DeleteStudentAdvisor(id uint) error
+	Insert(data model.StudentAdvisor) error
+	UpdateByID(data model.StudentAdvisor) error
+	DeleteByID(id uint) error
+	RetrieveByID(id uint, preloads ...string) (*model.StudentAdvisor, error)
 	GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error)
-	CreateStudentRequest(studentRequest model.StudentRequest) error
+	CreateStudentRequest(data model.StudentRequest) error
 	GetStudentRequestsByInstructorId(instructorId uint) ([]model.StudentRequest, error)
 	ReviewStudentRequest(id uint, review string, comment string) error
 }
@@ -24,7 +25,7 @@ type StudentWorkloadController struct {
 	Connector *gorm.DB
 }
 
-func CreateStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
+func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
 	return &StudentWorkloadController{
 		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		Connector:      db,
