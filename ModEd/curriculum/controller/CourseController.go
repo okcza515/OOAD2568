@@ -18,7 +18,7 @@ type CourseController struct {
 
 type CourseControllerInterface interface {
 	CreateCourse(course *model.Course) (courseId uint, err error)
-	GetCourseByID(courseId uint) (course *model.Course, err error)
+	GetCourseByID(courseId uint, preload ...string) (course *model.Course, err error)
 	UpdateCourse(updatedCourse *model.Course) (*model.Course, error)
 	DeleteCourse(courseId uint) (course *model.Course, err error)
 	ListCourses() (courses []*model.Course, err error)
@@ -33,23 +33,31 @@ func NewCourseController(db *gorm.DB) CourseControllerInterface {
 }
 
 func (c *CourseController) CreateCourse(course *model.Course) (courseId uint, err error) {
-	if err := c.db.Create(&course).Error; err != nil {
+	if err := c.core.Insert(course); err != nil {
 		return 0, err
 	}
 	return course.CourseId, nil
 }
 
-func (c *CourseController) GetCourseByID(courseId uint) (course *model.Course, err error) {
-	course = &model.Course{}
-	if err := c.db.Preload("Prerequisite").First(course, courseId).Error; err != nil {
+func (c *CourseController) ListCourses() (courses []*model.Course, err error) {
+	//TODO: Wait for preload support in BaseController
+	if err := c.db.Preload("Prerequisite").Find(&courses).Error; err != nil {
+		return nil, err
+	}
+	return courses, nil
+}
+
+func (c *CourseController) GetCourseByID(courseId uint, preload ...string) (course *model.Course, err error) {
+	course, err = c.core.RetrieveByID(courseId, preload...)
+	if err != nil {
 		return nil, err
 	}
 	return course, nil
 }
 
-func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (*model.Course, error) {
-	course := &model.Course{}
-	if err := c.db.First(course, updatedCourse.CourseId).Error; err != nil {
+func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (course *model.Course, err error) {
+	course, err = c.core.RetrieveByID(updatedCourse.CourseId)
+	if err != nil {
 		return nil, err
 	}
 
@@ -61,28 +69,22 @@ func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (*model.Cou
 	// course.Prerequisite = updatedCourse.Prerequisite
 	// course.ClassList = updatedCourse.ClassList
 
-	if err := c.db.Updates(course).Error; err != nil {
+	if err := c.core.UpdateByID(course); err != nil {
 		return nil, err
 	}
 	return course, nil
 }
 
 func (c *CourseController) DeleteCourse(courseId uint) (course *model.Course, err error) {
-	course = &model.Course{}
-	if err := c.db.First(course, courseId).Error; err != nil {
+	course, err = c.core.RetrieveByID(courseId)
+	if err != nil {
 		return nil, err
 	}
-	if err := c.db.Delete(course).Error; err != nil {
+
+	if err := c.core.DeleteByID(courseId); err != nil {
 		return nil, err
 	}
 	return course, nil
-}
-
-func (c *CourseController) ListCourses() (courses []*model.Course, err error) {
-	if err := c.db.Preload("Prerequisite").Find(&courses).Error; err != nil {
-		return nil, err
-	}
-	return courses, nil
 }
 
 func (c *CourseController) CreateSeedCourse(path string) (courses []*model.Course, err error) {
