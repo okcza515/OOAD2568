@@ -14,11 +14,11 @@ type WILProjectController struct {
 }
 
 type WILProjectControllerInterface interface {
+	RetrieveAllWILProjects() ([]model.WILProject, error)
 	Insert(data model.WILProject) error
 	UpdateByID(data model.WILProject) error
 	RetrieveByID(id uint, preloads ...string) (*model.WILProject, error)
 	DeleteByID(id uint) error
-	ListPagination(condition map[string]interface{}, page int, pageSize int)
 }
 
 func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
@@ -26,4 +26,14 @@ func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.WILProject](connector),
 	}
+}
+
+func (controller *WILProjectController) RetrieveAllWILProjects() ([]model.WILProject, error) {
+	var wilProjects []model.WILProject
+
+	if err := controller.Connector.Find(&wilProjects).Error; err != nil {
+		return nil, err
+	}
+
+	return wilProjects, nil
 }
