@@ -8,6 +8,8 @@ import (
 type IQuestionController interface {
 	CreateQuestion(question *model.Question) error
 	UpdateQuestion(id uint, updatedQuestion *model.Question) error
+	CreateQuestion(question *model.Question) error
+	UpdateCorrectAnswer(id uint, correctAnswer string) error
 }
 
 type QuestionController struct {
@@ -34,5 +36,25 @@ func (c *QuestionController) UpdateQuestion(id uint, updatedQuestion *model.Ques
 	if err := c.db.Model(&question).Select("*").Updates(updatedQuestion).Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+func (c *QuestionController) CreateQuestion(question *model.Question) error {
+	if err := c.db.Create(question).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *QuestionController) UpdateCorrectAnswer(id uint, correctAnswer string) error {
+	var question model.Question
+	if err := c.db.First(&question, id).Error; err != nil {
+		return err
+	}
+
+	if err := c.db.Model(&question).Update("Correct_answer", correctAnswer).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
