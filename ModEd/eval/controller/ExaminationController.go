@@ -46,6 +46,14 @@ func (c *ExaminationController) Update(id uint, exam *model.Examination) error {
 	return nil
 }
 
+func (c *ExaminationController) Delete(id uint) error {
+    if err := c.db.Where("id = ?", id).Delete(&model.Examination{}).Error; err != nil {
+        return err
+    }
+    return nil
+}
+
+
 // func (c *ExaminationController) GetQuestionController() *QuestionController {
 // 	return c.questionCtrl
 // }
