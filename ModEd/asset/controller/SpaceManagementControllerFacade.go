@@ -2,11 +2,11 @@
 package controller
 
 import (
-	"errors"
+	"ModEd/asset/model"
+	"ModEd/core"
+	"ModEd/core/migration"
 
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 type SpaceManagementControllerFacade struct {
@@ -17,10 +17,8 @@ type SpaceManagementControllerFacade struct {
 	Room              RoomController
 }
 
-func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
-	db, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent), // Or logger.Error for only errors
-	})
+func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
+	db, err := migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
 	if err != nil {
 		return nil, err
 	}
@@ -31,15 +29,11 @@ func CreateSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, 
 	AssetManagementController := NewAssetManagementController(InstrumentManagementAdapter, SupplyManagementAdapter)
 
 	facade := SpaceManagementControllerFacade{Db: db}
-	SpaceManagementMigrationController := SpaceManagementMigrationController{db: db}
-	err = SpaceManagementMigrationController.MigrateToDB()
-	if err != nil {
-		return nil, errors.New("failed to migrate schema")
-	}
+
 	facade.AssetManagement = AssetManagementController
 	facade.Booking = BookingController{db: db}
 	facade.PermanentSchedule = PermanentBookingController{db: db}
-	facade.Room = RoomController{db: db}
+	facade.Room = RoomController{db: db, BaseController: core.NewBaseController[model.Room](db)}
 	return &facade, nil
 
 }

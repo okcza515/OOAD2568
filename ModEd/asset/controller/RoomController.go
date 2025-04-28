@@ -2,6 +2,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
 
@@ -12,6 +13,7 @@ import (
 
 type RoomController struct {
 	db *gorm.DB
+	*core.BaseController[model.Room]
 }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {

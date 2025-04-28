@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	facade, err := controller.CreateSpaceManagementControllerFacade()
+	facade, err := controller.NewSpaceManagementControllerFacade()
 	if err != nil {
 		panic("err: initialize controllers failed")
 	}
