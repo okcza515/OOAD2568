@@ -1,10 +1,5 @@
 package model
 
-import (
-	commonModel "ModEd/common/model"
-	"time"
-)
-
 type ExternalMeeting struct {
 	Meeting
 	CompanyName string `gorm:"type:varchar(100);not null"`
@@ -14,16 +9,16 @@ type ExternalMeetingFactory struct {
 	CompanyName string
 }
 
-func (f ExternalMeetingFactory) CreateMeeting(title, description, location string, date, startTime, endTime time.Time, attendees []commonModel.Instructor) MeetingProductInterface {
+func (f ExternalMeetingFactory) CreateMeeting(meeting Meeting) MeetingProductInterface {
 	return &ExternalMeeting{
 		Meeting: Meeting{
-			Title:       title,
-			Description: description,
-			Location:    location,
-			Date:        date,
-			StartTime:   startTime,
-			EndTime:     endTime,
-			Attendees:   attendees,
+			Title:       meeting.Title,
+			Description: meeting.Description,
+			Location:    meeting.Location,
+			Date:        meeting.Date,
+			StartTime:   meeting.StartTime,
+			EndTime:     meeting.EndTime,
+			Attendees:   meeting.Attendees,
 		},
 		CompanyName: f.CompanyName,
 	}

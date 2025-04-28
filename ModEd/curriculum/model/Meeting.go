@@ -29,20 +29,20 @@ type MeetingProductInterface interface {
 }
 
 type MeetingFactory interface {
-	CreateMeeting(title, description, location string, date, startTime, endTime time.Time, attendees []commonModel.Instructor) MeetingProductInterface
+	CreateMeeting(meeting Meeting) MeetingProductInterface
 }
 
 type RegularMeetingFactory struct{}
 
-func (f RegularMeetingFactory) CreateMeeting(title, description, location string, date, startTime, endTime time.Time, attendees []commonModel.Instructor) MeetingProductInterface {
+func (f RegularMeetingFactory) CreateMeeting(meeting Meeting) MeetingProductInterface {
 	return &Meeting{
-		Title:       title,
-		Description: description,
-		Location:    location,
-		Date:        date,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		Attendees:   attendees,
+		Title:       meeting.Title,
+		Description: meeting.Description,
+		Location:    meeting.Location,
+		Date:        meeting.Date,
+		StartTime:   meeting.StartTime,
+		EndTime:     meeting.EndTime,
+		Attendees:   meeting.Attendees,
 	}
 }
 
