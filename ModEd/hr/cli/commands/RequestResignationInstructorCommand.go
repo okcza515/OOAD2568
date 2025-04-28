@@ -29,11 +29,8 @@ func requestResignationInstructor(args []string, tx *gorm.DB) error {
 	return tm.Execute(func(tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(tx)
 
-		builder := model.NewRequestResignationBuilder(false)
-		req, err := builder.WithID(*ID).
-			WithReason(*reason).
-			Build()
-
+		factory := &model.RequestResignationFactory{}
+		req, err := factory.Create("instructor", *ID, *reason)
 		if err != nil {
 			return fmt.Errorf("failed to build resignation request: %v", err)
 		}
