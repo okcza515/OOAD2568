@@ -9,7 +9,6 @@ import (
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -22,10 +21,20 @@ func main() {
 
 	database := utils.GetInputDatabasePath(defaultDBPath)
 
+	//db, err := migration.
+	//	GetInstance().
+	//	SetPathDB(database).
+	//	MigrateModule(core.MODULE_CURRICULUM).
+	//MigrateModule(core.MODULE_INSTRUCTOR).
+	//MigrateModule(core.MODULE_INTERNSHIP).
+	//MigrateModule(core.MODULE_WILPROJECT).
+	//BuildDB()
+
 	db, err := utils.NewGormSqlite(&utils.GormConfig{
 		DBPath: database,
 		Config: &gorm.Config{},
 	})
+
 	if err != nil {
 		panic(err)
 	}

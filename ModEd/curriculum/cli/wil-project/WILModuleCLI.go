@@ -15,16 +15,6 @@ func RunWILModuleCLI(
 	courseController curriculumController.CourseControllerInterface,
 	classController curriculumController.ClassControllerInterface,
 ) {
-
-	// db, err := migration.GetInstance().
-	// 	MigrateModule(core.MODULE_CURRICULUM).
-	// 	MigrateModule(core.MODULE_WILPROJECT).
-	// 	BuildDB()
-
-	// if err != nil {
-	// 	fmt.Println("error! cannot initialize db")
-	// }
-
 	menuManager := cli.NewCLIMenuManager()
 	wrapper := curriculumController.NewWILModuleWrapper(db, courseController, classController)
 	wilmoduleState := handler.NewWILModuleMenuStateHandler(menuManager, wrapper)
