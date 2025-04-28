@@ -6,49 +6,113 @@ package controller
 import (
 	"ModEd/eval/model"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type EvaluationController struct {
-	DB *gorm.DB
+	evaluations []*model.Evaluation
 }
 
-func NewEvaluationController(db *gorm.DB) *EvaluationController {
-	return &EvaluationController{DB: db}
+func NewEvaluationController(evals []*model.Evaluation) *EvaluationController {
+	return &EvaluationController{
+		evaluations: evals,
+	}
 }
 
-func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
-	eval := model.Evaluation{
+func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentID uint, score uint) {
+	for _, e := range ec.evaluations {
+		if e.StudentCode == studentCode && e.AssignmentID != nil && *e.AssignmentID == assignmentID {
+			e.Score = score
+			e.EvaluatedAt = time.Now()
+			return
+		}
+	}
+	ec.evaluations = append(ec.evaluations, &model.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssignmentId:   &assignmentId,
+		AssignmentID:   &assignmentID,
 		Score:          score,
-		Comment:        comment,
 		EvaluatedAt:    time.Now(),
-	}
-	return ec.DB.Create(&eval).Error
+	})
 }
 
-func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizId uint, score uint, comment string) error {
-	eval := model.Evaluation{
+func (ec *EvaluationController) CommentAssignment(studentCode string, assignmentID uint, comment string) {
+	for _, e := range ec.evaluations {
+		if e.StudentCode == studentCode && e.AssignmentID != nil && *e.AssignmentID == assignmentID {
+			e.Comment = comment
+			return
+		}
+	}
+}
+
+func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizID uint, score uint) {
+	for _, e := range ec.evaluations {
+		if e.StudentCode == studentCode && e.QuizID != nil && *e.QuizID == quizID {
+			e.Score = score
+			e.EvaluatedAt = time.Now()
+			return
+		}
+	}
+	ec.evaluations = append(ec.evaluations, &model.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		QuizId:         &quizId,
+		QuizID:         &quizID,
 		Score:          score,
-		Comment:        comment,
 		EvaluatedAt:    time.Now(),
-	}
-	return ec.DB.Create(&eval).Error
+	})
 }
 
-func (ec *EvaluationController) ListEvaluations(studentCode string) ([]model.Evaluation, error) {
-	var results []model.Evaluation
-	err := ec.DB.Where("student_code = ?", studentCode).Find(&results).Error
-	return results, err
+func (ec *EvaluationController) ListEvaluations() []*model.Evaluation {
+	return ec.evaluations
 }
 
 // package controller
+
+// import (
+// 	"ModEd/eval/model"
+// 	"time"
+
+// 	"gorm.io/gorm"
+// )
+
+// type EvaluationController struct {
+// 	DB *gorm.DB
+// }
+
+// func NewEvaluationController(db *gorm.DB) *EvaluationController {
+// 	return &EvaluationController{DB: db}
+// }
+
+// func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
+// 	eval := model.Evaluation{
+// 		StudentCode:    studentCode,
+// 		InstructorCode: instructorCode,
+// 		AssignmentId:   &assignmentId,
+// 		Score:          score,
+// 		Comment:        comment,
+// 		EvaluatedAt:    time.Now(),
+// 	}
+// 	return ec.DB.Create(&eval).Error
+// }
+
+// func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizId uint, score uint, comment string) error {
+// 	eval := model.Evaluation{
+// 		StudentCode:    studentCode,
+// 		InstructorCode: instructorCode,
+// 		QuizId:         &quizId,
+// 		Score:          score,
+// 		Comment:        comment,
+// 		EvaluatedAt:    time.Now(),
+// 	}
+// 	return ec.DB.Create(&eval).Error
+// }
+
+// func (ec *EvaluationController) ListEvaluations(studentCode string) ([]model.Evaluation, error) {
+// 	var results []model.Evaluation
+// 	err := ec.DB.Where("student_code = ?", studentCode).Find(&results).Error
+// 	return results, err
+// }
+
+//// package controller
 
 // import (
 // 	commonModel "ModEd/common/model"

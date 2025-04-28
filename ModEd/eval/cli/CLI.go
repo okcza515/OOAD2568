@@ -128,7 +128,7 @@ type EvaluationCLI struct {
 type Progress struct {
 	StudentCode  string
 	Title        string
-	AssignmentId uint
+	AssignmentID uint
 	Status       string
 	LastUpdate   time.Time
 	TotalSubmit  uint
@@ -142,8 +142,8 @@ func (ec *evaluationControllerAdapter) SaveEvaluation(studentCode string, instru
 	e := evalModel.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssignmentId:   assignmentID,
-		QuizId:         quizID,
+		AssignmentID:   assignmentID,
+		QuizID:         quizID,
 		Score:          uint(score),
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
@@ -198,11 +198,11 @@ func (cli *EvaluationCLI) listEvaluations() {
 	for i, e := range evals {
 		fmt.Printf("Entry: %d | Student: %s | Score: %d | Date: %s\n",
 			i+1, e.StudentCode, e.Score, e.EvaluatedAt.Format("2006-01-02"))
-		if e.AssignmentId != nil {
-			fmt.Printf("  Assignment ID: %d\n", *e.AssignmentId)
+		if e.AssignmentID != nil {
+			fmt.Printf("  Assignment ID: %d\n", *e.AssignmentID)
 		}
-		if e.QuizId != nil {
-			fmt.Printf("  Quiz ID: %d\n", *e.QuizId)
+		if e.QuizID != nil {
+			fmt.Printf("  Quiz ID: %d\n", *e.QuizID)
 		}
 		if e.Comment != "" {
 			fmt.Printf("  Comment: %s\n", e.Comment)
@@ -237,15 +237,15 @@ func (cli *EvaluationCLI) recordEvaluation() {
 	fmt.Print("Enter Comment: ")
 	fmt.Scanln(&comment)
 
-	var assignmentId, quizId *uint
+	var assignmentID, quizID *uint
 
 	if evalType == 1 {
-		assignmentId = &id
+		assignmentID = &id
 	} else {
-		quizId = &id
+		quizID = &id
 	}
 
-	err := evalController.SaveEvaluation(studentCode, instructorCode, assignmentId, quizId, score, comment)
+	err := evalController.SaveEvaluation(studentCode, instructorCode, assignmentID, quizID, score, comment)
 	if err != nil {
 		fmt.Printf("Error saving evaluation: %v\n", err)
 		return
@@ -290,11 +290,11 @@ func (cli *ProgressCLI) Run() {
 }
 
 func (cli *ProgressCLI) viewAllProgress() {
-	var assignmentId uint
+	var assignmentID uint
 	fmt.Print("Enter Assignment ID: ")
-	fmt.Scan(&assignmentId)
+	fmt.Scan(&assignmentID)
 
-	progress, err := cli.controller.GetAllProgress(assignmentId)
+	progress, err := cli.controller.GetAllProgress(assignmentID)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -303,15 +303,15 @@ func (cli *ProgressCLI) viewAllProgress() {
 }
 
 func (cli *ProgressCLI) viewProgressByStudent() {
-	var assignmentId uint
+	var assignmentID uint
 	var studentCode string
 
 	fmt.Print("Enter Assignment ID: ")
-	fmt.Scan(&assignmentId)
+	fmt.Scan(&assignmentID)
 	fmt.Print("Enter Student Code: ")
 	fmt.Scanln(&studentCode)
 
-	progress, err := cli.controller.GetProgressByStudentCode(assignmentId, studentCode)
+	progress, err := cli.controller.GetProgressByStudentCode(assignmentID, studentCode)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -320,15 +320,15 @@ func (cli *ProgressCLI) viewProgressByStudent() {
 }
 
 func (cli *ProgressCLI) viewProgressByStatus() {
-	var assignmentId uint
+	var assignmentID uint
 	var status string
 
 	fmt.Print("Enter Assignment ID: ")
-	fmt.Scan(&assignmentId)
+	fmt.Scan(&assignmentID)
 	fmt.Print("Enter Status (Open/Closed/Submitted): ")
 	fmt.Scanln(&status)
 
-	progress, err := cli.controller.GetProgressByStatus(assignmentId, status)
+	progress, err := cli.controller.GetProgressByStatus(assignmentID, status)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
