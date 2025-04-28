@@ -7,9 +7,12 @@ import (
 
 type Procurement struct {
 	gorm.Model
-	ProcurementID         uint           `gorm:"primaryKey"`
-	TORcandidate          uint           `gorm:"foreignKey:TORID"`
-	ItemRequestID         uint           `gorm:"foreignKey:ItemRequestID"`
-	ProcurementApprovalID uint           `gorm:"foreignKey:ProcurementApprovalID"`
-	DeletedAt             gorm.DeletedAt `gorm:"index"`
+	ProcurementID         uint              `gorm:"primaryKey"`
+	QuotationID           uint              `gorm:"index"`
+	InstrumentRequestID   uint              `gorm:"index"`
+	ProcurementApprovalID uint              `gorm:"foreignKey:ProcurementApprovalID"`
+	Status                ProcurementStatus `gorm:"type:varchar(50);default:'pending'"`
+	DeletedAt             gorm.DeletedAt    `gorm:"index"`
+	Quotation             Quotation         `gorm:"foreignKey:QuotationID"`
+	InstrumentRequest     InstrumentRequest `gorm:"foreignKey:InstrumentRequestID"`
 }

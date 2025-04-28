@@ -53,3 +53,16 @@ func (c *BudgetApprovalController) ShowBudgetRequestByStatus(status model.Budget
 func (c *BudgetApprovalController) DeleteBudgetRequest(id uint) error {
 	return c.db.Model(&model.BudgetApproval{}).Where("budget_approval_id = ?", id).Update("deleted_at", time.Now()).Error
 }
+
+func (c *BudgetApprovalController) OnApproved(id uint) error {
+	return c.db.Model(&model.BudgetApproval{}).
+		Where("budget_approval_id = ?", id).
+		Update("status", model.BudgetStatusApproved).Error
+}
+
+func (c *BudgetApprovalController) OnRejected(id uint) error {
+	return c.db.Model(&model.BudgetApproval{}).
+		Where("budget_approval_id = ?", id).
+		Update("status", model.BudgetStatusRejected).Error
+}
+
