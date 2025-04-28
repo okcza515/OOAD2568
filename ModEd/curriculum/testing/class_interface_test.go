@@ -219,10 +219,11 @@ func TestSeedClass(t *testing.T) {
 		DBPath: "../../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
-	migrationController := controller.NewMigrationController(db)
-	if err := migrationController.MigrateToDB(); err != nil {
-		t.Fatalf("Failed to migrate to db: %v", err)
-	}
+	//TODO: Fix this since migration is now at core module
+	// migrationController := controller.NewMigrationController(db)
+	// if err := migrationController.MigrateToDB(); err != nil {
+	// 	t.Fatalf("Failed to migrate to db: %v", err)
+	// }
 
 	classController := controller.NewClassController(db)
 	classes, err := classController.CreateSeedClass("../../data/curriculum/class.json")

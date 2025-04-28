@@ -222,10 +222,11 @@ func TestSeedCourse(t *testing.T) {
 		DBPath: "../../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
-	migrationController := controller.NewMigrationController(db)
-	if err := migrationController.MigrateToDB(); err != nil {
-		t.Fatalf("Failed to migrate to db: %v", err)
-	}
+	//TODO: Fix this since migration is now at core module
+	// migrationController := controller.NewMigrationController(db)
+	// if err := migrationController.MigrateToDB(); err != nil {
+	// 	t.Fatalf("Failed to migrate to db: %v", err)
+	// }
 
 	courseController := controller.NewCourseController(db)
 	courses, err := courseController.CreateSeedCourse("../../data/curriculum/course.json")
