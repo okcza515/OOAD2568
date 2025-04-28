@@ -10,6 +10,10 @@ type Faculty struct {
 	Budget int    `gorm:"default:0" csv:"budget" json:"budget"`
 }
 
+func (Faculty) TableName() string {
+	return "faculties"
+}
+
 func GetAllFaculties(db *gorm.DB) ([]*Faculty, error) {
 	var faculties []*Faculty
 	result := db.Find(&faculties)

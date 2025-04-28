@@ -19,6 +19,10 @@ type Student struct {
 	Status      *StudentStatus `csv:"status" json:"status"`
 }
 
+func (Student) TableName() string {
+	return "students"
+}
+
 func GetAllStudents(db *gorm.DB) ([]*Student, error) {
 	var students []*Student
 	result := db.Find(&students)

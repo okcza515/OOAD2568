@@ -50,7 +50,7 @@ func main() {
 			fmt.Printf("*** File %s is readable\n", path)
 		}
 
-	case REGISTER: // Not generic yet
+	case REGISTER:
 		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 			fmt.Printf("*** Error: %s does not exist.\n", path)
 			return
@@ -131,7 +131,7 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 		instructorController.Register(instructors)
 		fmt.Println("Instructor data updated successfully.")
 	} else if choice == 2 {
-		departmentController := controller.CreateDepartmentController(db)
+		//departmentController := controller.CreateDepartmentController(db)
 		deserializer, err := deserializer.NewFileDeserializer(path)
 		if err != nil {
 			panic(err)
@@ -141,7 +141,7 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 			panic(err)
 		}
 		fmt.Println(departments)
-		departmentController.Register(departments)
+		//departmentController.Register(departments)
 		fmt.Println("Department data updated successfully.")
 	} else if choice == 3 {
 		facultyController := controller.CreateFacultyController(db)

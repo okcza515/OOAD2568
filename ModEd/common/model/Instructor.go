@@ -16,6 +16,10 @@ type Instructor struct {
 	Department     *string    `csv:"department" json:"department"`
 }
 
+func (Instructor) TableName() string {
+	return "instructors"
+}
+
 func GetAllInstructors(db *gorm.DB) ([]*Instructor, error) {
 	var instructors []*Instructor
 	result := db.Find(&instructors)
