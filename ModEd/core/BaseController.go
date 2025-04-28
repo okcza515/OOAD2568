@@ -1,6 +1,8 @@
 package core
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -21,13 +23,18 @@ func (controller *BaseController[T]) InsertMany(data []T) error {
 }
 
 func (controller *BaseController[T]) UpdateByID(data T) error {
-	return controller.db.Model(data).Where("id = ?", data.GetID()).Updates(data).Error
+	result := controller.db.Model(data).Where("id = ?", data.GetID()).Updates(data)
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+
+	return result.Error
 }
 
 func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (T, error) {
 	var record T
-
 	query := controller.db
+
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
@@ -41,15 +48,24 @@ func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (
 
 func (controller *BaseController[T]) DeleteByID(id uint) error {
 	var record T
-	return controller.db.Where("id = ?", id).Delete(&record).Error
+	result := controller.db.Where("id = ?", id).Delete(&record)
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+
+	return result.Error
 }
 
-func (controller *BaseController[T]) List(condition map[string]interface{}) ([]T, error) {
+func (controller *BaseController[T]) List(condition map[string]interface{}, preloads ...string) ([]T, error) {
 	var records []T
 	query := controller.db
 
 	if condition != nil {
 		query = query.Where(condition)
+	}
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
 	}
 
 	if err := query.Find(&records).Error; err != nil {
@@ -58,13 +74,17 @@ func (controller *BaseController[T]) List(condition map[string]interface{}) ([]T
 	return records, nil
 }
 
-func (controller *BaseController[T]) ListPagination(condition map[string]interface{}, page, pageSize int) ([]T, error) {
+func (controller *BaseController[T]) ListPagination(condition map[string]interface{}, page, pageSize int, preloads ...string) ([]T, error) {
 	var records []T
 	var totalCount int64
 	query := controller.db
 
 	if condition != nil {
 		query = query.Where(condition)
+	}
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
 	}
 
 	if err := query.Model(new(T)).Count(&totalCount).Error; err != nil {
