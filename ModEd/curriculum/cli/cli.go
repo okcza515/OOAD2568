@@ -40,13 +40,13 @@ func main() {
 		choice := getUserChoice()
 
 		switch choice {
-		case "2":
+		case "1":
 			curriculum.RunCurriculumModuleCLI(db, courseController, classController, curriculumController)
-		case "3":
+		case "2":
 			wilproject.RunWILModuleCLI(db, courseController, classController)
-		case "4":
+		case "3":
 			instructorWorkload.RunInstructorWorkloadModuleCLI(db, courseController, classController, curriculumController)
-		case "5":
+		case "4":
 			internship.RunInterShipCLI(db)
 		case "resetdb":
 			err := resetDB()
