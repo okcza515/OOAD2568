@@ -117,17 +117,21 @@ func (menu *WILProjectMenuStateHandler) listAllWILProject() error {
 }
 
 func (menu *WILProjectMenuStateHandler) getWILProjectDetailByID() error {
+	var WILProject model.WILProject
+	var err error
 	WILProjectID := utils.GetUserInputUint("Enter WIL Project Id:")
 
-	WILProject, err := menu.wrapper.WILProjectController.RetrieveByID(WILProjectID)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		fmt.Println("WIL Project Not Found")
-	} else if err != nil {
-		return err
-	} else {
-		fmt.Printf("ID: %d, Class ID: %d, Senior Project ID: %d, Company ID: %d, Mentor: %s\n",
-			WILProject.ID, WILProject.ClassId, WILProject.SeniorProjectId, WILProject.Company, WILProject.Mentor)
+	if WILProject, err = menu.wrapper.WILProjectController.RetrieveByID(WILProjectID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			fmt.Println("WIL Project Not Found")
+			return nil
+		} else {
+			return err
+		}
 	}
 
+	fmt.Printf("ID: %d, Class ID: %d, Senior Project ID: %d, Company ID: %d, Mentor: %s\n",
+		WILProject.ID, WILProject.ClassId, WILProject.SeniorProjectId, WILProject.Company, WILProject.Mentor)
 	return nil
+
 }
