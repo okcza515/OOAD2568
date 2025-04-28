@@ -62,8 +62,7 @@ func NewMainCLI() *MainCLI {
 	err = db.AutoMigrate(
 		&evalModel.Assignment{},
 		&evalModel.AssignmentSubmission{},
-		&controller.Evaluation{},
-		&controller.Progress{},
+		&evalModel.Evaluation{},
 		&evalModel.Quiz{},
 		&evalModel.Question{},
 		&evalModel.Answer{},
@@ -121,111 +120,18 @@ func RunCLI() {
 	cli.Run()
 }
 
-type AssignmentCLI struct {
-	controller controller.AssignmentController
-}
-
-func NewAssignmentCLI(controller controller.AssignmentController) *AssignmentCLI {
-	return &AssignmentCLI{controller: controller}
-}
-
-func (cli *AssignmentCLI) Run() {
-	for {
-		fmt.Println("\n===== Assignment Menu =====")
-		fmt.Println("1. List Assignments")
-		fmt.Println("2. Create Assignment")
-		fmt.Println("3. Update Assignment")
-		fmt.Println("4. Delete Assignment")
-		fmt.Println("5. Back to Main Menu")
-		fmt.Print("Choose an option: ")
-
-		var option int
-		fmt.Scan(&option)
-
-		switch option {
-		case 1:
-			cli.listAssignments()
-		case 2:
-			cli.createAssignment()
-		case 3:
-			cli.updateAssignment()
-		case 4:
-			cli.deleteAssignment()
-		case 5:
-			return
-		default:
-			fmt.Println("Invalid option")
-		}
-	}
-}
-
-func (cli *AssignmentCLI) listAssignments() {
-	assignments, err := cli.controller.GetAll()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	for _, a := range assignments {
-		fmt.Printf("ID: %d | Title: %s | Status: %s | Due: %s\n",
-			a.ID, a.Title, a.Status, a.DueDate.Format("2006-01-02"))
-	}
-}
-
-func (cli *AssignmentCLI) createAssignment() {
-	var input controller.AssignmentInput
-	fmt.Print("Enter Title: ")
-	fmt.Scanln(&input.Title)
-	fmt.Print("Enter Description: ")
-	fmt.Scanln(&input.Description)
-	input.StartDate = time.Now()
-	input.DueDate = time.Now().Add(7 * 24 * time.Hour)
-	input.Status = "Open"
-
-	assignment, err := cli.controller.Create(input)
-	if err != nil {
-		fmt.Println("Error creating assignment:", err)
-		return
-	}
-	fmt.Println("Created Assignment:", assignment.ID)
-}
-
-func (cli *AssignmentCLI) updateAssignment() {
-	var id uint
-	fmt.Print("Enter Assignment ID to update: ")
-	fmt.Scan(&id)
-
-	var input controller.AssignmentInput
-	fmt.Print("Enter new Title: ")
-	fmt.Scanln(&input.Title)
-	fmt.Print("Enter new Description: ")
-	fmt.Scanln(&input.Description)
-	fmt.Print("Enter Status (Open/Closed): ")
-	fmt.Scanln(&input.Status)
-	input.StartDate = time.Now()
-	input.DueDate = time.Now().Add(7 * 24 * time.Hour)
-
-	assignment, err := cli.controller.Update(id, input)
-	if err != nil {
-		fmt.Println("Error updating assignment:", err)
-		return
-	}
-	fmt.Println("Updated Assignment:", assignment.ID)
-}
-
-func (cli *AssignmentCLI) deleteAssignment() {
-	var id uint
-	fmt.Print("Enter Assignment ID to delete: ")
-	fmt.Scan(&id)
-
-	if err := cli.controller.Delete(id); err != nil {
-		fmt.Println("Error deleting assignment:", err)
-		return
-	}
-	fmt.Println("Deleted Assignment:", id)
-}
-
+// Evaluation-related structures and functions
 type EvaluationCLI struct {
 	db *gorm.DB
+}
+
+type Progress struct {
+	StudentCode  string
+	Title        string
+	AssignmentId uint
+	Status       string
+	LastUpdate   time.Time
+	TotalSubmit  uint
 }
 
 type evaluationControllerAdapter struct {
@@ -233,26 +139,21 @@ type evaluationControllerAdapter struct {
 }
 
 func (ec *evaluationControllerAdapter) SaveEvaluation(studentCode string, instructorCode string, assignmentID, quizID *uint, score float64, comment string) error {
-	e := controller.Evaluation{
+	e := evalModel.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
 		AssignmentId:   assignmentID,
 		QuizId:         quizID,
-		Score:          score,
+		Score:          uint(score),
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
 	}
 	return ec.db.Create(&e).Error
 }
 
-func (ec *evaluationControllerAdapter) ListEvaluations() ([]controller.Evaluation, error) {
-	var evals []controller.Evaluation
-	err := ec.db.
-		Preload("Student").
-		Preload("Instructor").
-		Preload("Assignment").
-		Preload("Quiz").
-		Find(&evals).Error
+func (ec *evaluationControllerAdapter) ListEvaluations() ([]evalModel.Evaluation, error) {
+	var evals []evalModel.Evaluation
+	err := ec.db.Find(&evals).Error
 	return evals, err
 }
 
@@ -294,9 +195,9 @@ func (cli *EvaluationCLI) listEvaluations() {
 	}
 
 	fmt.Println("\n===== Evaluations =====")
-	for _, e := range evals {
-		fmt.Printf("ID: %d | Student: %s | Score: %.2f | Date: %s\n",
-			e.ID, e.StudentCode, e.Score, e.EvaluatedAt.Format("2006-01-02"))
+	for i, e := range evals {
+		fmt.Printf("Entry: %d | Student: %s | Score: %d | Date: %s\n",
+			i+1, e.StudentCode, e.Score, e.EvaluatedAt.Format("2006-01-02"))
 		if e.AssignmentId != nil {
 			fmt.Printf("  Assignment ID: %d\n", *e.AssignmentId)
 		}
@@ -389,7 +290,11 @@ func (cli *ProgressCLI) Run() {
 }
 
 func (cli *ProgressCLI) viewAllProgress() {
-	progress, err := cli.controller.GetAllProgress()
+	var assignmentId uint
+	fmt.Print("Enter Assignment ID: ")
+	fmt.Scan(&assignmentId)
+
+	progress, err := cli.controller.GetAllProgress(assignmentId)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -398,11 +303,15 @@ func (cli *ProgressCLI) viewAllProgress() {
 }
 
 func (cli *ProgressCLI) viewProgressByStudent() {
+	var assignmentId uint
 	var studentCode string
+
+	fmt.Print("Enter Assignment ID: ")
+	fmt.Scan(&assignmentId)
 	fmt.Print("Enter Student Code: ")
 	fmt.Scanln(&studentCode)
 
-	progress, err := cli.controller.GetProgressByStudentCode(studentCode)
+	progress, err := cli.controller.GetProgressByStudentCode(assignmentId, studentCode)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -411,11 +320,15 @@ func (cli *ProgressCLI) viewProgressByStudent() {
 }
 
 func (cli *ProgressCLI) viewProgressByStatus() {
+	var assignmentId uint
 	var status string
+
+	fmt.Print("Enter Assignment ID: ")
+	fmt.Scan(&assignmentId)
 	fmt.Print("Enter Status (Open/Closed/Submitted): ")
 	fmt.Scanln(&status)
 
-	progress, err := cli.controller.GetProgressByStatus(status)
+	progress, err := cli.controller.GetProgressByStatus(assignmentId, status)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -426,8 +339,7 @@ func (cli *ProgressCLI) viewProgressByStatus() {
 func (cli *ProgressCLI) displayProgress(progressList []controller.Progress) {
 	fmt.Println("\n===== Student Progress =====")
 	for _, p := range progressList {
-		fmt.Printf("ID: %d | Student: %s | Status: %s\n",
-			p.ID, p.StudentCode, p.Status)
+		fmt.Printf("ID: %d | Student: %v | Status: %v\n", p.Model.ID, p.StudentCode, p.Status)
 		fmt.Printf("  Last Update: %s | Total Submissions: %d\n",
 			p.LastUpdate.Format("2006-01-02 15:04"), p.TotalSubmit)
 		fmt.Println("------------------------")
