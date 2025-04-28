@@ -18,9 +18,12 @@ func importInstructor(args []string, tx *gorm.DB) error {
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR instructor info (only instructorid and HR fields).")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("path").
+		Validate()
+	if err != nil {
 		fs.Usage()
-		return fmt.Errorf("Validation error: %v\n", err)
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {

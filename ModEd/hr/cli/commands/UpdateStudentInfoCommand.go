@@ -3,7 +3,6 @@ package commands
 import (
 	commonController "ModEd/common/controller"
 	"ModEd/hr/controller"
-	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
@@ -15,7 +14,7 @@ import (
 // required field : id !!
 
 func updateStudentInfo(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("update student", flag.ExitOnError)
+	fs := flag.NewFlagSet("info", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID to update")
 	firstName := fs.String("fname", "", "New first name")
 	lastName := fs.String("lname", "", "New last name")
@@ -25,9 +24,15 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 	email := fs.String("email", "", "New email")
 	fs.Parse(args)
 
-	if *studentID == "" {
-		fs.Usage()
-		return fmt.Errorf("student id is required")
+	if err := util.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
+		err := util.NewValidationChain(fs).
+			Required("id").
+			Length("id", 11).
+			Validate()
+		if err != nil {
+			fs.Usage()
+			return fmt.Errorf("validation error: %v", err)
+		}	
 	}
 
 	tm := &util.TransactionManager{DB: tx}
@@ -39,17 +44,13 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 		}
 
 		// Create updated student info using non-empty flag values.
-		builder := model.NewStudentInfoBuilder()
-	
-		updatedStudent, err := builder.
-			WithStudentCode(*studentID).
-			WithFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).
-			WithLastName(ifNotEmpty(*lastName, studentInfo.LastName)).
-			WithGender(ifNotEmpty(*gender, studentInfo.Gender)).
-			WithCitizenID(ifNotEmpty(*citizenID, studentInfo.CitizenID)).
-			WithPhoneNumber(ifNotEmpty(*phoneNumber, studentInfo.PhoneNumber)).
-			WithEmail(ifNotEmpty(*email, studentInfo.Email)).
-			Build()
+		updatedStudent := studentInfo.
+			SetFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).
+			SetLastName(ifNotEmpty(*lastName, studentInfo.LastName)).
+			SetGender(ifNotEmpty(*gender, studentInfo.Gender)).
+			SetCitizenID(ifNotEmpty(*citizenID, studentInfo.CitizenID)).
+			SetPhoneNumber(ifNotEmpty(*phoneNumber, studentInfo.PhoneNumber)).
+			SetEmail(ifNotEmpty(*email, studentInfo.Email))
 
 		// Update common student data.
 		studentData := map[string]any{

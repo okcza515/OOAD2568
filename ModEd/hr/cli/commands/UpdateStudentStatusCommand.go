@@ -17,7 +17,12 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 	status := fs.String("status", "", "New Status (ACTIVE, GRADUATED, or DROP)")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "status"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Length("id", 11).
+		Required("status").
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}

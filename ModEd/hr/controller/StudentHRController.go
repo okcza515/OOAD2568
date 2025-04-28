@@ -4,7 +4,6 @@ import (
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
-	hrModel "ModEd/hr/model"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -70,7 +69,7 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 }
 
 func AddStudent(tx *gorm.DB,
-	studentCode, firstName, lastName, email, gender, citizenID, phone string,
+	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
 ) error {
 	// 1) common record
 	common := &commonModel.Student{
@@ -89,22 +88,23 @@ func AddStudent(tx *gorm.DB,
 	}
 
 	// 3) build HR info & upsert
-	builder := hrModel.NewStudentInfoBuilder().
-		WithStudentCode(studentCode).
-		WithFirstName(firstName).
-		WithLastName(lastName).
-		WithGender(gender).
-		WithCitizenID(citizenID).
-		WithPhoneNumber(phone)
+	hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
 
-	hrInfo, err := builder.Build()
-	if err != nil {
-		return fmt.Errorf("build HR info failed: %w", err)
-	}
-
-	// Upsert so we handle both insert & update
+	// // Upsert so we handle both insert & update
 	if err := NewHRFacade(tx).UpsertStudent(hrInfo); err != nil {
 		return fmt.Errorf("HR.UpsertStudent failed: %w", err)
 	}
 	return nil
+}
+
+func DeleteStudent(tx *gorm.DB, studentID string) error {
+    // Delete student from common data.
+    studentController := commonController.CreateStudentController(tx)
+    if err := studentController.DeleteByCode(studentID); err != nil {
+        return fmt.Errorf("failed to delete student from common data: %w", err)
+    }
+
+    hrFacade := NewHRFacade(tx)
+
+    return hrFacade.DeleteStudent(studentID)
 }

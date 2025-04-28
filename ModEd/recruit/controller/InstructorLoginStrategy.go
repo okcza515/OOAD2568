@@ -21,3 +21,10 @@ func (s *InstructorLoginStrategy) CheckUsername(username string) (bool, error) {
 	}
 	return true, nil
 }
+
+
+// Implement CheckUsernameAndPassword method for InstructorLoginStrategy (even if you don't need it)
+func (s *InstructorLoginStrategy) CheckUsernameAndPassword(username, password string) (bool, error) {
+	// Assuming instructors don't have passwords to check, or returning false if not needed.
+	return false, nil // Or implement logic if needed
+}
