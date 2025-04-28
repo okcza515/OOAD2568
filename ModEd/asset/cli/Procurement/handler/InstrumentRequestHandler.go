@@ -35,9 +35,35 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Println("\nPress Enter to continue...")
 			WaitForEnter()
 		case "2":
-			fmt.Println("Not implemented yet...")
+			fmt.Println("List All Instrument Requests")
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if err != nil {
+				fmt.Println("Failed to list requests:", err)
+			} else {
+				fmt.Println("Instrument Requests List:")
+				for _, request := range *requests {
+					fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+				}
+			}
+			WaitForEnter()
 		case "3":
-			fmt.Println("Not implemented yet...")
+			fmt.Println("Get Instrument Request by ID or Name")
+			idOrName := GetStringInput("Enter Instrument Request ID or Name: ")
+		
+			var request *model.InstrumentRequest
+			id, err := parseUint(idOrName)
+			if err == nil {
+				request, err = facade.RequestedItem.GetInstrumentRequestByID(id)
+			} else {
+				request, err = facade.RequestedItem.GetInstrumentRequestByName(idOrName)
+			}
+		
+			if err != nil {
+				fmt.Println("Failed to get request:", err)
+			} else {
+				fmt.Printf("Instrument Request found: ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+			}
+			WaitForEnter()						
 		case "4":
 			fmt.Println("Add Instrument to Existing Request")
 
@@ -95,4 +121,10 @@ func GetStringInput(prompt string) string {
 	fmt.Print(prompt)
 	fmt.Scanln(&input)
 	return input
+}
+
+func parseUint(input string) (uint, error) {
+    var result uint
+    _, err := fmt.Sscanf(input, "%d", &result)
+    return result, err
 }
