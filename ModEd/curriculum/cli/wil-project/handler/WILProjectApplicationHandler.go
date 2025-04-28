@@ -101,7 +101,8 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 	WILProjectApplicationModel.AdvisorId = utils.GetUserInputUint("\nEnter Advisor Id: ")
 
 	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
-	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
+	timeNow := time.Now()
+	WILProjectApplicationModel.TurninDate = &timeNow
 
 	result := menu.wrapper.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
 	if result != nil {

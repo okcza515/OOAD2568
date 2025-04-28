@@ -35,7 +35,10 @@ func RunWILModuleCLI(
 		menuManager.UserInput = utils.GetUserChoice()
 		err := menuManager.HandleUserInput()
 		if err != nil {
-			panic(err)
+			if err.Error() != "exited" {
+				panic(err)
+			}
+			return
 		}
 	}
 }
