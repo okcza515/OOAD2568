@@ -9,6 +9,7 @@ type IQuestionController interface {
 	CreateQuestion(question *model.Question) error
 	UpdateQuestion(id uint, updatedQuestion *model.Question) error
 	GetQuestionsByExamID(examID uint) ([]model.Question, error)
+	DeleteQuestion(id uint) error
 }
 
 type QuestionController struct {
@@ -44,4 +45,11 @@ func (c *QuestionController) GetQuestionsByExamID(examID uint) ([]model.Question
         return nil, err
     }
     return questions, nil
+}
+
+func (c *QuestionController) DeleteQuestion(id uint) error {
+    if err := c.db.Where("id = ?", id).Delete(&model.Question{}).Error; err != nil {
+        return err
+    }
+    return nil
 }

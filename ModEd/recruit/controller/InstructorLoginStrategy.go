@@ -1,0 +1,30 @@
+package controller
+
+import (
+	"ModEd/recruit/model"
+
+	"gorm.io/gorm"
+)
+
+type InstructorLoginStrategy struct {
+	DB *gorm.DB
+}
+
+func (s *InstructorLoginStrategy) CheckUsername(username string) (bool, error) {
+	var instructor model.Instructor
+	err := s.DB.Where("username = ?", username).First(&instructor).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+
+// Implement CheckUsernameAndPassword method for InstructorLoginStrategy (even if you don't need it)
+func (s *InstructorLoginStrategy) CheckUsernameAndPassword(username, password string) (bool, error) {
+	// Assuming instructors don't have passwords to check, or returning false if not needed.
+	return false, nil // Or implement logic if needed
+}

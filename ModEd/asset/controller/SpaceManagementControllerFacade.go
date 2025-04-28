@@ -32,5 +32,4 @@ func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, err
 	facade.PermanentSchedule = PermanentBookingController{db: db}
 	facade.Room = RoomController{db: db, BaseController: core.NewBaseController[model.Room](db)}
 	return &facade, nil
-
 }

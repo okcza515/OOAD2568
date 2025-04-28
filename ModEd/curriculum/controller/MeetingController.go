@@ -1,4 +1,4 @@
-//MEP-1008
+// MEP-1008
 package controller
 
 import (
@@ -19,13 +19,13 @@ type MeetingControllerService interface {
 }
 
 type MeetingController struct {
-	*core.BaseController
+	*core.BaseController[*model.Meeting]
 	Connector *gorm.DB
 }
 
-func CreateMeetingController(db *gorm.DB) MeetingControllerService {
+func CreateMeetingController(db *gorm.DB) *MeetingController {
 	return &MeetingController{
-		BaseController: core.NewBaseController("Meeting", db),
+		BaseController: core.NewBaseController[*model.Meeting](db),
 		Connector:      db,
 	}
 }

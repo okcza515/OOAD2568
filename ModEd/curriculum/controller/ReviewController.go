@@ -10,14 +10,14 @@ import (
 )
 
 type ReviewController struct {
-	*core.BaseController
+	*core.BaseController[model.SupervisorReview]
 	Connector *gorm.DB
 }
 
 func CreateReviewController(connector *gorm.DB) *ReviewController {
 	return &ReviewController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("Review", connector),
+		BaseController: core.NewBaseController[model.SupervisorReview](connector),
 	}
 }
 

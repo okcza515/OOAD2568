@@ -32,11 +32,11 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 		return nil, m.err
 	}
 
-	dbPath := ""
 	defaultPath := "data/ModEd.bin"
+	dbPath := defaultPath
 
-	if m.pathDB == "" {
-		dbPath = defaultPath
+	if m.pathDB != "" {
+		dbPath = m.pathDB
 	}
 
 	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})

@@ -21,13 +21,13 @@ type ProjectControllerService interface {
 }
 
 type ProjectController struct {
-	*core.BaseController
+	*core.BaseController[*model.ProjectEvaluation]
 	Connector *gorm.DB
 }
 
-func CreateProjectController(db *gorm.DB) ProjectControllerService {
+func CreateProjectController(db *gorm.DB) *ProjectController {
 	return &ProjectController{
-		BaseController: core.NewBaseController("Project", db),
+		BaseController: core.NewBaseController[*model.ProjectEvaluation](db),
 		Connector:      db,
 	}
 }

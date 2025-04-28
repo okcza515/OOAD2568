@@ -14,12 +14,25 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	studentID := fs.String("id", "", "Student ID")
 	firstName := fs.String("fname", "", "First Name")
 	lastName := fs.String("lname", "", "Last Name")
+	email := fs.String("email", "", "Email")
 	gender := fs.String("gender", "", "Gender")
 	citizenID := fs.String("citizenID", "", "Citizen ID")
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "fname", "lname"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Required("fname").
+		Required("lname").
+		Required("email").
+		Required("gender").
+		Required("citizenID").
+		Required("phoneNumber").
+		Length("id", 11).
+		Regex("id", `^[0-9]{11}$`).
+		Regex("email", `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
@@ -29,12 +42,13 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	// Create a TransactionManager instance.
 	tm := &util.TransactionManager{DB: db}
 
-	err := tm.Execute(func(tx *gorm.DB) error {
+	err = tm.Execute(func(tx *gorm.DB) error {
 		return controller.AddStudent(
 			tx,
 			*studentID,
 			*firstName,
 			*lastName,
+			*email,
 			*gender,
 			*citizenID,
 			*phoneNumber,

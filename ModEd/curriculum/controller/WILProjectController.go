@@ -14,10 +14,9 @@ type WILProjectController struct {
 }
 
 type WILProjectControllerInterface interface {
-	RegisterWILProjects(projects []core.RecordInterface)
-	Insert(data core.RecordInterface) error
-	UpdateByID(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
+	Insert(data model.WILProject) error
+	UpdateByID(data model.WILProject) error
+	RetrieveByID(id uint, preloads ...string) (*model.WILProject, error)
 	DeleteByID(id uint) error
 	ListPagination(condition map[string]interface{}, page int, pageSize int)
 }
@@ -27,8 +26,4 @@ func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.WILProject](connector),
 	}
-}
-
-func (controller WILProjectController) RegisterWILProjects(projects []core.RecordInterface) {
-	//controller.InsertMany()
 }

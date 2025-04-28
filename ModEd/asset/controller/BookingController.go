@@ -3,19 +3,34 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
 	"gorm.io/gorm"
 )
 
+type BookingControllerInterface interface {
+	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+	ResetTimeSlots(roomID uint) error
+	ResetAllBookings() error
+	BookRoom(roomID uint, userID uint, userRole model.Role, eventName string, startDate, endDate time.Time) (*model.Booking, error)
+	CancelBooking(bookingID uint) error
+	UpdateBooking(bookingID uint, eventName *string, newStartDate, newEndDate *time.Time) error
+	GetRoomBookings(roomID uint) ([]model.Booking, error)
+	GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error)
+	GetBookingDetails(bookingID uint) (*model.Booking, error)
+}
+
 type BookingController struct {
 	db *gorm.DB
+	*core.BaseController[model.Booking]
 }
 
 func NewBookingController(db *gorm.DB) *BookingController {
 	return &BookingController{
-		db: db,
+		db:             db,
+		BaseController: core.NewBaseController[model.Booking](db),
 	}
 }
 
@@ -236,14 +251,21 @@ func (controller *BookingController) GetRoomBookings(roomID uint) ([]model.Booki
 }
 
 func (controller *BookingController) GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error) {
-	subQuery := controller.db.Table("time_tables").
+	var rooms []model.Room
+	query := controller.db.Where("is_room_out_of_service = ?", false)
+	
+	var unavailableRoomIDs []uint
+	if err := controller.db.Table("time_tables").
 		Select("room_id").
 		Where("is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
 			false, startDate, startDate, endDate, endDate, startDate, endDate).
-		Group("room_id")
-
-	query := controller.db.Where("is_room_out_of_service = ?", false).
-		Where("room_id NOT IN (?)", subQuery)
+		Pluck("room_id", &unavailableRoomIDs).Error; err != nil {
+		return nil, fmt.Errorf("unable to query unavailable room IDs: %w", err)
+	}
+	
+	if len(unavailableRoomIDs) > 0 {
+		query = query.Where("id NOT IN ?", unavailableRoomIDs)
+	}
 
 	if roomType != nil {
 		query = query.Where("room_type = ?", *roomType)
@@ -253,7 +275,6 @@ func (controller *BookingController) GetAvailableRooms(startDate, endDate time.T
 		query = query.Where("capacity >= ?", *capacity)
 	}
 
-	var rooms []model.Room
 	if err := query.Find(&rooms).Error; err != nil {
 		return nil, fmt.Errorf("unable to find available rooms: %w", err)
 	}

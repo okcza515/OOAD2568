@@ -1,13 +1,13 @@
-//MEP-1009 Student Internship
+// MEP-1009 Student Internship
 package model
 
 import (
 	commonModel "ModEd/common/model"
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type InternStudent struct {
-	gorm.Model
+	core.BaseModel
 	InternStatus InternStatus        `gorm:"type:varchar(20)"`
 	StudentCode  string              `gorm:"type:varchar(255);not null;unique" csv:"student_code"`
 	Student      commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`

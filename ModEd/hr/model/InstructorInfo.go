@@ -13,3 +13,17 @@ type InstructorInfo struct {
 	AcademicPosition   AcademicPosition   `csv:"AcademicPosition"`
 	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition"`
 }
+
+func NewInstructorInfo(InstructorCode string, Gender string, CitizenID string, PhoneNumber string, Salary int, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
+	return &InstructorInfo{
+		Instructor: model.Instructor{
+			InstructorCode: InstructorCode,
+		},
+		Gender: Gender,
+		CitizenID: CitizenID,
+		PhoneNumber: PhoneNumber,
+		Salary: Salary,
+		AcademicPosition: AcademicPosition,
+		DepartmentPosition: DepartmentPosition,
+	}
+}

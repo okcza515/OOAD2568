@@ -5,6 +5,9 @@ import (
 	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
+	"ModEd/curriculum/utils"
+	"errors"
 	"fmt"
 )
 
@@ -39,7 +42,9 @@ func (menu *WILProjectMenuStateHandler) Render() {
 func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		fmt.Println("1 Not implemented yet...")
+		if err := menu.createCreateWILProject(); err != nil {
+			fmt.Println("error! cannot use this function")
+		}
 	case "2":
 		fmt.Println("2 Not implemented yet...")
 	case "3":
@@ -59,5 +64,30 @@ func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
 
 	util.PressEnterToContinue()
 
+	return nil
+}
+
+func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
+	classId := utils.GetUserInputUint("Enter class Id:")
+	seniorProjectId := utils.GetUserInputUint("Enter Senior Project Id:")
+	companyId := utils.GetUserInputUint("Enter company Id:")
+	mentor := utils.GetUserInput("Enter Mentor:")
+
+	WILProject := model.WILProject{
+		ClassId:         classId,
+		SeniorProjectId: seniorProjectId,
+		Company:         companyId,
+		Mentor:          mentor,
+	}
+
+	wil := make([]model.WILProject, 0)
+	wil = append(wil, WILProject)
+
+	err := menu.wrapper.WILProjectController.InsertMany(wil)
+	if err != nil {
+		return errors.New("error! cannot create WIL Project: " + err.Error())
+	} else {
+		fmt.Printf("WIL Project created successfully")
+	}
 	return nil
 }
