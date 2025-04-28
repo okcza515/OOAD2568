@@ -4,11 +4,11 @@ package handler
 import (
 	"ModEd/asset/util"
 	"ModEd/core/cli"
+	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 
 	"ModEd/curriculum/model"
-	"ModEd/utils/deserializer"
 	"fmt"
 )
 
@@ -17,6 +17,7 @@ type IndependentStudyMenuStateHandler struct {
 	wrapper *controller.WILModuleWrapper
 
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
+	insertHandlerStrategy     *handler.InsertHandlerStrategy[model.IndependentStudy]
 }
 
 func NewIndependentStudyMenuStateHandler(
@@ -26,6 +27,7 @@ func NewIndependentStudyMenuStateHandler(
 		manager:                   manager,
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
+		insertHandlerStrategy:     handler.NewInsertHandlerStrategy[model.IndependentStudy](wrapper.IndependentStudyController),
 	}
 }
 
@@ -34,16 +36,15 @@ func (menu *IndependentStudyMenuStateHandler) Render() {
 	fmt.Println("1.Read independent study list from file")
 	fmt.Println("2.Assign new independent study")
 	fmt.Println("3.Find IS by Id")
-	fmt.Println("0.Exit Independent Study module")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		if err := menu.readIndependentStudyFromFile(); err != nil {
-			fmt.Print("Read failed exiting with error [")
-			fmt.Print(err)
-			fmt.Println("]")
+		err := menu.insertHandlerStrategy.Execute()
+		if err != nil {
+			fmt.Println("error! cannot use this function")
 		}
 	case "2":
 		if err := menu.assignNewIndependentStudy(); err != nil {
@@ -57,7 +58,7 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 			fmt.Print(err)
 			fmt.Println("]")
 		}
-	case "0":
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:
@@ -86,27 +87,27 @@ func (menu *IndependentStudyMenuStateHandler) wilInformationRenderer(id uint) er
 	return nil
 }
 
-func (menu *IndependentStudyMenuStateHandler) readIndependentStudyFromFile() error {
-	fmt.Println("")
-	fmt.Println("Read IS list from file")
-	path := ""
-	fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
-	_, _ = fmt.Scanln(&path)
-	fd, err := deserializer.NewFileDeserializer(path)
-	if err != nil {
-		return err
-	}
-	isModel := new([]model.IndependentStudy)
-	if err := fd.Deserialize(isModel); err != nil {
-		return err
-	}
-
-	if err := menu.wrapper.IndependentStudyController.BaseController.InsertMany(*isModel); err != nil {
-		return err
-	}
-	fmt.Println("\nRead file Success!")
-	return nil
-}
+//func (menu *IndependentStudyMenuStateHandler) readIndependentStudyFromFile() error {
+//	fmt.Println("")
+//	fmt.Println("Read IS list from file")
+//	path := ""
+//	fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
+//	_, _ = fmt.Scanln(&path)
+//	fd, err := deserializer.NewFileDeserializer(path)
+//	if err != nil {
+//		return err
+//	}
+//	isModel := new([]model.IndependentStudy)
+//	if err := fd.Deserialize(isModel); err != nil {
+//		return err
+//	}
+//
+//	if err := menu.wrapper.IndependentStudyController.BaseController.InsertMany(*isModel); err != nil {
+//		return err
+//	}
+//	fmt.Println("\nRead file Success!")
+//	return nil
+//}
 
 func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error {
 	newIndependentStudy := model.IndependentStudy{}

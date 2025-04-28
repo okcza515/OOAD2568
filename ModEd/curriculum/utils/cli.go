@@ -1,6 +1,11 @@
 package utils
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
 
 func GetUserChoice() string {
 	var choice string
@@ -9,11 +14,11 @@ func GetUserChoice() string {
 	return choice
 }
 
-func GetUserInput(msg string) string {
-	var input string
-	fmt.Print(msg)
-	fmt.Scanln(&input)
-	return input
+func GetUserInput(prompt string) string {
+	fmt.Print(prompt)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	return strings.TrimSpace(input)
 }
 
 func GetUserInputUint(msg string) uint {

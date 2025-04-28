@@ -16,10 +16,11 @@ type IndependentStudyController struct {
 }
 
 type IndependentStudyControllerInterface interface {
-	Insert(data core.RecordInterface) error
-	UpdateByID(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (*core.RecordInterface, error)
-	List(condition map[string]interface{}) ([]core.RecordInterface, error)
+	Insert(data model.IndependentStudy) error
+	InsertMany(data []model.IndependentStudy) error
+	UpdateByID(data model.IndependentStudy) error
+	RetrieveByID(id uint, preloads ...string) (*model.IndependentStudy, error)
+	List(condition map[string]interface{}) ([]model.IndependentStudy, error)
 	ListPagination(condition map[string]interface{}, page int, pageSize int) (*core.PaginationResult, error)
 }
 
