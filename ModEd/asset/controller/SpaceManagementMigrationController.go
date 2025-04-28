@@ -18,7 +18,7 @@ func (c *SpaceManagementMigrationController) MigrateToDB() error {
 		&model.SupplyManagement{},
 		&model.Booking{},
 		//It's not working at this moment, dependencies are not resolved
-		// &model.PermanentSchedule{},
+		&model.PermanentSchedule{},
 		&model.Room{},
 	)
 	if err != nil {
