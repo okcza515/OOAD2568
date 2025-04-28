@@ -70,13 +70,14 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 }
 
 func AddStudent(tx *gorm.DB,
-	studentCode, firstName, lastName, gender, citizenID, phone string,
+	studentCode, firstName, lastName, email, gender, citizenID, phone string,
 ) error {
 	// 1) common record
 	common := &commonModel.Student{
 		StudentCode: studentCode,
 		FirstName:   firstName,
 		LastName:    lastName,
+		Email:       email,
 	}
 	if err := commonController.CreateStudentController(tx).Create(common); err != nil {
 		return fmt.Errorf("common.Create failed: %w", err)
