@@ -11,12 +11,16 @@ type RetrieveByIDHandlerStrategy[T core.RecordInterface] struct {
 	controller interface {
 		RetrieveByID(id uint, preloads ...string) (T, error)
 	}
+	preloads []string
 }
 
-func NewRetrieveByIDHandlerStrategy[T core.RecordInterface](controller interface {
-	RetrieveByID(id uint, preloads ...string) (T, error)
-}) *RetrieveByIDHandlerStrategy[T] {
-	return &RetrieveByIDHandlerStrategy[T]{controller: controller}
+func NewRetrieveByIDHandlerStrategy[T core.RecordInterface](
+	controller interface {
+		RetrieveByID(id uint, preloads ...string) (T, error)
+	},
+	preloads ...string,
+) *RetrieveByIDHandlerStrategy[T] {
+	return &RetrieveByIDHandlerStrategy[T]{controller: controller, preloads: preloads}
 }
 
 func (cs RetrieveByIDHandlerStrategy[T]) Execute() error {
@@ -29,7 +33,7 @@ func (cs RetrieveByIDHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	record, err := cs.controller.RetrieveByID(id)
+	record, err := cs.controller.RetrieveByID(id, cs.preloads...)
 
 	if err != nil {
 		return err

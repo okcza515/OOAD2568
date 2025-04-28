@@ -11,13 +11,13 @@ import (
 type DeleteHandlerStrategy[T core.RecordInterface] struct {
 	controller interface {
 		DeleteByID(id uint) error
-		List(condition map[string]interface{}) ([]T, error)
+		List(condition map[string]interface{}, preloads ...string) ([]T, error)
 	}
 }
 
 func NewDeleteHandlerStrategy[T core.RecordInterface](controller interface {
 	DeleteByID(id uint) error
-	List(condition map[string]interface{}) ([]T, error)
+	List(condition map[string]interface{}, preloads ...string) ([]T, error)
 }) *DeleteHandlerStrategy[T] {
 	return &DeleteHandlerStrategy[T]{controller: controller}
 }
@@ -37,10 +37,10 @@ func (cs DeleteHandlerStrategy[T]) Execute() error {
 	}
 
 	fmt.Print("Enter ID to delete: ")
-	var inputbuf string
-	fmt.Scanln(&inputbuf)
+	var inputBuffer string
+	fmt.Scanln(&inputBuffer)
 
-	idNum, err := strconv.Atoi(inputbuf)
+	idNum, err := strconv.Atoi(inputBuffer)
 	if err != nil {
 		fmt.Println("Invalid ID format. Please enter a valid number.")
 		return nil
