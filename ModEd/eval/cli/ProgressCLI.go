@@ -32,7 +32,7 @@ func RunProgressCLI(db *gorm.DB) {
 		case 3:
 			DisplayProgressByStatus(ProgressController)
 		case 4:
-			DisplaySubmitCountByAsssignmentID(ProgressController)
+			DisplaySubmitCountByAssignmentID(ProgressController)
 		case 5:
 			fmt.Println("Exit")
 			return
@@ -119,7 +119,7 @@ func DisplayProgressByStatus(controller *controllerProgress.ProgressController) 
 	}
 }
 
-func DisplaySubmitCountByAsssignmentID(controller *controllerProgress.ProgressController) {
+func DisplaySubmitCountByAssignmentID(controller *controllerProgress.ProgressController) {
 	AssignmentId, err := util.PromptUint("Enter Assignment ID: ")
 
 	if err != nil {
