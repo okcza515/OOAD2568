@@ -3,17 +3,23 @@ package main
 // MEP-1012 Asset
 
 import (
-	menu "ModEd/asset/cli/asset/menu"
+	"ModEd/asset/cli/asset/menu"
 	"ModEd/asset/controller"
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
+	"ModEd/core/migration"
 	"flag"
 )
 
 func main() {
-	assetControllerFacade := newAssetControllerFacade()
+	err := initAssetCLI()
+	if err != nil {
+		panic(err)
+	}
+
 	manager := cli.NewCLIMenuManager()
-	assetMenu := menu.NewAssetMenuState(manager, assetControllerFacade)
+	assetMenu := menu.NewAssetMenuState(manager)
 
 	manager.SetState(assetMenu)
 
@@ -39,28 +45,30 @@ func main() {
 	util.PrintByeBye()
 }
 
-func newAssetControllerFacade() *controller.AssetControllerFacade {
-	resetFlag := flag.Bool("reset", false, "Reset database")
-	blankFlag := flag.Bool("blank", false, "Load seed data to database")
+func initAssetCLI() error {
+	optionFlag := flag.String("option", "nothing here", "Reset database")
 
 	flag.Parse()
 
-	facade, err := controller.NewAssetControllerFacade()
+	_, err := migration.GetInstance().MigrateModule(core.MODULE_ASSET).BuildDB()
+
 	if err != nil {
 		panic(err)
 	}
 
-	if *blankFlag {
-		err = facade.ResetDB()
-		if err != nil {
-			panic(err)
-		}
-	} else if *resetFlag {
-		err = facade.ResetAndLoadDB()
-		if err != nil {
-			panic(err)
-		}
+	instance := controller.GetAssetInstance()
+
+	switch *optionFlag {
+	case "reset":
+		err = instance.ResetAndLoadDB()
+	case "blank":
+		err = instance.ResetDB()
+	default:
 	}
 
-	return facade
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
 }
