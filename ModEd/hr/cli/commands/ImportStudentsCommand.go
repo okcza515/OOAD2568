@@ -6,10 +6,8 @@ import (
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 
-	"errors"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
@@ -30,10 +28,6 @@ func importStudents(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
-		return fmt.Errorf("*** Error: File %s does not exist", *filePath)
-	}
-
 	hrMapper, err := core.CreateMapper[model.StudentInfo](*filePath)
 	if err != nil {
 		return fmt.Errorf("failed to create HR mapper: %v", err)
@@ -48,31 +42,13 @@ func importStudents(args []string, tx *gorm.DB) error {
 		hrRecordsMap[hrRec.StudentCode] = *hrRec
 	}
 
-	db := util.OpenDatabase(*util.DatabasePath)
+	// db := util.OpenDatabase(*util.DatabasePath)
 
-	tm := &util.TransactionManager{DB: tx}
+	tm := &util.TransactionManager{DB: tx} // use passed transaction connection
 	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(db)
-
-		for _, hrRec := range hrRecordsMap {
-			studentInfo, err := hrFacade.GetStudentById(hrRec.StudentCode)
-			if err != nil {
-				return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
-			}
-
-			importStudent := model.NewUpdatedStudentInfo(
-				studentInfo,
-				studentInfo.FirstName,
-				studentInfo.LastName,
-				hrRec.Gender,
-				hrRec.CitizenID,
-				hrRec.PhoneNumber,
-				studentInfo.Email,
-			)
-
-			if err := hrFacade.UpsertStudent(importStudent); err != nil {
-				return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
-			}
+		hrFacade := controller.NewHRFacade(tx) // pass tx instead of new db
+		if err := hrFacade.ImportStudents(tx, hrRecordsMap); err != nil {
+			return err
 		}
 		fmt.Println("Students imported successfully!")
 		return nil

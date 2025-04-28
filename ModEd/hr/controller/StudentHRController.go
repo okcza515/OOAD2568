@@ -144,3 +144,27 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 		return nil
 	})
 }
+
+func (f *HRFacade) ImportStudents(tx *gorm.DB, hrRecordsMap map[string]model.StudentInfo) error {
+	for _, hrRec := range hrRecordsMap {
+		studentInfo, err := f.GetStudentById(hrRec.StudentCode)
+		if err != nil {
+			return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
+		}
+
+		importStudent := model.NewUpdatedStudentInfo(
+			studentInfo,
+			studentInfo.FirstName,
+			studentInfo.LastName,
+			hrRec.Gender,
+			hrRec.CitizenID,
+			hrRec.PhoneNumber,
+			studentInfo.Email,
+		)
+
+		if err := f.UpsertStudent(importStudent); err != nil {
+			return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
+		}
+	}
+	return nil
+}

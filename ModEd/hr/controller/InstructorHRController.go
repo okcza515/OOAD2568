@@ -2,6 +2,7 @@ package controller
 
 import (
 	"ModEd/hr/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -49,4 +50,18 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 // Delete deletes an instructor's HR information by ID.
 func (c *InstructorHRController) delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+}
+func ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
+	
+	hrFacade := NewHRFacade(tx)
+	for _, instructor := range instructors {
+		if instructor.ID == 0 || instructor.FirstName == "" {
+			return fmt.Errorf("invalid instructor data: %+v", instructor)
+		}
+
+		if err := hrFacade.InsertInstructor(instructor); err != nil {
+			return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
+		}
+	}
+	return nil
 }
