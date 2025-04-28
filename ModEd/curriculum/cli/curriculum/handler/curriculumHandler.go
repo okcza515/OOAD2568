@@ -88,6 +88,16 @@ func getCurriculumById(curriculumController controller.CurriculumControllerInter
 }
 
 func updateCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
+	//TODO: Implement update functionality
+	curriculumId := utils.GetUserInputUint("Enter the curriculum ID: ")
+	curriculum, err := curriculumController.GetCurriculum(curriculumId)
+	if err != nil {
+		fmt.Println("Error getting curriculum:", err)
+		return err
+	}
+	curriculum.Print()
+	// Update fields
+
 	return nil
 }
 func deleteCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
