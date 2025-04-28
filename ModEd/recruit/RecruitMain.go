@@ -57,10 +57,18 @@ func main() {
 	}
 
 	facultyCtrl := common.CreateFacultyController(db.DB)
-
 	departmentCtrl := common.CreateDepartmentController(db.DB)
-
-	instructorController := controller.CreateInstructorController(db.DB)
+	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB)
+	instructorEvaluateApplicantService := cli.NewInstructorEvaluateApplicantService(db.DB)
+	applicantRegistrationService := cli.NewApplicantRegistrationService(
+		applicantController,
+		applicationRoundCtrl,
+		applicationReportCtrl,
+		facultyCtrl,
+		departmentCtrl,
+	)
+	applicantReportService := cli.NewApplicantReportService(db.DB)
+	interviewService := cli.NewInterviewService(db.DB)
 
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
 		fmt.Println("Failed to initialize application rounds:", err)
@@ -86,11 +94,11 @@ func main() {
 
 			switch roleChoice {
 			case 1:
-				cli.UserCLI(applicantController, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
+				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
 				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl)
 			case 3:
-				cli.InstructorCLI(instructorController)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService)
 			case 4:
 				fmt.Println("Existing...")
 				return

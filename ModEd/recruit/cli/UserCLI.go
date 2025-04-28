@@ -2,15 +2,13 @@
 package cli
 
 import (
-	common "ModEd/common/controller"
-	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 )
 
-func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl *controller.ApplicationRoundController, applicationReportCtrl *controller.ApplicationReportController, facultyCtrl *common.FacultyController, departmentCtrl *common.DepartmentController) {
+func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService) {
 
 	for {
 		util.ClearScreen()
@@ -29,10 +27,9 @@ func UserCLI(applicantCtrl *controller.ApplicantController, applicationRoundCtrl
 
 		switch choice {
 		case 1:
-			ApplicantRegistrationCLI(applicantCtrl, applicationRoundCtrl, applicationReportCtrl, facultyCtrl, departmentCtrl)
-			// util.WaitForEnter()
+			ApplicantRegistrationCLI(applicantRegistrationService)
 		case 2:
-			ShowApplicantReportCLI(applicantCtrl, applicationReportCtrl)
+			ShowApplicantReportCLI(applicantReportService, interviewService)
 		case 3:
 			fmt.Println("Exiting...")
 			return

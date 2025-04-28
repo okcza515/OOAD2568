@@ -2,13 +2,12 @@
 package cli
 
 import (
-	"ModEd/recruit/controller"
 	"bufio"
 	"fmt"
 	"os"
 )
 
-func EvaluateApplicant(instructorCtrl *controller.InstructorController) {
+func EvaluateApplicant(InstructorEvaluateApplicantService InstructorEvaluateApplicantService) {
 	var interviewID uint
 	var score float64
 
@@ -30,7 +29,7 @@ func EvaluateApplicant(instructorCtrl *controller.InstructorController) {
 		return
 	}
 
-	err = instructorCtrl.EvaluateApplicant(interviewID, score)
+	err = InstructorEvaluateApplicantService.EvaluateApplicant(interviewID, score)
 	if err != nil {
 		fmt.Println("Error updating interview score:", err)
 	} else {

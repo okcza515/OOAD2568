@@ -2,14 +2,15 @@
 package cli
 
 import (
-	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 )
 
-func InstructorCLI(instructorCtrl *controller.InstructorController) {
+func InstructorCLI(
+	instructorViewInterviewDetailsService InstructorViewInterviewDetailsService,
+	instructorEvaluateApplicantService InstructorEvaluateApplicantService) {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scanln(&instructorID)
@@ -34,10 +35,10 @@ func InstructorCLI(instructorCtrl *controller.InstructorController) {
 
 		switch choice {
 		case 1:
-			ViewInterviewDetails(instructorCtrl, instructorID)
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorID)
 			util.WaitForEnter()
 		case 2:
-			EvaluateApplicant(instructorCtrl)
+			EvaluateApplicant(instructorEvaluateApplicantService)
 		case 3:
 			fmt.Println("Exiting...")
 			return
