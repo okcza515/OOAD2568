@@ -10,11 +10,12 @@ import (
 )
 
 type StudentWorkloadService interface {
-	CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error
-	UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error
-	DeleteStudentAdvisor(id uint) error
+	Insert(data model.StudentAdvisor) error
+	UpdateByID(data model.StudentAdvisor) error
+	DeleteByID(id uint) error
+	RetrieveByID(id uint, preloads ...string) (*model.StudentAdvisor, error)
 	GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error)
-	CreateStudentRequest(studentRequest model.StudentRequest) error
+	CreateStudentRequest(data model.StudentRequest) error
 	GetStudentRequestsByInstructorId(instructorId uint) ([]model.StudentRequest, error)
 	ReviewStudentRequest(id uint, review string, comment string) error
 }
@@ -32,15 +33,20 @@ func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
 }
 
 func (swc *StudentWorkloadController) CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
-	return swc.Insert(&studentAdvisor)
+	return swc.Connector.Create(&studentAdvisor).Error
 }
 
 func (swc *StudentWorkloadController) UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
-	return swc.UpdateByID(&studentAdvisor)
+	return swc.Connector.Save(&studentAdvisor).Error
 }
 
 func (swc *StudentWorkloadController) DeleteStudentAdvisor(id uint) error {
-	return swc.DeleteByID(id)
+	var studentAdvisor model.StudentAdvisor
+	err := swc.Connector.First(&studentAdvisor, id).Error
+	if err != nil {
+		return err
+	}
+	return swc.Connector.Delete(&studentAdvisor).Error
 }
 
 func (swc *StudentWorkloadController) GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error) {

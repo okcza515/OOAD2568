@@ -2,6 +2,7 @@ package model
 
 import (
 	"ModEd/common/model"
+	"ModEd/hr/util"
 )
 
 type StudentInfo struct {
@@ -24,44 +25,24 @@ func NewStudentInfo(StudentCode string, Gender string, CitizenID string, PhoneNu
 	}
 }
 
-func (s *StudentInfo) SetStudent(commomStudent model.Student) *StudentInfo {
-	s.FirstName = commomStudent.FirstName
-	s.LastName = commomStudent.LastName
-	s.Email = commomStudent.Email
-	s.StartDate = commomStudent.StartDate
-	s.BirthDate = commomStudent.BirthDate
-	s.Program = commomStudent.Program
-	s.Department = commomStudent.Department
-	s.Status = commomStudent.Status
-	return s
-}
-
-func (s *StudentInfo) SetFirstName(firstName string) *StudentInfo {
-	s.FirstName = firstName
-	return s
-}
-
-func (s *StudentInfo) SetLastName(lastName string) *StudentInfo {
-	s.LastName = lastName
-	return s
-}
-
-func (s *StudentInfo) SetGender(gender string) *StudentInfo {
-	s.Gender = gender
-	return s
-}
-
-func (s *StudentInfo) SetCitizenID(citizenID string) *StudentInfo {
-	s.CitizenID = citizenID
-	return s
-}
-
-func (s *StudentInfo) SetPhoneNumber(phoneNumber string) *StudentInfo {
-	s.PhoneNumber = phoneNumber
-	return s
-}
-
-func (s *StudentInfo) SetEmail(email string) *StudentInfo {
-	s.Email = email
-	return s
+func NewUpdatedStudentInfo(
+	studentInfo *StudentInfo,
+	firstName, lastName, gender, citizenID, phoneNumber, email string,
+) *StudentInfo {
+	return &StudentInfo{
+		Student: model.Student{
+			StudentCode: studentInfo.StudentCode,
+			FirstName:   util.IfNotEmpty(firstName, studentInfo.FirstName),
+			LastName:    util.IfNotEmpty(lastName, studentInfo.LastName),
+			Email:       util.IfNotEmpty(email, studentInfo.Email),
+			StartDate:   studentInfo.StartDate,
+			BirthDate:   studentInfo.BirthDate,
+			Program:     studentInfo.Program,
+			Department:  studentInfo.Department,
+			Status:      studentInfo.Status,
+		},
+		Gender:      util.IfNotEmpty(gender, studentInfo.Gender),
+		CitizenID:   util.IfNotEmpty(citizenID, studentInfo.CitizenID),
+		PhoneNumber: util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber),
+	}
 }

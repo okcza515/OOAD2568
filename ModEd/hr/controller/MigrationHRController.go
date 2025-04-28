@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	common "ModEd/common/model"
-	"ModEd/hr/model"
 	hr "ModEd/hr/model"
 
 	"gorm.io/gorm"
@@ -26,8 +25,12 @@ func MigrateStudentsToHR(db *gorm.DB) error {
 
 	// Migrate data to HR StudentInfo.
 	for _, s := range students {
-		migrateStudent := model.NewStudentInfo(s.StudentCode, "", "", "").SetStudent(s)
-			
+		migrateStudent := hr.StudentInfo{
+			Student:     s,  // Embed the common student data
+			Gender:      "", // Initialize HR fields as empty
+			CitizenID:   "",
+			PhoneNumber: "",
+		}
 
 		// Use FirstOrCreate to avoid duplicate unique errors.
 		if err := db.Where("student_code = ?", s.StudentCode).FirstOrCreate(&migrateStudent).Error; err != nil {
