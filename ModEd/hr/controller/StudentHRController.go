@@ -108,3 +108,15 @@ func AddStudent(tx *gorm.DB,
 	}
 	return nil
 }
+
+func DeleteStudent(tx *gorm.DB, studentID string) error {
+    // Delete student from common data.
+    studentController := commonController.CreateStudentController(tx)
+    if err := studentController.DeleteByCode(studentID); err != nil {
+        return fmt.Errorf("failed to delete student from common data: %w", err)
+    }
+
+    hrFacade := NewHRFacade(tx)
+
+    return hrFacade.DeleteStudent(studentID)
+}
