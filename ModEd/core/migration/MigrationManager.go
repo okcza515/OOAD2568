@@ -63,7 +63,7 @@ func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *Migratio
 	case core.MODULE_PROCUREMENT:
 		panic("not implemented")
 	case core.MODULE_SPACEMANAGEMENT:
-		panic("not implemented")
+		strategy = &SpaceManagementMigrationStrategy{}
 	case core.MODULE_COMMON:
 		panic("not implemented")
 	case core.MODULE_CURRICULUM:

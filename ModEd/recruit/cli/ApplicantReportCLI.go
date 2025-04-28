@@ -2,20 +2,17 @@
 package cli
 
 import (
-	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
-
-	"gorm.io/gorm"
 )
 
 func ShowApplicantReportCLI(
-	applicantCtrl *controller.ApplicantController,
-	applicationReportCtrl *controller.ApplicationReportController,
+	ApplicantReportService ApplicantReportService,
+	InterviewService InterviewService,
 ) {
 	util.ClearScreen()
 	scanner := bufio.NewScanner(os.Stdin)
@@ -30,7 +27,7 @@ func ShowApplicantReportCLI(
 		return
 	}
 
-	report, err := applicationReportCtrl.GetFullApplicationReportByApplicantID(uint(applicantID))
+	report, err := ApplicantReportService.GetFullApplicationReportByApplicantID(uint(applicantID))
 	if err != nil {
 		fmt.Println("Error fetching application report:", err)
 		return
@@ -39,7 +36,7 @@ func ShowApplicantReportCLI(
 	displayApplicantReport(report)
 
 	if report != nil && report.ApplicationStatuses == model.InterviewStage {
-		ReportInterviewDetails(applicationReportCtrl.DB, uint(applicantID))
+		ReportInterviewDetails(InterviewService, uint(applicantID))
 	}
 }
 
@@ -75,8 +72,8 @@ func printStatus(status model.ApplicationStatus) {
 	}
 }
 
-func ReportInterviewDetails(db *gorm.DB, applicantID uint) {
-	interview, err := controller.GetInterviewDetails(db, applicantID)
+func ReportInterviewDetails(interviewService InterviewService, applicantID uint) {
+	interview, err := interviewService.GetInterviewDetails(applicantID)
 	if err != nil {
 		fmt.Println("An error occurred while fetching the interview details:", err)
 		return

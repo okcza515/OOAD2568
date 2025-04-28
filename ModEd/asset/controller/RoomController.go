@@ -2,6 +2,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"ModEd/utils/deserializer"
 	"errors"
 
@@ -10,8 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type RoomControllerInterface interface {
+	SeedRoomsDatabase(path string) ([]*model.Room, error)
+	GetAll() (*[]model.Room, error)
+	GetById(Id uint) (*model.Room, error)
+	CreateRoom(payload *model.Room) error
+	UpdateRoom(Id uint, payload *model.Room) error
+	DeleteRoom(Id uint) error
+	DeleteAllRooms() error
+}
+
 type RoomController struct {
 	db *gorm.DB
+	*core.BaseController[model.Room]
 }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {

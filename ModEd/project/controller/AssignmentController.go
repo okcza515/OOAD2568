@@ -1,36 +1,44 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 
 	"gorm.io/gorm"
 )
 
-type IAssignmentController interface {
-	ListAllAssignments() ([]model.Assignment, error)
-	RetrieveAssignment(id uint) (*model.Assignment, error)
-	InsertAssignment(assignment *model.Assignment) error
-	UpdateAssignment(assignment *model.Assignment) error
-	DeleteAssignment(id uint) error
-}
-
 type AssignmentController struct {
+	*core.BaseController
 	db *gorm.DB
 }
 
-func NewAssignmentController(db *gorm.DB) IAssignmentController {
-	return &AssignmentController{db: db}
+func NewAssignmentController(db *gorm.DB) *AssignmentController {
+	return &AssignmentController{
+		db:             db,
+		BaseController: core.NewBaseController("assignments", db),
+	}
 }
 
 func (c *AssignmentController) ListAllAssignments() ([]model.Assignment, error) {
 	var assignments []model.Assignment
-	err := c.db.Find(&assignments).Error
-	return assignments, err
+	result := c.db.Find(&assignments)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assignments, nil
 }
 
-func (c *AssignmentController) RetrieveAssignment(id uint) (*model.Assignment, error) {
+func (c *AssignmentController) RetrieveAssignment(seniorProjectId uint) (*model.Assignment, error) {
 	var assignment model.Assignment
-	if err := c.db.Where("id = ?", id).First(&assignment).Error; err != nil {
+	if err := c.db.First(&assignment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
+		return nil, err
+	}
+	return &assignment, nil
+}
+
+func (c *AssignmentController) RetrieveAssignmentBySeniorProjectId(seniorProjectId uint) (*model.Assignment, error) {
+	var assignment model.Assignment
+	if err := c.db.First(&assignment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
 		return nil, err
 	}
 	return &assignment, nil

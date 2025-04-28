@@ -12,17 +12,17 @@ import (
 
 type IndependentStudyMenuStateHandler struct {
 	manager *cli.CLIMenuStateManager
-	proxy   *controller.WILModuleProxy
+	wrapper *controller.WILModuleWrapper
 
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 }
 
 func NewIndependentStudyMenuStateHandler(
-	manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
+	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *IndependentStudyMenuStateHandler {
 	return &IndependentStudyMenuStateHandler{
 		manager:                   manager,
-		proxy:                     proxy,
+		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 	}
 }
@@ -34,35 +34,35 @@ func (menu *IndependentStudyMenuStateHandler) Render() {
 }
 
 func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) error {
-		switch input {
-		case "1":
-			fmt.Println("Migrate Independent Study")
-			// path := ""
-			// fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
-			// _, _ = fmt.Scanln(&path)
-			// fd, err := deserializer.NewFileDeserializer(path)
-			// if err != nil {
-			// 	fmt.Println(err)
-			// 	return nil
-			// }
-			// isModel := new([]model.IndependentStudy)
-			// if err := fd.Deserialize(isModel); err != nil {
-			// 	fmt.Println(err)
-			// 	return nil
-			// }
-			// for _, is := range *isModel {
-			// 	controller.IndependentStudyController.Insert(&is)
-			// }
-			// fmt.Println("Migration Success!")
-		case "0":
-			menu.manager.SetState(menu.wilModuleMenuStateHandler)
-			return nil
-		default:
-			fmt.Println("Invalid Command")
-		}
-
-		util.PressEnterToContinue()
-
+	switch input {
+	case "1":
+		fmt.Println("Migrate Independent Study")
+		// path := ""
+		// fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
+		// _, _ = fmt.Scanln(&path)
+		// fd, err := deserializer.NewFileDeserializer(path)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return nil
+		// }
+		// isModel := new([]model.IndependentStudy)
+		// if err := fd.Deserialize(isModel); err != nil {
+		// 	fmt.Println(err)
+		// 	return nil
+		// }
+		// for _, is := range *isModel {
+		// 	controller.IndependentStudyController.Insert(&is)
+		// }
+		// fmt.Println("Migration Success!")
+	case "0":
+		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
+	default:
+		fmt.Println("Invalid Command")
+	}
+
+	util.PressEnterToContinue()
+
+	return nil
 
 }

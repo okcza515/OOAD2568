@@ -12,49 +12,47 @@ import (
 )
 
 func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
-		var username, password string
-		fmt.Print("Enter admin username: ")
-		fmt.Scanln(&username)
-		fmt.Print("Enter admin password: ")
-		fmt.Scanln(&password)
-		csvPath := "data/AdminMockup.csv"
-		if !util.ValidateAdminLoginFromCSV(username, password, csvPath) {
-			fmt.Println("Invalid credentials. Access denied.")
-			time.Sleep(3 * time.Second) 
-			
-			return
-		}
-		util.ClearScreen()
-		fmt.Println("Login successful. Welcome,", username)
-		fmt.Println("==== Admin Menu ====")
-		fmt.Println("1. Manage Applicants")
-		fmt.Println("2. View Application Reports")
-		fmt.Println("3. Schedule Interview")
-		fmt.Println("4. Delete Interview")
-		fmt.Println("5. back")
-		fmt.Print("Select an option: ")
+	var username, password string
+	fmt.Print("Enter admin username: ")
+	fmt.Scanln(&username)
+	fmt.Print("Enter admin password: ")
+	fmt.Scanln(&password)
+	csvPath := "data/AdminMockup.csv"
+	if !util.ValidateAdminLoginFromCSV(username, password, csvPath) {
+		fmt.Println("Invalid credentials. Access denied.")
+		time.Sleep(3 * time.Second)
 
-		var choice int
-		fmt.Scanln(&choice)
+		return
+	}
+	util.ClearScreen()
+	fmt.Println("Login successful. Welcome,", username)
+	fmt.Println("==== Admin Menu ====")
+	fmt.Println("1. Manage Applicants")
+	fmt.Println("2. View Application Reports")
+	fmt.Println("3. Schedule Interview")
+	fmt.Println("4. Delete Interview")
+	fmt.Println("5. back")
+	fmt.Print("Select an option: ")
 
-		switch choice {
-		case 1:
-			ManageApplicants(applicantController)
-		case 2:
-			//ShowApplicationReports(applicationReportCtrl)
-		case 3:
-			AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
-		case 4:
-			DeleteInterview(interviewCtrl)
-		case 5:
-			return
-		default:
-			fmt.Println("Invalid option. Try again.")
+	var choice int
+	fmt.Scanln(&choice)
+
+	switch choice {
+	case 1:
+		ManageApplicants(applicantController)
+	case 2:
+		//ShowApplicationReports(applicationReportCtrl)
+	case 3:
+		AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
+	case 4:
+		DeleteInterview(interviewCtrl)
+	case 5:
+		return
+	default:
+		fmt.Println("Invalid option. Try again.")
 
 	}
 }
-
-
 
 func DeleteInterview(interviewCtrl *controller.InterviewController) {
 	var interviewID uint
@@ -85,4 +83,3 @@ func ManageApplicants(applicantController *controller.ApplicantController) {
 	fmt.Println("Managing Applicants...")
 	util.WaitForEnter()
 }
-

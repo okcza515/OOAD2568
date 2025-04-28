@@ -9,9 +9,10 @@ import (
 )
 
 type IResultController interface {
-	CreateResults() error
-	GetAllResults() ([]model.Result, error)
-	UpdateResult(id uint, updatedResult *model.Result) error
+	// CreateResults() error
+	// GetAllResults() ([]model.Result, error)
+	GetResultByStudent(studentID uint) ([]model.Result, error)
+	UpdateResult(id uint, updatedData map[string]interface{}) error
 	DeleteResult(id uint) error
 }
 
