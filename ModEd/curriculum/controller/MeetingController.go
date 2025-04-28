@@ -12,7 +12,7 @@ import (
 type MeetingControllerService interface {
 	GetAll() (*[]model.Meeting, error)
 	//GetByID(meetingID uint) (*model.Meeting, error)
-	RetrieveByID(id uint, preloads ...string) (*model.Meeting, error)
+	RetrieveByID(id uint) (*model.Meeting, error)
 	CreateMeeting(body *model.Meeting) error
 	//UpdateMeeting(meetingID uint, body *model.Meeting) error
 	UpdateByID(data model.Meeting) error
