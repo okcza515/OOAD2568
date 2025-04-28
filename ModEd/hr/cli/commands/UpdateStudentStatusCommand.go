@@ -27,7 +27,14 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	if err := controller.UpdateStudentStatus(tx, *studentID, *status); err != nil {
+	newStatus, err := util.StatusFromString(*status)
+	if err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+
+	hrFacade := controller.NewHRFacade(tx)
+
+	if err := hrFacade.UpdateStudentStatus(*studentID, newStatus); err != nil {
 		return fmt.Errorf("failed to update student status: %v", err)
 	}
 
