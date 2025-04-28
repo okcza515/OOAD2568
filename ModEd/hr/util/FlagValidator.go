@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 // ValidatorHandler defines the interface for flag validation handlers.
@@ -49,6 +50,14 @@ type RegexFlagValidator struct {
 	pattern  *regexp.Regexp
 }
 
+type AllowedValuesFlagValidator struct {
+	BaseValidator
+	fs           *flag.FlagSet
+	flagName     string
+	allowed      map[string]struct{}
+	allowedSlice []string
+}
+
 // NewRequiredFlagValidator creates a new validator for a required flag.
 func NewRequiredFlagValidator(fs *flag.FlagSet, flagName string) *RequiredFlagValidator {
 	return &RequiredFlagValidator{
@@ -76,6 +85,20 @@ func NewRegexFlagValidator(fs *flag.FlagSet, flagName, pattern string) (*RegexFl
 		flagName: flagName,
 		pattern:  re,
 	}, nil
+}
+
+func NewAllowedValuesFlagValidator(fs *flag.FlagSet, flagName string, allowed []string) *AllowedValuesFlagValidator {
+	allowedMap := make(map[string]struct{}, len(allowed))
+	for _, val := range allowed {
+		// Store lowercase versions for case-insensitive comparison
+		allowedMap[strings.ToLower(val)] = struct{}{}
+	}
+	return &AllowedValuesFlagValidator{
+		fs:           fs,
+		flagName:     flagName,
+		allowed:      allowedMap,
+		allowedSlice: allowed, // Store original for error message
+	}
 }
 
 func (v *RequiredFlagValidator) Validate() error {
@@ -111,5 +134,30 @@ func (v *RegexFlagValidator) Validate() error {
 	if !v.pattern.MatchString(value) {
 		return fmt.Errorf("flag '%s' does not match the required pattern", v.flagName)
 	}
+	return v.BaseValidator.Validate()
+}
+
+func (v *AllowedValuesFlagValidator) Validate() error {
+	f := v.fs.Lookup(v.flagName)
+	if f == nil {
+		// This might indicate a programming error (checking a non-existent flag)
+		// Or it could be handled by a RequiredFlagValidator earlier in the chain.
+		// Depending on desired behavior, you might return an error or let the chain continue.
+		// Let's assume RequiredFlagValidator handles missing flags.
+		return v.BaseValidator.Validate() // Proceed if flag doesn't exist (maybe it wasn't required)
+	}
+
+	value := f.Value.String()
+	if value == "" {
+		// If the value is empty, let RequiredFlagValidator handle it if needed.
+		return v.BaseValidator.Validate()
+	}
+
+	// Check against the allowed values (case-insensitive)
+	if _, ok := v.allowed[strings.ToLower(value)]; !ok {
+		return fmt.Errorf("flag '%s' has invalid value '%s'. Allowed values are: %v", v.flagName, value, v.allowedSlice)
+	}
+
+	// Value is valid, continue chain
 	return v.BaseValidator.Validate()
 }
