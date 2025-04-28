@@ -32,20 +32,15 @@ func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
 }
 
 func (swc *StudentWorkloadController) CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
-	return swc.Connector.Create(&studentAdvisor).Error
+	return swc.Insert(&studentAdvisor)
 }
 
 func (swc *StudentWorkloadController) UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
-	return swc.Connector.Save(&studentAdvisor).Error
+	return swc.UpdateByID(&studentAdvisor)
 }
 
 func (swc *StudentWorkloadController) DeleteStudentAdvisor(id uint) error {
-	var studentAdvisor model.StudentAdvisor
-	err := swc.Connector.First(&studentAdvisor, id).Error
-	if err != nil {
-		return err
-	}
-	return swc.Connector.Delete(&studentAdvisor).Error
+	return swc.DeleteByID(id)
 }
 
 func (swc *StudentWorkloadController) GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error) {
