@@ -7,6 +7,7 @@ import (
 	"ModEd/core/migration"
 	"ModEd/curriculum/cli/wil-project/handler"
 	curriculumController "ModEd/curriculum/controller"
+	"ModEd/curriculum/utils"
 	"fmt"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,6 @@ func RunWILModuleCLI(
 ) {
 
 	db, err := migration.GetInstance().
-		MigrateModule(core.MODULE_COMMON).
 		MigrateModule(core.MODULE_CURRICULUM).
 		MigrateModule(core.MODULE_WILPROJECT).
 		BuildDB()
@@ -28,12 +28,13 @@ func RunWILModuleCLI(
 	}
 
 	menuManager := cli.NewCLIMenuManager()
-	proxy := curriculumController.NewWILModuleWrapper(db, courseController, classController)
-	wilmoduleState := handler.NewWILModuleMenuStateHandler(menuManager, proxy)
+	wrapper := curriculumController.NewWILModuleWrapper(db, courseController, classController)
+	wilmoduleState := handler.NewWILModuleMenuStateHandler(menuManager, wrapper)
 	menuManager.SetState(wilmoduleState)
 
 	for {
 		menuManager.Render()
+		menuManager.UserInput = utils.GetUserChoice()
 		err := menuManager.HandleUserInput()
 		if err != nil {
 			panic(err)
