@@ -10,7 +10,7 @@ import (
 	"errors"
 )
 
-type AssetControllerFacade struct {
+type AssetControllerManager struct {
 	BorrowInstrument BorrowInstrumentControllerInterface
 	Category         CategoryControllerInterface
 	Instrument       InstrumentControllerInterface
@@ -19,9 +19,9 @@ type AssetControllerFacade struct {
 	SupplyLog        SupplyLogControllerInterface
 }
 
-var assetInstance *AssetControllerFacade
+var assetInstance *AssetControllerManager
 
-func GetAssetInstance() *AssetControllerFacade {
+func GetAssetInstance() *AssetControllerManager {
 	if assetInstance == nil {
 		instance, err := NewAssetControllerFacade()
 		if err != nil {
@@ -34,8 +34,8 @@ func GetAssetInstance() *AssetControllerFacade {
 	return assetInstance
 }
 
-func NewAssetControllerFacade() (*AssetControllerFacade, error) {
-	facade := &AssetControllerFacade{}
+func NewAssetControllerFacade() (*AssetControllerManager, error) {
+	manager := &AssetControllerManager{}
 
 	db := migration.GetInstance().DB
 
@@ -43,17 +43,17 @@ func NewAssetControllerFacade() (*AssetControllerFacade, error) {
 		return nil, errors.New("err: db not initialized")
 	}
 
-	//facade.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
-	//facade.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
-	facade.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController[model.Instrument](db)}
-	facade.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController[model.InstrumentLog](db)}
-	facade.Supply = &SupplyController{db: db, BaseController: core.NewBaseController[model.Supply](db)}
-	//facade.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
+	//manager.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
+	//manager.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
+	manager.Instrument = &InstrumentController{db: db, BaseController: core.NewBaseController[model.Instrument](db)}
+	manager.InstrumentLog = &InstrumentLogController{db: db, BaseController: core.NewBaseController[model.InstrumentLog](db)}
+	manager.Supply = &SupplyController{db: db, BaseController: core.NewBaseController[model.Supply](db)}
+	//manager.SupplyLog = &SupplyLogController{db: db, BaseController: core.NewBaseController("SupplyLog", db)}
 
-	return facade, nil
+	return manager, nil
 }
 
-func (facade *AssetControllerFacade) LoadSeedData() error {
+func (manager *AssetControllerManager) LoadSeedData() error {
 	seedData := map[string]interface{}{
 		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
 		"Category":       &[]model.Category{},
@@ -83,7 +83,7 @@ func (facade *AssetControllerFacade) LoadSeedData() error {
 	return nil
 }
 
-func (facade *AssetControllerFacade) ResetDB() error {
+func (manager *AssetControllerManager) ResetDB() error {
 	err := migration.GetInstance().DropAllTables()
 	if err != nil {
 		return err
@@ -97,13 +97,13 @@ func (facade *AssetControllerFacade) ResetDB() error {
 	return nil
 }
 
-func (facade *AssetControllerFacade) ResetAndLoadDB() error {
-	err := facade.ResetDB()
+func (manager *AssetControllerManager) ResetAndLoadDB() error {
+	err := manager.ResetDB()
 	if err != nil {
 		return err
 	}
 
-	err = facade.LoadSeedData()
+	err = manager.LoadSeedData()
 	if err != nil {
 		return err
 	}

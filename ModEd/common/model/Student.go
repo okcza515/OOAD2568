@@ -23,39 +23,10 @@ func (Student) TableName() string {
 	return "students"
 }
 
-func GetAllStudents(db *gorm.DB) ([]*Student, error) {
-	var students []*Student
-	result := db.Find(&students)
-	return students, result.Error
-}
-
-func GetStudentByCode(db *gorm.DB, code string) (*Student, error) {
-	var s Student
-	result := db.Where("student_code = ?", code).First(&s)
-	return &s, result.Error
-}
-
-func CreateStudent(db *gorm.DB, student *Student) error {
-	return db.Create(student).Error
-}
-
 func UpdateStudentByCode(db *gorm.DB, code string, updated map[string]interface{}) error {
 	return db.Model(&Student{}).Where("student_code = ?", code).Updates(updated).Error
 }
 
 func DeleteStudentByCode(db *gorm.DB, code string) error {
 	return db.Where("student_code = ?", code).Delete(&Student{}).Error
-}
-
-func TruncateStudents(db *gorm.DB) error {
-	return db.Exec("DELETE FROM students").Error
-}
-
-func RegisterStudents(db *gorm.DB, students []*Student) error {
-	for _, s := range students {
-		if err := db.Create(s).Error; err != nil {
-			return err
-		}
-	}
-	return nil
 }

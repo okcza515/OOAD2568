@@ -48,8 +48,8 @@ func (c *CourseController) GetCourse(courseId uint, preload ...string) (course *
 }
 
 func (c *CourseController) GetCourses() (courses []*model.Course, err error) {
-	//TODO: Wait for preload support in BaseController
-	if err := c.db.Preload("Prerequisite").Find(&courses).Error; err != nil {
+	courses, err = c.core.List(nil)
+	if err != nil {
 		return nil, err
 	}
 	return courses, nil

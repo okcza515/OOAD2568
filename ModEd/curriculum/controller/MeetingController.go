@@ -5,6 +5,7 @@ import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	model "ModEd/curriculum/model"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -12,8 +13,9 @@ import (
 type MeetingControllerService interface {
 	GetAll() (*[]model.Meeting, error)
 	//GetByID(meetingID uint) (*model.Meeting, error)
-	RetrieveByID(id uint, preloads ...string) (*model.Meeting, error)
+	RetrieveByID(id uint) (*model.Meeting, error)
 	CreateMeeting(body *model.Meeting) error
+	CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error
 	//UpdateMeeting(meetingID uint, body *model.Meeting) error
 	UpdateByID(data model.Meeting) error
 	//DeleteMeeting(meetingID uint) error
@@ -48,6 +50,30 @@ func (c *MeetingController) GetAll() (*[]model.Meeting, error) {
 func (c *MeetingController) CreateMeeting(body *model.Meeting) error {
 	result := c.Connector.Create(body)
 	return result.Error
+}
+
+func (c *MeetingController) CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error {
+	meetingProduct := factory.CreateMeeting(
+		meeting.Title,
+		meeting.Description,
+		meeting.Location,
+		meeting.Date,
+		meeting.StartTime,
+		meeting.EndTime,
+		meeting.Attendees,
+	)
+
+	// Store the created meeting in the database
+	switch m := meetingProduct.(type) {
+	case *model.Meeting:
+		return c.Connector.Create(m).Error
+	case *model.ExternalMeeting:
+		return c.Connector.Create(m).Error
+	case *model.OnlineMeeting:
+		return c.Connector.Create(m).Error
+	default:
+		return errors.New("unsupported meeting type")
+	}
 }
 
 // func (c *MeetingController) UpdateMeeting(meetingID uint, body *model.Meeting) error {

@@ -13,6 +13,7 @@ type StudentWorkloadService interface {
 	Insert(data model.StudentAdvisor) error
 	UpdateByID(data model.StudentAdvisor) error
 	DeleteByID(id uint) error
+	DeleteByStudentId(studentId uint) error
 	RetrieveByID(id uint, preloads ...string) (*model.StudentAdvisor, error)
 	GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error)
 	CreateStudentRequest(data model.StudentRequest) error
