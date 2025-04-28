@@ -13,7 +13,7 @@ func NewBaseController[T RecordInterface](db *gorm.DB) *BaseController[T] {
 }
 
 func (controller *BaseController[T]) Insert(data T) error {
-	return controller.db.Create(data).Error
+	return controller.db.Create(&data).Error
 }
 
 func (controller *BaseController[T]) InsertMany(data []T) error {
