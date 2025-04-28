@@ -46,3 +46,7 @@ func (f *ExaminationFacade) GetAllExams() ([]model.Examination, error) {
 func (f *ExaminationFacade) UpdateExamination(id uint, exam *model.Examination) error {
 	return f.examCtrl.Update(id, exam)
 }
+
+func (f *ExaminationFacade) UpdateQuestionForExam(id uint, updatedQuestion *model.Question) error {
+    return f.questionCtrl.UpdateQuestion(id, updatedQuestion)
+}
