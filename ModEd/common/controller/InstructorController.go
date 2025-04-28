@@ -30,3 +30,11 @@ func (c *InstructorController) Update(code string, updatedData map[string]any) e
 func (c *InstructorController) DeleteByCode(code string) error {
 	return model.DeleteInstructorByCode(c.DB, code)
 }
+
+func (c *InstructorController) Register(instructors []*model.Instructor) error {
+	return model.CommonRegister(c.DB, instructors)
+}
+
+func (c *InstructorController) Truncate() error {
+	return model.TruncateModel(c.DB, "instructors")
+}

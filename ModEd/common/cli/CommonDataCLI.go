@@ -3,9 +3,8 @@ package main
 import (
 	controller "ModEd/common/controller"
 	"ModEd/common/model"
-	"ModEd/utils/deserializer"
+	"ModEd/common/util"
 
-	// "ModEd/core"
 	"errors"
 	"flag"
 	"fmt"
@@ -103,57 +102,42 @@ func Menus() MenusChoices {
 	return choice
 }
 
-// **TODO when BaseController is fully functional or the truncate is no longer needed**
-// A unified and reusable register function
 func GenericRegister(choice int, db *gorm.DB, path string) {
 	if choice == 0 {
 		studentController := controller.CreateStudentController(db)
-		deserializer, err := deserializer.NewFileDeserializer(path)
-		if err != nil {
-			panic(err)
-		}
+		deserializer := util.CommonDeserializer(path)
 		var students []*model.Student
 		if err := deserializer.Deserialize(&students); err != nil {
 			panic(err)
 		}
 		studentController.Register(students)
-		fmt.Println("Student data updated successfully.")
+		fmt.Println("Complete task. (on student)")
 	} else if choice == 1 {
 		instructorController := controller.CreateInstructorController(db)
-		deserializer, err := deserializer.NewFileDeserializer(path)
-		if err != nil {
-			panic(err)
-		}
+		deserializer := util.CommonDeserializer(path)
 		var instructors []*model.Instructor
 		if err := deserializer.Deserialize(&instructors); err != nil {
 			panic(err)
 		}
 		instructorController.Register(instructors)
-		fmt.Println("Instructor data updated successfully.")
+		fmt.Println("Complete task. (on instructor)")
 	} else if choice == 2 {
-		//departmentController := controller.CreateDepartmentController(db)
-		deserializer, err := deserializer.NewFileDeserializer(path)
-		if err != nil {
-			panic(err)
-		}
+		departmentController := controller.CreateDepartmentController(db)
+		deserializer := util.CommonDeserializer(path)
 		var departments []*model.Department
 		if err := deserializer.Deserialize(&departments); err != nil {
 			panic(err)
 		}
-		fmt.Println(departments)
-		//departmentController.Register(departments)
-		fmt.Println("Department data updated successfully.")
+		departmentController.Register(departments)
+		fmt.Println("Complete task. (on department)")
 	} else if choice == 3 {
 		facultyController := controller.CreateFacultyController(db)
-		deserializer, err := deserializer.NewFileDeserializer(path)
-		if err != nil {
-			panic(err)
-		}
+		deserializer := util.CommonDeserializer(path)
 		var faculties []*model.Faculty
 		if err := deserializer.Deserialize(&faculties); err != nil {
 			panic(err)
 		}
 		facultyController.Register(faculties)
-		fmt.Println("Faculty data updated successfully.")
+		fmt.Println("Complete task. (on faculty)")
 	}
 }

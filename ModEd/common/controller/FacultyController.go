@@ -20,7 +20,7 @@ func (c *FacultyController) GetAll() ([]*model.Faculty, error) {
 }
 
 func (c *FacultyController) GetBy(field string, value interface{}) ([]*model.Faculty, error) {
-	return model.GetRecordByField[model.Faculty](c.DB, "name", value)
+	return model.GetRecordByField[model.Faculty](c.DB, field, value)
 }
 
 func (c *FacultyController) SetBudget(name string, budget int) error {
@@ -29,4 +29,12 @@ func (c *FacultyController) SetBudget(name string, budget int) error {
 
 func (c *FacultyController) UpdateBudget(name string, delta int) error {
 	return model.UpdateFacultyBudget(c.DB, name, delta)
+}
+
+func (c *FacultyController) Register(faculties []*model.Faculty) error {
+	return model.CommonRegister(c.DB, faculties)
+}
+
+func (c *FacultyController) Truncate() error {
+	return model.TruncateModel(c.DB, "faculties")
 }

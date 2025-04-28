@@ -31,6 +31,14 @@ func (c *DepartmentController) UpdateBudget(name string, delta int) error {
 	return model.UpdateDepartmentBudget(c.DB, name, delta)
 }
 
+func (c *DepartmentController) Register(department []*model.Department) error {
+	return model.CommonRegister(c.DB, department)
+}
+
+func (c *DepartmentController) Truncate() error {
+	return model.TruncateModel(c.DB, "departments")
+}
+
 func (c *DepartmentController) GetByFaculty(faculty string) ([]*model.Department, error) {
 	return model.GetDepartmentsByFaculty(c.DB, faculty)
 }

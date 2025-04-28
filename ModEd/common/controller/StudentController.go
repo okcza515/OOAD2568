@@ -30,3 +30,11 @@ func (c *StudentController) Update(code string, updatedData map[string]any) erro
 func (c *StudentController) DeleteByCode(code string) error {
 	return model.DeleteStudentByCode(c.DB, code)
 }
+
+func (c *StudentController) Register(students []*model.Student) error {
+	return model.CommonRegister(c.DB, students)
+}
+
+func (c *StudentController) Truncate() error {
+	return model.TruncateModel(c.DB, "students")
+}
