@@ -1,146 +1,110 @@
 package core
 
 import (
-	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 )
 
-type LoadStrategy interface {
-	Load(recordType reflect.Type) (interface{}, error)
-}
-
-type DisplayStrategy interface {
-	Display(results interface{})
-}
-
-type CSVLoadStrategy struct {
-	FilePath string
-}
-
-func (s *CSVLoadStrategy) Load(recordType reflect.Type) (interface{}, error) {
-	mapper := &CSVMapper[any]{Path: s.FilePath}
-	deserializeMethod := reflect.ValueOf(mapper).MethodByName("Deserialize")
-	result := deserializeMethod.Call(nil)[0].Interface()
-	return result, nil
-}
-
-type JSONLoadStrategy struct {
-	FilePath string
-}
-
-func (s *JSONLoadStrategy) Load(recordType reflect.Type) (interface{}, error) {
-	mapper := &JSONMapper[any]{Path: s.FilePath}
-	deserializeMethod := reflect.ValueOf(mapper).MethodByName("Deserialize")
-	result := deserializeMethod.Call(nil)[0].Interface()
-	return result, nil
-}
-
-type TextDisplayStrategy struct{}
-
-func (s *TextDisplayStrategy) Display(results interface{}) {
-	resultsValue := reflect.ValueOf(results)
-
-	if resultsValue.Kind() != reflect.Slice {
-		fmt.Println("Error: Results are not in expected format")
-		return
-	}
-
-	length := resultsValue.Len()
-	fmt.Printf("Found %d records:\n", length)
-
-	for i := 0; i < length; i++ {
-		record := resultsValue.Index(i).Interface()
-		fmt.Printf("Record %d: %+v\n", i+1, record)
-	}
-}
-
-type JSONDisplayStrategy struct{}
-
-func (s *JSONDisplayStrategy) Display(results interface{}) {
-	jsonData, err := json.MarshalIndent(results, "", "  ")
-	if err != nil {
-		fmt.Printf("Error marshaling to JSON: %v\n", err)
-		return
-	}
-	fmt.Println(string(jsonData))
-}
-
-type LoadStrategyFactory struct{}
-
-func (f *LoadStrategyFactory) CreateLoadStrategy(filePath string) (LoadStrategy, error) {
-	ext := filepath.Ext(filePath)
-
-	if ext == ".csv" {
-		return &CSVLoadStrategy{FilePath: filePath}, nil
-	} else if ext == ".json" {
-		return &JSONLoadStrategy{FilePath: filePath}, nil
-	}
-
-	return nil, fmt.Errorf("unsupported file extension: %s", ext)
-}
-
-type DisplayStrategyFactory struct{}
-
-func (f *DisplayStrategyFactory) CreateDisplayStrategy(format string) DisplayStrategy {
-	if format == "json" {
-		return &JSONDisplayStrategy{}
-	}
-	return &TextDisplayStrategy{}
-}
-
 type DataMapperCLI struct {
-	FilePath       string
-	OutputFormat   string
-	loadFactory    LoadStrategyFactory
-	displayFactory DisplayStrategyFactory
+	Args []string
 }
 
-func NewDataMapperCLI() *DataMapperCLI {
+func NewDataMapperCLI(args []string) *DataMapperCLI {
 	return &DataMapperCLI{
-		loadFactory:    LoadStrategyFactory{},
-		displayFactory: DisplayStrategyFactory{},
+		Args: args,
 	}
 }
 
-func (cli *DataMapperCLI) ParseArgs() {
-	flag.StringVar(&cli.FilePath, "file", "", "Path to data file (.csv or .json)")
-	flag.StringVar(&cli.OutputFormat, "format", "text", "Output format (text or json)")
-	flag.Parse()
+func (cli *DataMapperCLI) Run() error {
+	if len(cli.Args) < 2 {
+		cli.printUsage()
+		return errors.New("insufficient arguments")
+	}
 
-	if cli.FilePath == "" {
-		fmt.Println("Error: File path is required")
-		cli.PrintUsage()
-		os.Exit(1)
+	command := cli.Args[0]
+
+	switch command {
+	case "import":
+		return cli.handleImport(cli.Args[1:])
+	case "export":
+		return cli.handleExport(cli.Args[1:])
+	default:
+		cli.printUsage()
+		return fmt.Errorf("unknown command: %s", command)
 	}
 }
 
-func (cli *DataMapperCLI) PrintUsage() {
-	fmt.Println("Usage: program -file=<file_path> [-format=<format>]")
-	fmt.Println("Options:")
-	fmt.Println("  -file     Path to data file (.csv or .json)")
-	fmt.Println("  -format   Output format: 'text' (default) or 'json'")
-}
+func (cli *DataMapperCLI) handleImport(args []string) error {
+	importCmd := flag.NewFlagSet("import", flag.ExitOnError)
+	inputFile := importCmd.String("file", "", "Path to input file (CSV or JSON)")
+	modelType := importCmd.String("type", "", "Type of model to import")
 
-func (cli *DataMapperCLI) Run(recordType reflect.Type) {
-	cli.ParseArgs()
-
-	loadStrategy, err := cli.loadFactory.CreateLoadStrategy(cli.FilePath)
+	err := importCmd.Parse(args)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
-	displayStrategy := cli.displayFactory.CreateDisplayStrategy(cli.OutputFormat)
+	if *inputFile == "" || *modelType == "" {
+		fmt.Println("Error: Both file and type parameters are required")
+		fmt.Println("Usage: import -file=<filepath> -type=<modeltype>")
+		return errors.New("missing required parameters")
+	}
 
-	results, err := loadStrategy.Load(recordType)
+	mapper, err := CreateMapper[interface{}](*inputFile)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		os.Exit(1)
+		return err
 	}
 
-	displayStrategy.Display(results)
+	fmt.Printf("Importing data from %s...\n", *inputFile)
+	data := mapper.Deserialize()
+	fmt.Printf("Successfully imported %d records\n", len(data))
+
+	return nil
+}
+
+func (cli *DataMapperCLI) handleExport(args []string) error {
+	exportCmd := flag.NewFlagSet("export", flag.ExitOnError)
+	outputFile := exportCmd.String("file", "", "Path to output file (CSV or JSON)")
+	modelType := exportCmd.String("type", "", "Type of model to export")
+
+	err := exportCmd.Parse(args)
+	if err != nil {
+		return err
+	}
+
+	if *outputFile == "" || *modelType == "" {
+		fmt.Println("Error: Both file and type parameters are required")
+		fmt.Println("Usage: export -file=<filepath> -type=<modeltype>")
+		return errors.New("missing required parameters")
+	}
+
+	fmt.Printf("Exporting data to %s...\n", *outputFile)
+	// Fix: Implementation would connect to database and export data
+	fmt.Println("Export functionality to be implemented based on database connection")
+
+	return nil
+}
+
+func (cli *DataMapperCLI) printUsage() {
+	execName := filepath.Base(os.Args[0])
+	fmt.Printf("Usage: %s <command> [options]\n\n", execName)
+	fmt.Println("Commands:")
+	fmt.Println("  import -file=<filepath> -type=<modeltype>  Import data from CSV or JSON file")
+	fmt.Println("  export -file=<filepath> -type=<modeltype>  Export data to CSV or JSON file")
+	fmt.Println("\nExamples:")
+	fmt.Println("  import -file=students.csv -type=Student")
+	fmt.Println("  export -file=instructors.json -type=Instructor")
+	fmt.Println("  list -type=Faculty")
+}
+
+func DataMapperCLIMain() {
+	cli := NewDataMapperCLI(os.Args[1:])
+	err := cli.Run()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
 }
