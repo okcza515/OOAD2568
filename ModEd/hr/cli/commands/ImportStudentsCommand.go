@@ -1,11 +1,9 @@
 package commands
 
 import (
-	commonController "ModEd/common/controller"
 	"ModEd/core"
 	"ModEd/hr/controller"
 	"ModEd/hr/model"
-	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
 
 	"errors"
@@ -57,23 +55,18 @@ func importStudents(args []string, tx *gorm.DB) error {
 		hrFacade := controller.NewHRFacade(db)
 
 		for _, hrRec := range hrRecordsMap {
-			commonStudentController := commonController.CreateStudentController(db)
-			commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
+			studentInfo, err := hrFacade.GetStudentById(hrRec.StudentCode)
 			if err != nil {
-				fmt.Printf("failed to retrieve student %s from common data: %v", hrRec.StudentCode, err)
-				continue
+				return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
 			}
 
-			builder := hrModel.NewStudentInfoBuilder()
-			req, err := builder.WithStudentCode(hrRec.StudentCode).
-				WithStudent(*commonStudent).
-				WithGender(hrRec.Gender).
-				WithCitizenID(hrRec.CitizenID).
-				WithPhoneNumber(hrRec.PhoneNumber).
-				Build()
+			importStudent := studentInfo.
+				SetGender(hrRec.Gender).
+				SetCitizenID(hrRec.CitizenID).
+				SetPhoneNumber(hrRec.PhoneNumber)
 
-			if err := hrFacade.UpsertStudent(req); err != nil {
-				return fmt.Errorf("failed to upsert student %s: %v", req.StudentCode, err)
+			if err := hrFacade.UpsertStudent(importStudent); err != nil {
+				return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
 			}
 		}
 		fmt.Println("Students imported successfully!")
