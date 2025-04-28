@@ -16,15 +16,11 @@ func CreateInstructorController(db *gorm.DB) *InstructorController {
 }
 
 func (c *InstructorController) GetAll() ([]*model.Instructor, error) {
-	return model.GetAllInstructors(c.DB)
+	return model.GetAllCommonModels[model.Instructor](c.DB)
 }
 
-func (c *InstructorController) GetByCode(code string) (*model.Instructor, error) {
-	return model.GetInstructorByCode(c.DB, code)
-}
-
-func (c *InstructorController) Create(instructor *model.Instructor) error {
-	return model.CreateInstructor(c.DB, instructor)
+func (c *InstructorController) GetBy(field string, value interface{}) ([]*model.Instructor, error) {
+	return model.GetRecordByField[model.Instructor](c.DB, field, value)
 }
 
 func (c *InstructorController) Update(code string, updatedData map[string]any) error {
@@ -33,12 +29,4 @@ func (c *InstructorController) Update(code string, updatedData map[string]any) e
 
 func (c *InstructorController) DeleteByCode(code string) error {
 	return model.DeleteInstructorByCode(c.DB, code)
-}
-
-func (c *InstructorController) Register(instructors []*model.Instructor) error {
-	return model.RegisterInstructors(c.DB, instructors)
-}
-
-func (c *InstructorController) Truncate() error {
-	return model.TruncateInstructors(c.DB)
 }

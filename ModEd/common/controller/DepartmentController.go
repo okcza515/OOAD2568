@@ -20,7 +20,7 @@ func (c *DepartmentController) GetAll() ([]*model.Department, error) {
 }
 
 func (c *DepartmentController) GetBy(field string, value interface{}) ([]*model.Department, error) {
-	return model.GetModelByField[model.Department](c.DB, field, value)
+	return model.GetRecordByField[model.Department](c.DB, field, value)
 }
 
 func (c *DepartmentController) SetBudget(name string, budget int) error {

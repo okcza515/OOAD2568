@@ -16,15 +16,11 @@ func CreateFacultyController(db *gorm.DB) *FacultyController {
 }
 
 func (c *FacultyController) GetAll() ([]*model.Faculty, error) {
-	return model.GetAllFaculties(c.DB)
+	return model.GetAllCommonModels[model.Faculty](c.DB)
 }
 
-func (c *FacultyController) GetByName(name string) (*model.Faculty, error) {
-	return model.GetFacultyByName(c.DB, name)
-}
-
-func (c *FacultyController) Create(faculty *model.Faculty) error {
-	return model.CreateFaculty(c.DB, faculty)
+func (c *FacultyController) GetBy(field string, value interface{}) ([]*model.Faculty, error) {
+	return model.GetRecordByField[model.Faculty](c.DB, "name", value)
 }
 
 func (c *FacultyController) SetBudget(name string, budget int) error {
@@ -33,12 +29,4 @@ func (c *FacultyController) SetBudget(name string, budget int) error {
 
 func (c *FacultyController) UpdateBudget(name string, delta int) error {
 	return model.UpdateFacultyBudget(c.DB, name, delta)
-}
-
-func (c *FacultyController) Register(faculties []*model.Faculty) error {
-	return model.RegisterFaculties(c.DB, faculties)
-}
-
-func (c *FacultyController) Truncate() error {
-	return model.TruncateFaculties(c.DB)
 }

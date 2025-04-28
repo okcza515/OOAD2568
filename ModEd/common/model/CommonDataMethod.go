@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -20,7 +21,7 @@ func GetAllCommonModels[T any](db *gorm.DB) ([]*T, error) {
 	return models, result.Error
 }
 
-func GetModelByField[T CommonDataInterface](db *gorm.DB, field string, value interface{}) ([]*T, error) {
+func GetRecordByField[T CommonDataInterface](db *gorm.DB, field string, value interface{}) ([]*T, error) {
 	var model []*T
 	result := db.Where(fmt.Sprintf("%s = ?", field), value).Find(&model)
 	return model, result.Error
@@ -29,4 +30,3 @@ func GetModelByField[T CommonDataInterface](db *gorm.DB, field string, value int
 func TruncateModel(db *gorm.DB, model string) error {
 	return db.Exec(fmt.Sprintf("DELETE FROM %s", model)).Error
 }
-
