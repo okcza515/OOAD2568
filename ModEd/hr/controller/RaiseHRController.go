@@ -3,6 +3,8 @@ package controller
 import (
 	"ModEd/hr/model"
 	"gorm.io/gorm"
+	"ModEd/hr/util"
+	"fmt"
 )
 
 type RaiseHRController struct {
@@ -32,4 +34,23 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaise, error) {
 	var requests []model.RequestRaise
 	err := c.db.Find(&requests).Error
 	return requests, err
+}
+
+func (h *HRFacade) SubmitRaiseRequest(db *gorm.DB, instructorID string, amount int, reason string) error {
+	tm := &util.TransactionManager{DB: db}
+
+	return tm.Execute(func(tx *gorm.DB) error {
+		raiseController := createRaiseHRController(tx)
+
+		request := model.NewRequestRaiseBuilder().
+			WithInstructorCode(instructorID).
+			WithTargetSalary(amount).
+			WithReason(reason).
+			Build()
+
+		if err := raiseController.insert(request); err != nil {
+			return fmt.Errorf("failed to submit raise request: %v", err)
+		}
+		return nil
+	})
 }

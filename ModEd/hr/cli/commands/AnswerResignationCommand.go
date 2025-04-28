@@ -36,9 +36,9 @@ func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("invalid answer: --answer must be either 'approve' or 'reject'")
 	}
 
-	err = controller.HandleResignationStatus(tx, *id, status, *reason)
-	if err != nil {
-		return fmt.Errorf("failed to process resignation: %w", err)
+	hrFacade := controller.NewHRFacade(tx)
+	if err := hrFacade.UpdateResignationStudentStatus(*id, status, *reason); err != nil {
+		return fmt.Errorf("failed to update resignation status: %v", err)
 	}
 
 	fmt.Printf("Resignation marked as '%s' for id %s\n", status, *id)

@@ -23,3 +23,33 @@ func NewStudentInfo(StudentCode string, Gender string, CitizenID string, PhoneNu
 		PhoneNumber: PhoneNumber,
 	}
 }
+
+func (s *StudentInfo) SetFirstName(firstName string) *StudentInfo {
+    s.FirstName = firstName
+    return s
+}
+
+func (s *StudentInfo) SetLastName(lastName string) *StudentInfo {
+    s.LastName = lastName
+    return s
+}
+
+func (s *StudentInfo) SetGender(gender string) *StudentInfo {
+    s.Gender = gender
+    return s
+}
+
+func (s *StudentInfo) SetCitizenID(citizenID string) *StudentInfo {
+    s.CitizenID = citizenID
+    return s
+}
+
+func (s *StudentInfo) SetPhoneNumber(phoneNumber string) *StudentInfo {
+    s.PhoneNumber = phoneNumber
+    return s
+}
+
+func (s *StudentInfo) SetEmail(email string) *StudentInfo {
+    s.Email = email
+    return s
+}

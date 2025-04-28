@@ -4,6 +4,7 @@ package model
 import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
+	"time"
 )
 
 type WILProjectApplication struct {
@@ -17,5 +18,5 @@ type WILProjectApplication struct {
 	AdvisorId         uint                   `json:"AdvisorId"`
 	Advisor           commonModel.Instructor `json:"Advisor" gorm:"foreignKey:AdvisorId;references:InstructorCode"`
 	ApplicationStatus string                 `gorm:"not null"`
-	TurninDate        string                 `gorm:"not null"`
+	TurninDate        *time.Time             `gorm:"default:null"`
 }

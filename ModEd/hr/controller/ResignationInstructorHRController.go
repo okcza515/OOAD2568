@@ -2,6 +2,9 @@ package controller
 
 import (
 	"ModEd/hr/model"
+	"ModEd/hr/util"
+	"fmt"	
+
 
 	"gorm.io/gorm"
 )
@@ -29,4 +32,23 @@ func (c *ResignationInstructorHRController) getByInstructorID(id string) (*model
 
 func (c *ResignationInstructorHRController) update(req *model.RequestResignationInstructor) error {
 	return c.db.Save(req).Error
+}
+
+func (h *HRFacade) SubmitResignationInstructor(db *gorm.DB, instructorID string, reason string) error {
+	tm := &util.TransactionManager{DB: db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		
+		controller := createResignationInstructorHRController(tx)
+		factory := &model.RequestResignationFactory{}
+		req, err := factory.Create("instructor", instructorID, reason)
+		if err != nil {
+			return fmt.Errorf("failed to build resignation request: %v", err)
+		}
+
+		if err := controller.insert(req.(*model.RequestResignationInstructor)); err != nil {
+			return fmt.Errorf("failed to insert resignation request: %v", err)
+		}
+
+		return nil
+	})
 }

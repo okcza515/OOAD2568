@@ -1,8 +1,11 @@
 package controller
 
 import (
-	"gorm.io/gorm"
 	"ModEd/hr/model"
+	"ModEd/hr/util"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 type LeaveInstructorHRController struct {
 	db *gorm.DB
@@ -38,11 +41,33 @@ func (c *LeaveInstructorHRController) getByID(id uint) (*model.RequestLeaveInstr
 	}
 	return &request, nil
 }
-func (c *LeaveInstructorHRController) getByStudentID(studentID string) ([]model.RequestLeaveInstructor, error) {
+func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]model.RequestLeaveInstructor, error) {
 	var requests []model.RequestLeaveInstructor
-	err := c.db.Where("student_id = ?", studentID).Find(&requests).Error
+	err := c.db.Where("instructor_id = ?", instructorID).Find(&requests).Error
 	if err != nil {
 		return nil, err
 	}
 	return requests, nil
 }
+
+func (h *HRFacade) SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
+
+	tm := &util.TransactionManager{DB:db}
+
+	return tm.Execute(func(tx *gorm.DB) error {
+		instructorController := createLeaveInstructorHRController(tx)
+		factory := &model.RequestLeaveFactory{}
+
+		req, err := factory.Create("instructor", instructorID, leaveType, reason, leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to build leave request: %v", err)
+		}
+
+		if err := instructorController.insert(req.(*model.RequestLeaveInstructor)); err != nil {
+			return fmt.Errorf("failed to submit leave request: %v", err)
+		}
+		return nil
+	})
+}
+
+	
