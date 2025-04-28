@@ -88,7 +88,7 @@ func getCourseById(courseController controller.CourseControllerInterface) (err e
 }
 
 func updateCourseById(courseController controller.CourseControllerInterface) (err error) {
-
+	//TODO: Implement update course logic
 	return nil
 }
 
