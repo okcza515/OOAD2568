@@ -4,6 +4,7 @@ import (
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
+	"ModEd/hr/util"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -98,13 +99,56 @@ func AddStudent(tx *gorm.DB,
 }
 
 func DeleteStudent(tx *gorm.DB, studentID string) error {
-    // Delete student from common data.
-    studentController := commonController.CreateStudentController(tx)
-    if err := studentController.DeleteByCode(studentID); err != nil {
-        return fmt.Errorf("failed to delete student from common data: %w", err)
-    }
+	// Delete student from common data.
+	studentController := commonController.CreateStudentController(tx)
+	if err := studentController.DeleteByCode(studentID); err != nil {
+		return fmt.Errorf("failed to delete student from common data: %w", err)
+	}
 
-    hrFacade := NewHRFacade(tx)
+	hrFacade := NewHRFacade(tx)
 
-    return hrFacade.DeleteStudent(studentID)
+	return hrFacade.DeleteStudent(studentID)
+}
+
+func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
+	// Wrap the business logic in a transaction.
+	return tx.Transaction(func(tx *gorm.DB) error {
+		// Use HRFacade to get the existing HR info.
+		hrFacade := NewHRFacade(tx)
+		studentInfo, err := hrFacade.GetStudentById(studentID)
+		if err != nil {
+			return fmt.Errorf("error retrieving student with ID %s: %v", studentID, err)
+		}
+
+		// Update student info using non-empty values.
+		updatedStudent := studentInfo.
+			SetFirstName(util.IfNotEmpty(firstName, studentInfo.FirstName)).
+			SetLastName(util.IfNotEmpty(lastName, studentInfo.LastName)).
+			SetGender(util.IfNotEmpty(gender, studentInfo.Gender)).
+			SetCitizenID(util.IfNotEmpty(citizenID, studentInfo.CitizenID)).
+			SetPhoneNumber(util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber)).
+			SetEmail(util.IfNotEmpty(email, studentInfo.Email))
+
+		// 1) Update common student data.
+		studentData := map[string]any{
+			"FirstName": updatedStudent.FirstName,
+			"LastName":  updatedStudent.LastName,
+			"Email":     updatedStudent.Email,
+		}
+		studentController := commonController.CreateStudentController(tx)
+		if err := studentController.Update(studentID, studentData); err != nil {
+			return fmt.Errorf("failed to update common student data: %v", err)
+		}
+
+		// 2) Migrate students to HR.
+		if err := MigrateStudentsToHR(tx); err != nil {
+			return fmt.Errorf("failed to migrate student to HR module: %v", err)
+		}
+
+		// 3) Upsert HR-specific student info.
+		if err := hrFacade.UpsertStudent(updatedStudent); err != nil {
+			return fmt.Errorf("failed to update student HR info: %v", err)
+		}
+		return nil
+	})
 }
