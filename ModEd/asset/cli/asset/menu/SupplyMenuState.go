@@ -12,8 +12,7 @@ import (
 )
 
 type SupplyMenuState struct {
-	manager          *cli.CLIMenuStateManager
-	controllerFacade *controller.AssetControllerFacade
+	manager *cli.CLIMenuStateManager
 
 	assetMainMenu *AssetMenuState
 
@@ -24,16 +23,17 @@ type SupplyMenuState struct {
 }
 
 func NewSupplyMenuState(
-	manager *cli.CLIMenuStateManager, controllerFacade *controller.AssetControllerFacade, assetMainMenu *AssetMenuState,
+	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState,
 ) *SupplyMenuState {
+	controllerInstance := controller.GetAssetInstance().Supply
+
 	return &SupplyMenuState{
 		manager:               manager,
-		controllerFacade:      controllerFacade,
 		assetMainMenu:         assetMainMenu,
-		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerFacade.Supply),
-		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerFacade.Supply),
-		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerFacade.Supply),
-		updateHandlerStrategy: handler.NewUpdateHandlerStrategy(controllerFacade.Supply),
+		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerInstance),
+		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerInstance),
+		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerInstance),
+		updateHandlerStrategy: handler.NewUpdateHandlerStrategy(controllerInstance),
 	}
 }
 
