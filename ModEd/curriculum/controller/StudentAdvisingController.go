@@ -10,6 +10,7 @@ import (
 )
 
 type StudentWorkloadService interface {
+	ListStudentRequest(instructorId uint) ([]model.StudentRequest, error)
 	Insert(data model.StudentAdvisor) error
 	UpdateByID(data model.StudentAdvisor) error
 	DeleteByID(id uint) error
@@ -31,6 +32,15 @@ func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
 		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		Connector:      db,
 	}
+}
+
+func (swc *StudentWorkloadController) ListStudentRequest(instructorId uint) ([]model.StudentRequest, error) {
+	var studentRequests []model.StudentRequest
+	err := swc.Connector.Where("instructor_id = ?", instructorId).Find(&studentRequests).Error
+	if err != nil {
+		return nil, err
+	}
+	return studentRequests, nil
 }
 
 func (swc *StudentWorkloadController) CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {

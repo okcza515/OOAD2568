@@ -35,7 +35,7 @@ func CreateProjectController(db *gorm.DB) *ProjectController {
 
 func (c *ProjectController) CreateEvaluation(evaluation *model.ProjectEvaluation, strategyType string, criteria []projectModel.AssessmentCriteria) error {
 	ctx := model.NewEvaluationContext(strategyType)
-	evaluation.Score = ctx.Evaluate(evaluation, criteria)
+	evaluation.Score, evaluation.Comment = ctx.Evaluate(evaluation, criteria)
 
 	return c.Insert(evaluation)
 }

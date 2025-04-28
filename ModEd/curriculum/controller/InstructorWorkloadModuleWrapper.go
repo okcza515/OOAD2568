@@ -6,12 +6,18 @@ import (
 )
 
 type InstructorWorkloadModuleWrapper struct {
+	CourseController         *CourseController
+	ClassController          *ClassController
+	CurriculumController     *CurriculumController
 	CoursePlanController     *CoursePlanController
 	ClassLectureController   *ClassLectureController
 	ClassMaterialController  *ClassMaterialController
 	SeniorProjectController  *ProjectController
 	StudentRequestController *StudentWorkloadController
 	MeetingController        *MeetingController
+	WorkloadReportController *WorkloadReportController
+	WorkloadReportFacade     *WorkloadReportFacade
+	WorkloadReportBuilder    *WorkloadReportBuilder
 }
 
 func NewInstructorWorkloadModuleWrapper(
@@ -27,5 +33,6 @@ func NewInstructorWorkloadModuleWrapper(
 		SeniorProjectController:  CreateProjectController(db),
 		StudentRequestController: CreateStudentWorkloadController(db),
 		MeetingController:        CreateMeetingController(db),
+		WorkloadReportController: CreateWorkloadReportController(db),
 	}
 }

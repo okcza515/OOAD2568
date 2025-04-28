@@ -11,14 +11,12 @@ import (
 )
 
 type MeetingControllerService interface {
-	GetAll() (*[]model.Meeting, error)
-	//GetByID(meetingID uint) (*model.Meeting, error)
+	List(condition map[string]interface{}) ([]*model.Meeting, error)
+
 	RetrieveByID(id uint) (*model.Meeting, error)
 	CreateMeeting(body *model.Meeting) error
 	CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error
-	//UpdateMeeting(meetingID uint, body *model.Meeting) error
 	UpdateByID(data model.Meeting) error
-	//DeleteMeeting(meetingID uint) error
 	DeleteByID(id uint) error
 	AddAttendee(meetingID uint, instructorID uint) error
 }
@@ -34,18 +32,6 @@ func CreateMeetingController(db *gorm.DB) *MeetingController {
 		Connector:      db,
 	}
 }
-
-func (c *MeetingController) GetAll() (*[]model.Meeting, error) {
-	meetings := new([]model.Meeting)
-	result := c.Connector.Find(&meetings)
-	return meetings, result.Error
-}
-
-// func (c *MeetingController) GetByID(meetingID uint) (*model.Meeting, error) {
-// 	meetings := new(model.Meeting)
-// 	result := c.Connector.First(&meetings, "ID = ?", meetingID)
-// 	return meetings, result.Error
-// }
 
 func (c *MeetingController) CreateMeeting(body *model.Meeting) error {
 	result := c.Connector.Create(body)
@@ -66,17 +52,6 @@ func (c *MeetingController) CreateMeetingByFactory(factory model.MeetingFactory,
 		return errors.New("unsupported meeting type")
 	}
 }
-
-// func (c *MeetingController) UpdateMeeting(meetingID uint, body *model.Meeting) error {
-// 	body.ID = meetingID
-// 	result := c.Connector.Updates(body)
-// 	return result.Error
-// }
-
-// func (c *MeetingController) DeleteMeeting(meetingID uint) error {
-// 	result := c.Connector.Model(&model.Meeting{}).Where("ID = ?", meetingID).Update("deleted_at", nil)
-// 	return result.Error
-// }
 
 func (c *MeetingController) AddAttendee(meetingID uint, instructorID uint) error {
 	var meeting model.Meeting

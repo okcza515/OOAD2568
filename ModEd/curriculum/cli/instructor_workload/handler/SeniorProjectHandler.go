@@ -66,13 +66,10 @@ func (menu *SeniorProjectWorkloadMenuStateHandler) HandleUserInput(input string)
 			{CriteriaName: "Answered all questions"},
 			{CriteriaName: "Good teamwork"},
 		}
-		err := menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, "presentation", mockCriteria)
-		if err != nil {
-			fmt.Println("Error creating evaluation:", err)
-		} else {
-			fmt.Println("Mock evaluation created successfully")
-		}
-		menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, "presentation", mockCriteria)
+		menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, mockEvaluation.AssignmentType, mockCriteria)
+		mockEvaluation.AssignmentType = "report"
+		menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, mockEvaluation.AssignmentType, mockCriteria)
+		fmt.Println("Evaluation created successfully")
 	case "4":
 		fmt.Println("Evaluate Project as Committee Not implemented yet...")
 	case "exit":

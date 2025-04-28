@@ -19,9 +19,9 @@ func (ctx *EvaluationContext) SetStrategy(strategy EvaluationStrategy) {
 	ctx.Strategy = strategy
 }
 
-func (ctx *EvaluationContext) Evaluate(evaluation *ProjectEvaluation, criteria []projectModel.AssessmentCriteria) float64 {
+func (ctx *EvaluationContext) Evaluate(evaluation *ProjectEvaluation, criteria []projectModel.AssessmentCriteria) (float64, string) {
 	if ctx.Strategy == nil {
-		return 0
+		return 0, "error: no strategy set"
 	}
 	return ctx.Strategy.Evaluate(criteria)
 }

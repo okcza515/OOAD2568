@@ -1,84 +1,51 @@
 package handler
 
-// import (
-// 	"ModEd/curriculum/controller"
-// 	"ModEd/curriculum/model"
-// 	"ModEd/curriculum/utils"
-// 	"fmt"
-// 	"time"
-// )
+import (
+	"ModEd/core/cli"
 
-// func RunAcademicWorkloadHandler(
-// 	coursePlanController controller.CoursePlanService,
-// 	classWorkloadController controller.ClassWorkloadService,
-// ) {
-// 	for {
-// 		DisplayAcademicWorkloadModuleMenu()
-// 		choice := utils.GetUserChoice()
-// 		fmt.Println("choice: ", choice)
+	"ModEd/curriculum/controller"
+	"fmt"
+)
 
-// 		switch choice {
-// 		case "1":
-// 			mockLecture := model.ClassLecture{
-// 				ClassId:      1,
-// 				LectureName:  "Introduction to OOAD",
-// 				InstructorId: 1,
-// 				StartTime:    time.Now(),
-// 				EndTime:      time.Now().Add(2 * time.Hour),
-// 			}
-// 			classWorkloadController.AddClassLecture(&mockLecture)
-// 		case "2":
-// 			mockEditedLecture := model.ClassLecture{
-// 				ClassId:      1,
-// 				LectureName:  "Introduction to OOAD - Hardcore",
-// 				InstructorId: 1,
-// 				StartTime:    time.Now(),
-// 				EndTime:      time.Now().Add(2 * time.Hour),
-// 			}
-// 			classWorkloadController.UpdateClassLecture(&mockEditedLecture)
-// 		case "3":
-// 			classWorkloadController.DeleteClassLecture(1)
-// 		case "4":
-// 			classWorkloadController.GetClassLecturesByClassId(1)
+type AcademicWorkloadMenuStateHandler struct {
+	manager *cli.CLIMenuStateManager
+	wrapper *controller.InstructorWorkloadModuleWrapper
 
-// 		case "5":
-// 			mockMaterial := model.ClassMaterial{
-// 				ClassId:  1,
-// 				FileName: "Lecture1.pdf",
-// 				FilePath: "path/to/lecture1.pdf",
-// 			}
-// 			classWorkloadController.AddClassMaterial(&mockMaterial)
-// 		case "6":
-// 			editedMockMaterial := model.ClassMaterial{
-// 				ClassId:  1,
-// 				FileName: "Lecture1_edited.pdf",
-// 				FilePath: "path/to/lecture1_edited.pdf",
-// 			}
-// 			classWorkloadController.UpdateClassMaterial(&editedMockMaterial)
-// 		case "7":
-// 			classWorkloadController.DeleteClassMaterial(1)
-// 		case "8":
-// 			classWorkloadController.GetClassMaterialsByClassId(1)
-// 		case "exit":
-// 			fmt.Println("Exiting...")
-// 			return
-// 		default:
-// 			fmt.Println("Invalid option")
-// 		}
-// 	}
-// }
+	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler
+}
 
-// func DisplayAcademicWorkloadModuleMenu() {
-// 	fmt.Println("\nAcademic Workload Menu:")
-// 	fmt.Println("1. Add Class Lecture")
-// 	fmt.Println("2. Edit Class Lecture")
-// 	fmt.Println("3. Delete Class Lecture")
-// 	fmt.Println("4. List all Class Lectures")
+func NewAcademicWorkloadMenuStateHandler(
+	manager *cli.CLIMenuStateManager,
+	wrapper *controller.InstructorWorkloadModuleWrapper,
+	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler,
+) *SeniorProjectWorkloadMenuStateHandler {
+	return &SeniorProjectWorkloadMenuStateHandler{
+		manager:                                  manager,
+		wrapper:                                  wrapper,
+		instructorWorkloadModuleMenuStateHandler: instructorWorkloadModuleMenuStateHandler,
+	}
+}
 
-// 	fmt.Println("5. Add Class Material")
-// 	fmt.Println("6. Edit Class Material")
-// 	fmt.Println("7. Delete Class Material")
-// 	fmt.Println("8. Get Class Material By ID")
+func (menu *AcademicWorkloadMenuStateHandler) Render() {
+	fmt.Println("1. View Class Lecture")
+}
 
-// 	fmt.Println("Type 'exit' to quit")
-// }
+func (menu *AcademicWorkloadMenuStateHandler) HandleUserInput(input string) error {
+	switch input {
+	case "1":
+		classList, err := menu.wrapper.ClassController.GetClasses()
+		if err != nil {
+			fmt.Println("Error fetching meetings:", err.Error())
+			return err
+		}
+		for _, class := range classList {
+			fmt.Printf("Class: %d, Course Name: %s\n, Schedule: %s\n", class.ClassId, class.Course.Name, class.Schedule)
+		}
+	case "exit":
+		fmt.Println("Exiting...")
+		return nil
+	default:
+		fmt.Println("Invalid option")
+	}
+	return nil
+}
