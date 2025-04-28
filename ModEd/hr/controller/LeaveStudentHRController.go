@@ -1,8 +1,12 @@
 package controller
 
 import (
-	"gorm.io/gorm"
 	"ModEd/hr/model"
+	"ModEd/hr/util"
+	"fmt"
+
+	"gorm.io/gorm"
+	
 )
 type LeaveStudentHRController struct {
 	db *gorm.DB
@@ -45,4 +49,25 @@ func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.Req
 		return nil, err
 	}
 	return requests, nil
+}
+
+
+func (h *HRFacade) SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
+
+	tm := &util.TransactionManager{DB: db}
+
+	return tm.Execute(func(tx *gorm.DB) error {
+		leaveController := createLeaveStudentHRController(tx) // ใช้ transaction ของตัวนี้เลย
+		factory := &model.RequestLeaveFactory{}
+
+		req, err := factory.Create("student", studentID, leaveType, reason, leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to build leave request: %v", err)
+		}
+
+		if err := leaveController.insert(req.(*model.RequestLeaveStudent)); err != nil {
+			return fmt.Errorf("failed to submit leave request: %v", err)
+		}
+		return nil
+	})
 }

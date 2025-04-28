@@ -20,11 +20,6 @@ func updateInstructorInfo(args []string, tx *gorm.DB) error {
 	value := fs.String("value", "", "New value for the specified field")
 	fs.Parse(args)
 
-	if *instructorID == "" || *field == "" || *value == "" {
-		fs.Usage()
-		return fmt.Errorf("instructor id, field, and value are required")
-	}
-
 	err := util.NewValidationChain(fs).
 		Required("id").
 		Length("id", 11).
