@@ -12,14 +12,14 @@ import (
 )
 
 type InternStudentController struct {
-	*core.BaseController
+	*core.BaseController[model.InternStudent]
 	Connector *gorm.DB
 }
 
 func CreateInternStudentController(connector *gorm.DB) *InternStudentController {
 	return &InternStudentController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("InternStudent", connector),
+		BaseController: core.NewBaseController[model.InternStudent](connector),
 	}
 }
 

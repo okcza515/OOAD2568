@@ -10,14 +10,14 @@ import (
 )
 
 type ReportController struct {
-	*core.BaseController
+	*core.BaseController[model.InternshipReport]
 	Connector *gorm.DB
 }
 
 func CreateReportController(connector *gorm.DB) *ReportController {
 	return &ReportController{
 		Connector:      connector,
-		BaseController: core.NewBaseController("Report", connector),
+		BaseController: core.NewBaseController[model.InternshipReport](connector),
 	}
 }
 
