@@ -3,14 +3,28 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
 	"gorm.io/gorm"
 )
 
+type BookingControllerInterface interface {
+	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+	ResetTimeSlots(roomID uint) error
+	ResetAllBookings() error
+	BookRoom(roomID uint, userID uint, userRole model.Role, eventName string, startDate, endDate time.Time) (*model.Booking, error)
+	CancelBooking(bookingID uint) error
+	UpdateBooking(bookingID uint, eventName *string, newStartDate, newEndDate *time.Time) error
+	GetRoomBookings(roomID uint) ([]model.Booking, error)
+	GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error)
+	GetBookingDetails(bookingID uint) (*model.Booking, error)
+}
+
 type BookingController struct {
 	db *gorm.DB
+	*core.BaseController[model.Booking]
 }
 
 func NewBookingController(db *gorm.DB) *BookingController {
