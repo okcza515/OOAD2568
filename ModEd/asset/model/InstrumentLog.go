@@ -20,8 +20,10 @@ type InstrumentLog struct {
 }
 
 func (i InstrumentLog) ToString() string {
-	return fmt.Sprintf("Log ID:\t[%v]\n"+
-		"Instrument:\t[%v] %v\n"+
-		"Action:\t\t%v\n"+
-		"Description: \t\t%v\n", i.ID, i.Instrument.InstrumentCode, i.Instrument.InstrumentLabel, i.Action, i.Description)
+	//return fmt.Sprintf("Log ID:\t[%v]\n"+
+	//	"Instrument:\t[%v] %v\n"+
+	//	"Action:\t\t%v\n"+
+	//	"Description: \t\t%v\n", i.ID, i.Instrument.InstrumentCode, i.Instrument.InstrumentLabel, i.Action, i.Description)
+
+	return fmt.Sprintf("[%v]\t%v\t%v\t%v", i.CreatedAt.Format("2006-01-02 15:04:05"), string(i.Action), i.Instrument.InstrumentCode, i.Instrument.InstrumentLabel)
 }

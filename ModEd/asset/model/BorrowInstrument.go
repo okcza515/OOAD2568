@@ -17,4 +17,5 @@ type BorrowInstrument struct {
 	InstrumentID       uint       `gorm:"not null"`
 	Description        *string    `gorm:"type:text"`
 	BorrowObjective    string     `gorm:"type:text;not null"`
+	Instrument         Instrument `gorm:"foreignKey:InstrumentID;constraint:OnUpdate:CASCADE;"`
 }

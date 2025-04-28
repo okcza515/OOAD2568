@@ -5,6 +5,7 @@ package controller
 import (
 	"ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/core/migration"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -17,12 +18,22 @@ type SupplyController struct {
 
 type SupplyControllerInterface interface {
 	ListAll() ([]string, error)
-	List(condition map[string]interface{}) ([]model.Supply, error)
+	List(condition map[string]interface{}, preloads ...string) ([]model.Supply, error)
 	RetrieveByID(id uint, preloads ...string) (model.Supply, error)
 	Insert(data model.Supply) error
 	UpdateByID(data model.Supply) error
 	DeleteByID(id uint) error
 	InsertMany(data []model.Supply) error
+}
+
+func NewSupplyController() *SupplyController {
+	//observers := make(map[string]AssetObserver[model.Supply])
+	db := migration.GetInstance().DB
+	return &SupplyController{
+		db:             db,
+		BaseController: core.NewBaseController[model.Supply](db),
+		//observers:      observers,
+	}
 }
 
 func (c *SupplyController) ListAll() ([]string, error) {
@@ -35,8 +46,8 @@ func (c *SupplyController) ListAll() ([]string, error) {
 
 	var resultList []string
 
-	for _, supplie := range *supplies {
-		resultList = append(resultList, "["+supplie.UpdatedAt.String()+"] "+string(supplie.SupplyLabel)+" "+strconv.FormatUint(uint64(supplie.ID), 10))
+	for _, supply := range *supplies {
+		resultList = append(resultList, "["+supply.UpdatedAt.String()+"] "+string(supply.SupplyLabel)+" "+strconv.FormatUint(uint64(supply.ID), 10))
 	}
 
 	return resultList, result.Error

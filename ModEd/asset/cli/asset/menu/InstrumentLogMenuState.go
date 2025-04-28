@@ -26,8 +26,8 @@ func NewInstrumentLogMenuState(
 		manager:                     manager,
 		assetMainMenu:               assetMainMenu,
 		insertHandlerStrategy:       handler.NewInsertHandlerStrategy[model.InstrumentLog](controllerInstance),
-		listHandlerStrategy:         handler.NewListHandlerStrategy[model.InstrumentLog](controllerInstance),
-		retrieveByIDHandlerStrategy: handler.NewRetrieveByIDHandlerStrategy[model.InstrumentLog](controllerInstance),
+		listHandlerStrategy:         handler.NewListHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
+		retrieveByIDHandlerStrategy: handler.NewRetrieveByIDHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
 	}
 }
 

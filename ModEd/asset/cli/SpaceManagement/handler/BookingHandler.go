@@ -20,6 +20,7 @@ func printBookingOption() {
 	fmt.Println("7. Check Room Availability")
 	fmt.Println("8. Get Available Rooms")
 	fmt.Println("9. Reset Time Slots for a Room")
+	fmt.Println("10. Seek Bookings Data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("========================================")
 }
@@ -52,6 +53,19 @@ func BookingHandler(facade *controller.SpaceManagementControllerFacade) {
 			handleGetAvailableRooms(facade)
 		case "9":
 			handleResetTimeSlots(facade)
+		case "10":
+			fmt.Println("Seed Bookings Data")
+			data, err := facade.Booking.SeedBookingsDatabase("data/asset/Booking.json")
+			if err != nil {
+				fmt.Println("Failed to seed Booking data", err)
+				util.PressEnterToContinue()
+			} else {
+				fmt.Println("Booking data seeded successfully")
+				for _, booking := range data {
+					fmt.Println(booking)
+				}
+				util.PressEnterToContinue()
+			}
 		case "back":
 			return
 		default:
