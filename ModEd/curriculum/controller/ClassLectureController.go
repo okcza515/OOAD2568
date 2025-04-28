@@ -13,7 +13,7 @@ type ClassLectureService interface {
 
 	// AddClassLecture(lecture *model.ClassLecture) error
 	Insert(data model.ClassLecture) error
-	//GetClassLecturesByClassId(classId uint) ([]model.ClassLecture, error)
+	GetClassLecturesByClassId(classId uint) ([]model.ClassLecture, error)
 	RetrieveByID(id uint, preloads ...string) (*model.ClassLecture, error)
 	//DeleteClassLecture(lectureId uint) error
 	DeleteByID(id uint) error
