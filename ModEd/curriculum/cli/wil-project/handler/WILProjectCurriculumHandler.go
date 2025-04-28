@@ -34,7 +34,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) Render() {
 	fmt.Println("2. Create WIL Class")
 	fmt.Println("3. List all of WIL Course")
 	fmt.Println("4. List all of WIL Class")
-	fmt.Println("0. Exit WIL Curriculum")
+	fmt.Println("back: Exit the module")
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) error {
@@ -60,7 +60,7 @@ func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) 
 		if err != nil {
 			fmt.Println("error! cannot use this function")
 		}
-	case "0":
+	case "back":
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
 	default:

@@ -31,9 +31,9 @@ func (c *InstrumentRequestController) GetInstrumentRequestByID(id uint) (*model.
 }
 
 func (c *InstrumentRequestController) GetInstrumentRequestByName(name string) (*model.InstrumentRequest, error) {
-    var request model.InstrumentRequest
-    err := c.db.Joins("Department").Where("departments.name = ?", name).First(&request).Error
-    return &request, err
+	var request model.InstrumentRequest
+	err := c.db.Joins("Department").Where("departments.name = ?", name).First(&request).Error
+	return &request, err
 }
 
 func (c *InstrumentRequestController) ListAllInstrumentRequests() (*[]model.InstrumentRequest, error) {
@@ -44,7 +44,7 @@ func (c *InstrumentRequestController) ListAllInstrumentRequests() (*[]model.Inst
 
 func (c *InstrumentRequestController) GetInstrumentRequestWithDetails(id uint) (*model.InstrumentRequest, error) {
 	var request model.InstrumentRequest
-	err := c.db.Preload("Instruments").Preload("BudgetApproval").First(&request, id).Error
+	err := c.db.Preload("Instruments").First(&request, id).Error
 	return &request, err
 }
 

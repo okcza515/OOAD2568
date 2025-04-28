@@ -69,9 +69,9 @@ func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *Migratio
 	case core.MODULE_CURRICULUM:
 		strategy = &CurriculumMigrationStrategy{}
 	case core.MODULE_INSTRUCTOR:
-		panic("not implemented")
+		strategy = &InstructorWorkloadMigrationStrategy{}
 	case core.MODULE_INTERNSHIP:
-		panic("not implemented")
+		strategy = &InternshipMigrationStrategy{}
 	case core.MODULE_WILPROJECT:
 		strategy = &WILProjectMigrationStrategy{}
 	case core.MODULE_QUIZ:
