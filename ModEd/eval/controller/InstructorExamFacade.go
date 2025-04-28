@@ -20,8 +20,7 @@ type ExaminationFacade struct {
 func NewExaminationFacade(db *gorm.DB) *ExaminationFacade {
 	examController := NewExaminationController(db)
 	questionController := NewQuestionController(db)
-
-	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController}
+	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController , answerCtrl: answerController}
 }
 
 func (f *ExaminationFacade) CreateExamination(exam *model.Examination, question *model.Question) error {

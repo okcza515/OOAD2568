@@ -111,14 +111,6 @@ func printOption() {
 	fmt.Println()
 }
 
-func GetUintInput(prompt string) uint {
-	var input uint
-	fmt.Print(prompt)
-	fmt.Scan(&input)
-	fmt.Scanln() // <- THIS
-	return input
-}
-
 func WaitForEnter() {
 	fmt.Println("\nPress Enter to continue...")
 	fmt.Scanln()

@@ -12,6 +12,7 @@ type BudgetAllocation struct {
 	BudgetAllocationID  uint              `gorm:"primaryKey"`
 	InstrumentRequestID uint              `gorm:"index"`
 	Amount              float64           `gorm:"not null"`
+	TotalbudgetAmount   float64           `gorm:"not null"`
 	ApproverID          uint              `gorm:"index"`
 	Approver            master.Instructor `gorm:"foreignKey:ApproverID"`
 	DeletedAt           gorm.DeletedAt    `gorm:"index"`
