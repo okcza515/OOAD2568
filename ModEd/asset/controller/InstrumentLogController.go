@@ -16,9 +16,10 @@ type InstrumentLogController struct {
 
 type InstrumentLogControllerInterface interface {
 	getAll() ([]model.InstrumentLog, error)
-	ListAll() ([]string, error)
-	Insert(data core.RecordInterface) error
+	Insert(data model.InstrumentLog) error
+	InsertMany(data []model.InstrumentLog) error
 	RetrieveByID(id uint, preloads ...string) (model.InstrumentLog, error)
+	List(condition map[string]interface{}) ([]model.InstrumentLog, error)
 }
 
 func (c *InstrumentLogController) getAll() ([]model.InstrumentLog, error) {
