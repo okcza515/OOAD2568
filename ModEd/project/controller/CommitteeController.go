@@ -8,12 +8,12 @@ import (
 )
 
 type CommitteeController struct {
-	*core.BaseController
+	*core.BaseController[*model.Committee]
 	DB *gorm.DB
 }
 
 func NewCommitteeController(db *gorm.DB) *CommitteeController {
-	return &CommitteeController{DB: db, BaseController: core.NewBaseController("committees", db)}
+	return &CommitteeController{DB: db, BaseController: core.NewBaseController[*model.Committee](db)}
 }
 
 func (cc *CommitteeController) InsertCommittee(committee *model.Committee) error {
