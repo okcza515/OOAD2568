@@ -15,13 +15,14 @@ type IExaminationFacade interface {
 type ExaminationFacade struct {
 	examCtrl     IExaminationController
 	questionCtrl IQuestionController
+    answerCtrl IAnswerController
 }
 
 func NewExaminationFacade(db *gorm.DB) *ExaminationFacade {
 	examController := NewExaminationController(db)
 	questionController := NewQuestionController(db)
-
-	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController}
+	answerController := NewAnswerController(db)
+	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController , answerCtrl: answerController}
 }
 
 func (f *ExaminationFacade) CreateExamination(exam *model.Examination, question *model.Question) error {
