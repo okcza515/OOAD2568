@@ -20,13 +20,13 @@ type StudentWorkloadService interface {
 }
 
 type StudentWorkloadController struct {
-	*core.BaseController
+	*core.BaseController[*model.StudentAdvisor]
 	Connector *gorm.DB
 }
 
 func CreateStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
 	return &StudentWorkloadController{
-		BaseController: core.NewBaseController("StudentWorkload", db),
+		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		Connector:      db,
 	}
 }

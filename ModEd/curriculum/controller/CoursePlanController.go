@@ -20,13 +20,13 @@ type CoursePlanService interface {
 }
 
 type CoursePlanController struct {
-	*core.BaseController
+	*core.BaseController[*model.CoursePlan]
 	Connector *gorm.DB
 }
 
 func CreateCoursePlanController(db *gorm.DB) *CoursePlanController {
 	return &CoursePlanController{
-		BaseController: core.NewBaseController("CoursePlan", db),
+		BaseController: core.NewBaseController[*model.CoursePlan](db),
 		Connector:      db,
 	}
 }
