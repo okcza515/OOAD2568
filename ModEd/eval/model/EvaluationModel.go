@@ -69,6 +69,42 @@ func LoadEvaluationsFromCSV(filePath string) ([]*Evaluation, error) {
 	return evaluations, nil
 }
 
+func SaveEvaluationsToCSV(filePath string, evaluations []*Evaluation) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write header
+	writer.Write([]string{"student_code", "instructor_code", "assignment_id", "quiz_id", "score", "comment", "evaluated_at"})
+
+	for _, e := range evaluations {
+		assignmentID := ""
+		quizID := ""
+		if e.AssignmentID != nil {
+			assignmentID = strconv.FormatUint(uint64(*e.AssignmentID), 10)
+		}
+		if e.QuizID != nil {
+			quizID = strconv.FormatUint(uint64(*e.QuizID), 10)
+		}
+		writer.Write([]string{
+			e.StudentCode,
+			e.InstructorCode,
+			assignmentID,
+			quizID,
+			strconv.FormatUint(uint64(e.Score), 10),
+			e.Comment,
+			e.EvaluatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return nil
+}
+
 // package model
 
 // import (

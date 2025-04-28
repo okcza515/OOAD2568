@@ -1,4 +1,1 @@
 student_code,instructor_code,assignment_id,quiz_id,score,comment,evaluated_at
-S001,I001,1,,90,Good work,2025-04-28T10:00:00Z
-S002,I001,2,,85,Well done,2025-04-28T11:00:00Z
-S003,I002,,1,95,Excellent quiz,2025-04-28T12:00:00Z

@@ -10,14 +10,14 @@ import (
 )
 
 func main() {
-	// ดึงข้อมูลจาก CSV
+	// ดึงข้อมูลจาก CSV   //ModEd/eval/cli/evaluation/
 	evals, err := model.LoadEvaluationsFromCSV("ModEd/eval/cli/evaluation/EvalTest.csv")
 	if err != nil {
 		panic(err)
 	}
 
 	// สร้าง Evaluation Controller
-	evalController := controller.NewEvaluationController(evals)
+	evalController := controller.NewEvaluationController(evals, "ModEd/eval/cli/evaluation/EvalTest.csv")
 
 	// เรียก CLI
 	cli.RunEvaluationCLI(evalController)

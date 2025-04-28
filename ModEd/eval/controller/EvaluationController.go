@@ -10,11 +10,13 @@ import (
 
 type EvaluationController struct {
 	evaluations []*model.Evaluation
+	csvPath     string
 }
 
-func NewEvaluationController(evals []*model.Evaluation) *EvaluationController {
+func NewEvaluationController(evals []*model.Evaluation, csvPath string) *EvaluationController {
 	return &EvaluationController{
 		evaluations: evals,
+		csvPath:     csvPath,
 	}
 }
 
@@ -33,6 +35,7 @@ func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode s
 		Score:          score,
 		EvaluatedAt:    time.Now(),
 	})
+	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 }
 
 func (ec *EvaluationController) CommentAssignment(studentCode string, assignmentID uint, comment string) {
@@ -42,6 +45,7 @@ func (ec *EvaluationController) CommentAssignment(studentCode string, assignment
 			return
 		}
 	}
+	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 }
 
 func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizID uint, score uint) {
@@ -59,6 +63,7 @@ func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string,
 		Score:          score,
 		EvaluatedAt:    time.Now(),
 	})
+	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 }
 
 func (ec *EvaluationController) ListEvaluations() []*model.Evaluation {
