@@ -20,32 +20,21 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "fname", "lname", "email", "gender", "citizenID", "phoneNumber"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("id").
+		Required("fname").
+		Required("lname").
+		Required("email").
+		Required("gender").
+		Required("citizenID").
+		Required("phoneNumber").
+		Length("id", 11).
+		Regex("id", `^[0-9]{11}$`).
+		Regex("email", `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
-	}
-
-	idLengthValidator := util.NewLengthFlagValidator(fs, "id", 11)
-	regexValidator, err := util.NewRegexFlagValidator(fs, "id", "^[0-9]{11}$")
-	if err != nil {
-		fs.Usage()
-		return fmt.Errorf("failed to create regex validator for id: %v", err)
-	}
-
-	idLengthValidator.SetNext(regexValidator)
-	if err := idLengthValidator.Validate(); err != nil {
-		fs.Usage()
-		return fmt.Errorf("validation error for id: %v", err)
-	}
-
-	emailRegexValidator, err := util.NewRegexFlagValidator(fs, "email", "^[a-zA-Z0-9._%%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-	if err != nil {
-		fs.Usage()
-		return fmt.Errorf("failed to create regex validator for email: %v", err)
-	}
-	if err := emailRegexValidator.Validate(); err != nil {
-		fs.Usage()
-		return fmt.Errorf("validation error for email: %v", err)
 	}
 
 	db := util.OpenDatabase(*util.DatabasePath)
