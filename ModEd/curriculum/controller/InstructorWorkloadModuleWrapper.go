@@ -21,11 +21,11 @@ func NewInstructorWorkloadModuleWrapper(
 	curriculumController CurriculumControllerInterface,
 ) *InstructorWorkloadModuleWrapper {
 	return &InstructorWorkloadModuleWrapper{
-		CoursePlanController:     CreateCoursePlanController(db).(*CoursePlanController),
-		ClassLectureController:   CreateClassLectureController(db).(*ClassLectureController),
-		ClassMaterialController:  CreateClassMaterialController(db).(*ClassMaterialController),
-		SeniorProjectController:  CreateProjectController(db).(*ProjectController),
-		StudentRequestController: CreateStudentWorkloadController(db).(*StudentWorkloadController),
-		MeetingController:        CreateMeetingController(db).(*MeetingController),
+		CoursePlanController:     CreateCoursePlanController(db),
+		ClassLectureController:   CreateClassLectureController(db),
+		ClassMaterialController:  CreateClassMaterialController(db),
+		SeniorProjectController:  CreateProjectController(db),
+		StudentRequestController: CreateStudentWorkloadController(db),
+		MeetingController:        CreateMeetingController(db),
 	}
 }

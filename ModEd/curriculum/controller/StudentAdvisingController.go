@@ -24,7 +24,7 @@ type StudentWorkloadController struct {
 	Connector *gorm.DB
 }
 
-func CreateStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
+func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
 	return &StudentWorkloadController{
 		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		Connector:      db,

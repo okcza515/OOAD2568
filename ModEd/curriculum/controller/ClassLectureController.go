@@ -21,7 +21,7 @@ type ClassLectureController struct {
 	Connector *gorm.DB
 }
 
-func CreateClassLectureController(db *gorm.DB) ClassLectureService {
+func CreateClassLectureController(db *gorm.DB) *ClassLectureController {
 	return &ClassLectureController{
 		BaseController: core.NewBaseController[*model.ClassLecture](db),
 		Connector:      db,
