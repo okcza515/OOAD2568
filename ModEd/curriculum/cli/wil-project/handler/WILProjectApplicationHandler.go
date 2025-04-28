@@ -14,17 +14,17 @@ import (
 
 type WILProjectApplicationMenuStateHandler struct {
 	manager *cli.CLIMenuStateManager
-	proxy   *controller.WILModuleProxy
+	wrapper *controller.WILModuleWrapper
 
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 }
 
 func NewWILProjectApplicationMenuStateHandler(
-	manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
+	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *WILProjectApplicationMenuStateHandler {
 	return &WILProjectApplicationMenuStateHandler{
 		manager:                   manager,
-		proxy:                     proxy,
+		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 	}
 }
@@ -103,7 +103,7 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 	WILProjectApplicationModel.ApplicationStatus = string(model.WIL_APP_PENDING)
 	WILProjectApplicationModel.TurninDate = time.Now().Format("2006-01-02 15:04:05")
 
-	result := menu.proxy.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
+	result := menu.wrapper.WILProjectApplicationController.RegisterWILProjectsApplication(WILProjectApplicationModel, StudentsId)
 	if result != nil {
 		fmt.Println("\nError for WIL Project Application:", result)
 		return errors.New("Error! cannot create a WIL Project application")
@@ -113,7 +113,7 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 
 func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() error {
 	fmt.Println("\nWIL Project Application List\n")
-	applications, err := menu.proxy.WILProjectApplicationController.ListWILProjectApplication()
+	applications, err := menu.wrapper.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
 		return errors.New("Error! cannot retrieve WIL Project application data")
 	}

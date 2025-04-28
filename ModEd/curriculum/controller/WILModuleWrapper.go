@@ -5,19 +5,19 @@ import (
 	"gorm.io/gorm"
 )
 
-type WILModuleProxy struct {
+type WILModuleWrapper struct {
 	WILProjectController            *WILProjectController
 	WILProjectApplicationController *WILProjectApplicationController
 	WILProjectCurriculumController  *WILProjectCurriculumFacadeController
 	IndependentStudyController      *IndependentStudyController
 }
 
-func NewWILModuleProxy(
+func NewWILModuleWrapper(
 	db *gorm.DB,
 	courseController CourseControllerInterface,
 	classController ClassControllerInterface,
-) *WILModuleProxy {
-	return &WILModuleProxy{
+) *WILModuleWrapper {
+	return &WILModuleWrapper{
 		WILProjectController:            CreateWILProjectController(db),
 		WILProjectApplicationController: CreateWILProjectApplicationController(db),
 		WILProjectCurriculumController:  CreateWILProjectCurriculumFacadeController(db, courseController, classController),

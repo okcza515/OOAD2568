@@ -10,6 +10,9 @@ type IExaminationFacade interface {
 	CreateExamination(exam *model.Examination, question *model.Question) error
 	GetAllExams() ([]model.Examination, error)
 	UpdateExamination(id uint, exam *model.Examination) error
+	UpdateQuestionForExam(id uint, updatedQuestion *model.Question) error
+	GetQuestionsForExam(examID uint) ([]model.Question, error) 
+	DeleteExamination(id uint) error
 }
 
 type ExaminationFacade struct {
@@ -20,7 +23,7 @@ type ExaminationFacade struct {
 func NewExaminationFacade(db *gorm.DB) *ExaminationFacade {
 	examController := NewExaminationController(db)
 	questionController := NewQuestionController(db)
-	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController , answerCtrl: answerController}
+	return &ExaminationFacade{examCtrl: examController, questionCtrl: questionController}
 }
 
 func (f *ExaminationFacade) CreateExamination(exam *model.Examination, question *model.Question) error {
@@ -49,4 +52,12 @@ func (f *ExaminationFacade) UpdateExamination(id uint, exam *model.Examination) 
 
 func (f *ExaminationFacade) UpdateQuestionForExam(id uint, updatedQuestion *model.Question) error {
     return f.questionCtrl.UpdateQuestion(id, updatedQuestion)
+}
+
+func (f *ExaminationFacade) GetQuestionsForExam(examID uint) ([]model.Question, error) {
+    return f.questionCtrl.GetQuestionsByExamID(examID)
+}
+
+func (f *ExaminationFacade) DeleteExamination(id uint) error {
+    return f.examCtrl.Delete(id)
 }
