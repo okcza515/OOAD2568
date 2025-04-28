@@ -10,17 +10,17 @@ import (
 
 type WILProjectMenuStateHandler struct {
 	manager *cli.CLIMenuStateManager
-	proxy   *controller.WILModuleProxy
+	wrapper *controller.WILModuleWrapper
 
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 }
 
 func NewWILProjectMenuStateHandler(
-	manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
+	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *WILProjectMenuStateHandler {
 	return &WILProjectMenuStateHandler{
 		manager:                   manager,
-		proxy:                     proxy,
+		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 	}
 }

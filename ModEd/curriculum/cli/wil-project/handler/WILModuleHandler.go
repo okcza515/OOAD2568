@@ -8,24 +8,24 @@ import (
 
 type WILModuleMenuStateHandler struct {
 	menuManger *cli.CLIMenuStateManager
-	proxy      *controller.WILModuleProxy
+	wrapper    *controller.WILModuleWrapper
 
 	WILProjectApplicationMenuStateHandler *WILProjectApplicationMenuStateHandler
 	WILProjectCurriculumMenuStateHandler  *WILProjectCurriculumMenuStateHandler
 	WILProjectMenuStateHandler            *WILProjectMenuStateHandler
-	IndependentStudyMenuStateHandler	*IndependentStudyMenuStateHandler
+	IndependentStudyMenuStateHandler      *IndependentStudyMenuStateHandler
 }
 
-func NewWILModuleMenuStateHandler(manager *cli.CLIMenuStateManager, proxy *controller.WILModuleProxy) *WILModuleMenuStateHandler {
+func NewWILModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper) *WILModuleMenuStateHandler {
 	wilmoduleHandler := &WILModuleMenuStateHandler{
 		menuManger: manager,
-		proxy:      proxy,
+		wrapper:    wrapper,
 	}
 
-	wilmoduleHandler.WILProjectApplicationMenuStateHandler = NewWILProjectApplicationMenuStateHandler(manager, proxy, wilmoduleHandler)
-	wilmoduleHandler.WILProjectCurriculumMenuStateHandler = NewWILProjectCurriculumMenuStateHandler(manager, proxy, wilmoduleHandler)
-	wilmoduleHandler.WILProjectMenuStateHandler = NewWILProjectMenuStateHandler(manager, proxy, wilmoduleHandler)
-	wilmoduleHandler.IndependentStudyMenuStateHandler = NewIndependentStudyMenuStateHandler(manager, proxy, wilmoduleHandler)
+	wilmoduleHandler.WILProjectApplicationMenuStateHandler = NewWILProjectApplicationMenuStateHandler(manager, wrapper, wilmoduleHandler)
+	wilmoduleHandler.WILProjectCurriculumMenuStateHandler = NewWILProjectCurriculumMenuStateHandler(manager, wrapper, wilmoduleHandler)
+	wilmoduleHandler.WILProjectMenuStateHandler = NewWILProjectMenuStateHandler(manager, wrapper, wilmoduleHandler)
+	wilmoduleHandler.IndependentStudyMenuStateHandler = NewIndependentStudyMenuStateHandler(manager, wrapper, wilmoduleHandler)
 
 	return wilmoduleHandler
 }

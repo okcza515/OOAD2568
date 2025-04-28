@@ -28,7 +28,7 @@ func RunWILModuleCLI(
 	}
 
 	menuManager := cli.NewCLIMenuManager()
-	proxy := curriculumController.NewWILModuleProxy(db, courseController, classController)
+	proxy := curriculumController.NewWILModuleWrapper(db, courseController, classController)
 	wilmoduleState := handler.NewWILModuleMenuStateHandler(menuManager, proxy)
 	menuManager.SetState(wilmoduleState)
 
