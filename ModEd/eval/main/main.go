@@ -17,10 +17,10 @@ func main() {
 		return
 	}
 
-	db.AutoMigrate(&model.Examination{}, &model.Question{})
+	db.AutoMigrate(&model.Examination{}, &model.Question{}, &model.Answer{})
 
 	examFacade := controller.NewExaminationFacade(db)
-	
+
 	loggingCtrl := controller.NewLoggingDecorator(examFacade)
 
 	exam := model.NewExaminationBuilder().

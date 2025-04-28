@@ -30,6 +30,12 @@ func (c *InstrumentRequestController) GetInstrumentRequestByID(id uint) (*model.
 	return &request, err
 }
 
+func (c *InstrumentRequestController) GetInstrumentRequestByName(name string) (*model.InstrumentRequest, error) {
+    var request model.InstrumentRequest
+    err := c.db.Joins("Department").Where("departments.name = ?", name).First(&request).Error
+    return &request, err
+}
+
 func (c *InstrumentRequestController) ListAllInstrumentRequests() (*[]model.InstrumentRequest, error) {
 	var requests []model.InstrumentRequest
 	err := c.db.Find(&requests).Error
