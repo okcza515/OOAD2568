@@ -4,6 +4,8 @@ package controller
 import (
 	model "ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/utils/deserializer"
+	"errors"
 	"fmt"
 	"time"
 
@@ -23,12 +25,37 @@ type BookingControllerInterface interface {
 }
 
 type BookingController struct {
-	db *gorm.DB
+	db             *gorm.DB
 	*core.BaseController[model.Booking]
-	roomController *RoomController
 }
 
-func NewBookingController(db *gorm.DB) *BookingController {
+func (c *BookingController) CreateBooking(booking *model.Booking) error {
+	if err := c.db.Create(booking).Error; err != nil {
+		return fmt.Errorf("failed to create booking: %w", err)
+	}
+	return nil
+}
+
+func (c *BookingController) SeedBookingsDatabase(path string) (
+	booking []*model.Booking, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.New("failed to create file deserializer")
+	}
+	if err := deserializer.Deserialize(&booking); err != nil {
+		return nil, errors.New("failed to deserialize bookings")
+	}
+	for _, book := range booking {
+		err := c.CreateBooking(book)
+		if err != nil {
+			return nil, errors.New("failed to seed Booking DB")
+		}
+	}
+	return booking, nil
+
+}
+
+func NewBookingController(db *gorm.DB, roomController RoomControllerInterface) *BookingController {
 	return &BookingController{
 		db:             db,
 		BaseController: core.NewBaseController[model.Booking](db),
@@ -36,8 +63,9 @@ func NewBookingController(db *gorm.DB) *BookingController {
 }
 
 func (c *BookingController) CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error) {
-	room, err := c.roomController.GetById(roomID)
-	if err != nil {
+	var room model.Room
+
+	if err := c.db.First(&room, roomID).Error; err != nil {
 		return false, fmt.Errorf("unable to find room with ID %d: %w", roomID, err)
 	}
 
