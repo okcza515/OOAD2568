@@ -31,3 +31,10 @@ func StatusFromString(status string) (commonModel.StudentStatus, error) {
 		return commonModel.ACTIVE, fmt.Errorf("invalid status: %s (must be ACTIVE, GRADUATED, or DROP)", status)
 	}
 }
+
+func IfNotEmpty(newValue, fallback string) string {
+	if newValue != "" {
+		return newValue
+	}
+	return fallback
+}

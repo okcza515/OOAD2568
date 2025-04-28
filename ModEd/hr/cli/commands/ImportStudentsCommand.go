@@ -60,10 +60,15 @@ func importStudents(args []string, tx *gorm.DB) error {
 				return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
 			}
 
-			importStudent := studentInfo.
-				SetGender(hrRec.Gender).
-				SetCitizenID(hrRec.CitizenID).
-				SetPhoneNumber(hrRec.PhoneNumber)
+			importStudent := model.NewUpdatedStudentInfo(
+				studentInfo,
+				studentInfo.FirstName,
+				studentInfo.LastName,
+				hrRec.Gender,
+				hrRec.CitizenID,
+				hrRec.PhoneNumber,
+				studentInfo.Email,
+			)
 
 			if err := hrFacade.UpsertStudent(importStudent); err != nil {
 				return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)

@@ -1,7 +1,6 @@
 package commands
 
 import (
-	commonController "ModEd/common/controller"
 	"ModEd/hr/controller"
 	"ModEd/hr/util"
 	"flag"
@@ -32,54 +31,13 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 		if err != nil {
 			fs.Usage()
 			return fmt.Errorf("validation error: %v", err)
-		}	
+		}
 	}
 
-	tm := &util.TransactionManager{DB: tx}
-	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(tx)
-		studentInfo, err := hrFacade.GetStudentById(*studentID)
-		if err != nil {
-			return fmt.Errorf("error retrieving student with ID %s: %v", *studentID, err)
-		}
-
-		// Create updated student info using non-empty flag values.
-		updatedStudent := studentInfo.
-			SetFirstName(ifNotEmpty(*firstName, studentInfo.FirstName)).
-			SetLastName(ifNotEmpty(*lastName, studentInfo.LastName)).
-			SetGender(ifNotEmpty(*gender, studentInfo.Gender)).
-			SetCitizenID(ifNotEmpty(*citizenID, studentInfo.CitizenID)).
-			SetPhoneNumber(ifNotEmpty(*phoneNumber, studentInfo.PhoneNumber)).
-			SetEmail(ifNotEmpty(*email, studentInfo.Email))
-
-		// Update common student data.
-		studentData := map[string]any{
-			"FirstName": updatedStudent.FirstName,
-			"LastName":  updatedStudent.LastName,
-			// add additional fields as needed.
-		}
-		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.Update(*studentID, studentData); err != nil {
-			return fmt.Errorf("failed to update common student data: %v", err)
-		}
-
-		// Migrate and update HR-specific data.
-		if err := controller.MigrateStudentsToHR(tx); err != nil {
-			return fmt.Errorf("failed to migrate student to HR module: %v", err)
-		}
-
-		if err := hrFacade.UpdateStudent(updatedStudent); err != nil {
-			return fmt.Errorf("failed to update student HR info: %v", err)
-		}
-		fmt.Println("Student updated successfully!")
-		return nil
-	})
-}
-
-// ifNotEmpty returns newValue if not empty, otherwise fallback.
-func ifNotEmpty(newValue, fallback string) string {
-	if newValue != "" {
-		return newValue
+	if err := controller.UpdateStudentInfo(tx, *studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber, *email); err != nil {
+		return fmt.Errorf("failed to update student info: %v", err)
 	}
-	return fallback
+
+	fmt.Println("Student updated successfully!")
+	return nil
 }
