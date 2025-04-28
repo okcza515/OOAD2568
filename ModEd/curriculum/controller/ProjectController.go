@@ -1,4 +1,5 @@
 // MEP-1008
+
 package controller
 
 import (
@@ -10,12 +11,12 @@ import (
 )
 
 type ProjectControllerService interface {
-	CreateEvaluation(body *model.ProjectEvaluation, strategyType string, criteria []projectModel.AssessmentCriteria) error
-	UpdateEvaluation(evaluationID uint, body *model.ProjectEvaluation) error
-	DeleteEvaluation(evaluationID uint) error
-	GetAllEvaluations() (*[]model.ProjectEvaluation, error)
-	GetEvaluationByID(evaluationID uint) (*model.ProjectEvaluation, error)
+	UpdateByID(data *model.ProjectEvaluation) error
+	RetrieveByID(id uint, preloads ...string) (*model.ProjectEvaluation, error)
+	DeleteByID(id uint) error
+	List(condition map[string]interface{}) ([]*model.ProjectEvaluation, error)
 
+	CreateEvaluation(body *model.ProjectEvaluation, strategyType string, criteria []projectModel.AssessmentCriteria) error
 	GetProjectByAdvisorID(advisorID uint) (*[]model.ProjectEvaluation, error)
 	GetProjectByCommitteeID(committeeID uint) (*[]model.ProjectEvaluation, error)
 }
@@ -34,45 +35,19 @@ func CreateProjectController(db *gorm.DB) *ProjectController {
 
 func (c *ProjectController) CreateEvaluation(evaluation *model.ProjectEvaluation, strategyType string, criteria []projectModel.AssessmentCriteria) error {
 	ctx := model.NewEvaluationContext(strategyType)
+	evaluation.Score = ctx.Evaluate(evaluation, criteria)
 
-	score := ctx.Evaluate(evaluation, criteria)
-	evaluation.Score = score
-
-	result := c.Connector.Create(evaluation)
-	return result.Error
-}
-
-func (c *ProjectController) GetAllEvaluations() (*[]model.ProjectEvaluation, error) {
-	evaluations := new([]model.ProjectEvaluation)
-	result := c.Connector.Find(&evaluations)
-	return evaluations, result.Error
-}
-
-func (c *ProjectController) GetEvaluationByID(evaluationID uint) (*model.ProjectEvaluation, error) {
-	evaluation := new(model.ProjectEvaluation)
-	result := c.Connector.First(&evaluation, "ID = ?", evaluationID)
-	return evaluation, result.Error
-}
-
-func (c *ProjectController) UpdateEvaluation(evaluationID uint, body *model.ProjectEvaluation) error {
-	body.ID = evaluationID
-	result := c.Connector.Updates(body)
-	return result.Error
-}
-
-func (c *ProjectController) DeleteEvaluation(evaluationID uint) error {
-	result := c.Connector.Model(&model.ProjectEvaluation{}).Where("ID = ?", evaluationID).Update("deleted_at", nil)
-	return result.Error
+	return c.Insert(evaluation)
 }
 
 func (c *ProjectController) GetProjectByAdvisorID(advisorID uint) (*[]model.ProjectEvaluation, error) {
 	evaluations := new([]model.ProjectEvaluation)
-	result := c.Connector.Find(&evaluations, "advisor_id = ?", advisorID)
-	return evaluations, result.Error
+	err := c.Connector.Where("advisor_id = ?", advisorID).Find(evaluations).Error
+	return evaluations, err
 }
 
 func (c *ProjectController) GetProjectByCommitteeID(committeeID uint) (*[]model.ProjectEvaluation, error) {
 	evaluations := new([]model.ProjectEvaluation)
-	result := c.Connector.Find(&evaluations, "committee_id = ?", committeeID)
-	return evaluations, result.Error
+	err := c.Connector.Where("committee_id = ?", committeeID).Find(evaluations).Error
+	return evaluations, err
 }
