@@ -39,17 +39,9 @@ func importInstructor(args []string, tx *gorm.DB) error {
 
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(tx)
-		for _, instructor := range instructors {
-			if instructor.ID == 0 || instructor.FirstName == "" {
-				return fmt.Errorf("invalid instructor data: %+v", instructor)
-			}
-
-			if err := hrFacade.InsertInstructor(instructor); err != nil {
-				return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
-			}
+		if err := controller.ImportInstructors(tx, instructors); err != nil {
+			return err
 		}
-
 		fmt.Println("Instructors imported successfully!")
 		return nil
 	})

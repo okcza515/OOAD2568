@@ -17,11 +17,7 @@ func listStudents(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
-	// Using the databasePath flag defined in the main module.
-	// Adjust the variable reference or pass the flag value as needed.
-	db := util.OpenDatabase(*util.DatabasePath)
-
-	hrFacade := controller.NewHRFacade(db)
+	hrFacade := controller.NewHRFacade(tx)
 	studentInfos, err := hrFacade.GetAllStudents()
 	if err != nil {
 		return fmt.Errorf("error listing students: %v", err)
