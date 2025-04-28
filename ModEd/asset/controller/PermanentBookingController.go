@@ -72,7 +72,7 @@ func (controller *PermanentBookingController) CreateWeeklySchedule(startDateTime
 			ClassId:       classID,
 		}
 
-		if err := controller.Insert(schedule).Error; err != nil {
+		if err := controller.Insert(schedule); err != nil {
 			return fmt.Errorf("failed to create permanent schedule: %w", err)
 		}
 
@@ -134,7 +134,7 @@ func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, 
 	schedule.CourseId = CourseID
 	schedule.ClassId = ClassID
 
-	if err := controller.UpdateByID(schedule).Error; err != nil {
+	if err := controller.UpdateByID(schedule); err != nil {
 		return fmt.Errorf("failed to update permanent schedule: %w", err)
 	}
 
