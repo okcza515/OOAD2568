@@ -16,7 +16,7 @@ func CreateInstructorController(db *gorm.DB) *InstructorController {
 }
 
 func (c *InstructorController) GetAll() ([]*model.Instructor, error) {
-	return model.GetAllCommonModels[model.Instructor](c.DB)
+	return model.CommonModelGetAll[model.Instructor](c.DB)
 }
 
 func (c *InstructorController) GetBy(field string, value interface{}) ([]*model.Instructor, error) {
