@@ -26,6 +26,13 @@ type RoomController struct {
 	*core.BaseController[model.Room]
 }
 
+func NewRoomController(db *gorm.DB, BaseController *core.BaseController[model.Room]) *RoomController {
+	return &RoomController{
+		db:             db,
+		BaseController: BaseController,
+	}
+}
+
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
 	deserializer, err := deserializer.NewFileDeserializer(path)
 	if err != nil {
