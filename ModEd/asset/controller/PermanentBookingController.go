@@ -10,6 +10,15 @@ import (
 	"gorm.io/gorm"
 )
 
+type PermanentBookingControllerInterface interface {
+	CheckRoomIsInService(RoomID uint) (bool, error)
+	CreateWeeklySchedule(startDateTime, endDateTime time.Time, roomID uint, courseID uint, classID uint, facultyID uint, departmentID uint, programTypeID uint, semesterEndDate time.Time) error
+	GetLastCreatedScheduleIDs() []uint
+	GetAllPermanentBookings() ([]model.PermanentSchedule, error)
+	GetPermanentBookingByID(id uint) (model.PermanentSchedule, error)
+	UpdatePermanentBooking(StartDate, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint, ScheduleID uint) error
+	DeletePermanentSchedule(id uint) error
+}
 type PermanentBookingController struct {
 	db                     *gorm.DB
 	lastCreatedScheduleIDs []uint
@@ -72,10 +81,9 @@ func (controller *PermanentBookingController) CreateWeeklySchedule(startDateTime
 			ClassId:       classID,
 		}
 
-		if err := controller.Insert(schedule); err != nil {
+		if err := controller.BaseController.Insert(schedule); err != nil {
 			return fmt.Errorf("failed to create permanent schedule: %w", err)
 		}
-
 		controller.lastCreatedScheduleIDs = append(controller.lastCreatedScheduleIDs, schedule.ID)
 
 		currentStart = currentStart.AddDate(0, 0, 7)
@@ -90,11 +98,11 @@ func (controller *PermanentBookingController) GetLastCreatedScheduleIDs() []uint
 }
 
 func (controller *PermanentBookingController) GetAllPermanentBookings() ([]model.PermanentSchedule, error) {
-	return controller.List(nil, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
+	return controller.BaseController.List(nil, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
 }
 
 func (controller *PermanentBookingController) GetPermanentBookingByID(id uint) (model.PermanentSchedule, error) {
-	return controller.RetrieveByID(id, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
+	return controller.BaseController.RetrieveByID(id, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
 }
 
 func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint, ScheduleID uint) error {
@@ -142,12 +150,12 @@ func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, 
 }
 
 func (controller *PermanentBookingController) DeletePermanentSchedule(id uint) error {
-	schedule, err := controller.RetrieveByID(id)
+	schedule, err := controller.BaseController.RetrieveByID(id)
 	if err != nil {
 		return fmt.Errorf("unable to find schedule with ID %d: %w", id, err)
 	}
 
-	if err := controller.DeleteByID(id); err != nil {
+	if err := controller.BaseController.DeleteByID(id); err != nil {
 		return fmt.Errorf("failed to delete permanent schedule: %w", err)
 	}
 
