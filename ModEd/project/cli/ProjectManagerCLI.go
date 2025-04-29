@@ -1,7 +1,6 @@
 package main
 
 import (
-	"ModEd/project/cli/menus"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -181,8 +180,8 @@ func main() {
 					{
 						Title: "Assign Groups, Advisors, and Committees",
 						Children: []*utils.MenuItem{
-							menus.BuildAdvisorMenu(advisorController),
-							menus.BuildCommitteeMenu(committeeController),
+							BuildAdvisorMenu(advisorController),
+							BuildCommitteeMenu(committeeController),
 						},
 					},
 				},
@@ -190,22 +189,22 @@ func main() {
 			{
 				Title: "Project Execution and Monitoring",
 				Children: []*utils.MenuItem{
-					menus.BuildReportMenu(reportController),
-					menus.BuildProgressMenu(progressController),
+					BuildReportMenu(reportController),
+					BuildProgressMenu(progressController),
 				},
 			},
 			{
 				Title: "Evaluation & Assessment",
 				Children: []*utils.MenuItem{
-					menus.BuildEvaluateAssignmentMenu(
+					BuildEvaluateAssignmentMenu(
 						scoreAssignmentAdvisorController,
 						scoreAssignmentCommitteeController,
 					),
-					menus.BuildEvaluateReportMenu(
+					BuildEvaluateReportMenu(
 						scoreReportAdvisorController,
 						scoreReportCommitteeController,
 					),
-					menus.BuildEvaluatePresentationMenu(
+					BuildEvaluatePresentationMenu(
 						scorePresentationAdvisorController,
 						scorePresentationCommitteeController,
 					),
