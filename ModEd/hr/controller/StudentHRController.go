@@ -3,6 +3,7 @@ package controller
 import (
 	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/model"
 	"fmt"
 
@@ -72,15 +73,15 @@ func AddStudent(tx *gorm.DB,
 	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
 ) error {
 	// 1) common record
-	common := &commonModel.Student{
-		StudentCode: studentCode,
-		FirstName:   firstName,
-		LastName:    lastName,
-		Email:       email,
-	}
-	if err := commonController.CreateStudentController(tx).Create(common); err != nil {
-		return fmt.Errorf("common.Create failed: %w", err)
-	}
+	// common := &commonModel.Student{
+	// 	StudentCode: studentCode,
+	// 	FirstName:   firstName,
+	// 	LastName:    lastName,
+	// 	Email:       email,
+	// }
+	// if err := commonController.CreateStudentController(tx).Create(common); err != nil {
+	// 	return fmt.Errorf("common.Create failed: %w", err)
+	// }
 
 	// 2) migrate to HR
 	if err := MigrateStudentsToHR(tx); err != nil {
@@ -143,7 +144,22 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 	})
 }
 
-func (f *HRFacade) ImportStudents(tx *gorm.DB, hrRecordsMap map[string]model.StudentInfo) error {
+func (f *HRFacade) ImportStudents(tx *gorm.DB, filepath string) error {
+
+	hrMapper, err := core.CreateMapper[model.StudentInfo](filepath)
+	if err != nil {
+		return fmt.Errorf("failed to create HR mapper: %v", err)
+	}
+
+	hrRecords := hrMapper.Deserialize()
+	hrRecordsMap := make(map[string]model.StudentInfo)
+	for _, hrRec := range hrRecords {
+		if _, exists := hrRecordsMap[hrRec.StudentCode]; exists {
+			return fmt.Errorf("duplicate student code found: %s", hrRec.StudentCode)
+		}
+		hrRecordsMap[hrRec.StudentCode] = *hrRec
+	}
+
 	for _, hrRec := range hrRecordsMap {
 		studentInfo, err := f.GetStudentById(hrRec.StudentCode)
 		if err != nil {
