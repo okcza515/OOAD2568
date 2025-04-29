@@ -11,24 +11,14 @@ import (
 	"time"
 )
 
-func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController,loginCtrl *controller.LoginController) {
-	var username, password string
-	fmt.Print("Enter admin username: ")
-	fmt.Scanln(&username)
-	fmt.Print("Enter admin password: ")
-	fmt.Scanln(&password)
-
-	ok, err := loginCtrl.CheckUsernameAndPassword(username, password)
+func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController, loginCtrl *controller.LoginController) {
+	username, err := AdminLogin(loginCtrl)
 	if err != nil {
-		fmt.Println("An error occurred while checking credentials:", err)
+		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 		return
 	}
-	if !ok {
-		fmt.Println("Invalid credentials. Access denied.")
-		time.Sleep(3 * time.Second)
-		return
-	}
+
 	util.ClearScreen()
 	fmt.Println("Login successful. Welcome,", username)
 	fmt.Println("==== Admin Menu ====")
@@ -57,6 +47,24 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 		fmt.Println("Invalid option. Try again.")
 
 	}
+}
+
+func AdminLogin(loginCtrl *controller.LoginController) (string, error) {
+	var username, password string
+	fmt.Print("Enter admin username: ")
+	fmt.Scanln(&username)
+	fmt.Print("Enter admin password: ")
+	fmt.Scanln(&password)
+
+	ok, err := loginCtrl.CheckUsernameAndPassword(username, password)
+	if err != nil {
+		return "", fmt.Errorf("An error occurred while checking credentials: %v", err)
+	}
+	if !ok {
+		return "", fmt.Errorf("Invalid credentials. Access denied.")
+	}
+
+	return username, nil
 }
 
 func DeleteInterview(interviewCtrl *controller.InterviewController) {

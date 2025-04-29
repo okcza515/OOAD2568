@@ -1,20 +1,29 @@
 package controller
 
 import (
-	"ModEd/core"
-	"ModEd/recruit/model"
-
 	"gorm.io/gorm"
 )
 
 type LoginController struct {
 	strategy LoginStrategy
-	Base     *core.BaseController[*model.Admin]
 	DB       *gorm.DB
 }
 
-func CreateLoginController(strategy LoginStrategy) *LoginController {
-	return &LoginController{strategy: strategy}
+func NewLoginController(db *gorm.DB) *LoginController {
+	return &LoginController{DB: db}
+}
+
+func (c *LoginController) SetStrategyByRole(role string) {
+	switch role {
+	case "user":
+		c.strategy = &UserIDLoginStrategy{DB: c.DB}
+	case "instructor":
+		c.strategy = &InstructorIDLoginStrategy{DB: c.DB}
+	case "admin":
+		c.strategy = &UsernamePasswordLoginStrategy{DB: c.DB}
+	default:
+		panic("invalid role")
+	}
 }
 
 func (c *LoginController) CheckUsername(username string) (bool, error) {
@@ -22,5 +31,9 @@ func (c *LoginController) CheckUsername(username string) (bool, error) {
 }
 
 func (c *LoginController) CheckUsernameAndPassword(username, password string) (bool, error) {
-	return c.strategy.CheckUsernameAndPassword(username,password)
+	return c.strategy.CheckUsernameAndPassword(username, password)
+}
+
+func (c *LoginController) CheckID(id string) (bool, error) {
+	return c.strategy.CheckID(id)
 }

@@ -15,12 +15,10 @@ import (
 func main() {
 	// Command-line flags for file paths and role
 	var (
-		database          string
-		roundsCSVPath     string
-		facultyCSVPath    string
-		departmentCSVPath string
-		adminCSVPath      string
-		role              string
+		database      string
+		roundsCSVPath string
+		adminCSVPath  string
+		role          string
 	)
 
 	// Get the current working directory
@@ -79,17 +77,8 @@ func main() {
 		return
 	}
 
-	// Create InstructorLoginStrategy (InstructorLoginStrategy implements LoginStrategy)
-	instructorLoginStrategy := &controller.InstructorLoginStrategy{DB: db.DB}
+	loginController := controller.NewLoginController(db.DB)
 
-	// Create AdminLoginStrategy (AdminLoginStrategy implements LoginStrategy)
-	adminLoginStrategy := &controller.AdminLoginStrategy{DB: db.DB}
-
-	// Create LoginController using the respective strategy
-	instructorLoginController := controller.CreateLoginController(instructorLoginStrategy)
-	adminLoginController := controller.CreateLoginController(adminLoginStrategy)
-
-	// Main menu loop
 	for {
 		util.ClearScreen()
 
@@ -110,25 +99,25 @@ func main() {
 			var roleChoice int
 			fmt.Scanln(&roleChoice)
 
-			// Handle role selection
 			switch roleChoice {
 			case 1:
-				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
+				loginController.SetStrategyByRole("user")
+				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService, loginController)
 			case 2:
-				// Admin role selection, now passing the correct loginController
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, adminLoginController)
+				loginController.SetStrategyByRole("admin")
+				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, loginController)
 			case 3:
-				// Instructor role selection, passing the correct loginController
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, instructorLoginController)
+				loginController.SetStrategyByRole("instructor")
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, loginController)
 			case 4:
-				// Exit the program
 				fmt.Println("Exiting...")
 				return
+
 			default:
-				// Invalid selection
 				fmt.Println("Invalid option. Try again.")
 				continue
 			}
+
 		}
 	}
 }

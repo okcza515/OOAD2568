@@ -2,13 +2,14 @@
 package cli
 
 import (
+	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 )
 
-func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService) {
+func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService, loginController *controller.LoginController) {
 
 	for {
 		util.ClearScreen()
