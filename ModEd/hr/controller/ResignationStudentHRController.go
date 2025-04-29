@@ -33,7 +33,7 @@ func (c *ResignationStudentHRController) update(req *model.RequestResignationStu
 	return c.db.Save(req).Error
 }
 
-func (h *HRFacade) SubmitResignationStudent(db *gorm.DB,studentID string, reason string) error {
+func SubmitResignationStudent(db *gorm.DB,studentID string, reason string) error {
 	tm := &util.TransactionManager{DB: db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		

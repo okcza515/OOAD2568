@@ -42,17 +42,16 @@ func requestResignation(target string, args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	hrFacade := controller.NewHRFacade(tx)
 	var err error
 
 	if target == "student" {
-		err = hrFacade.SubmitResignationStudent(tx, *id, *reason)
+		err = controller.SubmitResignationStudent(tx, *id, *reason)
 		if err != nil {
 			return fmt.Errorf("failed to submit student resignation request: %v", err)
 		}
 		fmt.Println("Student resignation request submitted successfully.")
 	} else if target == "instructor" {
-		err = hrFacade.SubmitResignationInstructor(tx, *id, *reason)
+		err = controller.SubmitResignationInstructor(tx, *id, *reason)
 		if err != nil {
 			return fmt.Errorf("failed to submit instructor resignation request: %v", err)
 		}
