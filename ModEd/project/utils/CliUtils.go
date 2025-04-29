@@ -2,6 +2,7 @@ package utils
 
 import (
 	"ModEd/project/model"
+	"encoding/csv"
 	"fmt"
 	"os"
 
@@ -42,6 +43,24 @@ func OpenDatabase(database string) *gorm.DB {
 	}
 
 	return db
+}
+
+func ImportCsv(filePath string) [][]string {
+	file, err := os.Open(filePath)
+	if err != nil {
+		fmt.Printf("Failed to open CSV %s: %v\n", filePath, err)
+		return nil
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		fmt.Printf("Failed to read CSV %s: %v\n", filePath, err)
+		return nil
+	}
+
+	return records
 }
 
 func PrintTitle(title string) {
