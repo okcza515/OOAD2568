@@ -2,7 +2,9 @@ package controller
 
 import (
 	"ModEd/hr/model"
+	"ModEd/hr/util"
 	"fmt"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -47,12 +49,43 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 		Updates(info).Error
 }
 
+func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error {
+	tm := &util.TransactionManager{DB: tx}
+	return tm.Execute(func(tx *gorm.DB) error {
+		hrFacade := NewHRFacade(tx)
+		instructorInfo, err := hrFacade.GetInstructorById(instructorID)
+		if err != nil {
+			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
+		}
+
+		switch strings.ToLower(field) {
+		case "position", "academicposition", "academic_position":
+			parsedPos, err := model.ParseAcademicPosition(value)
+			if err != nil {
+				return fmt.Errorf("invalid academic position: %v", err)
+			}
+			instructorInfo.AcademicPosition = parsedPos
+		case "department":
+			// Assuming InstructorInfo has a Department field.
+			// instructorInfo.Department = *value
+		default:
+			return fmt.Errorf("unknown field for instructor update: %s", field)
+		}
+
+		if err := hrFacade.UpdateInstructor(instructorInfo); err != nil {
+			return fmt.Errorf("error updating instructor: %v", err)
+		}
+		fmt.Println("Instructor updated successfully!")
+		return nil
+	})
+}
+
 // Delete deletes an instructor's HR information by ID.
 func (c *InstructorHRController) delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 func ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
-	
+
 	hrFacade := NewHRFacade(tx)
 	for _, instructor := range instructors {
 		if instructor.ID == 0 || instructor.FirstName == "" {

@@ -77,7 +77,9 @@ func main() {
 		return
 	}
 
-	loginController := controller.NewLoginController(db.DB)
+	loginController := controller.LoginController{
+		Strategy: controller.NewLoginStrategy(role, db.DB),
+	}
 
 	for {
 		util.ClearScreen()
@@ -101,14 +103,14 @@ func main() {
 
 			switch roleChoice {
 			case 1:
-				loginController.SetStrategyByRole("user")
+				loginController.SetStrategy(controller.NewLoginStrategy("user", db.DB))
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService, loginController)
 			case 2:
-				loginController.SetStrategyByRole("admin")
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, loginController)
+				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
+				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 			case 3:
-				loginController.SetStrategyByRole("instructor")
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, loginController)
+				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, &loginController)
 			case 4:
 				fmt.Println("Exiting...")
 				return

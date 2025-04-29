@@ -1,7 +1,8 @@
-package menus
+package main
 
 import (
 	"ModEd/project/controller"
+	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
 	"log"
@@ -12,8 +13,8 @@ func BuildAssessmentManagerMenu(
 	assessmentCriteriaController *controller.AssessmentCriteriaController,
 	assessmentController *controller.AssessmentController,
 	assessmentCriteriaLinkController *controller.AssessmentCriteriaLinkController,
-	scoreAdvisorController *controller.ScoreAdvisorController,
-	scoreCommitteeController *controller.ScoreCommitteeController,
+	scoreAdvisorController *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor],
+	scoreCommitteeController *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee],
 ) *utils.MenuItem {
 	return &utils.MenuItem{
 		Title: "Assessment Manager",
@@ -50,11 +51,11 @@ func BuildAssessmentManagerMenu(
 				),
 			},
 			BuildAssessmentScoreManagerMenu(
-				scoreAdvisorController,
-				scoreCommitteeController,
 				assessmentController,
 				assessmentCriteriaLinkController,
 				assessmentCriteriaController,
+				scoreAdvisorController,
+				scoreCommitteeController,
 			),
 			BuildAssessmentCriteriaManagerMenu(assessmentCriteriaController),
 		},

@@ -16,7 +16,7 @@ func CreateDepartmentController(db *gorm.DB) *DepartmentController {
 }
 
 func (c *DepartmentController) GetAll() ([]*model.Department, error) {
-	return model.GetAllCommonModels[model.Department](c.DB)
+	return model.CommonModelGetAll[model.Department](c.DB)
 }
 
 func (c *DepartmentController) GetBy(field string, value interface{}) ([]*model.Department, error) {
@@ -33,6 +33,10 @@ func (c *DepartmentController) UpdateBudget(name string, delta int) error {
 
 func (c *DepartmentController) Register(department []*model.Department) error {
 	return model.CommonRegister(c.DB, department)
+}
+
+func (c *DepartmentController) Delete(field string, value interface{}) error {
+	return model.DeleteRecordByField[model.Department](c.DB, field, value)
 }
 
 func (c *DepartmentController) Truncate() error {

@@ -1,4 +1,4 @@
-package menus
+package main
 
 import (
 	"ModEd/project/controller"
@@ -8,27 +8,27 @@ import (
 	"strconv"
 )
 
-func BuildEvaluateAssignmentMenu(
-	scoreAssignmentAdvisorController *controller.ScoreAdvisorController[*model.ScoreAssignmentAdvisor],
-	scoreAssignmentCommitteeController *controller.ScoreCommitteeController[*model.ScoreAssignmentCommittee],
+func BuildEvaluatePresentationMenu(
+	scorePresentationAdvisorController *controller.ScoreAdvisorController[*model.ScorePresentationAdvisor],
+	scorePresentationCommitteeController *controller.ScoreCommitteeController[*model.ScorePresentationCommittee],
 ) *utils.MenuItem {
 	return &utils.MenuItem{
-		Title: "Evaluate Assignment",
+		Title: "Evaluate Presentation",
 		Children: []*utils.MenuItem{
 			{
 				Title: "For Advisor",
 				Action: func(io *utils.MenuIO) {
-					io.Println("Evaluating Assignment for Advisor...")
+					io.Println("Evaluating Presentation for Advisor...")
 
-					io.Print("Enter Assignment ID (-1 to cancel): ")
-					assignmentIdStr, err := io.ReadInput()
-					if err != nil || assignmentIdStr == "-1" {
+					io.Print("Enter Presentation ID (-1 to cancel): ")
+					presentationIdStr, err := io.ReadInput()
+					if err != nil || presentationIdStr == "-1" {
 						io.Println("Cancelled.")
 						return
 					}
-					assignmentId, err := strconv.Atoi(assignmentIdStr)
+					presentationId, err := strconv.Atoi(presentationIdStr)
 					if err != nil {
-						io.Println("Invalid Assignment ID.")
+						io.Println("Invalid Presentation ID.")
 						return
 					}
 
@@ -56,12 +56,12 @@ func BuildEvaluateAssignmentMenu(
 						return
 					}
 
-					newScore := &model.ScoreAssignmentAdvisor{
-						AssignmentId: uint(assignmentId),
-						AdvisorId:    uint(advisorId),
-						Score:        score,
+					newScore := &model.ScorePresentationAdvisor{
+						PresentationId: uint(presentationId),
+						AdvisorId:      uint(advisorId),
+						Score:          score,
 					}
-					if err := scoreAssignmentAdvisorController.InsertAdvisorScore(newScore); err != nil {
+					if err := scorePresentationAdvisorController.InsertAdvisorScore(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
 					} else {
 						io.Println("Advisor score submitted successfully!")
@@ -71,17 +71,17 @@ func BuildEvaluateAssignmentMenu(
 			{
 				Title: "For Committee",
 				Action: func(io *utils.MenuIO) {
-					io.Println("Evaluating Assignment for Committee...")
+					io.Println("Evaluating Presentation for Committee...")
 
-					io.Print("Enter Assignment ID (-1 to cancel): ")
-					assignmentIdStr, err := io.ReadInput()
-					if err != nil || assignmentIdStr == "-1" {
+					io.Print("Enter Presentation ID (-1 to cancel): ")
+					presentationIdStr, err := io.ReadInput()
+					if err != nil || presentationIdStr == "-1" {
 						io.Println("Cancelled.")
 						return
 					}
-					assignmentId, err := strconv.Atoi(assignmentIdStr)
+					presentationId, err := strconv.Atoi(presentationIdStr)
 					if err != nil {
-						io.Println("Invalid Assignment ID.")
+						io.Println("Invalid Presentation ID.")
 						return
 					}
 
@@ -109,12 +109,12 @@ func BuildEvaluateAssignmentMenu(
 						return
 					}
 
-					newScore := &model.ScoreAssignmentCommittee{
-						AssignmentId: uint(assignmentId),
-						CommitteeId:  uint(committeeId),
-						Score:        score,
+					newScore := &model.ScorePresentationCommittee{
+						PresentationId: uint(presentationId),
+						CommitteeId:    uint(committeeId),
+						Score:          score,
 					}
-					if err := scoreAssignmentCommitteeController.InsertCommitteeScore(newScore); err != nil {
+					if err := scorePresentationCommitteeController.InsertCommitteeScore(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 					} else {
 						io.Println("Committee score submitted successfully!")

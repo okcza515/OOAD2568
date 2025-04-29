@@ -3,6 +3,7 @@ package cli
 
 import (
 	"ModEd/recruit/controller"
+	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
@@ -56,11 +57,17 @@ func AdminLogin(loginCtrl *controller.LoginController) (string, error) {
 	fmt.Print("Enter admin password: ")
 	fmt.Scanln(&password)
 
-	ok, err := loginCtrl.CheckUsernameAndPassword(username, password)
+	req := controller.LoginRequest{
+		Username: username,
+		Password: password,
+	}
+
+	var admin model.Admin
+	isValid, err := loginCtrl.ExecuteLogin(req, &admin)
 	if err != nil {
 		return "", fmt.Errorf("An error occurred while checking credentials: %v", err)
 	}
-	if !ok {
+	if !isValid {
 		return "", fmt.Errorf("Invalid credentials. Access denied.")
 	}
 

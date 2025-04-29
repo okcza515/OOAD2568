@@ -8,7 +8,7 @@ import (
 
 type ScoreAdvisorController[T core.RecordInterface] struct {
 	*core.BaseController[T]
-	db             *gorm.DB
+	db *gorm.DB
 }
 
 func NewScoreAdvisorController[T core.RecordInterface](db *gorm.DB) *ScoreAdvisorController[T] {

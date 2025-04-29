@@ -8,14 +8,14 @@ import (
 )
 
 type GroupMemberController struct {
-	*core.BaseController
+	*core.BaseController[*model.GroupMember]
 	db *gorm.DB
 }
 
 func NewGroupMemberController(db *gorm.DB) *GroupMemberController {
 	return &GroupMemberController{
 		db:             db,
-		BaseController: core.NewBaseController("groupMembers", db),
+		BaseController: core.NewBaseController[*model.GroupMember](db),
 	}
 }
 

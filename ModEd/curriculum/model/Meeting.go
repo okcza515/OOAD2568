@@ -12,13 +12,13 @@ import (
 
 type Meeting struct {
 	gorm.Model
-	Title       string                   `gorm:"type:varchar(100);not null"`
-	Description string                   `gorm:"type:text"`
-	Date        time.Time                `gorm:"not null"`
-	Location    string                   `gorm:"type:varchar(255)"`
+	Title       string                   `csv:"title" gorm:"type:varchar(100);not null"`
+	Description string                   `csv:"description" gorm:"type:text"`
+	Date        time.Time                `csv:"date" gorm:"not null"`
+	Location    string                   `csv:"location" gorm:"type:varchar(255)"`
+	StartTime   time.Time                `csv:"start_time" gorm:"not null"`
+	EndTime     time.Time                `csv:"end_time"`
 	Attendees   []commonModel.Instructor `gorm:"many2many:meeting_attendees;constraint:OnDelete:CASCADE"`
-	StartTime   time.Time                `gorm:"not null"`
-	EndTime     time.Time                `gorm:""`
 	*core.SerializableRecord
 }
 

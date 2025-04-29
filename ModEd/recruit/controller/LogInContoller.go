@@ -1,39 +1,28 @@
 package controller
 
-import (
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type LoginController struct {
-	strategy LoginStrategy
-	DB       *gorm.DB
+	Strategy LoginStrategy
 }
 
-func NewLoginController(db *gorm.DB) *LoginController {
-	return &LoginController{DB: db}
-}
-
-func (c *LoginController) SetStrategyByRole(role string) {
-	switch role {
-	case "user":
-		c.strategy = &UserIDLoginStrategy{DB: c.DB}
-	case "instructor":
-		c.strategy = &InstructorIDLoginStrategy{DB: c.DB}
+func NewLoginStrategy(userType string, db *gorm.DB) LoginStrategy {
+	switch userType {
 	case "admin":
-		c.strategy = &UsernamePasswordLoginStrategy{DB: c.DB}
+		return &AdminLoginStrategy{DB: db}
+	case "instructor":
+		return &UserIDLoginStrategy{DB: db}
+	case "user":
+		return &UserIDLoginStrategy{DB: db}
 	default:
-		panic("invalid role")
+		return nil
 	}
 }
 
-func (c *LoginController) CheckUsername(username string) (bool, error) {
-	return c.strategy.CheckUsername(username)
+func (c *LoginController) SetStrategy(strategy LoginStrategy) {
+	c.Strategy = strategy
 }
 
-func (c *LoginController) CheckUsernameAndPassword(username, password string) (bool, error) {
-	return c.strategy.CheckUsernameAndPassword(username, password)
-}
-
-func (c *LoginController) CheckID(id string) (bool, error) {
-	return c.strategy.CheckID(id)
+func (c *LoginController) ExecuteLogin(req LoginRequest, model interface{}) (bool, error) {
+	return c.Strategy.ApplyLogin(req, model)
 }

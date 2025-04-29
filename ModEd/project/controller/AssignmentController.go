@@ -8,14 +8,14 @@ import (
 )
 
 type AssignmentController struct {
-	*core.BaseController
+	*core.BaseController[*model.Assignment]
 	db *gorm.DB
 }
 
 func NewAssignmentController(db *gorm.DB) *AssignmentController {
 	return &AssignmentController{
 		db:             db,
-		BaseController: core.NewBaseController("assignments", db),
+		BaseController: core.NewBaseController[*model.Assignment](db),
 	}
 }
 

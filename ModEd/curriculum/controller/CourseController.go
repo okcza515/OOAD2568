@@ -19,7 +19,7 @@ type CourseController struct {
 type CourseControllerInterface interface {
 	CreateCourse(course *model.Course) (courseId uint, err error)
 	GetCourse(courseId uint, preload ...string) (course *model.Course, err error)
-	GetCourses() (courses []*model.Course, err error)
+	GetCourses(preload ...string) (courses []*model.Course, err error)
 	UpdateCourse(updatedCourse *model.Course) (*model.Course, error)
 	DeleteCourse(courseId uint) (course *model.Course, err error)
 	CreateSeedCourse(path string) (courses []*model.Course, err error)
@@ -48,8 +48,8 @@ func (c *CourseController) GetCourse(courseId uint, preload ...string) (course *
 }
 
 // TODO: Consider adding condtions or preload params
-func (c *CourseController) GetCourses() (courses []*model.Course, err error) {
-	courses, err = c.core.List(nil)
+func (c *CourseController) GetCourses(preload ...string) (courses []*model.Course, err error) {
+	courses, err = c.core.List(nil, preload...)
 	if err != nil {
 		return nil, err
 	}

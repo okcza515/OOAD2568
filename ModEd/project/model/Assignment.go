@@ -15,3 +15,31 @@ type Assignment struct {
 	SeniorProjectId uint
 	SeniorProject   SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }
+
+func (p Assignment) GetID() uint {
+	return p.ID
+}
+
+func (p Assignment) ToString() string {
+	return ""
+}
+
+func (p Assignment) Validate() error {
+	return nil
+}
+
+func (p Assignment) ToCSVRow() string {
+	return ""
+}
+
+func (p Assignment) FromCSV(raw string) error {
+	return nil
+}
+
+func (p Assignment) ToJSON() string {
+	return ""
+}
+
+func (p Assignment) FromJSON(raw string) error {
+	return nil
+}

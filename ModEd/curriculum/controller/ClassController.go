@@ -19,8 +19,8 @@ type ClassController struct {
 
 type ClassControllerInterface interface {
 	CreateClass(class *model.Class) (classId uint, err error)
-	GetClass(classId uint) (class *model.Class, err error)
-	GetClasses() (classes []*model.Class, err error)
+	GetClass(classId uint, preload ...string) (class *model.Class, err error)
+	GetClasses(preload ...string) (classes []*model.Class, err error)
 	UpdateClass(updatedClass *model.Class) (class *model.Class, err error)
 	DeleteClass(classId uint) (class *model.Class, err error)
 	CreateSeedClass(path string) (classes []*model.Class, err error)
@@ -40,16 +40,16 @@ func (c *ClassController) CreateClass(class *model.Class) (classId uint, err err
 	return class.ClassId, nil
 }
 
-func (c *ClassController) GetClass(classId uint) (class *model.Class, err error) {
-	class, err = c.core.RetrieveByID(classId)
+func (c *ClassController) GetClass(classId uint, preload ...string) (class *model.Class, err error) {
+	class, err = c.core.RetrieveByID(classId, preload...)
 	if err != nil {
 		return nil, err
 	}
 	return class, nil
 }
 
-func (c *ClassController) GetClasses() (classes []*model.Class, err error) {
-	classes, err = c.core.List(nil)
+func (c *ClassController) GetClasses(preload ...string) (classes []*model.Class, err error) {
+	classes, err = c.core.List(nil, preload...)
 	if err != nil {
 		return nil, err
 	}

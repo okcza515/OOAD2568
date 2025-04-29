@@ -46,7 +46,7 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentC
 	assessmentCriteriaController := controller.NewAssessmentCriteriaController(db)
 	assessmentCriteriaLinkController := controller.NewAssessmentCriteriaLinkController(db)
 
-	return db, assessmentController, assessmentCriteriaController, assessmentCriteriaLinkController, assignmentController.(*controller.AssignmentController), presentationController, reportController, dbName
+	return db, assessmentController, assessmentCriteriaController, assessmentCriteriaLinkController, assignmentController, presentationController, reportController, dbName
 }
 
 func cleanup(dbName string) {
