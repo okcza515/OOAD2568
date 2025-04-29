@@ -22,19 +22,19 @@ type StudentWorkloadService interface {
 	ReviewStudentRequest(id uint, review string, comment string) error
 }
 
-type StudentWorkloadController struct {
+type StudentRequestController struct {
 	*core.BaseController[*model.StudentAdvisor]
 	Connector *gorm.DB
 }
 
-func CreateStudentWorkloadController(db *gorm.DB) *StudentWorkloadController {
-	return &StudentWorkloadController{
+func CreateStudentWorkloadController(db *gorm.DB) *StudentRequestController {
+	return &StudentRequestController{
 		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		Connector:      db,
 	}
 }
 
-func (swc *StudentWorkloadController) ListStudentRequest(instructorId uint) ([]model.StudentRequest, error) {
+func (swc *StudentRequestController) ListStudentRequest(instructorId uint) ([]model.StudentRequest, error) {
 	var studentRequests []model.StudentRequest
 	err := swc.Connector.Where("instructor_id = ?", instructorId).Find(&studentRequests).Error
 	if err != nil {
@@ -43,15 +43,15 @@ func (swc *StudentWorkloadController) ListStudentRequest(instructorId uint) ([]m
 	return studentRequests, nil
 }
 
-func (swc *StudentWorkloadController) CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
+func (swc *StudentRequestController) CreateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
 	return swc.Connector.Create(&studentAdvisor).Error
 }
 
-func (swc *StudentWorkloadController) UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
+func (swc *StudentRequestController) UpdateStudentAdvisor(studentAdvisor model.StudentAdvisor) error {
 	return swc.Connector.Save(&studentAdvisor).Error
 }
 
-func (swc *StudentWorkloadController) DeleteStudentAdvisor(id uint) error {
+func (swc *StudentRequestController) DeleteStudentAdvisor(id uint) error {
 	var studentAdvisor model.StudentAdvisor
 	err := swc.Connector.First(&studentAdvisor, id).Error
 	if err != nil {
@@ -60,7 +60,7 @@ func (swc *StudentWorkloadController) DeleteStudentAdvisor(id uint) error {
 	return swc.Connector.Delete(&studentAdvisor).Error
 }
 
-func (swc *StudentWorkloadController) GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error) {
+func (swc *StudentRequestController) GetStudentUnderSupervisionByInstructorId(instructorId uint) ([]model.StudentAdvisor, error) {
 	var studentAdvisors []model.StudentAdvisor
 	err := swc.Connector.Where("instructor_id = ?", instructorId).Preload("Students").Find(&studentAdvisors).Error
 	if err != nil {
@@ -69,11 +69,11 @@ func (swc *StudentWorkloadController) GetStudentUnderSupervisionByInstructorId(i
 	return studentAdvisors, nil
 }
 
-func (swc *StudentWorkloadController) CreateStudentRequest(studentRequest model.StudentRequest) error {
+func (swc *StudentRequestController) CreateStudentRequest(studentRequest model.StudentRequest) error {
 	return swc.Connector.Create(&studentRequest).Error
 }
 
-func (swc *StudentWorkloadController) GetStudentRequestsByInstructorId(instructorId uint) ([]model.StudentRequest, error) {
+func (swc *StudentRequestController) GetStudentRequestsByInstructorId(instructorId uint) ([]model.StudentRequest, error) {
 	var studentRequests []model.StudentRequest
 	err := swc.Connector.Where("instructor_id = ?", instructorId).Find(&studentRequests).Error
 	if err != nil {
@@ -82,7 +82,7 @@ func (swc *StudentWorkloadController) GetStudentRequestsByInstructorId(instructo
 	return studentRequests, nil
 }
 
-func (swc *StudentWorkloadController) ReviewStudentRequest(id uint, review string, comment string) error {
+func (swc *StudentRequestController) ReviewStudentRequest(id uint, review string, comment string) error {
 	var studentRequest model.StudentRequest
 	err := swc.Connector.First(&studentRequest, id).Error
 	if err != nil {

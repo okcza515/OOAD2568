@@ -13,7 +13,7 @@ type InstructorWorkloadModuleWrapper struct {
 	ClassLectureController   *ClassLectureController
 	ClassMaterialController  *ClassMaterialController
 	SeniorProjectController  *ProjectController
-	StudentRequestController *StudentWorkloadController
+	StudentRequestController *StudentRequestController
 	MeetingController        *MeetingController
 	WorkloadReportController *WorkloadReportController
 	WorkloadReportFacade     *WorkloadReportFacade

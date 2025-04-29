@@ -2,34 +2,30 @@
 package controller
 
 import (
-	"ModEd/core"
-	model "ModEd/curriculum/model"
-	"fmt"
-
-	"gorm.io/gorm"
+    "ModEd/curriculum/model"
+    "gorm.io/gorm"
 )
 
 type ReportController struct {
-	*core.BaseController[model.InternshipReport]
-	Connector *gorm.DB
+    *BaseScoreController[model.InternshipReport]
 }
 
 func CreateReportController(connector *gorm.DB) *ReportController {
-	return &ReportController{
-		Connector:      connector,
-		BaseController: core.NewBaseController[model.InternshipReport](connector),
-	}
+    return &ReportController{
+        BaseScoreController: &BaseScoreController[model.InternshipReport]{Connector: connector},
+    }
 }
 
-func (rc *ReportController) UpdateReportScore(studentID string, Score int) error {
-	var application model.InternshipApplication
-	if err := rc.Connector.Where("student_code = ?", studentID).Last(&application).Error; err != nil {
-		return fmt.Errorf("failed to find application for student_code '%s': %w", studentID, err)
-	}
-	var report model.InternshipReport
-	if err := rc.Connector.Where("id = ?", application.InternshipReportId).Last(&report).Error; err != nil {
-		return fmt.Errorf("failed to find report with id '%d': %w", application.InternshipReportId, err)
-	}
-	rc.Connector.Model(&model.InternshipReport{}).Where("id = ?", report.ID).Update("ReportScore", Score)
-	return nil
+func (rc *ReportController) UpdateReportScore(studentID string, score int) error {
+    scoreFields := map[string]interface{}{
+        "ReportScore": score,
+    }
+
+    return rc.UpdateScore(studentID, scoreFields, func(db *gorm.DB, studentID string) (uint, error) {
+        var application model.InternshipApplication
+        if err := db.Where("student_code = ?", studentID).Last(&application).Error; err != nil {
+            return 0, err
+        }
+        return application.InternshipReportId, nil
+    })
 }

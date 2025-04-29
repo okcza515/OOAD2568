@@ -7,6 +7,7 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/utils/deserializer"
 	"fmt"
+	"reflect"
 )
 
 type InstructorWorkloadModuleMenuStateHandler struct {
@@ -41,7 +42,36 @@ func (handler *InstructorWorkloadModuleMenuStateHandler) Render() {
 
 func LoadCSVData(pairs map[string]interface{}) error {
 	for filename, model := range pairs {
-		fd, err := deserializer.NewFileDeserializer("data/instructor_workload/" + filename + ".csv")
+		fd, err := deserializer.NewFileDeserializer("data/instructor-workload/" + filename + ".csv")
+		if err != nil {
+			return err
+		}
+		fmt.Println("Deserializing file:", filename)
+
+		err = fd.Deserialize(model)
+		if err != nil {
+			return err
+		}
+
+		v := reflect.ValueOf(model)
+		if v.Kind() == reflect.Ptr {
+			v = v.Elem()
+		}
+
+		// ถ้า slice ว่างก็ข้าม
+		if v.Kind() == reflect.Slice && v.Len() > 0 {
+			result := migration.GetInstance().DB.Create(v.Interface())
+			if result.Error != nil {
+				return result.Error
+			}
+		}
+	}
+	return nil
+}
+
+func LoadJsonData(pairs map[string]interface{}) error {
+	for filename, model := range pairs {
+		fd, err := deserializer.NewFileDeserializer("data/curriculum/" + filename + ".json")
 		if err != nil {
 			return err
 		}
@@ -60,22 +90,37 @@ func LoadCSVData(pairs map[string]interface{}) error {
 }
 
 func (handler *InstructorWorkloadModuleMenuStateHandler) HandleUserInput(input string) error {
+	facadeWorkload := &controller.WorkloadReportFacade{
+		ClassController:           controller.NewClassController(migration.GetInstance().DB),
+		MeetingController:         controller.CreateMeetingController(migration.GetInstance().DB),
+		StudentWorkloadController: controller.CreateStudentWorkloadController(migration.GetInstance().DB),
+	}
 	switch input {
 	case "1":
+		fmt.Println("Loading CSV data...")
 		LoadCSVData(
 			map[string]interface{}{
 				"Meeting":           &[]model.Meeting{},
 				"OnlineMeeting":     &[]model.OnlineMeeting{},
 				"ExternalMeeting":   &[]model.ExternalMeeting{},
 				"ProjectEvaluation": &[]model.ProjectEvaluation{},
+				"StudentRequest":    &[]model.StudentRequest{},
 			},
 		)
 		fmt.Println("CSV data loaded successfully")
+		LoadJsonData(
+			map[string]interface{}{
+				"Class":  &[]model.Class{},
+				"Course": &[]model.Course{},
+			},
+		)
+		fmt.Println("Seed data loaded successfully")
+
 	case "2":
-		handler.wrapper.WorkloadReportFacade.GenerateDailyWorkloadReport(1)
-		// handler.wrapper.WorkloadReportController.GenerateWorkloadReportWithFilter()
+		facadeWorkload.GenerateDailyWorkloadReport(1)
 	case "3":
-		handler.wrapper.WorkloadReportBuilder.IncludeClasses().IncludeMeetings().SetDateRange("2023-01-01", "2023-12-31").Generate(1)
+		workloadReportBuilder := controller.NewWorkloadReportBuilder(facadeWorkload)
+		workloadReportBuilder.IncludeClasses().IncludeMeetings().SetDateRange("2023-01-01", "2023-12-31").Generate(1)
 	case "4":
 		handler.menuManager.SetState(handler.AdministrativeTaskMenuStateHandler)
 	case "5":
