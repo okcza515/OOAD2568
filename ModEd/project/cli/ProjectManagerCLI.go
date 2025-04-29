@@ -85,14 +85,6 @@ func main() {
 						scorePresentationCommitteeController,
 					),
 					{
-						Title: "Compile Final Scores",
-						Action: func(io *utils.MenuIO) {
-							io.Println("Compiling Final Scores...")
-							// Add logic to compile final scores เพิ่มแล้วลบด้วย
-						},
-					},
-
-					{
 						Title: "Assessment Manager",
 						Action: func(io *utils.MenuIO) {
 							BuildAssessmentManagerMenu(
