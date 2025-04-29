@@ -16,7 +16,7 @@ func NewInsertHandlerStrategy[T core.RecordInterface](controller interface{ Inse
 	return &InsertHandlerStrategy[T]{controller: controller}
 }
 
-func (cs InsertHandlerStrategy[T]) Execute() error {
+func (handler InsertHandlerStrategy[T]) Execute() error {
 	path := ""
 	fmt.Println("Please enter the path of the records (csv or json): ")
 	_, err := fmt.Scanln(&path)
@@ -35,7 +35,7 @@ func (cs InsertHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	err = cs.controller.InsertMany(recordModel)
+	err = handler.controller.InsertMany(recordModel)
 	if err != nil {
 		return err
 	}

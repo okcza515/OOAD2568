@@ -24,8 +24,8 @@ func NewListHandlerStrategy[T core.RecordInterface](
 	return &ListHandlerStrategy[T]{controller: controller, preloads: preloads}
 }
 
-func (cs ListHandlerStrategy[T]) Execute() error {
-	records, err := cs.controller.List(nil, cs.preloads...)
+func (handler ListHandlerStrategy[T]) Execute() error {
+	records, err := handler.controller.List(nil, handler.preloads...)
 	if err != nil {
 		return err
 	}

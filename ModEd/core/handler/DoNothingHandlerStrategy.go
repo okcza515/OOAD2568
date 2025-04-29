@@ -5,6 +5,6 @@ package handler
 type DoNothingHandlerStrategy struct {
 }
 
-func (cs DoNothingHandlerStrategy) Execute() error {
+func (handler DoNothingHandlerStrategy) Execute() error {
 	return nil
 }

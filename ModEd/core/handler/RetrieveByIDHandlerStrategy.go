@@ -23,7 +23,7 @@ func NewRetrieveByIDHandlerStrategy[T core.RecordInterface](
 	return &RetrieveByIDHandlerStrategy[T]{controller: controller, preloads: preloads}
 }
 
-func (cs RetrieveByIDHandlerStrategy[T]) Execute() error {
+func (handler RetrieveByIDHandlerStrategy[T]) Execute() error {
 
 	var id uint
 	fmt.Print("Enter ID to retrieve: ")
@@ -33,7 +33,7 @@ func (cs RetrieveByIDHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	record, err := cs.controller.RetrieveByID(id, cs.preloads...)
+	record, err := handler.controller.RetrieveByID(id, handler.preloads...)
 
 	if err != nil {
 		return err
