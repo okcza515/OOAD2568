@@ -9,10 +9,8 @@ import (
 )
 
 func main() {
-	// Set up CSV path with absolute path
 	csvPath := "D:\\OOAD\\OOAD2568\\ModEd\\eval\\cli\\assignment\\Mock_jockey.csv"
 
-	// Create assignment controller
 	assignmentController, err := controller.NewAssignmentController(csvPath)
 	if err != nil {
 		fmt.Println("Error initializing assignment controller:", err)
@@ -136,7 +134,6 @@ func updateAssignment(controller *controller.AssignmentController) {
 	fmt.Print("Enter assignment ID to update: ")
 	fmt.Scan(&id)
 
-	// First get the existing assignment
 	assignment, err := controller.GetAssignmentByID(id)
 	if err != nil {
 		fmt.Println("Error finding assignment:", err)
@@ -274,7 +271,7 @@ func queryAssignmentsByDateRange(controller *controller.AssignmentController) {
 		return
 	}
 
-	fmt.Printf("\nAssignments between %s and %s:\n", startDateStr, endDateStr)
+	fmt.Printf("\nAssignments betweens %s and %s:\n", startDateStr, endDateStr)
 	fmt.Println("=========================")
 	for _, a := range assignments {
 		fmt.Printf("ID: %d\n", a.ID)
