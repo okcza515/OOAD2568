@@ -42,11 +42,7 @@ func (h *HRFacade) SubmitRaiseRequest(db *gorm.DB, instructorID string, amount i
 	return tm.Execute(func(tx *gorm.DB) error {
 		raiseController := createRaiseHRController(tx)
 
-		request := model.NewRequestRaiseBuilder().
-			WithInstructorCode(instructorID).
-			WithTargetSalary(amount).
-			WithReason(reason).
-			Build()
+		request := model.NewRequestRaise(instructorID, reason, amount)
 
 		if err := raiseController.insert(request); err != nil {
 			return fmt.Errorf("failed to submit raise request: %v", err)
