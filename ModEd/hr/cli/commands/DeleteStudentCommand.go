@@ -26,10 +26,8 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
-
 	// Create a TransactionManager instance.
-	tm := &hrUtil.TransactionManager{DB: db}
+	tm := &hrUtil.TransactionManager{DB: tx}
 
 	err = tm.Execute(func(tx *gorm.DB) error {
 		// Use StudentHRController to handle the deletion business logic.

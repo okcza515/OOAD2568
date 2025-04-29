@@ -87,12 +87,12 @@ func AddStudent(tx *gorm.DB,
 		return fmt.Errorf("MigrateStudentsToHR failed: %w", err)
 	}
 
-	// 3) build HR info & upsert
+	// 3) build HR info & insert
 	hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
 
-	// // Upsert so we handle both insert & update
-	if err := NewHRFacade(tx).UpsertStudent(hrInfo); err != nil {
-		return fmt.Errorf("HR.UpsertStudent failed: %w", err)
+	// Insert the new HR record using the StudentHRController directly.
+	if err := createStudentHRController(tx).insert(hrInfo); err != nil {
+		return fmt.Errorf("failed to insert HR student info: %w", err)
 	}
 	return nil
 }
@@ -104,17 +104,15 @@ func DeleteStudent(tx *gorm.DB, studentID string) error {
 		return fmt.Errorf("failed to delete student from common data: %w", err)
 	}
 
-	hrFacade := NewHRFacade(tx)
-
-	return hrFacade.DeleteStudent(studentID)
+	return createStudentHRController(tx).delete(studentID)
 }
 
 func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
 	// Wrap the business logic in a transaction.
 	return tx.Transaction(func(tx *gorm.DB) error {
-		// Use HRFacade to get the existing HR info.
-		hrFacade := NewHRFacade(tx)
-		studentInfo, err := hrFacade.GetStudentById(studentID)
+		// Retrieve the existing HR info using StudentHRController.
+		controller := createStudentHRController(tx)
+		studentInfo, err := controller.getById(studentID)
 		if err != nil {
 			return fmt.Errorf("error retrieving student with ID %s: %v", studentID, err)
 		}
@@ -137,8 +135,8 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 			return fmt.Errorf("failed to migrate student to HR module: %v", err)
 		}
 
-		// 3) Upsert HR-specific student info.
-		if err := hrFacade.UpsertStudent(updatedStudent); err != nil {
+		// 3) Update HR-specific student info using the controller directly.
+		if err := controller.update(updatedStudent); err != nil {
 			return fmt.Errorf("failed to update student HR info: %v", err)
 		}
 		return nil

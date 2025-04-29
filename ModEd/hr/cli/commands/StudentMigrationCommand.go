@@ -2,7 +2,6 @@ package commands
 
 import (
 	"ModEd/hr/controller"
-	"ModEd/hr/util"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -10,9 +9,7 @@ import (
 
 // usage: go run hr/cli/HumanResourceCLI.go migrate
 func (c *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
-	db := util.OpenDatabase(*util.DatabasePath)
-
-	if err := controller.MigrateStudentsToHR(db); err != nil {
+	if err := controller.MigrateStudentsToHR(tx); err != nil {
 		return fmt.Errorf("migration failed: %v", err)
 	}
 
