@@ -1,31 +1,31 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 
 	"gorm.io/gorm"
 )
 
-type IPresentationController interface {
-	ListAllPresentations() ([]model.Presentation, error)
-	RetrievePresentation(id uint) (*model.Presentation, error)
-	InsertPresentation(Presentation *model.Presentation) error
-	UpdatePresentation(Presentation *model.Presentation) error
-	DeletePresentation(id uint) error
-}
-
 type PresentationController struct {
+	*core.BaseController[*model.Presentation]
 	db *gorm.DB
 }
 
-func NewPresentationController(db *gorm.DB) IPresentationController {
-	return &PresentationController{db: db}
+func NewPresentationController(db *gorm.DB) *PresentationController {
+	return &PresentationController{
+		BaseController: core.NewBaseController[*model.Presentation](db),
+		db:             db,
+	}
 }
 
 func (c *PresentationController) ListAllPresentations() ([]model.Presentation, error) {
-	var Presentations []model.Presentation
-	err := c.db.Find(&Presentations).Error
-	return Presentations, err
+	var presentations []model.Presentation
+	result := c.db.Find(&presentations)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return presentations, nil
 }
 
 func (c *PresentationController) RetrievePresentation(id uint) (*model.Presentation, error) {
