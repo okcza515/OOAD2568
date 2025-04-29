@@ -7,7 +7,7 @@ import (
 )
 
 type EvaluationStrategy interface {
-	Evaluate(criteria []projectModel.AssessmentCriteria) float64
+	Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string)
 }
 
 type PresentationEvaluationStrategy struct{}
@@ -16,7 +16,7 @@ type ReportEvaluationStrategy struct{}
 
 type MarkedCriteria struct {
 	projectModel.AssessmentCriteria
-	IsCompleted bool
+	IsPass bool
 }
 
 type WeightedCriteria struct {
@@ -24,8 +24,8 @@ type WeightedCriteria struct {
 	Weight float64
 }
 
-func (p *PresentationEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) float64 {
-	fmt.Println("Evaluating presentation criteria...")
+func (p *PresentationEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string) {
+	fmt.Println("Evaluate Presentation")
 
 	score := 0.0
 	scale := map[string]float64{
@@ -40,11 +40,13 @@ func (p *PresentationEvaluationStrategy) Evaluate(criteria []projectModel.Assess
 		}
 	}
 
-	return score
+	comment := "Should be improved"
+
+	return score, comment
 }
 
-func (a *AssignmentEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) float64 {
-	fmt.Println("Evaluating assignment criteria...")
+func (a *AssignmentEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string) {
+	fmt.Println("Evaluate Assignment")
 
 	mockedCriteria := []MarkedCriteria{
 		{criteria[0], true},
@@ -54,17 +56,18 @@ func (a *AssignmentEvaluationStrategy) Evaluate(criteria []projectModel.Assessme
 
 	score := 0.0
 	for _, c := range mockedCriteria {
-		if c.IsCompleted {
+		if c.IsPass {
 			score += 10
 		}
 	}
 
-	return score
+	comment := "Good job!"
+	return score, comment
 }
 
-func (r *ReportEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) float64 {
+func (r *ReportEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string) {
 
-	fmt.Println("Evaluating report criteria...")
+	fmt.Println("Evaluate Report")
 
 	score := 0.0
 	scale := map[string]float64{
@@ -80,7 +83,7 @@ func (r *ReportEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCr
 	}
 
 	for _, c := range mockedCriteria {
-		if c.IsCompleted {
+		if c.IsPass {
 			if val, ok := scale[c.CriteriaName]; ok {
 				score += val
 			} else {
@@ -88,5 +91,5 @@ func (r *ReportEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCr
 			}
 		}
 	}
-	return score
+	return score, ""
 }

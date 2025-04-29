@@ -1,3 +1,2 @@
 run-curriculum:
-	go build -o ../bin/curriculum ./cli/migration/migrationCLI.go
-	@../bin/curriculum
+	cd ./cli && go build -o ../../bin/curriculum cli.go && ../../bin/curriculum

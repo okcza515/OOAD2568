@@ -1,5 +1,6 @@
-// MEP-1012 Asset
 package controller
+
+// MEP-1012 Asset
 
 import (
 	"ModEd/asset/model"
@@ -11,6 +12,8 @@ import (
 type BorrowInstrumentController struct {
 	db *gorm.DB
 	*core.BaseController[model.BorrowInstrument]
+
+	observers map[string]AssetObserver[model.BorrowInstrument]
 }
 
 type BorrowInstrumentControllerInterface interface {
@@ -32,19 +35,3 @@ func (c *BorrowInstrumentController) GetByID(ID uint) (*model.BorrowInstrument, 
 	result := c.db.First(&borrowInstrument, "ID = ?", ID)
 	return borrowInstrument, result.Error
 }
-
-// func (c *BorrowInstrumentController) Create(body *model.BorrowInstrument) error {
-// 	result := c.db.Create(body)
-// 	return result.Error
-// }
-
-// func (c *BorrowInstrumentController) Update(ID uint, body *model.BorrowInstrument) error {
-// 	body.ID = ID
-// 	result := c.db.Updates(body)
-// 	return result.Error
-// }
-
-// func (c *BorrowInstrumentController) Delete(ID uint) error {
-// 	result := c.db.Model(&model.BorrowInstrument{}).Where("ID = ?", ID).Update("deleted_at", time.Now())
-// 	return result.Error
-// }

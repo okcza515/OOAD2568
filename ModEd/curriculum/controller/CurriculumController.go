@@ -35,7 +35,7 @@ func NewCurriculumController(db *gorm.DB) *CurriculumController {
 
 // Create
 func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (curriculumId uint, err error) {
-	if err := c.db.Create(&curriculum).Error; err != nil {
+	if err := c.core.Insert(curriculum); err != nil {
 		return 0, err
 	}
 	return curriculum.CurriculumId, nil
@@ -43,8 +43,8 @@ func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (c
 
 // Read one
 func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
-	curriculum = &model.Curriculum{}
-	if err := c.db.First(curriculum, curriculumId).Error; err != nil {
+	curriculum, err = c.core.RetrieveByID(curriculumId)
+	if err != nil {
 		return nil, err
 	}
 	return curriculum, nil
@@ -52,28 +52,29 @@ func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *mod
 
 // Read all
 func (c *CurriculumController) GetCurriculums() (curriculums []*model.Curriculum, err error) {
-	if err := c.db.Find(&curriculums).Error; err != nil {
+	curriculums, err = c.core.List(nil)
+	if err != nil {
 		return nil, err
 	}
 	return curriculums, nil
 }
 
 // Update
-func (c *CurriculumController) UpdateCurriculum(updated *model.Curriculum) (curriculum *model.Curriculum, err error) {
-	curriculum = &model.Curriculum{}
-	if err := c.db.First(curriculum, updated.CurriculumId).Error; err != nil {
+func (c *CurriculumController) UpdateCurriculum(updatedCurriculum *model.Curriculum) (curriculum *model.Curriculum, err error) {
+	curriculum, err = c.core.RetrieveByID(updatedCurriculum.CurriculumId)
+	if err != nil {
 		return nil, err
 	}
 
 	// update fields
-	curriculum.CurriculumId = updated.CurriculumId
-	curriculum.Name = updated.Name
-	curriculum.StartYear = updated.StartYear
-	curriculum.EndYear = updated.EndYear
-	curriculum.DepartmentName = updated.DepartmentName
-	curriculum.ProgramType = updated.ProgramType
+	curriculum.CurriculumId = updatedCurriculum.CurriculumId
+	curriculum.Name = updatedCurriculum.Name
+	curriculum.StartYear = updatedCurriculum.StartYear
+	curriculum.EndYear = updatedCurriculum.EndYear
+	curriculum.DepartmentName = updatedCurriculum.DepartmentName
+	curriculum.ProgramType = updatedCurriculum.ProgramType
 
-	if err := c.db.Updates(curriculum).Error; err != nil {
+	if err := c.core.UpdateByID(curriculum); err != nil {
 		return nil, err
 	}
 	return curriculum, nil
@@ -81,11 +82,12 @@ func (c *CurriculumController) UpdateCurriculum(updated *model.Curriculum) (curr
 
 // Delete
 func (c *CurriculumController) DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
-	curriculum = &model.Curriculum{}
-	if err := c.db.First(curriculum, curriculumId).Error; err != nil {
+	curriculum, err = c.core.RetrieveByID(curriculumId)
+	if err != nil {
 		return nil, err
 	}
-	if err := c.db.Delete(curriculum).Error; err != nil {
+
+	if err := c.core.DeleteByID(curriculumId); err != nil {
 		return nil, err
 	}
 	return curriculum, nil

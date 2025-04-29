@@ -20,3 +20,7 @@ func CreateLoginController(strategy LoginStrategy) *LoginController {
 func (c *LoginController) CheckUsername(username string) (bool, error) {
 	return c.strategy.CheckUsername(username)
 }
+
+func (c *LoginController) CheckUsernameAndPassword(username, password string) (bool, error) {
+	return c.strategy.CheckUsernameAndPassword(username,password)
+}

@@ -3,6 +3,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
@@ -12,11 +13,13 @@ import (
 type PermanentBookingController struct {
 	db                     *gorm.DB
 	lastCreatedScheduleIDs []uint
+	*core.BaseController[model.PermanentSchedule]
 }
 
 func NewPermanentBookingController(db *gorm.DB) *PermanentBookingController {
 	return &PermanentBookingController{
-		db: db,
+		db:             db,
+		BaseController: core.NewBaseController[model.PermanentSchedule](db),
 	}
 }
 
@@ -31,30 +34,29 @@ func (controller *PermanentBookingController) CheckRoomIsInService(RoomID uint) 
 	return true, nil
 }
 
-func (controller *PermanentBookingController) CreateWeeklySchedule(StartDate time.Time, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint) error {
+func (controller *PermanentBookingController) CreateWeeklySchedule(startDateTime, endDateTime time.Time, roomID uint, courseID uint, classID uint, facultyID uint, departmentID uint, programTypeID uint, semesterEndDate time.Time) error {
 	controller.lastCreatedScheduleIDs = []uint{}
 
-	if !StartDate.Before(EndDate) {
-		return fmt.Errorf("start date must be before end date")
+	if !startDateTime.Before(endDateTime) {
+		return fmt.Errorf("start time must be before end time")
 	}
 
 	var room model.Room
-	if err := controller.db.First(&room, RoomID).Error; err != nil {
-		return fmt.Errorf("unable to find room with ID %d: %w", RoomID, err)
+	if err := controller.db.First(&room, roomID).Error; err != nil {
+		return fmt.Errorf("unable to find room with ID %d: %w", roomID, err)
 	}
 	if room.IsRoomOutOfService {
-		return fmt.Errorf("room with ID %d is out of service", RoomID)
+		return fmt.Errorf("room with ID %d is out of service", roomID)
 	}
 
-	currentDate := StartDate
-	for currentDate.Before(EndDate) || currentDate.Equal(EndDate) {
-		slotStart := currentDate
-		slotEnd := currentDate.Add(time.Hour * 2)
+	currentStart := startDateTime
+	currentEnd := endDateTime
 
+	for currentStart.Before(semesterEndDate) || currentStart.Equal(semesterEndDate) {
 		timetable := model.TimeTable{
-			StartDate:   slotStart,
-			EndDate:     slotEnd,
-			RoomID:      RoomID,
+			StartDate:   currentStart,
+			EndDate:     currentEnd,
+			RoomID:      roomID,
 			IsAvailable: false,
 		}
 		if err := controller.db.Create(&timetable).Error; err != nil {
@@ -63,20 +65,21 @@ func (controller *PermanentBookingController) CreateWeeklySchedule(StartDate tim
 
 		schedule := model.PermanentSchedule{
 			TimeTableID:   timetable.ID,
-			FacultyID:     FacultyID,
-			DepartmentID:  DepartmentID,
-			ProgramtypeID: ProgramtypeID,
-			CourseId:      CourseID,
-			ClassId:       ClassID,
+			FacultyID:     facultyID,
+			DepartmentID:  departmentID,
+			ProgramtypeID: programTypeID,
+			CourseId:      courseID,
+			ClassId:       classID,
 		}
 
-		if err := controller.db.Create(&schedule).Error; err != nil {
+		if err := controller.Insert(schedule); err != nil {
 			return fmt.Errorf("failed to create permanent schedule: %w", err)
 		}
 
 		controller.lastCreatedScheduleIDs = append(controller.lastCreatedScheduleIDs, schedule.ID)
 
-		currentDate = currentDate.AddDate(0, 0, 7)
+		currentStart = currentStart.AddDate(0, 0, 7)
+		currentEnd = currentEnd.AddDate(0, 0, 7)
 	}
 
 	return nil
@@ -87,11 +90,11 @@ func (controller *PermanentBookingController) GetLastCreatedScheduleIDs() []uint
 }
 
 func (controller *PermanentBookingController) GetAllPermanentBookings() ([]model.PermanentSchedule, error) {
-	var bookings []model.PermanentSchedule
-	if err := controller.db.Preload("TimeTable").Find(&bookings).Error; err != nil {
-		return nil, fmt.Errorf("unable to retrieve permanent bookings: %w", err)
-	}
-	return bookings, nil
+	return controller.List(nil, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
+}
+
+func (controller *PermanentBookingController) GetPermanentBookingByID(id uint) (model.PermanentSchedule, error) {
+	return controller.RetrieveByID(id, "TimeTable", "Room", "Course", "Class", "Faculty", "Department", "Programtype")
 }
 
 func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint, ScheduleID uint) error {
@@ -107,8 +110,8 @@ func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, 
 		return fmt.Errorf("room with ID %d is out of service", RoomID)
 	}
 
-	var schedule model.PermanentSchedule
-	if err := controller.db.First(&schedule, ScheduleID).Error; err != nil {
+	schedule, err := controller.RetrieveByID(ScheduleID)
+	if err != nil {
 		return fmt.Errorf("unable to find schedule with ID %d: %w", ScheduleID, err)
 	}
 
@@ -131,8 +134,25 @@ func (controller *PermanentBookingController) UpdatePermanentBooking(StartDate, 
 	schedule.CourseId = CourseID
 	schedule.ClassId = ClassID
 
-	if err := controller.db.Save(&schedule).Error; err != nil {
+	if err := controller.UpdateByID(schedule); err != nil {
 		return fmt.Errorf("failed to update permanent schedule: %w", err)
+	}
+
+	return nil
+}
+
+func (controller *PermanentBookingController) DeletePermanentSchedule(id uint) error {
+	schedule, err := controller.RetrieveByID(id)
+	if err != nil {
+		return fmt.Errorf("unable to find schedule with ID %d: %w", id, err)
+	}
+
+	if err := controller.DeleteByID(id); err != nil {
+		return fmt.Errorf("failed to delete permanent schedule: %w", err)
+	}
+
+	if err := controller.db.Delete(&model.TimeTable{}, schedule.TimeTableID).Error; err != nil {
+		return fmt.Errorf("failed to delete timetable with ID %d: %w", schedule.TimeTableID, err)
 	}
 
 	return nil

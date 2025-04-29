@@ -64,7 +64,7 @@ func printCourseMenu() {
 }
 
 func listCourses(courseController controller.CourseControllerInterface) (err error) {
-	courses, err := courseController.ListCourses()
+	courses, err := courseController.GetCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)
 		return err
@@ -78,7 +78,7 @@ func listCourses(courseController controller.CourseControllerInterface) (err err
 
 func getCourseById(courseController controller.CourseControllerInterface) (err error) {
 	courseId := utils.GetUserInputUint("Enter the course ID: ")
-	course, err := courseController.GetCourseByID(courseId)
+	course, err := courseController.GetCourse(courseId)
 	if err != nil {
 		fmt.Println("Error getting course:", err)
 		return err
@@ -88,12 +88,12 @@ func getCourseById(courseController controller.CourseControllerInterface) (err e
 }
 
 func updateCourseById(courseController controller.CourseControllerInterface) (err error) {
-
+	//TODO: Implement update course logic
 	return nil
 }
 
 func deleteCourseById(courseController controller.CourseControllerInterface) (err error) {
-	courses, err := courseController.ListCourses()
+	courses, err := courseController.GetCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)
 		return err

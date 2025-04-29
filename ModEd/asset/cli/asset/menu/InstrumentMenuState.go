@@ -12,8 +12,7 @@ import (
 )
 
 type InstrumentMenuState struct {
-	manager          *cli.CLIMenuStateManager
-	controllerFacade *controller.AssetControllerFacade
+	manager *cli.CLIMenuStateManager
 
 	assetMainMenu *AssetMenuState
 
@@ -23,15 +22,17 @@ type InstrumentMenuState struct {
 }
 
 func NewInstrumentMenuState(
-	manager *cli.CLIMenuStateManager, controllerFacade *controller.AssetControllerFacade, assetMainMenu *AssetMenuState,
+	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState,
 ) *InstrumentMenuState {
+
+	controllerInstance := controller.GetAssetInstance().Instrument
+
 	return &InstrumentMenuState{
 		manager:               manager,
-		controllerFacade:      controllerFacade,
 		assetMainMenu:         assetMainMenu,
-		insertHandlerStrategy: handler.NewInsertHandlerStrategy[model.Instrument](controllerFacade.Instrument),
-		listHandlerStrategy:   handler.NewListHandlerStrategy[model.Instrument](controllerFacade.Instrument),
-		updateHandlerStrategy: handler.NewUpdateHandlerStrategy[model.Instrument](controllerFacade.Instrument),
+		insertHandlerStrategy: handler.NewInsertHandlerStrategy[model.Instrument](controllerInstance),
+		listHandlerStrategy:   handler.NewListHandlerStrategy[model.Instrument](controllerInstance),
+		updateHandlerStrategy: handler.NewUpdateHandlerStrategy[model.Instrument](controllerInstance),
 	}
 }
 

@@ -38,7 +38,7 @@ func TestCreateCourse(t *testing.T) {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	retrievedCourse, err := courseController.GetCourseByID(courseId)
+	retrievedCourse, err := courseController.GetCourse(courseId)
 	if err != nil {
 		t.Fatalf("Failed to get course: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestGetCourseByID(t *testing.T) {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	retrievedCourse, err := courseController.GetCourseByID(courseId)
+	retrievedCourse, err := courseController.GetCourse(courseId)
 	if err != nil {
 		t.Fatalf("Failed to get course: %v", err)
 	}
@@ -111,7 +111,7 @@ func TestListCourses(t *testing.T) {
 		t.Fatalf("Failed to create course: %v", err)
 	}
 
-	courses, err := courseController.ListCourses()
+	courses, err := courseController.GetCourses()
 	if err != nil {
 		t.Fatalf("Failed to list courses: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestUpdateCourse(t *testing.T) {
 	}
 
 	// First retrieve the course to get its ID
-	retrievedCourse, err := courseController.GetCourseByID(courseId)
+	retrievedCourse, err := courseController.GetCourse(courseId)
 	if err != nil {
 		t.Fatalf("Failed to get course: %v", err)
 	}
@@ -211,7 +211,7 @@ func TestDeleteCourse(t *testing.T) {
 		t.Errorf("Expected course ID %v, got %v", courseId, deletedCourse.CourseId)
 	}
 
-	_, err = courseController.GetCourseByID(courseId)
+	_, err = courseController.GetCourse(courseId)
 	if err == nil {
 		t.Fatalf("Expected error when getting deleted course, got nil")
 	}
@@ -222,10 +222,11 @@ func TestSeedCourse(t *testing.T) {
 		DBPath: "../../data/curriculum.db",
 		Config: &gorm.Config{},
 	})
-	migrationController := controller.NewMigrationController(db)
-	if err := migrationController.MigrateToDB(); err != nil {
-		t.Fatalf("Failed to migrate to db: %v", err)
-	}
+	//TODO: Fix this since migration is now at core module
+	// migrationController := controller.NewMigrationController(db)
+	// if err := migrationController.MigrateToDB(); err != nil {
+	// 	t.Fatalf("Failed to migrate to db: %v", err)
+	// }
 
 	courseController := controller.NewCourseController(db)
 	courses, err := courseController.CreateSeedCourse("../../data/curriculum/course.json")
@@ -238,7 +239,7 @@ func TestSeedCourse(t *testing.T) {
 
 	for _, course := range courses {
 		fmt.Printf("Course: %v\n", course.CourseId)
-		rcourse, err := courseController.GetCourseByID(course.CourseId)
+		rcourse, err := courseController.GetCourse(course.CourseId)
 		if err != nil {
 			t.Fatalf("Failed to create course: %v", err)
 		}

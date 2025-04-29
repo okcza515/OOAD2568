@@ -22,18 +22,44 @@ type Meeting struct {
 	*core.SerializableRecord
 }
 
-type OnlineMeeting struct {
-	Meeting
-	ZoomLink string `gorm:"type:varchar(255);not null"`
+type MeetingProductInterface interface {
+	GetTitle() string
+	GetDate() time.Time
+	GetLocation() string
 }
 
-type ExternalMeeting struct {
-	Meeting
-	CompanyName string `gorm:"type:varchar(100);not null"`
+type MeetingFactory interface {
+	CreateMeeting(meeting Meeting) MeetingProductInterface
+}
+
+type RegularMeetingFactory struct{}
+
+func (f RegularMeetingFactory) CreateMeeting(meeting Meeting) MeetingProductInterface {
+	return &Meeting{
+		Title:       meeting.Title,
+		Description: meeting.Description,
+		Location:    meeting.Location,
+		Date:        meeting.Date,
+		StartTime:   meeting.StartTime,
+		EndTime:     meeting.EndTime,
+		Attendees:   meeting.Attendees,
+	}
+}
+
+func (m *Meeting) GetTitle() string {
+	return m.Title
+}
+
+func (m *Meeting) GetDate() time.Time {
+	return m.Date
 }
 
 func (m *Meeting) GetID() uint {
 	return m.ID
+}
+
+func (m *Meeting) GetLocation() string {
+	return m.Location
 }
 
 func (m *Meeting) ToString() string {

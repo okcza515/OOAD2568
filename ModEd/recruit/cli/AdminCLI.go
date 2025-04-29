@@ -11,17 +11,22 @@ import (
 	"time"
 )
 
-func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController) {
+func AdminCLI(applicantController *controller.ApplicantController, applicationReportCtrl *controller.ApplicationReportController, interviewCtrl *controller.InterviewController, adminCtrl *controller.AdminController,loginCtrl *controller.LoginController) {
 	var username, password string
 	fmt.Print("Enter admin username: ")
 	fmt.Scanln(&username)
 	fmt.Print("Enter admin password: ")
 	fmt.Scanln(&password)
-	csvPath := "data/AdminMockup.csv"
-	if !util.ValidateAdminLoginFromCSV(username, password, csvPath) {
+
+	ok, err := loginCtrl.CheckUsernameAndPassword(username, password)
+	if err != nil {
+		fmt.Println("An error occurred while checking credentials:", err)
+		time.Sleep(3 * time.Second)
+		return
+	}
+	if !ok {
 		fmt.Println("Invalid credentials. Access denied.")
 		time.Sleep(3 * time.Second)
-
 		return
 	}
 	util.ClearScreen()

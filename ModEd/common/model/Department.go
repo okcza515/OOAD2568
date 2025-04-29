@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -13,16 +11,8 @@ type Department struct {
 	Budget  int    `gorm:"default:0" csv:"budget" json:"budget"`
 }
 
-func GetAllDepartments(db *gorm.DB) ([]*Department, error) {
-	var departments []*Department
-	result := db.Find(&departments)
-	return departments, result.Error
-}
-
-func GetDepartmentByName(db *gorm.DB, name string) (*Department, error) {
-	var dept Department
-	result := db.Where("name = ?", name).First(&dept)
-	return &dept, result.Error
+func (Department) TableName() string {
+	return "departments"
 }
 
 func SetDepartmentBudget(db *gorm.DB, name string, newBudget int) error {
@@ -41,24 +31,6 @@ func UpdateDepartmentBudget(db *gorm.DB, name string, delta int) error {
 		Where("name = ?", name).
 		Where("budget + ? >= 0", delta).
 		Update("budget", gorm.Expr("budget + ?", delta)).Error
-}
-
-func TruncateDepartments(db *gorm.DB) error {
-	return db.Exec("DELETE FROM departments").Error
-}
-
-func RegisterDepartments(db *gorm.DB, departments []*Department) error {
-	for _, dept := range departments {
-		newDept, err := NewDepartment(db, *dept)
-		if err != nil {
-			return err
-		}
-		fmt.Println("\n", newDept)
-		if err := db.Create(dept).Error; err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func GetDepartmentsByFaculty(db *gorm.DB, faculty string) ([]*Department, error) {

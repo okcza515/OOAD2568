@@ -13,6 +13,7 @@ type IExaminationFacade interface {
 	UpdateQuestionForExam(id uint, updatedQuestion *model.Question) error
 	GetQuestionsForExam(examID uint) ([]model.Question, error) 
 	DeleteExamination(id uint) error
+	DeleteQuestion(id uint) error
 }
 
 type ExaminationFacade struct {
@@ -60,4 +61,8 @@ func (f *ExaminationFacade) GetQuestionsForExam(examID uint) ([]model.Question, 
 
 func (f *ExaminationFacade) DeleteExamination(id uint) error {
     return f.examCtrl.Delete(id)
+}
+
+func (f *ExaminationFacade) DeleteQuestion(id uint) error {
+    return f.questionCtrl.DeleteQuestion(id)
 }

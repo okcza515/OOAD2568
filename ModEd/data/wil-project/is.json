@@ -1,0 +1,26 @@
+[
+	{
+		"WILProjectId":1,
+		"ID": 1,
+		"IndependentStudyTopic": "Image Processing",
+		"IndependentStudyContent": "Image processing technique",
+		"AssignmentDate":"2024-05-15T13:00:00Z",
+		"DueDate":"2024-08-15T13:00:00Z"
+	},
+	{
+		"WILProjectId":1,
+		"ID": 2,
+		"IndependentStudyTopic": "Basic FPGA design with Verilog",
+		"IndependentStudyContent": "Learn about how to synthesize digital system on FPGA",
+		"AssignmentDate":"2024-05-15T13:00:00Z",
+		"DueDate":"2024-08-15T13:00:00Z"
+	},
+	{
+		"WILProjectId":1,
+		"ID": 3,
+		"IndependentStudyTopic": "Image Processing Using FPGA",
+		"IndependentStudyContent": "Learn how to process the image using FPGA device",
+		"AssignmentDate":"2024-05-15T13:00:00Z",
+		"DueDate":"2024-08-15T13:00:00Z"
+	}
+]

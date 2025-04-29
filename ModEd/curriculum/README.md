@@ -79,28 +79,16 @@ To use these interfaces, import the necessary modules from the `/controller` dir
 1. Import interface
 
     ```go
-    //import database connector
-    import "ModEd/curriculum/utils"
-    //and
-    import classController "ModEd/curriculum/controller/class"
-    // or
-    import courseController "ModEd/curriculum/controller/course"
-    //or
-    import curriculumController "ModEd/curriculum/controller/curriculum"
+    import (
+		classController "ModEd/curriculum/controller/class"
+		//or
+		courseController "ModEd/curriculum/controller/course"
+		//or
+		curriculumController "ModEd/curriculum/controller/curriculum"
+	) 
     ```
 
-2. Initialize Database
-
-    ```go
-    db, err := utils.NewGormSqlite(&utils.GormConfig{
-		DBPath: "path-to/curriculum.db",
-		Config: &gorm.Config{},
-	})
-	if err != nil {
-		panic(err)
-	}
-    ```
-3. Access Data (example for Class data)
+2. Access Data (example for Class data)
 
     ```go
     classId, err := classController.CreateClass(&newClass)
@@ -118,6 +106,52 @@ To use these interfaces, import the necessary modules from the `/controller` dir
 		t.Fatalf("Failed to delete class: %v", err)
 	}
     ```
+3. (Advance Query) Using `preload` with functions
+	The `GetCourse` method supports preloading related entities. For example, if a course has a `Prerequisite` relationship, you can preload it as follows:
+
+	```go
+	// Retrieve a course with its prerequisites preloaded
+	course, err := courseController.GetCourse(courseId, "Prerequisite")
+	if err != nil {
+    	fmt.Printf("Failed to get course: %v\n", err)
+    return
+	}
+	```
+	After retrieving the course, you can directly access the `Prerequisite` field without making additional queries. This approach is useful for reducing the number of database queries when working with related entities.
+
+	Example of how the data will look like:
+	```
+	{
+		"course_id": 1,
+		"name": "Introduction to Programming",
+		"description": "This course covers the basics of programming using Python.",
+		"curriculum_id": 101,
+		"optional": false,
+		"course_status": 1,
+		"created_at": "2025-01-01T10:00:00Z",
+		"updated_at": "2025-01-15T10:00:00Z",
+		"class_list": [
+			{
+			"class_id": 1,
+			"section": 1,
+			"schedule": "2025-02-01T09:00:00Z",
+			"instructor": "John Doe"
+			}
+		],
+		"prerequisite": [
+			{
+			"course_id": 2,
+			"name": "Basic Mathematics",
+			"description": "This course covers fundamental mathematical concepts.",
+			"curriculum_id": 101,
+			"optional": false,
+			"course_status": 1,
+			"created_at": "2024-01-01T10:00:00Z",
+			"updated_at": "2024-01-15T10:00:00Z"
+			}
+		]
+	}
+	```
 
 For full implementation visit `/testing`:
 - [Class](testing/class_interface_test.go)

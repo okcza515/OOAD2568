@@ -10,9 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type ChildModel struct {
+	gorm.Model
+	TestModelID uint
+	Value       string
+}
+
 type TestModel struct {
 	gorm.Model
-	Name string
+	Name   string
+	Childs []ChildModel `gorm:"foreignKey:TestModelID"`
 }
 
 func (m *TestModel) GetID() uint {
@@ -44,7 +51,7 @@ func Init() (*gorm.DB, string) {
 		panic(err)
 	}
 
-	if err := db.AutoMigrate(&TestModel{}); err != nil {
+	if err := db.AutoMigrate(&TestModel{}, &ChildModel{}); err != nil {
 		panic(err)
 	}
 	return db, dbName
@@ -163,7 +170,6 @@ func TestInsertNonPointerShouldFail(t *testing.T) {
 	controller := core.NewBaseController[*TestModel](db)
 	testData := TestModel{Name: "FailInsert"}
 
-	// ส่งแบบ non-pointer ควรจะ panic หรือ error เพราะ GORM ต้องการ pointer
 	defer func() {
 		if r := recover(); r == nil {
 			t.Errorf("Expected panic when using non-pointer in Insert, but did not panic")
@@ -199,11 +205,70 @@ func TestDeleteByIDNonPointerInstanceInternalHandling(t *testing.T) {
 	testData := TestModel{Name: "DeleteMe"}
 	db.Create(&testData)
 
-	// ลบแบบใช้ ID โดย controller จะจัดการ pointer เอง
 	err := controller.DeleteByID(testData.ID)
 	assert.NoError(t, err)
 
 	var result TestModel
 	db.First(&result, testData.ID)
 	assert.Zero(t, result.ID)
+}
+
+func TestRetrieveByIDWithPreloads(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+
+	parent := TestModel{Name: "Parent"}
+	err := controller.Insert(&parent)
+	assert.NoError(t, err)
+
+	child1 := ChildModel{TestModelID: parent.ID, Value: "Child1"}
+	child2 := ChildModel{TestModelID: parent.ID, Value: "Child2"}
+	db.Create(&child1)
+	db.Create(&child2)
+
+	result, err := controller.RetrieveByID(parent.ID, "Childs")
+	assert.NoError(t, err)
+
+	assert.Equal(t, "Parent", result.Name)
+	assert.Len(t, result.Childs, 2)
+	assert.Equal(t, "Child1", result.Childs[0].Value)
+	assert.Equal(t, "Child2", result.Childs[1].Value)
+}
+
+func TestListWithPreloads(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	controller := core.NewBaseController[*TestModel](db)
+
+	parent1 := TestModel{Name: "Parent1"}
+	parent2 := TestModel{Name: "Parent2"}
+	err := controller.Insert(&parent1)
+	assert.NoError(t, err)
+	err = controller.Insert(&parent2)
+	assert.NoError(t, err)
+
+	db.Create(&ChildModel{TestModelID: parent1.ID, Value: "Child1-1"})
+	db.Create(&ChildModel{TestModelID: parent1.ID, Value: "Child1-2"})
+	db.Create(&ChildModel{TestModelID: parent2.ID, Value: "Child2-1"})
+
+	results, err := controller.List(map[string]interface{}{}, "Childs")
+	assert.NoError(t, err)
+	assert.Len(t, results, 2)
+
+	for _, parent := range results {
+		switch parent.Name {
+		case "Parent1":
+			assert.Len(t, parent.Childs, 2)
+			assert.Equal(t, "Child1-1", parent.Childs[0].Value)
+			assert.Equal(t, "Child1-2", parent.Childs[1].Value)
+		case "Parent2":
+			assert.Len(t, parent.Childs, 1)
+			assert.Equal(t, "Child2-1", parent.Childs[0].Value)
+		default:
+			t.Errorf("Unexpected parent name: %s", parent.Name)
+		}
+	}
 }

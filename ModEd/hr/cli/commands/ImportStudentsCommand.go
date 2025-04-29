@@ -1,17 +1,13 @@
 package commands
 
 import (
-	commonController "ModEd/common/controller"
 	"ModEd/core"
 	"ModEd/hr/controller"
 	"ModEd/hr/model"
-	hrModel "ModEd/hr/model"
 	"ModEd/hr/util"
 
-	"errors"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/gorm"
 )
@@ -24,13 +20,12 @@ func importStudents(args []string, tx *gorm.DB) error {
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"path"}); err != nil {
+	err := util.NewValidationChain(fs).
+		Required("path").
+		Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
-	}
-
-	if _, err := os.Stat(*filePath); errors.Is(err, os.ErrNotExist) {
-		return fmt.Errorf("*** Error: File %s does not exist", *filePath)
 	}
 
 	hrMapper, err := core.CreateMapper[model.StudentInfo](*filePath)
@@ -47,31 +42,13 @@ func importStudents(args []string, tx *gorm.DB) error {
 		hrRecordsMap[hrRec.StudentCode] = *hrRec
 	}
 
-	db := util.OpenDatabase(*util.DatabasePath)
+	// db := util.OpenDatabase(*util.DatabasePath)
 
-	tm := &util.TransactionManager{DB: tx}
+	tm := &util.TransactionManager{DB: tx} // use passed transaction connection
 	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(db)
-
-		for _, hrRec := range hrRecordsMap {
-			commonStudentController := commonController.CreateStudentController(db)
-			commonStudent, err := commonStudentController.GetByCode(hrRec.StudentCode)
-			if err != nil {
-				fmt.Printf("failed to retrieve student %s from common data: %v", hrRec.StudentCode, err)
-				continue
-			}
-
-			builder := hrModel.NewStudentInfoBuilder()
-			req, err := builder.WithStudentCode(hrRec.StudentCode).
-				WithStudent(*commonStudent).
-				WithGender(hrRec.Gender).
-				WithCitizenID(hrRec.CitizenID).
-				WithPhoneNumber(hrRec.PhoneNumber).
-				Build()
-
-			if err := hrFacade.UpsertStudent(req); err != nil {
-				return fmt.Errorf("failed to upsert student %s: %v", req.StudentCode, err)
-			}
+		hrFacade := controller.NewHRFacade(tx) // pass tx instead of new db
+		if err := hrFacade.ImportStudents(tx, hrRecordsMap); err != nil {
+			return err
 		}
 		fmt.Println("Students imported successfully!")
 		return nil

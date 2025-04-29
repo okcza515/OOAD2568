@@ -72,7 +72,6 @@ func handleCreateWeeklySchedule(facade *controller.SpaceManagementControllerFaca
 		util.PressEnterToContinue()
 		return
 	}
-
 	if !inService {
 		fmt.Printf("Room with ID %d is out of service and cannot be booked.\n", roomID)
 		util.PressEnterToContinue()
@@ -81,15 +80,50 @@ func handleCreateWeeklySchedule(facade *controller.SpaceManagementControllerFaca
 
 	fmt.Println("Room is available for booking. Please continue.")
 
-	fmt.Println("For start time:")
-	startDate, errStart := readTimeInput()
+	fmt.Print("Enter start date (YYYY-MM-DD): ")
+	startDateStr := util.GetCommandInput()
+	startDateOnly, err := time.Parse("2006-01-02", startDateStr)
+	if err != nil {
+		fmt.Println("Invalid start date format.")
+		util.PressEnterToContinue()
+		return
+	}
 
-	fmt.Println("For end time:")
-	endDate, errEnd := readTimeInput()
+	loc := time.Now().Location()
 
-	if errStart != nil || errEnd != nil {
-		fmt.Println("Invalid date/time format.")
-		fmt.Println("Please use YYYY-MM-DD for date and HH:MM for time.")
+	fmt.Print("Enter start time (HH:MM): ")
+	startTimeStr := util.GetCommandInput()
+	startTimeOnly, err := time.ParseInLocation("15:04", startTimeStr, loc)
+	if err != nil {
+		fmt.Println("Invalid start time format.")
+		util.PressEnterToContinue()
+		return
+	}
+
+	fmt.Print("Enter end time (HH:MM): ")
+	endTimeStr := util.GetCommandInput()
+	endTimeOnly, err := time.ParseInLocation("15:04", endTimeStr, loc)
+	if err != nil {
+		fmt.Println("Invalid end time format.")
+		util.PressEnterToContinue()
+		return
+	}
+
+	startDateTime := time.Date(
+		startDateOnly.Year(), startDateOnly.Month(), startDateOnly.Day(),
+		startTimeOnly.Hour(), startTimeOnly.Minute(), 0, 0, loc,
+	)
+
+	endDateTime := time.Date(
+		startDateOnly.Year(), startDateOnly.Month(), startDateOnly.Day(),
+		endTimeOnly.Hour(), endTimeOnly.Minute(), 0, 0, loc,
+	)
+
+	fmt.Print("Enter semester end date (YYYY-MM-DD): ")
+	semesterEndDateStr := util.GetCommandInput()
+	semesterEndDateOnly, err := time.Parse("2006-01-02", semesterEndDateStr)
+	if err != nil {
+		fmt.Println("Invalid semester end date format.")
 		util.PressEnterToContinue()
 		return
 	}
@@ -101,22 +135,26 @@ func handleCreateWeeklySchedule(facade *controller.SpaceManagementControllerFaca
 	programTypeID := readUintInput("Please enter Program Type ID:")
 
 	err = facade.PermanentSchedule.CreateWeeklySchedule(
-		startDate,
-		endDate,
+		startDateTime,
+		endDateTime,
 		roomID,
 		courseID,
 		classID,
 		facultyID,
 		departmentID,
 		programTypeID,
+		semesterEndDateOnly,
 	)
 
 	if err != nil {
 		fmt.Println("Failed to create weekly schedule:", err)
 	} else {
 		scheduleIDs := facade.PermanentSchedule.GetLastCreatedScheduleIDs()
-		fmt.Println("Weekly class schedule created successfully!")
-		fmt.Printf("Created %d schedules with IDs: %v\n", len(scheduleIDs), scheduleIDs)
+		numWeeks := len(scheduleIDs)
+
+		fmt.Println("Weekly class schedule created successfully! 🎉")
+		fmt.Printf("Created %d week(s) of schedule.\n", numWeeks)
+		fmt.Printf("Schedule IDs: %v\n", scheduleIDs)
 	}
 	util.PressEnterToContinue()
 }
@@ -237,10 +275,13 @@ func handleCheckRoomServiceStatus(facade *controller.SpaceManagementControllerFa
 
 func readUintInput(prompt string) uint {
 	fmt.Println(prompt)
-	input, err := strconv.Atoi(util.GetCommandInput())
-	if err != nil {
-		fmt.Println("Invalid input. Using default value 1.")
-		return 1
+	for {
+		input := util.GetCommandInput()
+		val, err := strconv.Atoi(input)
+		if err != nil || val <= 0 {
+			fmt.Println("Invalid input. Please enter a positive number:")
+			continue
+		}
+		return uint(val)
 	}
-	return uint(input)
 }

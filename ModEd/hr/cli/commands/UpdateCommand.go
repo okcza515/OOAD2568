@@ -18,16 +18,16 @@ func (c *UpdateCommand) Execute(args []string, tx *gorm.DB) error {
 	case "student":
 		switch action {
 		case "info":
-			return updateStudentInfo(args[1:], tx)
+			return updateStudentInfo(args[2:], tx)
 		case "status":
-			return updateStudentStatus(args[1:], tx)
+			return updateStudentStatus(args[2:], tx)
 		default:
 			return fmt.Errorf("unknown action for student: %s", action)
 		}
 	case "instructor":
 		switch action {
 		case "info":
-			return updateInstructorInfo(args[1:], tx)
+			return updateInstructorInfo(args[2:], tx)
 		default:
 			return fmt.Errorf("unknown action for instructor: %s", action)
 		}

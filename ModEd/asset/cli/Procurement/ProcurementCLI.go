@@ -27,7 +27,7 @@ func main() {
 		case "3":
 			handler.BudgetAllocationHandler(facade)
 		case "4":
-			fmt.Println("Not implemented yet...")
+			handler.ApprovalHandler(facade)
 		case "5":
 			fmt.Println("Not implemented yet...")
 		case "6":
@@ -56,7 +56,7 @@ func printOption() {
 	fmt.Println("  1:\tRequest Instrument Page")
 	fmt.Println("  2:\tProcurement Page")
 	fmt.Println("  3:\tBudget Allocation Page")
-	fmt.Println("  4:\tNot implemented yet... Page")
+	fmt.Println("  4:\tApproval Page")
 	fmt.Println("  5:\tNot implemented yet... Page")
 	fmt.Println("  6:\tNot implemented yet... Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")

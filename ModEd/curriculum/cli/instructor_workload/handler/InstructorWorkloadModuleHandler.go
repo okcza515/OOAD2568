@@ -1,0 +1,88 @@
+package handler
+
+import (
+	"ModEd/core/cli"
+	"ModEd/core/migration"
+	"ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
+	"ModEd/utils/deserializer"
+	"fmt"
+)
+
+type InstructorWorkloadModuleMenuStateHandler struct {
+	menuManager *cli.CLIMenuStateManager
+	wrapper     *controller.InstructorWorkloadModuleWrapper
+
+	AdministrativeTaskMenuStateHandler    *AdministrativeTaskMenuStateHandler
+	SeniorProjectWorkloadMenuStateHandler *SeniorProjectWorkloadMenuStateHandler
+}
+
+func NewInstructorWorkloadModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InstructorWorkloadModuleWrapper) *InstructorWorkloadModuleMenuStateHandler {
+	instructorWorkloadModuleHandler := &InstructorWorkloadModuleMenuStateHandler{
+		menuManager: manager,
+		wrapper:     wrapper,
+	}
+
+	instructorWorkloadModuleHandler.SeniorProjectWorkloadMenuStateHandler = NewSeniorProjectModuleStateHandler(manager, wrapper, instructorWorkloadModuleHandler)
+
+	return instructorWorkloadModuleHandler
+}
+
+func (handler *InstructorWorkloadModuleMenuStateHandler) Render() {
+	fmt.Println("\nInstructor Workload Module Menu:")
+	fmt.Println("1. Load CSV Seed Data")
+	fmt.Println("2. Today Workload Report")
+	fmt.Println("3. Wokrload Report With Filter")
+	fmt.Println("4. Student Advisor Workload")
+	fmt.Println("5. Administrative Task")
+	fmt.Println("6. Senior Project")
+	fmt.Println("Type 'exit' to quit")
+}
+
+func LoadCSVData(pairs map[string]interface{}) error {
+	for filename, model := range pairs {
+		fd, err := deserializer.NewFileDeserializer("data/instructor_workload/" + filename + ".csv")
+		if err != nil {
+			return err
+		}
+
+		err = fd.Deserialize(model)
+		if err != nil {
+			return err
+		}
+
+		result := migration.GetInstance().DB.Create(model)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+	return nil
+}
+
+func (handler *InstructorWorkloadModuleMenuStateHandler) HandleUserInput(input string) error {
+	switch input {
+	case "1":
+		LoadCSVData(
+			map[string]interface{}{
+				"Meeting":           &[]model.Meeting{},
+				"OnlineMeeting":     &[]model.OnlineMeeting{},
+				"ExternalMeeting":   &[]model.ExternalMeeting{},
+				"ProjectEvaluation": &[]model.ProjectEvaluation{},
+			},
+		)
+		fmt.Println("CSV data loaded successfully")
+	case "2":
+		handler.wrapper.WorkloadReportFacade.GenerateDailyWorkloadReport(1)
+		// handler.wrapper.WorkloadReportController.GenerateWorkloadReportWithFilter()
+	case "3":
+		handler.wrapper.WorkloadReportBuilder.IncludeClasses().IncludeMeetings().SetDateRange("2023-01-01", "2023-12-31").Generate(1)
+	case "4":
+		handler.menuManager.SetState(handler.AdministrativeTaskMenuStateHandler)
+	case "5":
+		handler.menuManager.SetState(handler.SeniorProjectWorkloadMenuStateHandler)
+	default:
+		fmt.Println("Invalid input")
+	}
+
+	return nil
+}

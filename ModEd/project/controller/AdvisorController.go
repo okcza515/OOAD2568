@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 	utils "ModEd/project/utils"
 	"errors"
@@ -9,11 +10,15 @@ import (
 )
 
 type AdvisorController struct {
+	*core.BaseController[*model.Advisor]
 	DB *gorm.DB
 }
 
 func NewAdvisorController(db *gorm.DB) *AdvisorController {
-	return &AdvisorController{DB: db}
+	return &AdvisorController{
+		BaseController: core.NewBaseController[*model.Advisor](db),
+		DB:             db,
+	}
 }
 
 func (ac *AdvisorController) AssignAdvisor(projectId, instructorId uint, isPrimary bool) (*model.Advisor, error) {
