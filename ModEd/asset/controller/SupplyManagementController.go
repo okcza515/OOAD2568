@@ -4,69 +4,71 @@ package controller
 import (
 	model "ModEd/asset/model"
 	"errors"
-
 	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type SupplyManagementController struct {
 	db *gorm.DB
+	*core.BaseController[model.SupplyManagement]
 }
 
 func NewSupplyManagementController(db *gorm.DB) *SupplyManagementController {
-	return &SupplyManagementController{db: db}
+	return &SupplyManagementController{BaseController: core.NewBaseController[model.SupplyManagement](db)}
 }
 
-func (a *SupplyManagementController) GetAll() (*[]model.SupplyManagement, error) {
-	assetInfo := new([]model.SupplyManagement)
-	result := a.db.Find(&assetInfo)
-	return assetInfo, result.Error
+func (c *SupplyManagementController) GetAll() (*[]model.SupplyManagement, error) {
+	assetList := []model.SupplyManagement{}
+    records, err := c.BaseController.List(nil)
+    assetList = records
+    return &assetList, err
 }
 
-func (a *SupplyManagementController) GetById(Id uint) (*model.SupplyManagement, error) {
-	if Id == 0 {
-		return nil, errors.New("no Id provide")
-	}
-	assetInfo := new(model.SupplyManagement)
-	result := a.db.First(&assetInfo, "ID = ?", Id)
-	return assetInfo, result.Error
+func (c *SupplyManagementController) GetById(Id uint) (*model.SupplyManagement, error) {
+    asset := model.SupplyManagement{}
+    record, err := c.BaseController.RetrieveByID(Id)
+    if err != nil {
+        return nil, err
+    }
+    asset = record
+    return &asset, nil
 }
 
-func (a *SupplyManagementController) GetByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
+func (c *SupplyManagementController) GetByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
 	if roomID == 0 {
 		return nil, errors.New("no RoomID provided")
 	}
 
 	assetList := new([]model.SupplyManagement)
-	result := a.db.Where("room_id = ?", roomID).Find(&assetList)
+	result := c.db.Where("room_id = ?", roomID).Find(&assetList)
 
 	return assetList, result.Error
 }
 
-func (a *SupplyManagementController) Create(payload *model.SupplyManagement) error {
+func (c *SupplyManagementController) Create(payload *model.SupplyManagement) error {
 	if payload == nil {
-		return errors.New("invalid supply data")
+		return errors.New("invalid supply management data")
 	}
-	result := a.db.Create(payload)
-	return result.Error
+	err := c.BaseController.Insert(*payload)
+	return err
 }
 
-func (a *SupplyManagementController) Update(Id uint, payload *model.SupplyManagement) error {
+func (c *SupplyManagementController) Update(Id uint, payload *model.SupplyManagement) error {
 	if payload == nil || Id == 0 {
 		return errors.New("invalid info")
 	}
-	existingAsset := new(model.SupplyManagement)
-	if err := a.db.First(existingAsset, Id).Error; err != nil {
-		return err
-	}
-	result := a.db.Model(existingAsset).Updates(payload)
-	return result.Error
+	err := c.BaseController.UpdateByID(*payload)
+	return err
 }
 
-func (a *SupplyManagementController) Delete(Id uint) error {
+func (c *SupplyManagementController) Delete(Id uint) error {
 	if Id == 0 {
 		return errors.New("no Id provide")
-	}
-	assetInfo := new(model.SupplyManagement)
-	result := a.db.Delete(&assetInfo, Id)
-	return result.Error
+	 }
+	err := c.BaseController.DeleteByID(Id)
+	return err
+}
+
+func (c* InstrumentManagementController) SeedSupplyManagementDatabase(path string)(){
+	
 }
