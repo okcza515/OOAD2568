@@ -32,14 +32,10 @@ func main() {
 
 	defaultDBPath := filepath.Join(parentDir, "data", "ModEd.bin")
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
-	defaultfacultyPath := filepath.Join(parentDir, "recruit", "data", "fac.csv")
-	defaultdepartmentPath := filepath.Join(parentDir, "recruit", "data", "dp.csv")
 	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
 
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
-	flag.StringVar(&facultyCSVPath, "faculty", defaultfacultyPath, "")
-	flag.StringVar(&departmentCSVPath, "department", defaultdepartmentPath, "")
 	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
 	flag.StringVar(&role, "role", "", "Specify the role (user/admin/instructor)")
 	flag.Parse()
