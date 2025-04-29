@@ -50,7 +50,7 @@ func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]
 	return requests, nil
 }
 
-func (h *HRFacade) SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
+func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
 
 	tm := &util.TransactionManager{DB:db}
 

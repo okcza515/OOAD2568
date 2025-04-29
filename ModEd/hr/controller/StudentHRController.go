@@ -73,6 +73,15 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 	return c.db.Save(&studentInfo).Error
 }
 
+func GetAllStudents(tx *gorm.DB) ([]*model.StudentInfo, error) {
+	controller := createStudentHRController(tx)
+	studentInfos, err := controller.getAll()
+	if err != nil {
+		return nil, fmt.Errorf("error fetching students: %v", err)
+	}
+	return studentInfos, nil
+}
+
 func AddStudent(db *gorm.DB,
 	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
 ) error {

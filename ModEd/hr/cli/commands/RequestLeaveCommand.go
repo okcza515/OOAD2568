@@ -38,12 +38,10 @@ func requestLeave(target string, args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	hrFacade := controller.NewHRFacade(tx)
-
 	if target == "student" {
-		err = hrFacade.SubmitStudentLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+		err = controller.SubmitStudentLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
 	} else if target == "instructor" {
-		err = hrFacade.SubmitInstructorLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+		err = controller.SubmitInstructorLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
 	} else {
 		return fmt.Errorf("internal error: invalid target '%s' for requestLeave", target)
 	}

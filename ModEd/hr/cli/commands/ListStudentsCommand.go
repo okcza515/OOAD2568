@@ -17,8 +17,7 @@ func listStudents(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list", flag.ExitOnError)
 	fs.Parse(args)
 
-	hrFacade := controller.NewHRFacade(tx)
-	studentInfos, err := hrFacade.GetAllStudents()
+	studentInfos, err := controller.GetAllStudents(tx)
 	if err != nil {
 		return fmt.Errorf("error listing students: %v", err)
 	}
