@@ -5,8 +5,11 @@ import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	"ModEd/hr/model"
+	"encoding/json"
 	"fmt"
+	"os"
 
+	"github.com/gocarina/gocsv"
 	"gorm.io/gorm"
 )
 
@@ -181,5 +184,58 @@ func ImportStudents(tx *gorm.DB, filepath string) error {
 			return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
 		}
 	}
+	return nil
+}
+
+func ExportStudents(tx *gorm.DB, filePath string, format string) error {
+
+	fileInfo, err := os.Stat(filePath)
+	if err == nil && fileInfo.IsDir() {
+		switch format {
+		case "csv":
+			filePath = fmt.Sprintf("%s/studentinfo.csv", filePath)
+		case "json":
+			filePath = fmt.Sprintf("%s/studentinfo.json", filePath)
+		default:
+			return fmt.Errorf("invalid format. Supported formats are 'csv' and 'json'")
+		}
+	}
+
+	// Fetch all student records
+	controller := createStudentHRController(tx)
+	studentInfos, err := controller.getAll()
+	if err != nil {
+		return fmt.Errorf("error fetching students: %v", err)
+	}
+
+	// Handle export based on the format
+	switch format {
+	case "csv":
+		// Use gocsv for CSV serialization
+		file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("error opening file: %v", err)
+		}
+		defer file.Close()
+
+		if err := gocsv.MarshalFile(&studentInfos, file); err != nil {
+			return fmt.Errorf("error exporting to CSV: %v", err)
+		}
+	case "json":
+		// Use encoding/json for JSON serialization
+		file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("error opening file: %v", err)
+		}
+		defer file.Close()
+
+		encoder := json.NewEncoder(file)
+		if err := encoder.Encode(studentInfos); err != nil {
+			return fmt.Errorf("error exporting to JSON: %v", err)
+		}
+	default:
+		return fmt.Errorf("invalid format. Supported formats are 'csv' and 'json'")
+	}
+
 	return nil
 }

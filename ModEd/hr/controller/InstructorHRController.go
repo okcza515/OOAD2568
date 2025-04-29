@@ -49,6 +49,11 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 		Updates(info).Error
 }
 
+// Delete deletes an instructor's HR information by ID.
+func (c *InstructorHRController) delete(id string) error {
+	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+}
+
 func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
@@ -78,11 +83,6 @@ func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error 
 		fmt.Println("Instructor updated successfully!")
 		return nil
 	})
-}
-
-// Delete deletes an instructor's HR information by ID.
-func (c *InstructorHRController) delete(id string) error {
-	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
 func ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
