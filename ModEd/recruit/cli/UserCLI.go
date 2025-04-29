@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService, loginController *controller.LoginController) {
+func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService, loginController controller.LoginController) {
 
 	for {
 		util.ClearScreen()

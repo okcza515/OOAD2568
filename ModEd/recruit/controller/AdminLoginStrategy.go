@@ -1,32 +1,31 @@
 package controller
 
 import (
-	"ModEd/recruit/model"
+	"fmt"
+	"reflect"
+
 	"gorm.io/gorm"
 )
 
-// AdminLoginStrategy implements LoginStrategy for admin login
 type AdminLoginStrategy struct {
 	DB *gorm.DB
 }
 
-// CheckUsername checks if an admin with the given username exists
-func (s *AdminLoginStrategy) CheckUsername(username string) (bool, error) {
-	var admin model.Admin
-	err := s.DB.Where("username = ?", username).First(&admin).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return false, nil
-		}
-		return false, err
+func (s *AdminLoginStrategy) ApplyLogin(req LoginRequest, model interface{}) (bool, error) {
+	modelVal := reflect.ValueOf(model)
+	if modelVal.Kind() != reflect.Ptr || modelVal.IsNil() {
+		return false, fmt.Errorf("model must be a non-nil pointer")
 	}
-	return true, nil
-}
 
-// CheckUsernameAndPassword checks if the given username and password match for an admin
-func (s *AdminLoginStrategy) CheckUsernameAndPassword(username, password string) (bool, error) {
-	var admin model.Admin
-	err := s.DB.Where("username = ?", username).First(&admin).Error
+	usernameField := modelVal.Elem().FieldByName("Username")
+	passwordField := modelVal.Elem().FieldByName("Password")
+
+	if !usernameField.IsValid() || !passwordField.IsValid() {
+		return false, fmt.Errorf("model must have Username and Password fields")
+	}
+
+	// ค้นหาผู้ใช้ในฐานข้อมูล
+	err := s.DB.Where("username = ?", req.Username).First(model).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return false, nil
@@ -34,8 +33,8 @@ func (s *AdminLoginStrategy) CheckUsernameAndPassword(username, password string)
 		return false, err
 	}
 
-	// Assuming hashed passwords are stored, compare using a method like bcrypt
-	if admin.Password != password {
+	// ตรวจสอบรหัสผ่าน
+	if passwordField.String() != req.Password {
 		return false, nil
 	}
 	return true, nil

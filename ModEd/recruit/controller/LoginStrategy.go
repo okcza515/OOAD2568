@@ -1,7 +1,10 @@
 package controller
 
+type LoginRequest struct {
+	ID       string
+	Username string
+	Password string
+}
 type LoginStrategy interface {
-	CheckUsername(username string) (bool, error)
-	CheckUsernameAndPassword(username, password string) (bool, error)
-	CheckID(id string) (bool, error)
+	ApplyLogin(req LoginRequest, model interface{}) (bool, error)
 }

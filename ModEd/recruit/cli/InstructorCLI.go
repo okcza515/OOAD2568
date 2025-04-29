@@ -2,36 +2,46 @@
 package cli
 
 import (
-	"ModEd/recruit/util"
+	"ModEd/common/model"
 	"ModEd/recruit/controller"
+	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 )
 
 func InstructorCLI(
 	instructorViewInterviewDetailsService InstructorViewInterviewDetailsService,
-	instructorEvaluateApplicantService InstructorEvaluateApplicantService,loginCtrl *controller.LoginController,) {
+	instructorEvaluateApplicantService InstructorEvaluateApplicantService, loginCtrl *controller.LoginController) {
 
-	var username  string
-	fmt.Print("Enter Instructor username: ")
-	fmt.Scanln(&username)
+	instructorID, err := promptInstructorCredentials()
+	if err != nil {
+		fmt.Println(err)
+		time.Sleep(3 * time.Second)
+		return
+	}
 
-	ok, err := loginCtrl.CheckUsername(username)
+	instructorIDUint64, err := strconv.ParseUint(instructorID, 10, 32)
+	instructorIDUint := uint(instructorIDUint64)
+
+	req := controller.LoginRequest{
+		ID: instructorID,
+	}
+
+	var instructor model.Instructor
+	isValid, err := loginCtrl.ExecuteLogin(req, &instructor)
 	if err != nil {
 		fmt.Println("An error occurred while checking credentials:", err)
 		time.Sleep(3 * time.Second)
 		return
 	}
-	if !ok {
+	if !isValid {
 		fmt.Println("Invalid credentials. Access denied.")
 		time.Sleep(3 * time.Second)
 		return
 	}
-	var instructorID uint
-	fmt.Print("Enter Instructor ID: ")
-	fmt.Scanln(&instructorID)
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -53,7 +63,7 @@ func InstructorCLI(
 
 		switch choice {
 		case 1:
-			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorID)
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint)
 			util.WaitForEnter()
 		case 2:
 			EvaluateApplicant(instructorEvaluateApplicantService)
@@ -64,4 +74,16 @@ func InstructorCLI(
 			fmt.Println("Invalid option. Try again.")
 		}
 	}
+}
+
+func promptInstructorCredentials() (string, error) {
+	var id string
+	fmt.Print("Enter Instructor ID: ")
+	fmt.Scanln(&id)
+
+	if id == "" {
+		return "", fmt.Errorf("Username and password are required")
+	}
+
+	return id, nil
 }

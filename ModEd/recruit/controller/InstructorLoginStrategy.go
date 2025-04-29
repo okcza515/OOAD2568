@@ -10,9 +10,9 @@ type InstructorLoginStrategy struct {
 	DB *gorm.DB
 }
 
-func (s *InstructorLoginStrategy) CheckUsername(username string) (bool, error) {
+func (s *InstructorLoginStrategy) ApplyLogin(req LoginRequest) (bool, error) {
 	var instructor model.Instructor
-	err := s.DB.Where("username = ?", username).First(&instructor).Error
+	err := s.DB.Where("username = ?", req.Username).First(&instructor).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return false, nil
@@ -20,11 +20,4 @@ func (s *InstructorLoginStrategy) CheckUsername(username string) (bool, error) {
 		return false, err
 	}
 	return true, nil
-}
-
-
-// Implement CheckUsernameAndPassword method for InstructorLoginStrategy (even if you don't need it)
-func (s *InstructorLoginStrategy) CheckUsernameAndPassword(username, password string) (bool, error) {
-	// Assuming instructors don't have passwords to check, or returning false if not needed.
-	return false, nil // Or implement logic if needed
 }
