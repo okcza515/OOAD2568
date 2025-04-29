@@ -85,7 +85,6 @@ func UpdateAssignment(controller *controller.AssignmentController) {
 	fmt.Print("Enter assignment ID to update: ")
 	fmt.Scan(&id)
 
-	// First get the existing assignment
 	assignment, err := controller.GetAssignmentByID(id)
 	if err != nil {
 		fmt.Println("Error finding assignment:", err)
@@ -212,7 +211,7 @@ func QueryAssignmentsByDateRange(controller *controller.AssignmentController) {
 
 	endDate, err := time.Parse("2006-01-02", endDateStr)
 	if err != nil {
-		fmt.Println("Invalid end date format. Please use YYYY-MM-DD")
+		fmt.Println("Invalid end date formats. Please use YYYY-MM-DD")
 		return
 	}
 

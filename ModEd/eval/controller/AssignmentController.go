@@ -22,7 +22,6 @@ func NewAssignmentController(csvPath string) (*AssignmentController, error) {
 		csvPath: csvPath,
 	}
 
-	// Load existing assignments from CSV
 	err := controller.loadFromCSV()
 	if err != nil {
 		return nil, err
@@ -40,15 +39,12 @@ func (c *AssignmentController) loadFromCSV() error {
 
 	reader := csv.NewReader(file)
 
-	// Skip header
 	_, err = reader.Read()
 	if err != nil {
 		return err
 	}
 
 	c.assignments = []assignmentModel.Assignment{}
-
-	// Read all records
 	for {
 		record, err := reader.Read()
 		if err != nil {
@@ -86,10 +82,8 @@ func (c *AssignmentController) saveToCSV() error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Write header
 	writer.Write([]string{"ID", "Title", "Description", "Released", "StartDate", "DueDate", "Status"})
 
-	// Write all assignments
 	for _, a := range c.assignments {
 		writer.Write([]string{
 			strconv.FormatUint(uint64(a.ID), 10),
@@ -106,7 +100,6 @@ func (c *AssignmentController) saveToCSV() error {
 }
 
 func (c *AssignmentController) AddAssignment(assignment assignmentModel.Assignment) error {
-	// Generate new ID
 	maxID := uint(0)
 	for _, a := range c.assignments {
 		if a.ID > maxID {

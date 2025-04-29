@@ -2,11 +2,11 @@
 package model
 
 import (
-	"gorm.io/gorm"
+	"ModEd/core"
 )
 
 type InstrumentManagement struct {
-	gorm.Model
+	core.BaseModel
 	AssetManagementID  uint             `gorm:"type:integer" json:"asset_management_id" csv:"asset_management_id"`
 	BorrowUserID       uint             `gorm:"type:integer" json:"borrow_id" csv:"borrow_id"`
 	BorrowInstrument   BorrowInstrument `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"borrow_instrument"`

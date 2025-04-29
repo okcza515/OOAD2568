@@ -10,12 +10,12 @@ import (
 )
 
 type SpaceManagementControllerFacade struct {
-	Db                	   *gorm.DB
-	InstrumentManagement    InstrumentManagementController
-	SupplyManagement		SupplyManagementController
-	Booking           		BookingController
-	PermanentSchedule 		PermanentBookingController
-	Room              		RoomController
+	Db                   *gorm.DB
+	InstrumentManagement InstrumentManagementController
+	SupplyManagement     SupplyManagementController
+	Booking              BookingController
+	PermanentSchedule    PermanentBookingController
+	Room                 RoomController
 }
 
 func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
@@ -24,12 +24,11 @@ func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, err
 		return nil, err
 	}
 
-
 	facade := SpaceManagementControllerFacade{Db: db}
-	facade.InstrumentManagement = InstrumentManagementController{db:db}
-	facade.SupplyManagement = SupplyManagementController{db:db}
+	facade.InstrumentManagement = InstrumentManagementController{db: db}
+	facade.SupplyManagement = SupplyManagementController{db: db}
 	facade.Booking = BookingController{db: db}
 	facade.PermanentSchedule = PermanentBookingController{db: db}
-	facade.Room = RoomController{db: db, BaseController: core.NewBaseController[model.Room](db)}
+	facade.Room = *NewRoomController(db, core.NewBaseController[model.Room](db))
 	return &facade, nil
 }

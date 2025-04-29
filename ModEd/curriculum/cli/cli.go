@@ -61,11 +61,12 @@ func (i *InstructorWorkloadCommand) Execute() error {
 
 // InternshipCommand
 type InternshipCommand struct {
-	db *gorm.DB
+	db                   *gorm.DB
+	curriculumController controller.CurriculumControllerInterface
 }
 
 func (i *InternshipCommand) Execute() error {
-	internship.RunInterShipCLI(i.db)
+	internship.RunInterShipCLI(i.db, i.curriculumController)
 	return nil
 }
 
@@ -117,7 +118,7 @@ func main() {
 	commandExecutor.RegisterCommand("1", &CurriculumCommand{db, courseController, classController, curriculumController})
 	commandExecutor.RegisterCommand("2", &WILProjectCommand{db, courseController, classController})
 	commandExecutor.RegisterCommand("3", &InstructorWorkloadCommand{db, courseController, classController, curriculumController})
-	commandExecutor.RegisterCommand("4", &InternshipCommand{db})
+	commandExecutor.RegisterCommand("4", &InternshipCommand{db, curriculumController})
 	commandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
 
 	for {

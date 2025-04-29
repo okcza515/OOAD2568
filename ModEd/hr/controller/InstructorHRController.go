@@ -49,11 +49,16 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 		Updates(info).Error
 }
 
+// Delete deletes an instructor's HR information by ID.
+func (c *InstructorHRController) delete(id string) error {
+	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+}
+
 func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := NewHRFacade(tx)
-		instructorInfo, err := hrFacade.GetInstructorById(instructorID)
+		controller := createInstructorHRController(tx)
+		instructorInfo, err := controller.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
@@ -66,13 +71,13 @@ func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error 
 			}
 			instructorInfo.AcademicPosition = parsedPos
 		case "department":
-			// Assuming InstructorInfo has a Department field.
-			// instructorInfo.Department = *value
+			// Uncomment and adjust if InstructorInfo has a Department field.
+			// instructorInfo.Department = value
 		default:
 			return fmt.Errorf("unknown field for instructor update: %s", field)
 		}
 
-		if err := hrFacade.UpdateInstructor(instructorInfo); err != nil {
+		if err := controller.update(instructorInfo); err != nil {
 			return fmt.Errorf("error updating instructor: %v", err)
 		}
 		fmt.Println("Instructor updated successfully!")
@@ -80,21 +85,17 @@ func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error 
 	})
 }
 
-// Delete deletes an instructor's HR information by ID.
-func (c *InstructorHRController) delete(id string) error {
-	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
-}
 func ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
-
-	hrFacade := NewHRFacade(tx)
+	controller := createInstructorHRController(tx)
 	for _, instructor := range instructors {
 		if instructor.ID == 0 || instructor.FirstName == "" {
 			return fmt.Errorf("invalid instructor data: %+v", instructor)
 		}
 
-		if err := hrFacade.InsertInstructor(instructor); err != nil {
+		if err := controller.insert(instructor); err != nil {
 			return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
 		}
 	}
 	return nil
+}
 }

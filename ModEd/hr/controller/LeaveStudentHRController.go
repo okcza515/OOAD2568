@@ -52,7 +52,7 @@ func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.Req
 }
 
 
-func (h *HRFacade) SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
+func SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
 
 	tm := &util.TransactionManager{DB: db}
 

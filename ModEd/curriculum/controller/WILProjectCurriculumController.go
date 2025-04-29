@@ -18,7 +18,7 @@ type WILProjectCurriculumFacadeControllerInterface interface {
 	RegisterWILProjects(projects []core.RecordInterface)
 }
 
-func CreateWILProjectCurriculumFacadeController(
+func NewWILProjectCurriculumFacadeController(
 	connector *gorm.DB,
 	courseController CourseControllerInterface,
 	classController ClassControllerInterface,

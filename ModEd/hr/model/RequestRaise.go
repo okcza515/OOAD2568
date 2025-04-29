@@ -11,3 +11,12 @@ type RequestRaise struct {
 	Status         string `gorm:"default:Pending"` // Pending / Approved / Rejected
 	TargetSalary   int    `gorm:"not null"`        // เป้าหมายเงินเดือนที่ต้องการ
 }
+
+func NewRequestRaise(InstructorCode string, Reason string, TargetSalary int) *RequestRaise {
+	return &RequestRaise{
+		InstructorCode: InstructorCode,
+		Reason:         Reason,
+		Status:         "Pending",
+		TargetSalary:   TargetSalary,
+	}
+}

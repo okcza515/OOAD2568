@@ -6,7 +6,6 @@ import (
 
 	"ModEd/hr/controller"
 	"ModEd/hr/util"
-	hrUtil "ModEd/hr/util"
 
 	"gorm.io/gorm"
 )
@@ -26,15 +25,7 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	db := hrUtil.OpenDatabase(*hrUtil.DatabasePath)
-
-	// Create a TransactionManager instance.
-	tm := &hrUtil.TransactionManager{DB: db}
-
-	err = tm.Execute(func(tx *gorm.DB) error {
-		// Use StudentHRController to handle the deletion business logic.
-		return controller.DeleteStudent(tx, *studentID)
-	})
+	err = controller.DeleteStudent(tx, *studentID)
 
 	if err != nil {
 		return fmt.Errorf("failed to delete student: %v", err)
