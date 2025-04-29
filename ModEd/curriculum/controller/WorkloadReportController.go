@@ -24,7 +24,7 @@ func CreateWorkloadReportController(db *gorm.DB) *WorkloadReportController {
 type WorkloadReportFacade struct {
 	ClassController           *ClassController
 	MeetingController         *MeetingController
-	StudentWorkloadController *StudentWorkloadController
+	StudentWorkloadController *StudentRequestController
 }
 
 // GenerateDailyWorkloadReport generates a simple daily workload report.
