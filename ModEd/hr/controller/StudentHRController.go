@@ -5,6 +5,7 @@ import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	"ModEd/hr/model"
+	"ModEd/hr/util"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -72,48 +73,58 @@ func (c *StudentHRController) updateStatus(sid string, status commonModel.Studen
 	return c.db.Save(&studentInfo).Error
 }
 
-func AddStudent(tx *gorm.DB,
+func AddStudent(db *gorm.DB,
 	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
 ) error {
-	// 1) common record
-	// common := &commonModel.Student{
-	// 	StudentCode: studentCode,
-	// 	FirstName:   firstName,
-	// 	LastName:    lastName,
-	// 	Email:       email,
-	// }
-	// if err := commonController.CreateStudentController(tx).Create(common); err != nil {
-	// 	return fmt.Errorf("common.Create failed: %w", err)
-	// }
+	tm := &util.TransactionManager{DB: db}
 
-	// 2) migrate to HR
-	if err := MigrateStudentsToHR(tx); err != nil {
-		return fmt.Errorf("MigrateStudentsToHR failed: %w", err)
-	}
+	err := tm.Execute(func(tx *gorm.DB) error {
+		// 1) common record
+		// common := &commonModel.Student{
+		// 	StudentCode: studentCode,
+		// 	FirstName:   firstName,
+		// 	LastName:    lastName,
+		// 	Email:       email,
+		// }
+		// if err := commonController.CreateStudentController(tx).Create(common); err != nil {
+		// 	return fmt.Errorf("common.Create failed: %w", err)
+		// }
 
-	// 3) build HR info & insert
-	hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
+		if migrateErr := MigrateStudentsToHR(tx); migrateErr != nil {
+			return fmt.Errorf("MigrateStudentsToHR failed: %w", migrateErr)
+		}
 
-	// Insert the new HR record using the StudentHRController directly.
-	if err := createStudentHRController(tx).insert(hrInfo); err != nil {
-		return fmt.Errorf("failed to insert HR student info: %w", err)
-	}
-	return nil
+		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
+
+		if insertErr := createStudentHRController(tx).insert(hrInfo); insertErr != nil {
+			return fmt.Errorf("failed to insert HR student info: %w", insertErr)
+		}
+		return nil
+	})
+	return err
 }
 
-func DeleteStudent(tx *gorm.DB, studentID string) error {
-	// Delete student from common data.
-	studentController := commonController.CreateStudentController(tx)
-	if err := studentController.DeleteByCode(studentID); err != nil {
-		return fmt.Errorf("failed to delete student from common data: %w", err)
-	}
+func DeleteStudent(db *gorm.DB, studentID string) error {
+	tm := &util.TransactionManager{DB: db}
 
-	return createStudentHRController(tx).delete(studentID)
+	err := tm.Execute(func(tx *gorm.DB) error {
+		studentController := commonController.CreateStudentController(tx)
+		if err := studentController.DeleteByCode(studentID); err != nil {
+			return fmt.Errorf("failed to delete student from common data: %w", err)
+		}
+
+		if err := createStudentHRController(tx).delete(studentID); err != nil {
+			return fmt.Errorf("failed to delete student HR info: %w", err)
+		}
+
+		return nil
+	})
+	return err
 }
 
-func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
-	// Wrap the business logic in a transaction.
-	return tx.Transaction(func(tx *gorm.DB) error {
+func UpdateStudentInfo(db *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
+	tm := &util.TransactionManager{DB: db}
+	err := tm.Execute(func(tx *gorm.DB) error {
 		// Retrieve the existing HR info using StudentHRController.
 		controller := createStudentHRController(tx)
 		studentInfo, err := controller.getById(studentID)
@@ -145,50 +156,58 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 		}
 		return nil
 	})
+	return err
 }
 
-func ImportStudents(tx *gorm.DB, filepath string) error {
+func ImportStudents(db *gorm.DB, filepath string) error {
+	tm := &util.TransactionManager{DB: db}
 
-	hrMapper, err := core.CreateMapper[model.StudentInfo](filepath)
-	if err != nil {
-		return fmt.Errorf("failed to create HR mapper: %v", err)
-	}
-
-	hrRecords := hrMapper.Deserialize()
-	hrRecordsMap := make(map[string]model.StudentInfo)
-	for _, hrRec := range hrRecords {
-		if _, exists := hrRecordsMap[hrRec.StudentCode]; exists {
-			return fmt.Errorf("duplicate student code found: %s", hrRec.StudentCode)
-		}
-		hrRecordsMap[hrRec.StudentCode] = *hrRec
-	}
-
-	controller := createStudentHRController(tx)
-	for _, hrRec := range hrRecordsMap {
-		studentInfo, err := controller.getById(hrRec.StudentCode)
+	err := tm.Execute(func(tx *gorm.DB) error {
+		hrMapper, err := core.CreateMapper[model.StudentInfo](filepath)
 		if err != nil {
-			return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
+			return fmt.Errorf("failed to create HR mapper: %w", err)
 		}
 
-		importStudent := model.NewUpdatedStudentInfo(
-			studentInfo,
-			studentInfo.FirstName,
-			studentInfo.LastName,
-			hrRec.Gender,
-			hrRec.CitizenID,
-			hrRec.PhoneNumber,
-			studentInfo.Email,
-		)
-
-		if err := controller.update(importStudent); err != nil {
-			return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
+		hrRecords := hrMapper.Deserialize()
+		hrRecordsMap := make(map[string]model.StudentInfo)
+		for _, hrRec := range hrRecords {
+			if _, exists := hrRecordsMap[hrRec.StudentCode]; exists {
+				return fmt.Errorf("duplicate student code found in import file: %s", hrRec.StudentCode)
+			}
+			if hrRec != nil {
+				hrRecordsMap[hrRec.StudentCode] = *hrRec
+			} else {
+				continue
+			}
 		}
-	}
-	return nil
+
+		controller := createStudentHRController(tx)
+		for studentCode, hrRec := range hrRecordsMap {
+			studentInfo, err := controller.getById(studentCode)
+			if err != nil {
+				return fmt.Errorf("error retrieving student with ID %s: %w", studentCode, err)
+			}
+
+			importStudent := model.NewUpdatedStudentInfo(
+				studentInfo,
+				studentInfo.FirstName,
+				studentInfo.LastName,
+				hrRec.Gender,
+				hrRec.CitizenID,
+				hrRec.PhoneNumber,
+				studentInfo.Email,
+			)
+
+			if err := controller.update(importStudent); err != nil {
+				return fmt.Errorf("failed to update student %s: %w", importStudent.StudentCode, err)
+			}
+		}
+		return nil
+	})
+	return err
 }
 
 func ExportStudents(tx *gorm.DB, filePath string, format string) error {
-
 	fileInfo, err := os.Stat(filePath)
 	if err == nil && fileInfo.IsDir() {
 		switch format {

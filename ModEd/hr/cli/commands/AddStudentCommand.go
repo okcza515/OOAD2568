@@ -37,23 +37,16 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	db := util.OpenDatabase(*util.DatabasePath)
-
-	// Create a TransactionManager instance.
-	tm := &util.TransactionManager{DB: db}
-
-	err = tm.Execute(func(tx *gorm.DB) error {
-		return controller.AddStudent(
-			tx,
-			*studentID,
-			*firstName,
-			*lastName,
-			*email,
-			*gender,
-			*citizenID,
-			*phoneNumber,
-		)
-	})
+	err = controller.AddStudent(
+		tx,
+		*studentID,
+		*firstName,
+		*lastName,
+		*email,
+		*gender,
+		*citizenID,
+		*phoneNumber,
+	)
 
 	if err != nil {
 		return fmt.Errorf("transaction failed: %v", err)
