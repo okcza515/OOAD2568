@@ -46,15 +46,26 @@ func (menu *InstrumentLogMenuState) Render() {
 }
 
 func (menu *InstrumentLogMenuState) HandleUserInput(input string) error {
-	context := &handler.HandlerContext{}
+	//err := menu.handlerContext.HandleInput(input)
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//if input != "back" {
+	//	util.PressEnterToContinue()
+	//}
+	//
+	//return nil
+
+	//context := &handler.HandlerContext{}
 
 	switch input {
 	case "1":
 		fmt.Println("List all Instrument Log")
-		context.SetStrategy(menu.listHandlerStrategy)
+		//context.SetStrategy(menu.listHandlerStrategy)
 	case "2":
 		fmt.Println("Get detail of an Instrument Log")
-		context.SetStrategy(menu.retrieveByIDHandlerStrategy)
+		//context.SetStrategy(menu.retrieveByIDHandlerStrategy)
 	case "back":
 		menu.manager.SetState(menu.assetMainMenu)
 		return nil
@@ -62,11 +73,11 @@ func (menu *InstrumentLogMenuState) HandleUserInput(input string) error {
 		return nil
 	}
 
-	err := context.Execute()
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	//err := context.HandleInput()
+	//
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	util.PressEnterToContinue()
 
