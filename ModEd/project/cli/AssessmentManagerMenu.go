@@ -51,11 +51,11 @@ func BuildAssessmentManagerMenu(
 				),
 			},
 			BuildAssessmentScoreManagerMenu(
-				scoreAdvisorController,
-				scoreCommitteeController,
 				assessmentController,
 				assessmentCriteriaLinkController,
 				assessmentCriteriaController,
+				scoreAdvisorController,
+				scoreCommitteeController,
 			),
 			BuildAssessmentCriteriaManagerMenu(assessmentCriteriaController),
 		},
