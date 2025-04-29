@@ -20,8 +20,8 @@ func RunInterShipCLI(
         db,
         curriculumController,
     )
-    instructorWorkloadModuleState := handler.NewInternShipModuleMenuStateHandler(menuManager, wrapper)
-    menuManager.SetState(instructorWorkloadModuleState)
+    InternshipModule := handler.NewInternShipModuleMenuStateHandler(menuManager, wrapper)
+    menuManager.SetState(InternshipModule)
 
     for {
         menuManager.Render()
