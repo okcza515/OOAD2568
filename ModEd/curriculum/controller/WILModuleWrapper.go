@@ -18,9 +18,9 @@ func NewWILModuleWrapper(
 	classController ClassControllerInterface,
 ) *WILModuleWrapper {
 	return &WILModuleWrapper{
-		WILProjectController:            CreateWILProjectController(db),
-		WILProjectApplicationController: CreateWILProjectApplicationController(db),
-		WILProjectCurriculumController:  CreateWILProjectCurriculumFacadeController(db, courseController, classController),
-		IndependentStudyController:      CreateIndependentStudyController(db),
+		WILProjectController:            NewWILProjectController(db),
+		WILProjectApplicationController: NewWILProjectApplicationController(db),
+		WILProjectCurriculumController:  NewWILProjectCurriculumFacadeController(db, courseController, classController),
+		IndependentStudyController:      NewIndependentStudyController(db),
 	}
 }

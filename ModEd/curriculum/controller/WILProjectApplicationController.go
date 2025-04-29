@@ -25,10 +25,10 @@ type WILProjectApplicationControllerInterface interface {
 	ListPagination(condition map[string]interface{}, page int, pageSize int)
 }
 
-func CreateWILProjectApplicationController(connector *gorm.DB) *WILProjectApplicationController {
+func NewWILProjectApplicationController(connector *gorm.DB) *WILProjectApplicationController {
 	return &WILProjectApplicationController{
 		connector:                  connector,
-		wilProjectMemberController: CreateWILProjectMemberController(connector),
+		wilProjectMemberController: NewWILProjectMemberController(connector),
 		BaseController:             core.NewBaseController[model.WILProjectApplication](connector),
 	}
 }

@@ -17,7 +17,7 @@ type WILProjectMemberControllerInterface interface {
 	InsertMany(data []model.WILProjectMember) error
 }
 
-func CreateWILProjectMemberController(connector *gorm.DB) *WILProjectMemberController {
+func NewWILProjectMemberController(connector *gorm.DB) *WILProjectMemberController {
 	return &WILProjectMemberController{
 		connector:      connector,
 		BaseController: core.NewBaseController[model.WILProjectMember](connector),

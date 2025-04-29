@@ -24,7 +24,7 @@ type IndependentStudyControllerInterface interface {
 	ListPagination(condition map[string]interface{}, page int, pageSize int) (*core.PaginationResult, error)
 }
 
-func CreateIndependentStudyController(connector *gorm.DB) *IndependentStudyController {
+func NewIndependentStudyController(connector *gorm.DB) *IndependentStudyController {
 	return &IndependentStudyController{
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.IndependentStudy](connector),

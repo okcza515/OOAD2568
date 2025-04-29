@@ -21,7 +21,7 @@ type WILProjectControllerInterface interface {
 	DeleteByID(id uint) error
 }
 
-func CreateWILProjectController(connector *gorm.DB) *WILProjectController {
+func NewWILProjectController(connector *gorm.DB) *WILProjectController {
 	return &WILProjectController{
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.WILProject](connector),
