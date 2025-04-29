@@ -10,6 +10,62 @@ import (
 	"gorm.io/gorm"
 )
 
+type ImportStrategy interface {
+	Deserialize(filePath string) error
+	SaveAll(db *gorm.DB) error
+}
+
+type CompanyImportStrategy struct {
+	Companies []model.Company
+}
+
+func (s *CompanyImportStrategy) Deserialize(filePath string) error {
+	des, err := deserializer.NewFileDeserializer(filePath)
+	if err != nil {
+		return err
+	}
+	return des.Deserialize(&s.Companies)
+}
+
+func (s *CompanyImportStrategy) SaveAll(db *gorm.DB) error {
+	for _, company := range s.Companies {
+		if err := db.Create(&company).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type InternStudentImportStrategy struct {
+	Students []model.InternStudent
+}
+
+func (s *InternStudentImportStrategy) Deserialize(filePath string) error {
+	des, err := deserializer.NewFileDeserializer(filePath)
+	if err != nil {
+		return err
+	}
+	return des.Deserialize(&s.Students)
+}
+
+func (s *InternStudentImportStrategy) SaveAll(db *gorm.DB) error {
+	for _, intern := range s.Students {
+		var existing commonmodel.Student
+		if err := db.Where("student_code = ?", intern.StudentCode).First(&existing).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				fmt.Printf("Warning: Student code %s not found. Skipping.\n", intern.StudentCode)
+				continue
+			}
+			return err
+		}
+		intern.InternStatus = model.NOT_STARTED
+		if err := db.Create(&intern).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type GenericImportController struct {
 	*core.BaseController[model.InternStudent]
 	Connector *gorm.DB
@@ -22,51 +78,20 @@ func CreateGenericImportController(connector *gorm.DB) *GenericImportController 
 	}
 }
 
-func (c *GenericImportController) ImportDataFromFile(filePath string, target interface{}, deserializerFunc func(string) (*deserializer.FileDeserializer, error)) error {
-	fileDeserializer, err := deserializerFunc(filePath)
-	if err != nil {
-		return fmt.Errorf("failed to create file deserializer: %w", err)
+func (c *GenericImportController) ImportWithStrategy(filePath string, s ImportStrategy) error {
+	if err := s.Deserialize(filePath); err != nil {
+		return fmt.Errorf("deserialization failed: %w", err)
 	}
-
-	if err := fileDeserializer.Deserialize(target); err != nil {
-		return fmt.Errorf("failed to deserialize file: %w", err)
+	if err := s.SaveAll(c.Connector); err != nil {
+		return fmt.Errorf("saving failed: %w", err)
 	}
-
-	switch v := target.(type) {
-	case *[]model.Company:
-		for _, company := range *v {
-			if err := c.Connector.Create(&company).Error; err != nil {
-				return fmt.Errorf("failed to insert company into database: %w", err)
-			}
-		}
-	case *[]model.InternStudent:
-		for _, internStudent := range *v {
-			var existingStudent commonmodel.Student
-			if err := c.Connector.Where("student_code = ?", internStudent.StudentCode).First(&existingStudent).Error; err != nil {
-				if err == gorm.ErrRecordNotFound {
-					fmt.Printf("Warning: Student with code %s does not exist. Skipping...\n", internStudent.StudentCode)
-					continue
-				}
-				return fmt.Errorf("failed to check student_code %s: %w", internStudent.StudentCode, err)
-			}
-
-			internStudent.InternStatus = model.NOT_STARTED
-
-			if err := c.Connector.Create(&internStudent).Error; err != nil {
-				return fmt.Errorf("failed to insert InternStudent: %w", err)
-			}
-		}
-	default:
-		return fmt.Errorf("unsupported target type: %T", v)
-	}
-
 	return nil
 }
 
-func (c *GenericImportController) ImportCompaniesFromCSV(filePath string) error {
-	return c.ImportDataFromFile(filePath, &[]model.Company{}, deserializer.NewFileDeserializer)
+func (c *GenericImportController) ImportCompanies(filePath string) error {
+	return c.ImportWithStrategy(filePath, &CompanyImportStrategy{})
 }
 
-func (c *GenericImportController) RegisterInternStudentsFromFile(filePath string) error {
-	return c.ImportDataFromFile(filePath, &[]model.InternStudent{}, deserializer.NewFileDeserializer)
+func (c *GenericImportController) ImportInternStudents(filePath string) error {
+	return c.ImportWithStrategy(filePath, &InternStudentImportStrategy{})
 }
