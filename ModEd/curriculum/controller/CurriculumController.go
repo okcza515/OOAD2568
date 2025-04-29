@@ -20,8 +20,8 @@ type CurriculumController struct {
 type CurriculumControllerInterface interface {
 	CreateSeedCurriculum(path string) (curriculums []*model.Curriculum, err error)
 	CreateCurriculum(curriculum *model.Curriculum) (curriculumId uint, err error)
-	GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
-	GetCurriculums() (curriculums []*model.Curriculum, err error)
+	GetCurriculum(curriculumId uint, preload ...string) (curriculum *model.Curriculum, err error)
+	GetCurriculums(preload ...string) (curriculums []*model.Curriculum, err error)
 	UpdateCurriculum(updated *model.Curriculum) (curriculum *model.Curriculum, err error)
 	DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error)
 }
@@ -42,8 +42,8 @@ func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (c
 }
 
 // Read one
-func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
-	curriculum, err = c.core.RetrieveByID(curriculumId)
+func (c *CurriculumController) GetCurriculum(curriculumId uint, preload ...string) (curriculum *model.Curriculum, err error) {
+	curriculum, err = c.core.RetrieveByID(curriculumId, preload...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func (c *CurriculumController) GetCurriculum(curriculumId uint) (curriculum *mod
 }
 
 // Read all
-func (c *CurriculumController) GetCurriculums() (curriculums []*model.Curriculum, err error) {
-	curriculums, err = c.core.List(nil)
+func (c *CurriculumController) GetCurriculums(preload ...string) (curriculums []*model.Curriculum, err error) {
+	curriculums, err = c.core.List(nil, preload...)
 	if err != nil {
 		return nil, err
 	}
