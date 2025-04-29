@@ -2,40 +2,31 @@
 package controller
 
 import (
-	"ModEd/core"
-	model "ModEd/curriculum/model"
-	"fmt"
-
-	"gorm.io/gorm"
+    "ModEd/curriculum/model"
+    "gorm.io/gorm"
 )
 
 type ReviewController struct {
-	*core.BaseController[model.SupervisorReview]
-	Connector *gorm.DB
+    *BaseScoreController[model.SupervisorReview]
 }
 
 func CreateReviewController(connector *gorm.DB) *ReviewController {
-	return &ReviewController{
-		Connector:      connector,
-		BaseController: core.NewBaseController[model.SupervisorReview](connector),
-	}
+    return &ReviewController{
+        BaseScoreController: &BaseScoreController[model.SupervisorReview]{Connector: connector},
+    }
 }
 
-func (rc *ReviewController) UpdateReviewScore(studentID string, SupervisorScore int, MentorScore int) error {
-	var application model.InternshipApplication
-	if err := rc.Connector.Where("student_code = ?", studentID).Last(&application).Error; err != nil {
-		return fmt.Errorf("failed to find application for student_code '%s': %w", studentID, err)
-	}
-	var report model.SupervisorReview
-	if err := rc.Connector.Where("id = ?", application.InternshipReportId).Last(&report).Error; err != nil {
-		return fmt.Errorf("failed to find report with id '%d': %w", application.InternshipReportId, err)
-	}
-	if err := rc.Connector.Model(&model.SupervisorReview{}).Where("id = ?", report.ID).Updates(map[string]interface{}{
-		"InstructorScore": SupervisorScore,
-		"MentorScore":     MentorScore,
-	}).Error; err != nil {
-		return fmt.Errorf("failed to update review scores for report id '%d': %w", report.ID, err)
-	}
+func (rc *ReviewController) UpdateReviewScore(studentID string, supervisorScore int, mentorScore int) error {
+    scoreFields := map[string]interface{}{
+        "InstructorScore": supervisorScore,
+        "MentorScore":     mentorScore,
+    }
 
-	return nil
+    return rc.UpdateScore(studentID, scoreFields, func(db *gorm.DB, studentID string) (uint, error) {
+        var application model.InternshipApplication
+        if err := db.Where("student_code = ?", studentID).Last(&application).Error; err != nil {
+            return 0, err
+        }
+        return application.SupervisorReviewId, nil
+    })
 }
