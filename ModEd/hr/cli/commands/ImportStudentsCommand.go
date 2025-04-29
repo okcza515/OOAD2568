@@ -28,8 +28,7 @@ func importStudents(args []string, tx *gorm.DB) error {
 
 	tm := &util.TransactionManager{DB: tx} // use passed transaction connection
 	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(tx) // pass tx instead of new db
-		if err := hrFacade.ImportStudents(tx, *filePath); err != nil {
+		if err := controller.ImportStudents(tx, *filePath); err != nil {
 			return err
 		}
 		fmt.Println("Students imported successfully!")

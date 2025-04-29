@@ -144,7 +144,7 @@ func UpdateStudentInfo(tx *gorm.DB, studentID, firstName, lastName, gender, citi
 	})
 }
 
-func (f *HRFacade) ImportStudents(tx *gorm.DB, filepath string) error {
+func ImportStudents(tx *gorm.DB, filepath string) error {
 
 	hrMapper, err := core.CreateMapper[model.StudentInfo](filepath)
 	if err != nil {
@@ -160,8 +160,9 @@ func (f *HRFacade) ImportStudents(tx *gorm.DB, filepath string) error {
 		hrRecordsMap[hrRec.StudentCode] = *hrRec
 	}
 
+	controller := createStudentHRController(tx)
 	for _, hrRec := range hrRecordsMap {
-		studentInfo, err := f.GetStudentById(hrRec.StudentCode)
+		studentInfo, err := controller.getById(hrRec.StudentCode)
 		if err != nil {
 			return fmt.Errorf("error retrieving student with ID %s: %v", hrRec.StudentCode, err)
 		}
@@ -176,7 +177,7 @@ func (f *HRFacade) ImportStudents(tx *gorm.DB, filepath string) error {
 			studentInfo.Email,
 		)
 
-		if err := f.UpsertStudent(importStudent); err != nil {
+		if err := controller.update(importStudent); err != nil {
 			return fmt.Errorf("failed to upsert student %s: %v", importStudent.StudentCode, err)
 		}
 	}
