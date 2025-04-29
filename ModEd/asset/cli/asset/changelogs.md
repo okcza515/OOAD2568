@@ -55,7 +55,17 @@ ___
 MEP-1012 Asset
 
 ### Done
-1. 
+1. Refactor CLI layer using `State` DP
+2. Refactor handler using `Strategy` DP
+3. Implemented a core migration with `Singleton`, `Builder`, `Strategy`
+4. Refactor `AssetControllerFacade` into a `AssetControllerManager`. Instead of using `Facade` DP, we simply encapsulate it with `Singleton`.
+5. Implemented cross-controller updated using `Observer` DP
+6. Add preloads into `HandlerStrategy`
+
+### Actual New Feature
+1. Instrument `Update`
+2. Instrument Log `List`, `RetrieveByID`
+3. Supply `Insert`,`List`,`Update`,`Delete`
 
 # Implemented Design Pattern Or Principles
 
