@@ -3,10 +3,8 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"strings"
 
 	"ModEd/hr/controller"
-	"ModEd/hr/model"
 	"ModEd/hr/util"
 
 	"gorm.io/gorm"
@@ -31,32 +29,10 @@ func updateInstructorInfo(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	tm := &util.TransactionManager{DB: tx}
-	return tm.Execute(func(tx *gorm.DB) error {
-		hrFacade := controller.NewHRFacade(tx)
-		instructorInfo, err := hrFacade.GetInstructorById(*instructorID)
-		if err != nil {
-			return fmt.Errorf("error retrieving instructor with ID %s: %v", *instructorID, err)
-		}
+	if err := controller.UpdateInstructorInfo(tx, *instructorID, *field, *value); err != nil {
+		return fmt.Errorf("failed to update instructor info: %v", err)
+	}
 
-		switch strings.ToLower(*field) {
-		case "position", "academicposition", "academic_position":
-			parsedPos, err := model.ParseAcademicPosition(*value)
-			if err != nil {
-				return fmt.Errorf("invalid academic position: %v", err)
-			}
-			instructorInfo.AcademicPosition = parsedPos
-		case "department":
-			// Assuming InstructorInfo has a Department field.
-			// instructorInfo.Department = *value
-		default:
-			return fmt.Errorf("unknown field for instructor update: %s", *field)
-		}
-
-		if err := hrFacade.UpdateInstructor(instructorInfo); err != nil {
-			return fmt.Errorf("error updating instructor: %v", err)
-		}
-		fmt.Println("Instructor updated successfully!")
-		return nil
-	})
+	fmt.Println("Instructor updated successfully!")
+	return nil
 }
