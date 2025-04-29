@@ -9,15 +9,93 @@ import (
 	wilproject "ModEd/curriculum/cli/wil-project"
 	controller "ModEd/curriculum/controller"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 const (
 	defaultDBPath = "../../data/curriculum.db"
 )
 
-// TODO: not sure is this a good approach to do at all might need to discuss further
-func main() {
+type Command interface {
+	Execute() error
+}
 
+// CurriculumCommand
+type CurriculumCommand struct {
+	db                   *gorm.DB
+	courseController     controller.CourseControllerInterface
+	classController      controller.ClassControllerInterface
+	curriculumController controller.CurriculumControllerInterface
+}
+
+func (c *CurriculumCommand) Execute() error {
+	curriculum.RunCurriculumModuleCLI(c.db, c.courseController, c.classController, c.curriculumController)
+	return nil
+}
+
+// WILProjectCommand
+type WILProjectCommand struct {
+	db               *gorm.DB
+	courseController controller.CourseControllerInterface
+	classController  controller.ClassControllerInterface
+}
+
+func (w *WILProjectCommand) Execute() error {
+	wilproject.RunWILModuleCLI(w.db, w.courseController, w.classController)
+	return nil
+}
+
+// InstructorWorkloadCommand
+type InstructorWorkloadCommand struct {
+	db                   *gorm.DB
+	courseController     controller.CourseControllerInterface
+	classController      controller.ClassControllerInterface
+	curriculumController controller.CurriculumControllerInterface
+}
+
+func (i *InstructorWorkloadCommand) Execute() error {
+	instructorWorkload.RunInstructorWorkloadModuleCLI(i.db, i.courseController, i.classController, i.curriculumController)
+	return nil
+}
+
+// InternshipCommand
+type InternshipCommand struct {
+	db *gorm.DB
+}
+
+func (i *InternshipCommand) Execute() error {
+	internship.RunInterShipCLI(i.db)
+	return nil
+}
+
+// ResetDBCommand
+type ResetDBCommand struct{}
+
+func (r *ResetDBCommand) Execute() error {
+	return resetDB()
+}
+
+type CommandExecutor struct {
+	commands map[string]Command
+}
+
+func NewCommandExecutor() *CommandExecutor {
+	return &CommandExecutor{commands: make(map[string]Command)}
+}
+
+func (ce *CommandExecutor) RegisterCommand(name string, command Command) {
+	ce.commands[name] = command
+}
+
+func (ce *CommandExecutor) ExecuteCommand(name string) error {
+	if command, exists := ce.commands[name]; exists {
+		return command.Execute()
+	}
+	return fmt.Errorf("invalid command: %s", name)
+}
+
+func main() {
 	db, err := migration.
 		GetInstance().
 		SetPathDB(defaultDBPath).
@@ -35,29 +113,24 @@ func main() {
 	classController := controller.NewClassController(db)
 	courseController := controller.NewCourseController(db)
 
+	commandExecutor := NewCommandExecutor()
+	commandExecutor.RegisterCommand("1", &CurriculumCommand{db, courseController, classController, curriculumController})
+	commandExecutor.RegisterCommand("2", &WILProjectCommand{db, courseController, classController})
+	commandExecutor.RegisterCommand("3", &InstructorWorkloadCommand{db, courseController, classController, curriculumController})
+	commandExecutor.RegisterCommand("4", &InternshipCommand{db})
+	commandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
+
 	for {
 		displayMainMenu()
 		choice := getUserChoice()
 
-		switch choice {
-		case "1":
-			curriculum.RunCurriculumModuleCLI(db, courseController, classController, curriculumController)
-		case "2":
-			wilproject.RunWILModuleCLI(db, courseController, classController)
-		case "3":
-			instructorWorkload.RunInstructorWorkloadModuleCLI(db, courseController, classController, curriculumController)
-		case "4":
-			internship.RunInterShipCLI(db)
-		case "resetdb":
-			err := resetDB()
-			if err != nil {
-				panic(err)
-			}
-		case "0":
+		if choice == "0" {
 			fmt.Println("Exiting...")
 			return
-		default:
-			fmt.Println("Invalid option")
+		}
+
+		if err := commandExecutor.ExecuteCommand(choice); err != nil {
+			fmt.Printf("Error: %v\n", err)
 		}
 	}
 }
