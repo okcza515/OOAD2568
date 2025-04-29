@@ -9,11 +9,11 @@ import (
 )
 
 func BuildAssessmentScoreManagerMenu(
-	scoreAdvisorController *controller.ScoreAdvisorController,
-	scoreCommitteeController *controller.ScoreCommitteeController,
 	assessmentController *controller.AssessmentController,
 	assessmentCriteriaLinkController *controller.AssessmentCriteriaLinkController,
 	assessmentCriteriaController *controller.AssessmentCriteriaController,
+	scoreAdvisorController *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor],
+	scoreCommitteeController *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee],
 ) *utils.MenuItem {
 	return &utils.MenuItem{
 		Title: "Assessment Score Manager",
