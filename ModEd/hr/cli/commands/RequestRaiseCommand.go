@@ -26,12 +26,11 @@ func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	hrFacade := controller.NewHRFacade(tx)
-	if err := hrFacade.SubmitRaiseRequest(tx, *id, *amount, *reason); err != nil {
+	raiseController := controller.NewRaiseHRController(tx) // Declare and initialize the controller
+	if err := raiseController.SubmitRaiseRequest(*id, *amount, *reason); err != nil {
 		return err
 	}
 
 	fmt.Println("Raise request submitted successfully.")
 	return nil
 }
-

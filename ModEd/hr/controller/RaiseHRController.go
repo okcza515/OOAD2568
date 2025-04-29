@@ -2,16 +2,17 @@ package controller
 
 import (
 	"ModEd/hr/model"
-	"gorm.io/gorm"
 	"ModEd/hr/util"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type RaiseHRController struct {
 	db *gorm.DB
 }
 
-func createRaiseHRController(db *gorm.DB) *RaiseHRController {
+func NewRaiseHRController(db *gorm.DB) *RaiseHRController {
 	db.AutoMigrate(&model.RequestRaise{})
 	return &RaiseHRController{db: db}
 }
@@ -36,15 +37,13 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaise, error) {
 	return requests, err
 }
 
-func (h *HRFacade) SubmitRaiseRequest(db *gorm.DB, instructorID string, amount int, reason string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
+	tm := &util.TransactionManager{DB: c.db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
-		raiseController := createRaiseHRController(tx)
-
 		request := model.NewRequestRaise(instructorID, reason, amount)
 
-		if err := raiseController.insert(request); err != nil {
+		if err := c.insert(request); err != nil {
 			return fmt.Errorf("failed to submit raise request: %v", err)
 		}
 		return nil
