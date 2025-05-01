@@ -54,6 +54,15 @@ func (c *InstructorHRController) delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
+func GetAllInstructors(tx *gorm.DB) ([]*model.InstructorInfo, error) {
+	controller := createInstructorHRController(tx)
+	instructors, err := controller.getAll()
+	if err != nil {
+		return nil, fmt.Errorf("error retrieving instructors: %v", err)
+	}
+	return instructors, nil
+}
+
 func UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {

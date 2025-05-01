@@ -26,16 +26,26 @@ type Invoker struct {
 func NewInvoker() *Invoker {
 	return &Invoker{
 		commands: map[string]Command{
-			"list":              &commands.ListCommand{},
-			"add":               &commands.AddStudentCommand{},
-			"delete":            &commands.DeleteStudentCommand{},
-			"update":            &commands.UpdateCommand{},
-			"import":            &commands.ImportCommand{},
-			"migrate":           &commands.MigrateStudentsCommand{},
-			"export":            &commands.ExportStudentsCommand{},
-			"request":           &commands.RequestCommand{},
-			"answerResignation": &commands.AnswerResignationCommand{},
-			// ... additional command registrations ...
+			"delete":                        &commands.DeleteStudentCommand{},
+			"migrate":                       &commands.MigrateStudentsCommand{},
+			"export":                        &commands.ExportStudentsCommand{},
+			"list-student":                  &commands.ListStudentCommand{},
+			"add-student":                   &commands.AddStudentCommand{},
+			"import-student":                &commands.ImportStudentCommand{},
+			"update-student-info":           &commands.UpdateStudentInfoCommand{},
+			"request-student-leave":         &commands.RequestStudentLeaveCommand{},
+			"request-student-resign":        &commands.RequestStudentResignCommand{},
+			"review-student-leave":          &commands.ReviewStudentLeaveCommand{},
+			"review-student-resignation":    &commands.ReviewStudentResignCommand{},
+			"list-instructor":               &commands.ListInstructorCommand{},
+			"add-instructor":                &commands.AddInstructorCommand{},
+			"import-instructor":             &commands.ImportInstructorCommand{},
+			"update-instructor-info":        &commands.UpdateInstructorInfoCommand{},
+			"request-instructor-leave":      &commands.RequestInstructorLeaveCommand{},
+			"request-instructor-resign":     &commands.RequestInstructorResignCommand{},
+			"review-instructor-leave":       &commands.ReviewInstructorLeaveCommand{},
+			"review-instructor-resignation": &commands.ReviewInstructorResignCommand{},
+			"answerResignation":             &commands.AnswerResignationCommand{},
 		},
 	}
 }
@@ -57,20 +67,67 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	// Open the database
 	util.DatabasePath = databasePath
 	db := util.OpenDatabase(*databasePath)
 
 	if len(args) < 1 {
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|...} [options]")
+		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {command} [subcommand] [action] [options]")
+		fmt.Println("Examples:")
+		fmt.Println("  go run humanresourcecli.go list")
+		fmt.Println("  go run humanresourcecli.go add student --name John")
+		fmt.Println("  go run humanresourcecli.go request student resign --id 123")
 		os.Exit(1)
 	}
 
-	commandName := args[0]
-	// Create an invoker and execute the command.
+	// Create the invoker first to access the command map
 	invoker := NewInvoker()
-	if err := invoker.ExecuteCommand(commandName, args[1:], db); err != nil {
-		fmt.Printf("Error executing command: %v\n", err)
+
+	var commandName string
+	var commandArgs []string
+	commandFound := false
+
+	// Try matching longest command name first (3 parts)
+	if len(args) >= 3 {
+		potentialCmd := args[0] + "-" + args[1] + "-" + args[2]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[3:]
+			commandFound = true
+		}
+	}
+
+	// If not found, try matching 2 parts
+	if !commandFound && len(args) >= 2 {
+		potentialCmd := args[0] + "-" + args[1]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[2:]
+			commandFound = true
+		}
+	}
+
+	// If not found, try matching 1 part
+	if !commandFound && len(args) >= 1 {
+		potentialCmd := args[0]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[1:]
+			commandFound = true
+		}
+	}
+
+	// If no command matched
+	if !commandFound {
+		fmt.Printf("Error: unknown command sequence starting with '%s'\n", args[0])
+		// Optional: List available commands from invoker.commands keys
+		fmt.Println("Available commands (examples): list, add-student, request-student-resign, ...")
+		fmt.Println("Run with no arguments for full usage.")
+		os.Exit(1)
+	}
+
+	// Execute the found command.
+	if err := invoker.ExecuteCommand(commandName, commandArgs, db); err != nil {
+		fmt.Printf("Error executing command '%s': %v\n", commandName, err)
 		os.Exit(1)
 	}
 }

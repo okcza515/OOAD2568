@@ -93,6 +93,29 @@ func (fv *FieldValidator) AllowedValues(allowed []string) *FieldValidator {
 	return fv
 }
 
+func (fv *FieldValidator) IsStudentID() *FieldValidator {
+	// Student ID is 11 digits long
+	return fv.Length(11).Regex(`^[0-9]{11}$`)
+}
+
+func (fv *FieldValidator) IsInstructorID() *FieldValidator {
+	return fv.Required()
+}
+
+func (fv *FieldValidator) IsDate() *FieldValidator {
+	// YYYY-MM-DD format
+	return fv.Regex(`^\d{4}-\d{2}-\d{2}$`)
+}
+
+func (fv *FieldValidator) IsEmail() *FieldValidator {
+	// Simple email regex
+	return fv.Regex(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+}
+
+func (fv *FieldValidator) IsDigit() *FieldValidator {
+	return fv.Regex(`^\d+$`)
+}
+
 // validateField applies all registered rules for this specific field.
 func (fv *FieldValidator) validateField() []error {
 	var errors []error

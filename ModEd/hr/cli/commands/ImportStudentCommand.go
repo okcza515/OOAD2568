@@ -10,11 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type ImportStudentCommand struct{}
+
 // usage : go run hr/cli/HumanResourceCLI.go import student -path=<path>
 // required field : path !!
-
-func importStudents(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("import", flag.ExitOnError)
+func (cmd *ImportStudentCommand) Execute(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("import-student", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR student info (only studentid and HR fields).")
 	fs.Parse(args)
 
@@ -26,7 +27,7 @@ func importStudents(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	tm := &util.TransactionManager{DB: tx} // use passed transaction connection
+	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
 		if err := controller.ImportStudents(tx, *filePath); err != nil {
 			return err

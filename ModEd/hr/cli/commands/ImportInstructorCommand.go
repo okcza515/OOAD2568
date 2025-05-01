@@ -13,14 +13,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func importInstructor(args []string, tx *gorm.DB) error {
+type ImportInstructorCommand struct{}
+
+func (cmd *ImportInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR instructor info (only instructorid and HR fields).")
 	fs.Parse(args)
 
-	validtor := util.NewValidationChain(fs)
-	validtor.Field("path").Required()
-	err := validtor.Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("path").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
