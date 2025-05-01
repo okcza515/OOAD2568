@@ -16,7 +16,7 @@ type InternStudentController struct {
 	Connector *gorm.DB
 }
 
-func CreateInternStudentController(connector *gorm.DB) *InternStudentController {
+func NewInternStudentController(connector *gorm.DB) *InternStudentController {
 	return &InternStudentController{
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.InternStudent](connector),

@@ -54,10 +54,11 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 func (handler *InternShipModuleMenuStateHandler) handleCreateInternshipApplication() error {
     studentCode := utils.GetUserInput("Enter Student Code: ")
 
-    companyIdStr := utils.GetUserInput("Enter Company ID: ")
-    companyId, err := strconv.Atoi(companyIdStr)
+    companyName := utils.GetUserInput("Enter Company Name: ")
+
+    company, err := handler.wrapper.Company.GetCompanyByName(companyName)
     if err != nil {
-        fmt.Println("Invalid Company ID.")
+        fmt.Printf("Error finding company with name '%s': %v\n", companyName, err)
         return err
     }
 
@@ -73,7 +74,7 @@ func (handler *InternShipModuleMenuStateHandler) handleCreateInternshipApplicati
         ApprovalAdvisorStatus: model.WAIT,
         ApprovalCompanyStatus: model.WAIT,
         AdvisorCode:           uint(advisorCode),
-        CompanyId:             uint(companyId),
+        CompanyId:             company.ID,
         StudentCode:           studentCode,
     }
 

@@ -11,6 +11,7 @@ type InternshipModuleWrapper struct {
 	Review                *ReviewController
 	Report                *ReportController
 	Approved              *ApprovedController
+	Company               *CompanyController
 	InternStudent         *InternStudentController
 	GenericImport         *GenericImportController
 }
@@ -21,10 +22,11 @@ func NewInternshipModuleWrapper(
 ) *InternshipModuleWrapper {
 	return &InternshipModuleWrapper{
 		InternshipApplication: NewInternshipApplicationController(db),
-		Review:                CreateReviewController(db),
-		Report:                CreateReportController(db),
-		Approved:              CreateApprovedController(db),
-		InternStudent:         CreateInternStudentController(db),
+		Review:                NewReviewController(db),
+		Report:                NewReportController(db),
+		Approved:              NewApprovedController(db),
+		Company:               NewCompanyController(db),
+		InternStudent:         NewInternStudentController(db),
 		GenericImport:         CreateGenericImportController(db),
 	}
 }

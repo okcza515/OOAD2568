@@ -10,7 +10,7 @@ type ReviewController struct {
     *BaseScoreController[model.SupervisorReview]
 }
 
-func CreateReviewController(connector *gorm.DB) *ReviewController {
+func NewReviewController(connector *gorm.DB) *ReviewController {
     return &ReviewController{
         BaseScoreController: &BaseScoreController[model.SupervisorReview]{Connector: connector},
     }
