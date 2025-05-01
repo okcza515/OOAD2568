@@ -4,22 +4,48 @@ package migration
 
 import (
 	"ModEd/core"
+	"fmt"
 	"github.com/cockroachdb/errors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-var instance *MigrationManager = &MigrationManager{}
+var instance = newMigrationManager()
 
 type MigrationManager struct {
-	DB     *gorm.DB
-	err    error
-	pathDB string
-	Models []interface{}
+	DB                   *gorm.DB
+	err                  error
+	pathDB               string
+	models               []interface{}
+	migrationStrategyMap map[core.ModuleOptionEnum]MigrationStrategy
 }
 
 func GetInstance() *MigrationManager {
 	return instance
+}
+
+func newMigrationManager() *MigrationManager {
+	migrationMap := make(map[core.ModuleOptionEnum]MigrationStrategy)
+
+	// To use the core migration module you need to create your own migration strategy
+	// Then come here to replace `nil` with your model here to register
+	migrationMap[core.MODULE_ASSET] = &AssetMigrationStrategy{}
+	migrationMap[core.MODULE_PROCUREMENT] = nil
+	migrationMap[core.MODULE_SPACEMANAGEMENT] = &SpaceManagementMigrationStrategy{}
+	migrationMap[core.MODULE_COMMON] = nil
+	migrationMap[core.MODULE_CURRICULUM] = &CurriculumMigrationStrategy{}
+	migrationMap[core.MODULE_INSTRUCTOR] = &InstructorWorkloadMigrationStrategy{}
+	migrationMap[core.MODULE_INTERNSHIP] = &InternshipMigrationStrategy{}
+	migrationMap[core.MODULE_WILPROJECT] = &WILProjectMigrationStrategy{}
+	migrationMap[core.MODULE_QUIZ] = nil
+	migrationMap[core.MODULE_EVAL] = nil
+	migrationMap[core.MODULE_HR] = nil
+	migrationMap[core.MODULE_PROJECT] = nil
+	migrationMap[core.MODULE_RECRUIT] = nil
+
+	return &MigrationManager{
+		migrationStrategyMap: migrationMap,
+	}
 }
 
 func (m *MigrationManager) SetPathDB(pathDB string) *MigrationManager {
@@ -55,45 +81,29 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 }
 
 func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *MigrationManager {
-	var strategy MigrationStrategy
-
-	switch module {
-	case core.MODULE_ASSET:
-		strategy = &AssetMigrationStrategy{}
-	case core.MODULE_PROCUREMENT:
-		panic("not implemented")
-	case core.MODULE_SPACEMANAGEMENT:
-		strategy = &SpaceManagementMigrationStrategy{}
-	case core.MODULE_COMMON:
-		panic("not implemented")
-	case core.MODULE_CURRICULUM:
-		strategy = &CurriculumMigrationStrategy{}
-	case core.MODULE_INSTRUCTOR:
-		strategy = &InstructorWorkloadMigrationStrategy{}
-	case core.MODULE_INTERNSHIP:
-		strategy = &InternshipMigrationStrategy{}
-	case core.MODULE_WILPROJECT:
-		strategy = &WILProjectMigrationStrategy{}
-	case core.MODULE_QUIZ:
-		panic("not implemented")
-	case core.MODULE_EVAL:
-		panic("not implemented")
-	case core.MODULE_HR:
-		panic("not implemented")
-	case core.MODULE_PROJECT:
-		panic("not implemented")
-	case core.MODULE_RECRUIT:
-		panic("not implemented")
-	default:
-		return m
+	strategy, ok := m.migrationStrategyMap[module]
+	fmt.Println(strategy)
+	fmt.Println(ok)
+	fmt.Println(len(m.migrationStrategyMap))
+	if !ok || strategy == nil {
+		panic(fmt.Sprintf("err: module '%v' migration is not implemented", string(module)))
 	}
 
-	m.Models = append(m.Models, strategy.GetModels()...)
+	m.models = append(m.models, strategy.GetModels()...)
 	return m
 }
 
 func (m *MigrationManager) migrateToDB() error {
-	err := m.DB.AutoMigrate(m.Models...)
+	var modelsToMigrate []interface{}
+	for i := range m.models {
+		if m.DB.Migrator().HasTable(m.models[i]) {
+			continue
+		}
+
+		modelsToMigrate = append(modelsToMigrate, m.models[i])
+	}
+
+	err := m.DB.AutoMigrate(modelsToMigrate...)
 	if err != nil {
 		return errors.Wrap(err, "failed to migrate to db")
 	}
@@ -106,7 +116,7 @@ func (m *MigrationManager) DropAllTables() error {
 		return errors.New("db not initialize")
 	}
 
-	err := m.DB.Migrator().DropTable(m.Models...)
+	err := m.DB.Migrator().DropTable(m.models...)
 	if err != nil {
 		return err
 	}
