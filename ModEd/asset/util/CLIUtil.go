@@ -90,3 +90,32 @@ func PressEnterToContinue() {
 	var buffer string
 	_, _ = fmt.Scanln(&buffer)
 }
+
+func GetUintInput(prompt string) uint {
+	var input uint
+	fmt.Print(prompt)
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		fmt.Println("Invalid input. Please enter a positive number.")
+		return GetUintInput(prompt)
+	}
+	return input
+}
+
+func GetFloatInput(prompt string) float64 {
+	var input float64
+	fmt.Print(prompt)
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		fmt.Println("Invalid input. Please enter a number.")
+		return GetFloatInput(prompt)
+	}
+	return input
+}
+
+func GetStringInput(prompt string) string {
+	var input string
+	fmt.Print(prompt)
+	fmt.Scanln(&input)
+	return input
+}
