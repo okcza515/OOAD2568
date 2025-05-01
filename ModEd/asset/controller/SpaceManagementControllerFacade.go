@@ -18,6 +18,20 @@ type SpaceManagementControllerFacade struct {
 	Room                 RoomController
 }
 
+var spaceManagementInstance *SpaceManagementControllerFacade
+
+func GetSpaceManagementInstance() *SpaceManagementControllerFacade {
+	if spaceManagementInstance != nil {
+		return spaceManagementInstance
+	}
+	data, err := NewSpaceManagementControllerFacade()
+	if err != nil {
+		panic("Initial SpaceManagement Controller Failed")
+	}
+	spaceManagementInstance = data
+	return spaceManagementInstance
+}
+
 func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
 	db, err := migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
 	if err != nil {
