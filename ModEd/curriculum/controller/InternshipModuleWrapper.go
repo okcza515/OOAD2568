@@ -20,7 +20,7 @@ func NewInternshipModuleWrapper(
 	curriculumController CurriculumControllerInterface,
 ) *InternshipModuleWrapper {
 	return &InternshipModuleWrapper{
-		InternshipApplication: CreateInternshipApplicationController(db),
+		InternshipApplication: NewInternshipApplicationController(db),
 		Review:                CreateReviewController(db),
 		Report:                CreateReportController(db),
 		Approved:              CreateApprovedController(db),
