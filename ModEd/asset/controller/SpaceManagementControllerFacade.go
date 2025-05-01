@@ -41,7 +41,7 @@ func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, err
 	facade := SpaceManagementControllerFacade{Db: db}
 	facade.InstrumentManagement = InstrumentManagementController{db: db}
 	facade.SupplyManagement = SupplyManagementController{db: db}
-	facade.Booking = BookingController{db: db}
+	facade.Booking = *NewBookingController(db, core.NewBaseController[model.Booking](db))
 	facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
 	facade.Room = *NewRoomController(db, core.NewBaseController[model.Room](db))
 	return &facade, nil
