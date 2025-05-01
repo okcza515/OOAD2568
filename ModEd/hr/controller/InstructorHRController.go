@@ -98,4 +98,3 @@ func ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
 	}
 	return nil
 }
-}

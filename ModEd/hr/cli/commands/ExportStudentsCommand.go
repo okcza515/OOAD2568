@@ -15,11 +15,10 @@ func (c *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	format := fs.String("format", "", "Export format (csv or json)")
 	fs.Parse(args)
 
-	// Validate required flags
-	err := util.NewValidationChain(fs).
-		Required("path").
-		Required("format").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("path").Required()
+	validator.Field("format").Required().AllowedValues([]string{"csv", "json"})
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

@@ -20,18 +20,15 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Required("fname").
-		Required("lname").
-		Required("email").
-		Required("gender").
-		Required("citizenID").
-		Required("phoneNumber").
-		Length("id", 11).
-		Regex("id", `^[0-9]{11}$`).
-		Regex("email", `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	validator.Field("fname").Required()
+	validator.Field("lname").Required()
+	validator.Field("email").Required().Regex(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	validator.Field("gender").Required().AllowedValues([]string{"Male", "Female"})
+	validator.Field("citizenID").Required()
+	validator.Field("phone").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

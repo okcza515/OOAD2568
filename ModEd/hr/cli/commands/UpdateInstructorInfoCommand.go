@@ -18,12 +18,11 @@ func updateInstructorInfo(args []string, tx *gorm.DB) error {
 	value := fs.String("value", "", "New value for the specified field")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Length("id", 11).
-		Required("field").
-		Required("value").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	validator.Field("field").Required()
+	validator.Field("value").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

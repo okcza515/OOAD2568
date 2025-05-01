@@ -17,10 +17,10 @@ func (c *AnswerResignationCommand) Execute(args []string, tx *gorm.DB) error {
 	reason := fs.String("reason", "", "Reason if rejected (optional)")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("answer").
-		Required("reason").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("answer").Required().AllowedValues([]string{"approve", "reject"})
+	validator.Field("reason").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

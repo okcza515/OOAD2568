@@ -25,14 +25,13 @@ func requestLeave(target string, args []string, tx *gorm.DB) error {
 	leaveDateStr := fs.String("date", "", "Leave date (YYYY-MM-DD)")
 	fs.Parse(args)
 
-	// Validation remains the same
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Length("id", 11).
-		Required("type").
-		Required("reason").
-		Required("date").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	validator.Field("type").Required()
+	validator.Field("reason").Required()
+	validator.Field("date").Required().Regex(`^\d{4}-\d{2}-\d{2}$`)
+	validator.Validate()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

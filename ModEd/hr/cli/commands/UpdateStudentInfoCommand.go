@@ -23,15 +23,12 @@ func updateStudentInfo(args []string, tx *gorm.DB) error {
 	email := fs.String("email", "", "New email")
 	fs.Parse(args)
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id"}); err != nil {
-		err := util.NewValidationChain(fs).
-			Required("id").
-			Length("id", 11).
-			Validate()
-		if err != nil {
-			fs.Usage()
-			return fmt.Errorf("validation error: %v", err)
-		}
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	err := validator.Validate()
+	if err != nil {
+		fs.Usage()
+		return fmt.Errorf("validation error: %v", err)
 	}
 
 	if err := controller.UpdateStudentInfo(tx, *studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber, *email); err != nil {

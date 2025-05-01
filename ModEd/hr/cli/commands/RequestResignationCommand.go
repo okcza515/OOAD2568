@@ -20,7 +20,6 @@ func requestResignation(target string, args []string, tx *gorm.DB) error {
 	} else if target == "instructor" {
 		idUsage = "Instructor ID"
 	}
-
 	id := fs.String("id", "", idUsage)
 	reason := fs.String("reason", "", "Reason for resignation")
 
@@ -28,21 +27,13 @@ func requestResignation(target string, args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	validationChain := util.NewValidationChain(fs).
-		Required("id").
-		Required("reason")
-
-	if target == "student" {
-		validationChain.Length("id", 11)
-	} else if target == "instructor" {
-	}
-
-	if err := validationChain.Validate(); err != nil {
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	err := validator.Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
-
-	var err error
 
 	if target == "student" {
 		err = controller.SubmitResignationStudent(tx, *id, *reason)

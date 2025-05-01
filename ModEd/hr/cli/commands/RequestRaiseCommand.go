@@ -21,7 +21,12 @@ func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "amount", "reason"}); err != nil {
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	validator.Field("amount").Required()
+	validator.Field("reason").Required()
+	err := validator.Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}

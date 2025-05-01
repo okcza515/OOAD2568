@@ -24,12 +24,10 @@ func updateStudentStatus(args []string, tx *gorm.DB) error {
 		util.StatusToString(commonModel.DROP),
 	}
 
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Length("id", 11).
-		Required("status").
-		AllowedValues("status", allowedStatuses).
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	validator.Field("status").Required().AllowedValues(allowedStatuses)
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

@@ -17,9 +17,10 @@ func (c *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	studentID := fs.String("id", "", "Student ID to delete")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().Length(11).Regex(`^[0-9]{11}$`)
+	err := validator.Validate()
+	
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
