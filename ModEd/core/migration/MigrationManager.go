@@ -82,9 +82,6 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 
 func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *MigrationManager {
 	strategy, ok := m.migrationStrategyMap[module]
-	fmt.Println(strategy)
-	fmt.Println(ok)
-	fmt.Println(len(m.migrationStrategyMap))
 	if !ok || strategy == nil {
 		panic(fmt.Sprintf("err: module '%v' migration is not implemented", string(module)))
 	}
