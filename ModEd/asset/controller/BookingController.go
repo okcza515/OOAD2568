@@ -12,6 +12,7 @@ import (
 )
 
 type BookingControllerInterface interface {
+	SeedBookingsDatabase(path string) ([]*model.Booking, error)
 	CreateBooking(booking model.Booking) (model.Booking, error)
 	GetBooking(id uint) (model.Booking, error)
 	UpdateBooking(booking model.Booking) error
@@ -44,6 +45,23 @@ func (c *BookingController) NotifyObservers(eventType string, booking model.Book
 	for _, observer := range c.observers {
 		observer.HandleEvent(eventType, booking)
 	}
+}
+
+func (c *BookingController) SeedBookingsDatabase(path string) (bookings []*model.Booking, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.New("failed to create file deserializer")
+	}
+	if err := deserializer.Deserialize(&bookings); err != nil {
+		return nil, errors.New("failed to deserialize bookings")
+	}
+	for _, booking := range bookings {
+		err := c.baseController.Insert(*booking)
+		if err != nil {
+			return nil, errors.New("failed to seed Booking DB")
+		}
+	}
+	return bookings, nil
 }
 
 func (c *BookingController) CreateBooking(booking model.Booking) (model.Booking, error) {
@@ -179,21 +197,4 @@ func (c *BookingController) CheckRoomAvailability(roomID uint, startDate, endDat
 func (c *BookingController) GetBookingsByTimeTable(timeTableID uint) ([]model.Booking, error) {
 	condition := map[string]interface{}{"time_table_id": timeTableID}
 	return c.baseController.List(condition, "TimeTable", "TimeTable.Room")
-}
-
-func (c *BookingController) SeedBookingsDatabase(path string) (bookings []*model.Booking, err error) {
-	deserializer, err := deserializer.NewFileDeserializer(path)
-	if err != nil {
-		return nil, errors.New("failed to create file deserializer")
-	}
-	if err := deserializer.Deserialize(&bookings); err != nil {
-		return nil, errors.New("failed to deserialize bookings")
-	}
-	for _, booking := range bookings {
-		err := c.baseController.Insert(*booking)
-		if err != nil {
-			return nil, errors.New("failed to seed Booking DB")
-		}
-	}
-	return bookings, nil
 }
