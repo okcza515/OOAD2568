@@ -14,6 +14,8 @@ type TOR struct {
 	Deliverables        string         `gorm:"type:text"`
 	Timeline            string         `gorm:"type:text"`
 	Committee           string         `gorm:"type:text"`
+	Quotations          []Quotation    `gorm:"foreignKey:TORID"`
+	Status              TORStatus      `gorm:"type:varchar(50);default:'announced'"`
 	DeletedAt           gorm.DeletedAt `gorm:"index"`
 	CreatedAt           time.Time
 	UpdatedAt           time.Time

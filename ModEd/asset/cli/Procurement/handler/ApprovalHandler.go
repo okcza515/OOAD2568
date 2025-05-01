@@ -20,7 +20,7 @@ func ApprovalHandler(facade *controller.ProcurementControllerFacade) {
 	case "1":
 		printApprovalOption(&facade.BudgetApproval)
 	case "2":
-		printApprovalOption(&facade.ProcurementApproval)
+		printApprovalOption(&facade.Procurement)
 	case "back":
 		return
 	default:
