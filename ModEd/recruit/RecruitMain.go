@@ -110,7 +110,7 @@ func main() {
 				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, &loginController)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController)
 			case 4:
 				fmt.Println("Exiting...")
 				return

@@ -23,7 +23,12 @@ func CreateInstructorController(db *gorm.DB) *InstructorController {
 
 func (ctrl *InstructorController) GetInterviewsByInstructor(instructorID uint) ([]model.Interview, error) {
 	var interviews []model.Interview
-	err := ctrl.DB.Where("instructor_id = ?", instructorID).Find(&interviews).Error
+	err := ctrl.DB.
+		Preload("Instructor").
+		Preload("ApplicationReport").
+		Preload("ApplicationReport.Applicant").
+		Where("instructor_id = ?", instructorID).
+		Find(&interviews).Error
 	return interviews, err
 }
 

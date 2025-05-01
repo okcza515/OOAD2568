@@ -129,7 +129,7 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 
 	// Save application report
 	s.SaveReportForApplicant(applicant.ApplicantID, round.RoundID, faculty, department, string(status))
-	fmt.Println("Registration successful! Your Applicant ID is:", applicant.ApplicantID)
+	// fmt.Println("Registration successful! Your Applicantion Report ID is:", applicant.ApplicantID)
 	util.WaitForEnter()
 }
 
@@ -264,12 +264,13 @@ func (s *applicantRegistrationService) SaveReportForApplicant(applicantID uint, 
 		ApplicationStatuses: model.ApplicationStatus(status),
 	}
 
-	// Save the application report
 	err := s.applicationReportCtrl.SaveApplicationReport(&report)
 	if err != nil {
-		fmt.Printf("Failed to save report for applicant ID %d: %v\n", applicantID, err)
+		fmt.Printf("\n\033[1;31m[ERROR]\033[0m Failed to save report for applicant ID %d: %v\n", applicantID, err)
 	} else {
-		fmt.Printf("Application report saved for applicant ID %d\n", applicantID)
+		fmt.Println("\n\033[1;32m[SUCCESS]\033[0m Registration completed.")
+		fmt.Printf("\033[1;36mApplication Report ID:\033[0m \033[1;34m%d\033[0m\n", report.ApplicationReportID)
+		fmt.Println("Please remember this ID. You will need it for scheduling an interview or checking your status later.")
 	}
 
 	time.Sleep(2 * time.Second)
