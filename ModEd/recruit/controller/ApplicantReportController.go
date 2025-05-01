@@ -13,7 +13,7 @@ type ApplicationReportController struct {
 	Base *core.BaseController[*model.ApplicationReport]
 }
 
-func CreateApplicationReportController(db *gorm.DB) *ApplicationReportController {
+func NewApplicationReportController(db *gorm.DB) *ApplicationReportController {
 	return &ApplicationReportController{
 		Base: core.NewBaseController[*model.ApplicationReport](db),
 		DB:   db,

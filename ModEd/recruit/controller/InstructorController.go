@@ -14,7 +14,7 @@ type InstructorController struct {
 	DB   *gorm.DB
 }
 
-func CreateInstructorController(db *gorm.DB) *InstructorController {
+func NewInstructorController(db *gorm.DB) *InstructorController {
 	return &InstructorController{
 		Base: core.NewBaseController[*model.Interview](db),
 		DB:   db,

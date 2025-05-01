@@ -30,7 +30,7 @@ func NewApplicantReportService(DB *gorm.DB) *applicantReportService {
 }
 
 func (s *applicantReportService) GetFullApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
-	reportController := controller.CreateApplicationReportController(s.DB)
+	reportController := controller.NewApplicationReportController(s.DB)
 	return reportController.GetFullApplicationReportByApplicantID(applicantID)
 }
 

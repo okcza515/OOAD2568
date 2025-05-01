@@ -22,6 +22,6 @@ func NewInstructorEvaluateApplicantService(DB *gorm.DB) *instructorEvaluateAppli
 }
 
 func (s *instructorEvaluateApplicantService) EvaluateApplicant(interviewID uint, score float64) error {
-	instructorCtrl := controller.CreateInstructorController(s.DB)
+	instructorCtrl := controller.NewInstructorController(s.DB)
 	return instructorCtrl.EvaluateApplicant(interviewID, score)
 }

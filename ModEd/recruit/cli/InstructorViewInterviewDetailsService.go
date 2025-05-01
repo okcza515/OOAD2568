@@ -23,6 +23,6 @@ func NewInstructorViewInterviewDetailsService(DB *gorm.DB) InstructorViewIntervi
 }
 
 func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(instructorID uint) ([]model.Interview, error) {
-	instructorCtrl := controller.CreateInstructorController(s.DB)
+	instructorCtrl := controller.NewInstructorController(s.DB)
 	return instructorCtrl.GetInterviewsByInstructor(instructorID)
 }

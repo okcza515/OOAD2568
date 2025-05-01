@@ -15,7 +15,7 @@ type ApplicationRoundController struct {
 	DB   *gorm.DB
 }
 
-func CreateApplicationRoundController(db *gorm.DB) *ApplicationRoundController {
+func NewApplicationRoundController(db *gorm.DB) *ApplicationRoundController {
 	return &ApplicationRoundController{
 		Base: core.NewBaseController[*model.ApplicationRound](db),
 		DB:   db,
