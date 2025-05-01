@@ -40,6 +40,6 @@ func UserCLI(applicantRegistrationService ApplicantRegistrationService, applican
 		}
 		fmt.Println("\nPress Enter to return to the menu...")
 		bufio.NewReader(os.Stdin).ReadBytes('\n')
-		// util.ClearScreen()
+		util.ClearScreen()
 	}
 }

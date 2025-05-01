@@ -22,22 +22,16 @@ type Invoker struct {
 	commands map[string]Command
 }
 
-// NewInvoker creates a new invoker with registered commands.
+// NewInvoker creates a new invoker.
 func NewInvoker() *Invoker {
 	return &Invoker{
-		commands: map[string]Command{
-			"list":              &commands.ListCommand{},
-			"add":               &commands.AddStudentCommand{},
-			"delete":            &commands.DeleteStudentCommand{},
-			"update":            &commands.UpdateCommand{},
-			"import":            &commands.ImportCommand{},
-			"migrate":           &commands.MigrateStudentsCommand{},
-			"export":            &commands.ExportStudentsCommand{},
-			"request":           &commands.RequestCommand{},
-			"answerResignation": &commands.AnswerResignationCommand{},
-			// ... additional command registrations ...
-		},
+		commands: make(map[string]Command), // Initialize an empty map
 	}
+}
+
+// RegisterCommand adds a command to the invoker's registry.
+func (inv *Invoker) RegisterCommand(name string, cmd Command) {
+	inv.commands[name] = cmd
 }
 
 // ExecuteCommand looks up and executes the command with the given arguments.
@@ -57,20 +51,88 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	// Open the database
 	util.DatabasePath = databasePath
 	db := util.OpenDatabase(*databasePath)
 
 	if len(args) < 1 {
-		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {list|...} [options]")
+		fmt.Println("Usage: go run humanresourcecli.go [-database=<path>] {command} [subcommand] [action] [options]")
+		fmt.Println("Examples:")
+		fmt.Println("  go run humanresourcecli.go list")
+		fmt.Println("  go run humanresourcecli.go add student --name John")
+		fmt.Println("  go run humanresourcecli.go request student resign --id 123")
 		os.Exit(1)
 	}
 
-	commandName := args[0]
-	// Create an invoker and execute the command.
+	// Create the invoker first to access the command map
 	invoker := NewInvoker()
-	if err := invoker.ExecuteCommand(commandName, args[1:], db); err != nil {
-		fmt.Printf("Error executing command: %v\n", err)
+
+	// Register commands
+	invoker.RegisterCommand("delete", &commands.DeleteStudentCommand{})
+	invoker.RegisterCommand("migrate", &commands.MigrateStudentsCommand{})
+	invoker.RegisterCommand("export", &commands.ExportStudentsCommand{})
+	invoker.RegisterCommand("list-student", &commands.ListStudentCommand{})
+	invoker.RegisterCommand("add-student", &commands.AddStudentCommand{})
+	invoker.RegisterCommand("import-student", &commands.ImportStudentCommand{})
+	invoker.RegisterCommand("update-student-info", &commands.UpdateStudentInfoCommand{})
+	invoker.RegisterCommand("request-student-leave", &commands.RequestStudentLeaveCommand{})
+	invoker.RegisterCommand("request-student-resign", &commands.RequestStudentResignCommand{})
+	invoker.RegisterCommand("review-student-leave", &commands.ReviewStudentLeaveCommand{})
+	invoker.RegisterCommand("review-student-resign", &commands.ReviewStudentResignCommand{}) // Corrected name
+	invoker.RegisterCommand("list-instructor", &commands.ListInstructorCommand{})
+	invoker.RegisterCommand("add-instructor", &commands.AddInstructorCommand{})
+	invoker.RegisterCommand("import-instructor", &commands.ImportInstructorCommand{})
+	invoker.RegisterCommand("update-instructor-info", &commands.UpdateInstructorInfoCommand{})
+	invoker.RegisterCommand("request-instructor-leave", &commands.RequestInstructorLeaveCommand{})
+	invoker.RegisterCommand("request-instructor-resign", &commands.RequestInstructorResignCommand{})
+	invoker.RegisterCommand("review-instructor-leave", &commands.ReviewInstructorLeaveCommand{})
+	invoker.RegisterCommand("review-instructor-resign", &commands.ReviewInstructorResignCommand{}) // Corrected name
+
+	var commandName string
+	var commandArgs []string
+	commandFound := false
+
+	// Try matching longest command name first (3 parts)
+	if len(args) >= 3 {
+		potentialCmd := args[0] + "-" + args[1] + "-" + args[2]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[3:]
+			commandFound = true
+		}
+	}
+
+	// If not found, try matching 2 parts
+	if !commandFound && len(args) >= 2 {
+		potentialCmd := args[0] + "-" + args[1]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[2:]
+			commandFound = true
+		}
+	}
+
+	// If not found, try matching 1 part
+	if !commandFound && len(args) >= 1 {
+		potentialCmd := args[0]
+		if _, ok := invoker.commands[potentialCmd]; ok {
+			commandName = potentialCmd
+			commandArgs = args[1:]
+			commandFound = true
+		}
+	}
+
+	// If no command matched
+	if !commandFound {
+		fmt.Printf("Error: unknown command sequence starting with '%s'\n", args[0])
+		// Optional: List available commands from invoker.commands keys
+		fmt.Println("Available commands (examples): list, add-student, request-student-resign, ...")
+		fmt.Println("Run with no arguments for full usage.")
+		os.Exit(1)
+	}
+
+	// Execute the found command.
+	if err := invoker.ExecuteCommand(commandName, commandArgs, db); err != nil {
+		fmt.Printf("Error executing command '%s': %v\n", commandName, err)
 		os.Exit(1)
 	}
 }

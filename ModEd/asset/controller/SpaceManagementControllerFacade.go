@@ -2,47 +2,63 @@
 package controller
 
 import (
-	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
+	"errors"
 
 	"gorm.io/gorm"
 )
 
-type SpaceManagementControllerFacade struct {
-	Db                   *gorm.DB
-	InstrumentManagement InstrumentManagementController
-	SupplyManagement     SupplyManagementController
-	Booking              BookingController
-	PermanentSchedule    PermanentBookingController
-	Room                 RoomController
+type SpaceManagementControllerManager struct {
+	db *gorm.DB
+	// InstrumentManagement InstrumentManagementController
+	// SupplyManagement     SupplyManagementController
+	// Booking              BookingController
+	// PermanentSchedule    PermanentBookingController
+	Room RoomControllerInterface
 }
 
-var spaceManagementInstance *SpaceManagementControllerFacade
+var spaceManagementInstance *SpaceManagementControllerManager
 
-func GetSpaceManagementInstance() *SpaceManagementControllerFacade {
+func GetSpaceManagementInstance(db *gorm.DB) *SpaceManagementControllerManager {
 	if spaceManagementInstance != nil {
 		return spaceManagementInstance
 	}
-	data, err := NewSpaceManagementControllerFacade()
+	spaceManagementInstance, err := NewSpaceManagementControllerFacade(db)
 	if err != nil {
-		panic("Initial SpaceManagement Controller Failed")
+		panic("failed to create SpaceManagementControllerManager instance")
 	}
-	spaceManagementInstance = data
 	return spaceManagementInstance
 }
 
-func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
-	db, err := migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
-	if err != nil {
-		return nil, err
+func NewSpaceManagementControllerFacade(db *gorm.DB) (*SpaceManagementControllerManager, error) {
+	// db := migration.GetInstance().DB
+	if db == nil {
+		return nil, errors.New("db not initialized")
 	}
 
-	facade := SpaceManagementControllerFacade{Db: db}
-	facade.InstrumentManagement = InstrumentManagementController{db: db}
-	facade.SupplyManagement = SupplyManagementController{db: db}
-	facade.Booking = BookingController{db: db}
-	facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
-	facade.Room = *NewRoomController(db, core.NewBaseController[model.Room](db))
-	return &facade, nil
+	manager := &SpaceManagementControllerManager{
+		db: db,
+	}
+	// facade.InstrumentManagement = InstrumentManagementController{db: db}
+	// facade.SupplyManagement = SupplyManagementController{db: db}
+	// facade.Booking = BookingController{db: db}
+	// facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
+	manager.Room = NewRoomController()
+
+	return manager, nil
+}
+
+func (manager *SpaceManagementControllerManager) ResetDatabase() error {
+	db := migration.GetInstance().DropAllTables()
+	if db != nil {
+		return errors.New("db not initialized")
+	}
+
+	_, err := migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
+	if err != nil {
+		return errors.New("failed to migrate database")
+	}
+
+	return nil
 }

@@ -17,17 +17,17 @@ func ShowApplicantReportCLI(
 	util.ClearScreen()
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Print("Enter Applicant ID to view the report: ")
+	fmt.Print("Enter Applicantion Report ID to view the report: ")
 	scanner.Scan()
-	applicantIDStr := scanner.Text()
+	applicantReportIDStr := scanner.Text()
 
-	applicantID, err := strconv.ParseUint(applicantIDStr, 10, 32)
+	applicantReportID, err := strconv.ParseUint(applicantReportIDStr, 10, 32)
 	if err != nil {
 		fmt.Println("Invalid applicant ID:", err)
 		return
 	}
 
-	report, err := ApplicantReportService.GetFullApplicationReportByApplicantID(uint(applicantID))
+	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(uint(applicantReportID))
 	if err != nil {
 		fmt.Println("Error fetching application report:", err)
 		return
@@ -36,7 +36,7 @@ func ShowApplicantReportCLI(
 	displayApplicantReport(report)
 
 	if report != nil && report.ApplicationStatuses == model.InterviewStage {
-		ReportInterviewDetails(InterviewService, uint(applicantID))
+		ReportInterviewDetails(InterviewService, uint(applicantReportID))
 	}
 }
 
@@ -80,8 +80,8 @@ func ReportInterviewDetails(interviewService InterviewService, applicantID uint)
 	}
 
 	scoreText := "N/A"
-	if interview.InterviewScore != nil {
-		scoreText = fmt.Sprintf("%.2f", *interview.InterviewScore)
+	if interview.TotalScore != 0 {
+		scoreText = fmt.Sprintf("%.2f", *&interview.TotalScore)
 	}
 
 	fmt.Println("\n==== Interview Details ====")

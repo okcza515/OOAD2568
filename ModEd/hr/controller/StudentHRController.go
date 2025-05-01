@@ -2,7 +2,6 @@ package controller
 
 import (
 	commonController "ModEd/common/controller"
-	commonModel "ModEd/common/model"
 	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
@@ -56,21 +55,6 @@ func (c *StudentHRController) update(info *model.StudentInfo) error {
 // Delete deletes a student's HR information by SID.
 func (c *StudentHRController) delete(sid string) error {
 	return c.db.Where("student_code = ?", sid).Delete(&model.StudentInfo{}).Error
-}
-
-// UpdateStatus updates the status of a student by SID.
-func (c *StudentHRController) updateStatus(sid string, status commonModel.StudentStatus) error {
-	// First retrieve the student record
-	var studentInfo model.StudentInfo
-	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
-		return err
-	}
-
-	// Update the status field
-	studentInfo.Status = &status
-
-	// Save the updated record
-	return c.db.Save(&studentInfo).Error
 }
 
 func GetAllStudents(tx *gorm.DB) ([]*model.StudentInfo, error) {

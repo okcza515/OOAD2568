@@ -43,10 +43,36 @@ func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 	return string(interview.InterviewStatus), nil
 }
 
-func GetInterviewDetails(db *gorm.DB, applicantID uint) (*model.Interview, error) {
+func (c *InterviewController) GetInterviewByApplicationReportID(reportID uint) (*model.Interview, error) {
+	var interview model.Interview
+	err := c.DB.Where("application_report_id = ?", reportID).First(&interview).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("Notfound Application Report ID")
+		}
+		return nil, err
+	}
+	return &interview, nil
+}
+
+func (c *InterviewController) SaveInterviewEvaluation(data *model.Interview) error {
+	var interview model.Interview
+	if err := c.DB.First(&interview, data.InterviewID).Error; err != nil {
+		return errors.New("ไม่พบข้อมูลสัมภาษณ์")
+	}
+
+	interview.CriteriaScores = data.CriteriaScores
+	interview.TotalScore = data.TotalScore
+	interview.EvaluatedAt = data.EvaluatedAt
+	interview.InterviewStatus = model.ApplicationStatus(data.InterviewStatus)
+
+	return c.DB.Save(&interview).Error
+}
+
+func GetInterviewDetails(db *gorm.DB, reportID uint) (*model.Interview, error) {
 	var interview model.Interview
 
-	err := db.Where("applicant_id = ?", applicantID).First(&interview).Error
+	err := db.Where("application_report_id = ?", reportID).First(&interview).Error
 	if err != nil {
 		return nil, errors.New("ไม่พบข้อมูลสัมภาษณ์สำหรับผู้สมัครที่ให้มา")
 	}

@@ -33,15 +33,23 @@ func (ctrl *ApplicationReportController) GetApplicationReportByApplicantID(appli
 	return &report, nil
 }
 
-func (ctrl *ApplicationReportController) UpdateApplicationStatus(applicantID uint, newStatus model.ApplicationStatus) error {
+func (ctrl *ApplicationReportController) UpdateApplicationStatus(applicantionreportID uint, newStatus model.ApplicationStatus) error {
 	result := ctrl.DB.Model(&model.ApplicationReport{}).
-		Where("applicant_id = ?", applicantID).
+		Where("application_report_id = ?", applicantionreportID).
 		Update("application_statuses", newStatus)
 
 	return result.Error
 }
 
-func (ctrl *ApplicationReportController) GetApplicationStatusByID(applicantID uint) (model.ApplicationStatus, error) {
+func (ctrl *ApplicationReportController) GetApplicationReportByID(reportID uint) (*model.ApplicationReport, error) {
+	var report model.ApplicationReport
+	if err := ctrl.DB.Preload("Applicant").First(&report, reportID).Error; err != nil {
+		return nil, err
+	}
+	return &report, nil
+}
+
+func (ctrl *ApplicationReportController) GetApplicationStatusByApplicantID(applicantID uint) (model.ApplicationStatus, error) {
 	var status model.ApplicationStatus
 	err := ctrl.DB.
 		Model(&model.ApplicationReport{}).
@@ -52,13 +60,13 @@ func (ctrl *ApplicationReportController) GetApplicationStatusByID(applicantID ui
 	return status, err
 }
 
-func (ctrl *ApplicationReportController) GetFullApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
+func (ctrl *ApplicationReportController) GetFullApplicationReportByApplicationID(applicantionReportID uint) (*model.ApplicationReport, error) {
 	var report model.ApplicationReport
 	err := ctrl.DB.Preload("Applicant").
 		Preload("ApplicationRound").
 		Preload("Faculty").
 		Preload("Department").
-		Where("applicant_id = ?", applicantID).
+		Where("application_report_id = ?", applicantionReportID).
 		First(&report).Error
 	if err != nil {
 		return nil, err

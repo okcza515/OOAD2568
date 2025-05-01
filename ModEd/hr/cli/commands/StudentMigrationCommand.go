@@ -7,8 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type MigrateStudentsCommand struct{}
+
 // usage: go run hr/cli/HumanResourceCLI.go migrate
-func (c *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
+func (cmd *MigrateStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	if err := controller.MigrateStudentsToHR(tx); err != nil {
 		return fmt.Errorf("migration failed: %v", err)
 	}

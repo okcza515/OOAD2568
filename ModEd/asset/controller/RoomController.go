@@ -3,6 +3,7 @@ package controller
 import (
 	model "ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/core/migration"
 	"ModEd/utils/deserializer"
 	"errors"
 
@@ -13,24 +14,39 @@ import (
 
 type RoomControllerInterface interface {
 	SeedRoomsDatabase(path string) ([]*model.Room, error)
-	GetAll() (*[]model.Room, error)
-	GetById(Id uint) (*model.Room, error)
-	CreateRoom(payload *model.Room) error
-	UpdateRoom(Id uint, payload *model.Room) error
-	DeleteRoom(Id uint) error
-	DeleteAllRooms() error
+	ListAll() ([]string, error)
+	List(condition map[string]interface{}, preloads ...string) ([]model.Room, error)
+	RetrieveByID(id uint, preloads ...string) (model.Room, error)
+	Insert(data model.Room) error
+	UpdateByID(data model.Room) error
+	DeleteByID(id uint) error
+	InsertMany(data []model.Room) error
+
+	addObserver(observer SpaceManagementObserverInterface[model.Room])
+	removeObserver(observer SpaceManagementObserverInterface[model.Room])
 }
 
 type RoomController struct {
 	db *gorm.DB
 	*core.BaseController[model.Room]
+	observers map[string]SpaceManagementObserverInterface[model.Room]
 }
 
-func NewRoomController(db *gorm.DB, BaseController *core.BaseController[model.Room]) *RoomController {
+func NewRoomController() *RoomController {
+	db := migration.GetInstance().DB
 	return &RoomController{
 		db:             db,
-		BaseController: BaseController,
+		BaseController: core.NewBaseController[model.Room](db),
+		observers:      make(map[string]SpaceManagementObserverInterface[model.Room]),
 	}
+}
+
+func (c *RoomController) addObserver(observer SpaceManagementObserverInterface[model.Room]) {
+	c.observers[observer.GetObserverID()] = observer
+}
+
+func (c *RoomController) removeObserver(observer SpaceManagementObserverInterface[model.Room]) {
+	delete(c.observers, observer.GetObserverID())
 }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
@@ -42,7 +58,7 @@ func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, er
 		return nil, errors.New("failed to deserialize curriculums")
 	}
 	for _, room := range rooms {
-		err := c.CreateRoom(room)
+		err := c.Insert(*room)
 		if err != nil {
 			return nil, errors.New("failed to seed Room DB")
 		}
@@ -50,64 +66,73 @@ func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, er
 	return rooms, nil
 }
 
-func (c *RoomController) GetAll() (*[]model.Room, error) {
-	result, err := c.BaseController.List(nil)
-	return &result, err
-}
-
-func (c *RoomController) GetById(Id uint) (*model.Room, error) {
-	if Id == 0 {
-		return nil, errors.New("no Id provide")
-	}
-	result, err := c.BaseController.RetrieveByID(Id)
+func (c *RoomController) ListAll() ([]string, error) {
+	result, err := c.List(nil)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("room not found, please check the ID")
-		}
 		return nil, err
 	}
-	if result.IsRoomOutOfService {
-		return nil, errors.New("room is out of service")
+
+	roomNames := make([]string, len(result))
+	for i, room := range result {
+		roomNames[i] = room.RoomName
 	}
-	return &result, nil
+
+	return roomNames, nil
 }
 
-func (c *RoomController) CreateRoom(payload *model.Room) error {
-	if payload == nil {
+func (c *RoomController) List(condition map[string]interface{}, preloads ...string) ([]model.Room, error) {
+	return c.BaseController.List(condition, preloads...)
+}
+
+func (c *RoomController) RetrieveByID(id uint, preloads ...string) (model.Room, error) {
+	if id == 0 {
+		return model.Room{}, errors.New("no id provided")
+	}
+	result, err := c.BaseController.RetrieveByID(id, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.Room{}, errors.New("room not found, please check the ID")
+		}
+		return model.Room{}, err
+	}
+	if result.IsRoomOutOfService {
+		return model.Room{}, errors.New("room is out of service")
+	}
+	return result, nil
+}
+
+func (c *RoomController) Insert(data model.Room) error {
+	if data.ID == 0 {
 		return errors.New("invalid room data")
 	}
-	err := c.BaseController.Insert(*payload)
-	return err
+	return c.BaseController.Insert(data)
 }
 
-func (c *RoomController) UpdateRoom(id uint, payload *model.Room) error {
-	if payload == nil || id == 0 {
+func (c *RoomController) UpdateByID(data model.Room) error {
+	if data.ID == 0 {
 		return errors.New("invalid info")
 	}
-	payload.ID = id
-	err := c.BaseController.UpdateByID(*payload)
-	return err
+	return c.BaseController.UpdateByID(data)
 }
 
-func (c *RoomController) DeleteRoom(Id uint) error {
-	if Id == 0 {
+func (c *RoomController) DeleteByID(id uint) error {
+	if id == 0 {
 		return errors.New("no ID provided")
 	}
 	existingRoom := new(model.Room)
-	if err := c.db.Unscoped().First(existingRoom, Id).Error; err != nil {
+	if err := c.db.Unscoped().First(existingRoom, id).Error; err != nil {
 		return errors.New("room not found, please check the ID")
 	}
 	result := c.db.Model(&existingRoom).UpdateColumn("DeletedAt", time.Now())
 	return result.Error
 }
 
-func (c *RoomController) DeleteAllRooms() error {
-	result, err := c.BaseController.List(nil)
-	if err != nil {
-		return err
+func (c *RoomController) InsertMany(data []model.Room) error {
+	if len(data) == 0 {
+		return errors.New("no rooms to insert")
 	}
-	for _, room := range result {
-		if err := c.BaseController.DeleteByID(room.ID); err != nil {
+	for _, room := range data {
+		if err := c.Insert(room); err != nil {
 			return err
 		}
 	}
