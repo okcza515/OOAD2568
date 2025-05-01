@@ -10,7 +10,7 @@ type ReportController struct {
     *BaseScoreController[model.InternshipReport]
 }
 
-func CreateReportController(connector *gorm.DB) *ReportController {
+func NewReportController(connector *gorm.DB) *ReportController {
     return &ReportController{
         BaseScoreController: &BaseScoreController[model.InternshipReport]{Connector: connector},
     }

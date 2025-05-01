@@ -29,9 +29,9 @@ func NewApplicantReportService(DB *gorm.DB) *applicantReportService {
 	}
 }
 
-func (s *applicantReportService) GetFullApplicationReportByApplicationID(applicationID uint) (*model.ApplicationReport, error) {
-	reportController := controller.CreateApplicationReportController(s.DB)
-	return reportController.GetFullApplicationReportByApplicationID(applicationID)
+func (s *applicantReportService) GetFullApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
+	reportController := controller.NewApplicationReportController(s.DB)
+	return reportController.GetFullApplicationReportByApplicantID(applicantID)
 }
 
 func NewInterviewService(DB *gorm.DB) *interviewService {

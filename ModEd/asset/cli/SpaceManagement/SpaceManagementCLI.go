@@ -2,17 +2,13 @@
 package main
 
 import (
-	handler "ModEd/asset/cli/spacemanagement/handler"
-	controller "ModEd/asset/controller"
-	util "ModEd/asset/util"
+	"ModEd/asset/cli/spacemanagement/handler"
+	"ModEd/asset/controller"
+	"ModEd/asset/util"
 	"fmt"
 )
 
 func main() {
-	facade, err := controller.NewSpaceManagementControllerFacade()
-	if err != nil {
-		panic("err: initialize controllers failed")
-	}
 
 	input := ""
 	for input != "exit" {
@@ -21,6 +17,7 @@ func main() {
 		printOption()
 		input = util.GetCommandInput()
 
+		facade := controller.GetSpaceManagementInstance()
 		switch input {
 		case "1":
 			handler.InstrumentManagementHandler(facade)

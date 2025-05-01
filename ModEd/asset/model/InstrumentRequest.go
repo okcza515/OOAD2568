@@ -10,7 +10,7 @@ import (
 
 type InstrumentRequest struct {
 	InstrumentRequestID uint                    `gorm:"primaryKey"`
-	Status              InstrumentRequestStatus `gorm:"type:varchar(50);default:'draft'"`
+	Status              InstrumentRequestStatus `gorm:"type:varchar(50);default:'pending'"`
 	Instruments         []InstrumentDetail      `gorm:"foreignKey:InstrumentRequestID"`
 	TotalEstimatedPrice float64                 `gorm:"type:decimal(12,2);default:0"`
 	DeleteAt            gorm.DeletedAt          `gorm:"index"`

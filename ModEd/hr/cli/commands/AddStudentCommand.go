@@ -9,8 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("add", flag.ExitOnError)
+type AddStudentCommand struct{}
+
+func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("add-student", flag.ExitOnError)
 	studentID := fs.String("id", "", "Student ID")
 	firstName := fs.String("fname", "", "First Name")
 	lastName := fs.String("lname", "", "Last Name")
@@ -20,18 +22,15 @@ func (c *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("id").
-		Required("fname").
-		Required("lname").
-		Required("email").
-		Required("gender").
-		Required("citizenID").
-		Required("phoneNumber").
-		Length("id", 11).
-		Regex("id", `^[0-9]{11}$`).
-		Regex("email", `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`).
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("id").Required().IsStudentID()
+	validator.Field("fname").Required()
+	validator.Field("lname").Required()
+	validator.Field("email").Required().IsEmail()
+	validator.Field("gender").Required().AllowedValues([]string{"Male", "Female", "Other"})
+	validator.Field("citizenID").Required().Length(13)
+	validator.Field("phone").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)

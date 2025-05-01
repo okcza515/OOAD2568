@@ -18,6 +18,20 @@ type SpaceManagementControllerFacade struct {
 	Room                 RoomController
 }
 
+var spaceManagementInstance *SpaceManagementControllerFacade
+
+func GetSpaceManagementInstance() *SpaceManagementControllerFacade {
+	if spaceManagementInstance != nil {
+		return spaceManagementInstance
+	}
+	data, err := NewSpaceManagementControllerFacade()
+	if err != nil {
+		panic("Initial SpaceManagement Controller Failed")
+	}
+	spaceManagementInstance = data
+	return spaceManagementInstance
+}
+
 func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, error) {
 	db, err := migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
 	if err != nil {
@@ -27,8 +41,8 @@ func NewSpaceManagementControllerFacade() (*SpaceManagementControllerFacade, err
 	facade := SpaceManagementControllerFacade{Db: db}
 	facade.InstrumentManagement = InstrumentManagementController{db: db}
 	facade.SupplyManagement = SupplyManagementController{db: db}
-	facade.Booking = BookingController{db: db}
-	facade.PermanentSchedule = PermanentBookingController{db: db}
+	facade.Booking = *NewBookingController(db, core.NewBaseController[model.Booking](db))
+	facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
 	facade.Room = *NewRoomController(db, core.NewBaseController[model.Room](db))
 	return &facade, nil
 }

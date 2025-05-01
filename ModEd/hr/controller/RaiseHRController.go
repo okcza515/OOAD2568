@@ -37,13 +37,14 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaise, error) {
 	return requests, err
 }
 
-func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
-	tm := &util.TransactionManager{DB: c.db}
+func SubmitRaiseRequest(tx *gorm.DB, instructorID string, amount int, reason string) error {
+	controller := NewRaiseHRController(tx)
+	tm := &util.TransactionManager{DB: tx}
 
 	return tm.Execute(func(tx *gorm.DB) error {
 		request := model.NewRequestRaise(instructorID, reason, amount)
 
-		if err := c.insert(request); err != nil {
+		if err := controller.insert(request); err != nil {
 			return fmt.Errorf("failed to submit raise request: %v", err)
 		}
 		return nil

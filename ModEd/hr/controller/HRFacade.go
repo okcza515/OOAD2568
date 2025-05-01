@@ -1,7 +1,6 @@
 package controller
 
 import (
-	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
 
 	"gorm.io/gorm"
@@ -25,7 +24,7 @@ func NewHRFacade(db *gorm.DB) *HRFacade {
 		ResignationInstructor: createResignationInstructorHRController(db),
 		LeaveStudent:          createLeaveStudentHRController(db),
 		LeaveInstructor:       createLeaveInstructorHRController(db),
-		Raise:                 createRaiseHRController(db),
+		// Raise:                 createRaiseHRController(db),
 	}
 }
 
@@ -49,10 +48,6 @@ func (f *HRFacade) UpdateStudent(info *model.StudentInfo) error {
 
 func (f *HRFacade) DeleteStudent(sid string) error {
 	return f.Student.delete(sid)
-}
-
-func (f *HRFacade) UpdateStudentStatus(sid string, status commonModel.StudentStatus) error {
-	return f.Student.updateStatus(sid, status)
 }
 
 func (f *HRFacade) UpsertStudent(info *model.StudentInfo) error {

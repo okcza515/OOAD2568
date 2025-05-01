@@ -25,7 +25,7 @@ type instructorEvaluateApplicantService struct {
 func NewInstructorEvaluateApplicantService(db *gorm.DB) InstructorEvaluateApplicantService {
 	return &instructorEvaluateApplicantService{
 		DB:            db,
-		InterviewCtrl: controller.CreateInterviewController(db),
+		InterviewCtrl: controller.NewInterviewController(db),
 	}
 }
 

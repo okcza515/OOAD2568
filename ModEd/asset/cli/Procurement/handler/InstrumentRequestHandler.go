@@ -22,7 +22,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 			newRequest := &model.InstrumentRequest{
 				DepartmentID: deptID,
-				Status:       model.InstrumentRequestStatusDraft,
+				Status:       model.InstrumentRequestStatusPending,
 			}
 
 			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)
@@ -134,6 +134,7 @@ func printInstrumentRequestOption() {
 	fmt.Println("  3:\tGet Instrument Request by ID")
 	fmt.Println("  4:\tAdd Instrument to Request")
 	fmt.Println("  5:\tShow Request with Details")
+	fmt.Println("  6:\tEdit Request by ID")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }

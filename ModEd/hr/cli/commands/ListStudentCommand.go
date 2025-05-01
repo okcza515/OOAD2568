@@ -1,20 +1,18 @@
 package commands
 
 import (
+	"ModEd/hr/controller"
+	"ModEd/hr/util"
 	"flag"
 	"fmt"
-
-	"ModEd/hr/controller" // adjust the import paths as needed
-	"ModEd/hr/util"
 
 	"gorm.io/gorm"
 )
 
-// usage: go run hr/cli/HumanResourceCLI.go list student
-// no required fields !!
-// Run executes the list command, using flags to parse arguments.
-func listStudents(args []string, tx *gorm.DB) error {
-	fs := flag.NewFlagSet("list", flag.ExitOnError)
+type ListStudentCommand struct{}
+
+func (cmd *ListStudentCommand) Execute(args []string, tx *gorm.DB) error {
+	fs := flag.NewFlagSet("list-student", flag.ExitOnError)
 	fs.Parse(args)
 
 	studentInfos, err := controller.GetAllStudents(tx)

@@ -45,13 +45,13 @@ func main() {
 	db.InitDB(database)
 
 	// Create controllers
-	applicationReportCtrl := controller.CreateApplicationReportController(db.DB)
+	applicationReportCtrl := controller.NewApplicationReportController(db.DB)
 	applicantController := controller.NewApplicantController(db.DB)
-	interviewController := controller.CreateInterviewController(db.DB)
-	applicationRoundCtrl := controller.CreateApplicationRoundController(db.DB)
+	interviewController := controller.NewInterviewController(db.DB)
+	applicationRoundCtrl := controller.NewApplicationRoundController(db.DB)
 
 	// Create admin controller and read admins from CSV
-	adminCtrl := controller.CreateAdminController(db.DB)
+	adminCtrl := controller.NewAdminController(db.DB)
 	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
 		fmt.Println(err)
 	}

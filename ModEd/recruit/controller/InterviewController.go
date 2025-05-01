@@ -14,7 +14,7 @@ type InterviewController struct {
 	DB   *gorm.DB
 }
 
-func CreateInterviewController(db *gorm.DB) *InterviewController {
+func NewInterviewController(db *gorm.DB) *InterviewController {
 	return &InterviewController{
 		DB:   db,
 		Base: core.NewBaseController[*model.Interview](db),

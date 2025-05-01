@@ -2,7 +2,6 @@ package commands
 
 import (
 	"ModEd/hr/controller"
-
 	"ModEd/hr/util"
 	"flag"
 	"fmt"
@@ -10,8 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type RequestInstructorRaiseCommand struct{}
+
 // usage: go run hr/cli/HumanResourceCLI.go request instructor raise -id="66050001" -amount=10000 -reason="ดีมาก"
-func requestRaiseInstructor(args []string, tx *gorm.DB) error {
+func (cmd *RequestInstructorRaiseCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("requestRaise", flag.ExitOnError)
 	id := fs.String("id", "", "Instructor ID")
 	amount := fs.Int("amount", 0, "Raise amount")
@@ -21,14 +22,20 @@ func requestRaiseInstructor(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	if err := util.ValidateRequiredFlags(fs, []string{"id", "amount", "reason"}); err != nil {
+	validator := util.NewValidationChain(fs)
+	// Instructor Code in demo data is different from real instructor ID in LEB2.
+	validator.Field("id").Required().IsInstructorID()
+	validator.Field("amount").Required()
+	validator.Field("reason").Required()
+	err := validator.Validate()
+	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	raiseController := controller.NewRaiseHRController(tx) // Declare and initialize the controller
-	if err := raiseController.SubmitRaiseRequest(*id, *amount, *reason); err != nil {
-		return err
+	err = controller.SubmitRaiseRequest(tx, *id, *amount, *reason)
+	if err != nil {
+		return fmt.Errorf("failed to submit raise request: %v", err)
 	}
 
 	fmt.Println("Raise request submitted successfully.")
