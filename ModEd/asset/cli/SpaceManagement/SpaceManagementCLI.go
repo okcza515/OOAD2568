@@ -2,9 +2,9 @@
 package main
 
 import (
-	handler "ModEd/asset/cli/spacemanagement/handler"
-	controller "ModEd/asset/controller"
-	util "ModEd/asset/util"
+	"ModEd/asset/cli/spacemanagement/handler"
+	"ModEd/asset/controller"
+	"ModEd/asset/util"
 	"fmt"
 )
 
