@@ -4,32 +4,49 @@ package controller
 import (
 	model "ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/utils/deserializer"
+	"errors"
 	"fmt"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-type PermanentBookingControllerInterface interface {
-	CheckRoomIsInService(RoomID uint) (bool, error)
-	CreateWeeklySchedule(startDateTime, endDateTime time.Time, roomID uint, courseID uint, classID uint, facultyID uint, departmentID uint, programTypeID uint, semesterEndDate time.Time) error
-	GetLastCreatedScheduleIDs() []uint
-	GetAllPermanentBookings() ([]model.PermanentSchedule, error)
-	GetPermanentBookingByID(id uint) (model.PermanentSchedule, error)
-	UpdatePermanentBooking(StartDate, EndDate time.Time, RoomID uint, CourseID uint, ClassID uint, FacultyID uint, DepartmentID uint, ProgramtypeID uint, ScheduleID uint) error
-	DeletePermanentSchedule(id uint) error
-}
 type PermanentBookingController struct {
 	db                     *gorm.DB
 	lastCreatedScheduleIDs []uint
 	*core.BaseController[model.PermanentSchedule]
 }
 
-func NewPermanentBookingController(db *gorm.DB) *PermanentBookingController {
+func NewPermanentBookingController(db *gorm.DB, BaseController *core.BaseController[model.PermanentSchedule]) *PermanentBookingController {
 	return &PermanentBookingController{
 		db:             db,
-		BaseController: core.NewBaseController[model.PermanentSchedule](db),
+		BaseController: BaseController,
 	}
+}
+
+func (controller *PermanentBookingController) CreateSchedule(schedule *model.PermanentSchedule) error {
+	if err := controller.db.Create(schedule).Error; err != nil {
+		return fmt.Errorf("failed to create schedule: %w", err)
+	}
+	return nil
+}
+
+func (controller *PermanentBookingController) SeedScheduleDatabase(path string) (schedule []*model.PermanentSchedule, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.New("failed to create file deserializer")
+	}
+	if err := deserializer.Deserialize(&schedule); err != nil {
+		return nil, errors.New("failed to deserialize schedule")
+	}
+	for _, schedule := range schedule {
+		err := controller.CreateSchedule(schedule)
+		if err != nil {
+			return nil, errors.New("failed to seed Schedule DB")
+		}
+	}
+	return schedule, nil
 }
 
 func (controller *PermanentBookingController) CheckRoomIsInService(RoomID uint) (bool, error) {
