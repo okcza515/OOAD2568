@@ -4,6 +4,6 @@ package model
 type BookingType string
 
 const (
-    BOOKING_TEMPORARY string = "temporary"
-    BOOKING_PERMANENT string = "permanent"
+    BOOKING_TEMPORARY BookingType = "temporary"
+    BOOKING_PERMANENT BookingType = "permanent"
 )
