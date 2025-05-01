@@ -60,10 +60,10 @@ func (c *InstrumentRequestController) UpdateInstrumentRequest(id uint, updated *
 	return result.Error
 }
 
-func (c *InstrumentRequestController) SubmitForApproval(id uint) error {
+func (c *InstrumentRequestController) RequestApprove(id uint) error {
 	return c.db.Model(&model.InstrumentRequest{}).
 		Where("instrument_request_id = ?", id).
-		Update("status", model.InstrumentRequestStatusPending).Error // use enum
+		Update("status", model.InstrumentRequestStatusApproved).Error // use enum
 }
 
 func (c *InstrumentRequestController) DeleteInstrumentRequest(id uint) error {

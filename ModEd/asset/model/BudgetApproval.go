@@ -11,7 +11,7 @@ import (
 type BudgetApproval struct {
 	BudgetApprovalID    uint                 `gorm:"primaryKey"`
 	InstrumentRequestID uint                 `gorm:"index"`
-	ApproverID          uint                 `gorm:"index"`
+	ApproverID          *uint                `gorm:"index"`
 	Approver            master.Instructor    `gorm:"foreignKey:ApproverID"`
 	Status              BudgetApprovalStatus `gorm:"type:varchar(50);default:'pending'"`
 	DeletedAt           gorm.DeletedAt       `gorm:"index"`

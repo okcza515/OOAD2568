@@ -3,7 +3,7 @@ package handler
 import (
 	procurement "ModEd/asset/controller"
 	model "ModEd/asset/model"
-	"ModEd/asset/util"
+	util "ModEd/asset/util"
 	"fmt"
 )
 
@@ -18,7 +18,8 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Create New Instrument Request")
-			deptID := GetUintInput("Enter Department ID: ")
+			deptID := util.GetUintInput("Enter Department ID: ")
+			// budgetapproverID := util.GetUintInput("Enter Approver ID: ")
 
 			newRequest := &model.InstrumentRequest{
 				DepartmentID: deptID,
@@ -30,6 +31,19 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				fmt.Println("Failed to create request:", err)
 			} else {
 				fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
+			}
+
+			newBudgetApproval := &model.BudgetApproval{
+				// ApproverID: budgetapproverID,
+				InstrumentRequestID: newRequest.InstrumentRequestID,
+				Status:              model.BudgetStatusPending,
+			}
+			err1 := facade.BudgetApproval.CreateBudgetRequest(newBudgetApproval)
+
+			if err1 != nil {
+				fmt.Println("Failed to create request:", err1)
+			} else {
+				fmt.Println("Budget Approval created with ID:", newBudgetApproval.InstrumentRequestID)
 			}
 			WaitForEnter()
 		case "2":
@@ -46,7 +60,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			WaitForEnter()
 		case "3":
 			fmt.Println("Get Instrument Request by ID or Name")
-			idOrName := GetStringInput("Enter Instrument Request ID or Name: ")
+			idOrName := util.GetStringInput("Enter Instrument Request ID or Name: ")
 
 			var request *model.InstrumentRequest
 			id, err := parseUint(idOrName)
@@ -65,12 +79,12 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 		case "4":
 			fmt.Println("Add Instrument to Existing Request")
 
-			requestID := GetUintInput("Enter Instrument Request ID: ")
-			label := GetStringInput("Enter Instrument Label: ")
-			desc := GetStringInput("Enter Description: ")
-			categoryID := GetUintInput("Enter Category ID: ")
-			estimatedPrice := GetFloatInput("Enter Estimated Price: ")
-			quantity := GetUintInput("Enter Quantity: ")
+			requestID := util.GetUintInput("Enter Instrument Request ID: ")
+			label := util.GetStringInput("Enter Instrument Label: ")
+			desc := util.GetStringInput("Enter Description: ")
+			categoryID := util.GetUintInput("Enter Category ID: ")
+			estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
+			quantity := util.GetUintInput("Enter Quantity: ")
 
 			detail := &model.InstrumentDetail{
 				InstrumentLabel:     label,
@@ -90,7 +104,7 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			WaitForEnter()
 		case "5":
 			fmt.Println("Show Instrument Request with Details")
-			requestID := GetUintInput("Enter Instrument Request ID: ")
+			requestID := util.GetUintInput("Enter Instrument Request ID: ")
 
 			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
 			if err != nil {
@@ -142,13 +156,6 @@ func printInstrumentRequestOption() {
 func WaitForEnter() {
 	fmt.Println("\nPress Enter to continue...")
 	fmt.Scanln()
-}
-
-func GetStringInput(prompt string) string {
-	var input string
-	fmt.Print(prompt)
-	fmt.Scanln(&input)
-	return input
 }
 
 func parseUint(input string) (uint, error) {
