@@ -22,32 +22,16 @@ type Invoker struct {
 	commands map[string]Command
 }
 
-// NewInvoker creates a new invoker with registered commands.
+// NewInvoker creates a new invoker.
 func NewInvoker() *Invoker {
 	return &Invoker{
-		commands: map[string]Command{
-			"delete":                        &commands.DeleteStudentCommand{},
-			"migrate":                       &commands.MigrateStudentsCommand{},
-			"export":                        &commands.ExportStudentsCommand{},
-			"list-student":                  &commands.ListStudentCommand{},
-			"add-student":                   &commands.AddStudentCommand{},
-			"import-student":                &commands.ImportStudentCommand{},
-			"update-student-info":           &commands.UpdateStudentInfoCommand{},
-			"request-student-leave":         &commands.RequestStudentLeaveCommand{},
-			"request-student-resign":        &commands.RequestStudentResignCommand{},
-			"review-student-leave":          &commands.ReviewStudentLeaveCommand{},
-			"review-student-resignation":    &commands.ReviewStudentResignCommand{},
-			"list-instructor":               &commands.ListInstructorCommand{},
-			"add-instructor":                &commands.AddInstructorCommand{},
-			"import-instructor":             &commands.ImportInstructorCommand{},
-			"update-instructor-info":        &commands.UpdateInstructorInfoCommand{},
-			"request-instructor-leave":      &commands.RequestInstructorLeaveCommand{},
-			"request-instructor-resign":     &commands.RequestInstructorResignCommand{},
-			"review-instructor-leave":       &commands.ReviewInstructorLeaveCommand{},
-			"review-instructor-resignation": &commands.ReviewInstructorResignCommand{},
-			"answerResignation":             &commands.AnswerResignationCommand{},
-		},
+		commands: make(map[string]Command), // Initialize an empty map
 	}
+}
+
+// RegisterCommand adds a command to the invoker's registry.
+func (inv *Invoker) RegisterCommand(name string, cmd Command) {
+	inv.commands[name] = cmd
 }
 
 // ExecuteCommand looks up and executes the command with the given arguments.
@@ -81,6 +65,27 @@ func main() {
 
 	// Create the invoker first to access the command map
 	invoker := NewInvoker()
+
+	// Register commands
+	invoker.RegisterCommand("delete", &commands.DeleteStudentCommand{})
+	invoker.RegisterCommand("migrate", &commands.MigrateStudentsCommand{})
+	invoker.RegisterCommand("export", &commands.ExportStudentsCommand{})
+	invoker.RegisterCommand("list-student", &commands.ListStudentCommand{})
+	invoker.RegisterCommand("add-student", &commands.AddStudentCommand{})
+	invoker.RegisterCommand("import-student", &commands.ImportStudentCommand{})
+	invoker.RegisterCommand("update-student-info", &commands.UpdateStudentInfoCommand{})
+	invoker.RegisterCommand("request-student-leave", &commands.RequestStudentLeaveCommand{})
+	invoker.RegisterCommand("request-student-resign", &commands.RequestStudentResignCommand{})
+	invoker.RegisterCommand("review-student-leave", &commands.ReviewStudentLeaveCommand{})
+	invoker.RegisterCommand("review-student-resign", &commands.ReviewStudentResignCommand{}) // Corrected name
+	invoker.RegisterCommand("list-instructor", &commands.ListInstructorCommand{})
+	invoker.RegisterCommand("add-instructor", &commands.AddInstructorCommand{})
+	invoker.RegisterCommand("import-instructor", &commands.ImportInstructorCommand{})
+	invoker.RegisterCommand("update-instructor-info", &commands.UpdateInstructorInfoCommand{})
+	invoker.RegisterCommand("request-instructor-leave", &commands.RequestInstructorLeaveCommand{})
+	invoker.RegisterCommand("request-instructor-resign", &commands.RequestInstructorResignCommand{})
+	invoker.RegisterCommand("review-instructor-leave", &commands.ReviewInstructorLeaveCommand{})
+	invoker.RegisterCommand("review-instructor-resign", &commands.ReviewInstructorResignCommand{}) // Corrected name
 
 	var commandName string
 	var commandArgs []string
