@@ -13,9 +13,9 @@ type SpaceManagementControllerManager struct {
 	db *gorm.DB
 	// InstrumentManagement InstrumentManagementController
 	// SupplyManagement     SupplyManagementController
-	// Booking              BookingController
+	Booking              	BookingControllerInterface
 	// PermanentSchedule    PermanentBookingController
-	Room RoomControllerInterface
+	Room 					RoomControllerInterface
 }
 
 var spaceManagementInstance *SpaceManagementControllerManager
@@ -44,6 +44,7 @@ func NewSpaceManagementControllerFacade(db *gorm.DB) (*SpaceManagementController
 	// facade.SupplyManagement = SupplyManagementController{db: db}
 	// facade.Booking = BookingController{db: db}
 	// facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
+	manager.Booking = NewBookingController()
 	manager.Room = NewRoomController()
 
 	return manager, nil

@@ -1,323 +1,199 @@
-// // MEP-1013
-// package controller
+package controller
 
-// import (
-// 	model "ModEd/asset/model"
-// 	"ModEd/core"
-// 	"ModEd/utils/deserializer"
-// 	"errors"
-// 	"fmt"
-// 	"time"
+import (
+	"ModEd/asset/model"
+	"ModEd/core"
+	"ModEd/core/migration"
+	"ModEd/utils/deserializer"
+	"errors"
+	"time"
 
-// 	"gorm.io/gorm"
-// )
+	"gorm.io/gorm"
+)
 
-// type BookingControllerInterface interface {
-// 	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
-// 	ResetTimeSlots(roomID uint) error
-// 	ResetAllBookings() error
-// 	BookRoom(roomID uint, userID uint, userRole model.Role, eventName string, startDate, endDate time.Time) (*model.Booking, error)
-// 	CancelBooking(bookingID uint) error
-// 	UpdateBooking(bookingID uint, eventName *string, newStartDate, newEndDate *time.Time) error
-// 	GetRoomBookings(roomID uint) ([]model.Booking, error)
-// 	GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error)
-// 	GetBookingDetails(bookingID uint) (*model.Booking, error)
-// }
+type BookingControllerInterface interface {
+	CreateBooking(booking model.Booking) (model.Booking, error)
+	GetBooking(id uint) (model.Booking, error)
+	UpdateBooking(booking model.Booking) error
+	DeleteBooking(id uint) error
+	ListBookings(condition map[string]interface{}) ([]model.Booking, error)
+	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+	GetBookingsByTimeTable(timeTableID uint) ([]model.Booking, error)
+}
 
-// type BookingController struct {
-// 	db             *gorm.DB
-// 	*core.BaseController[model.Booking]
-// }
+type BookingController struct {
+	db *gorm.DB
+	baseController *core.BaseController[model.Booking]
+	observers []SpaceManagementObserverInterface[model.Booking]
+}
 
-// func (c *BookingController) CreateBooking(booking *model.Booking) error {
-// 	if err := c.db.Create(booking).Error; err != nil {
-// 		return fmt.Errorf("failed to create booking: %w", err)
-// 	}
-// 	return nil
-// }
+func NewBookingController() BookingControllerInterface {
+	db := migration.GetInstance().DB
+	return &BookingController{
+		db: db,
+		baseController: core.NewBaseController[model.Booking](db),
+		observers: make([]SpaceManagementObserverInterface[model.Booking], 0),
+	}
+}
 
-// func (c *BookingController) SeedBookingsDatabase(path string) (
-// 	booking []*model.Booking, err error) {
-// 	deserializer, err := deserializer.NewFileDeserializer(path)
-// 	if err != nil {
-// 		return nil, errors.New("failed to create file deserializer")
-// 	}
-// 	if err := deserializer.Deserialize(&booking); err != nil {
-// 		return nil, errors.New("failed to deserialize bookings")
-// 	}
-// 	for _, book := range booking {
-// 		err := c.CreateBooking(book)
-// 		if err != nil {
-// 			return nil, errors.New("failed to seed Booking DB")
-// 		}
-// 	}
-// 	return booking, nil
+func (c *BookingController) RegisterObserver(observer SpaceManagementObserverInterface[model.Booking]) {
+	c.observers = append(c.observers, observer)
+}
 
-// }
+func (c *BookingController) NotifyObservers(eventType string, booking model.Booking) {
+	for _, observer := range c.observers {
+		observer.HandleEvent(eventType, booking)
+	}
+}
 
-// func NewBookingController(db *gorm.DB, roomController RoomControllerInterface) *BookingController {
-// 	return &BookingController{
-// 		db:             db,
-// 		BaseController: core.NewBaseController[model.Booking](db),
-// 	}
-// }
-
-// func (c *BookingController) CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error) {
-// 	var room model.Room
-
-// 	if err := c.db.First(&room, roomID).Error; err != nil {
-// 		return false, fmt.Errorf("unable to find room with ID %d: %w", roomID, err)
-// 	}
-
-// 	if room.IsRoomOutOfService {
-// 		return false, fmt.Errorf("room with ID %d is out of service", roomID)
-// 	}
-
-// 	var bookingCount int64
-// 	if err := c.db.Model(&model.TimeTable{}).
-// 		Where("room_id = ? AND is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
-// 			roomID, false, startDate, startDate, endDate, endDate, startDate, endDate).
-// 		Count(&bookingCount).Error; err != nil {
-// 		return false, fmt.Errorf("error checking for existing bookings: %w", err)
-// 	}
-
-// 	if bookingCount > 0 {
-// 		return false, nil
-// 	}
-
-// 	return true, nil
-// }
-
-// func (c *BookingController) ResetTimeSlots(roomID uint) error {
-// 	if err := c.db.Model(&model.TimeTable{}).
-// 		Where("room_id = ? AND booking_id IS NOT NULL", roomID).
-// 		Update("is_available", true).Error; err != nil {
-// 		return fmt.Errorf("unable to reset time slots for room %d: %w", roomID, err)
-// 	}
-
-// 	fmt.Printf("Successfully reset time slots for room %d\n", roomID)
-// 	return nil
-// }
-
-// func (c *BookingController) ResetAllBookings() error {
-// 	if err := c.db.Model(&model.TimeTable{}).
-// 		Where("booking_id IS NOT NULL").
-// 		Update("is_available", true).Error; err != nil {
-// 		return fmt.Errorf("unable to reset all bookings: %w", err)
-// 	}
-
-// 	fmt.Println("Successfully reset all bookings")
-// 	return nil
-// }
-
-// func (c *BookingController) BookRoom(roomID uint, userID uint, userRole model.Role, eventName string, startDate, endDate time.Time) (*model.Booking, error) {
-// 	isAvailable, err := c.CheckRoomAvailability(roomID, startDate, endDate)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if !isAvailable {
-// 		return nil, fmt.Errorf("room with ID %d is not available during the specified time period", roomID)
-// 	}
-
-// 	tx := c.db.Begin()
-
-// 	timeTable := model.TimeTable{
-// 		StartDate:   startDate,
-// 		EndDate:     endDate,
-// 		RoomID:      roomID,
-// 		IsAvailable: false,
-// 	}
-
-// 	if err := tx.Create(&timeTable).Error; err != nil {
-// 		tx.Rollback()
-// 		return nil, fmt.Errorf("unable to create time table entry: %w", err)
-// 	}
-
-// 	booking := model.Booking{
-// 		TimeTableID: timeTable.ID,
-// 		UserID:      userID,
-// 		UserRole:    userRole,
-// 		EventName:   eventName,
-// 	}
-
-// 	if err := c.BaseController.Insert(booking); err != nil {
-// 		tx.Rollback()
-// 		return nil, fmt.Errorf("unable to create booking: %w", err)
-// 	}
-
-// 	bookingID := booking.ID
-// 	timeTable.BookingID = &bookingID
-// 	if err := tx.Save(&timeTable).Error; err != nil {
-// 		tx.Rollback()
-// 		return nil, fmt.Errorf("unable to update time table with booking ID: %w", err)
-// 	}
-
-// 	if err := tx.Commit().Error; err != nil {
-// 		return nil, fmt.Errorf("transaction failed: %w", err)
-// 	}
-
-// 	fmt.Printf("Room %d successfully booked for event '%s' from %v to %v\n", roomID, eventName, startDate, endDate)
-// 	return &booking, nil
-// }
-
-// func (c *BookingController) CancelBooking(bookingID uint) error {
-// 	booking, err := c.BaseController.RetrieveByID(bookingID)
-// 	if err != nil {
-// 		return fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
-// 	}
-
-// 	var timeTable model.TimeTable
-// 	if err := c.db.First(&timeTable, booking.TimeTableID).Error; err != nil {
-// 		return fmt.Errorf("unable to find time table for booking %d: %w", bookingID, err)
-// 	}
-
-// 	tx := c.db.Begin()
-
-// 	timeTable.IsAvailable = true
-// 	if err := tx.Save(&timeTable).Error; err != nil {
-// 		tx.Rollback()
-// 		return fmt.Errorf("unable to update time table: %w", err)
-// 	}
-
-// 	if err := c.BaseController.DeleteByID(bookingID); err != nil {
-// 		tx.Rollback()
-// 		return fmt.Errorf("unable to cancel booking: %w", err)
-// 	}
-
-// 	if err := tx.Commit().Error; err != nil {
-// 		return fmt.Errorf("transaction failed: %w", err)
-// 	}
-
-// 	fmt.Printf("Successfully canceled booking with ID %d\n", bookingID)
-// 	return nil
-// }
-
-// func (c *BookingController) UpdateBooking(bookingID uint, eventName *string, newStartDate, newEndDate *time.Time) error {
-// 	booking, err := c.BaseController.RetrieveByID(bookingID)
-// 	if err != nil {
-// 		return fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
-// 	}
-
-// 	var timeTable model.TimeTable
-// 	if err := c.db.First(&timeTable, booking.TimeTableID).Error; err != nil {
-// 		return fmt.Errorf("unable to find time table for booking %d: %w", bookingID, err)
-// 	}
-
-// 	if (newStartDate != nil && !timeTable.StartDate.Equal(*newStartDate)) || (newEndDate != nil && !timeTable.EndDate.Equal(*newEndDate)) {
-// 		startDate := timeTable.StartDate
-// 		if newStartDate != nil {
-// 			startDate = *newStartDate
-// 		}
-
-// 		endDate := timeTable.EndDate
-// 		if newEndDate != nil {
-// 			endDate = *newEndDate
-// 		}
-
-// 		originalIsAvailable := timeTable.IsAvailable
-// 		timeTable.IsAvailable = true
-// 		if err := c.db.Save(&timeTable).Error; err != nil {
-// 			return fmt.Errorf("unable to temporarily update time table: %w", err)
-// 		}
-
-// 		isAvailable, err := c.CheckRoomAvailability(timeTable.RoomID, startDate, endDate)
-
-// 		timeTable.IsAvailable = originalIsAvailable
-// 		if err := c.db.Save(&timeTable).Error; err != nil {
-// 			return fmt.Errorf("unable to restore time table status: %w", err)
-// 		}
-
-// 		if err != nil {
-// 			return err
-// 		}
-// 		if !isAvailable {
-// 			return fmt.Errorf("requested time slot is already booked")
-// 		}
-// 	}
-
-// 	tx := c.db.Begin()
-
-// 	if eventName != nil {
-// 		booking.EventName = *eventName
-// 	}
-
-// 	if eventName != nil {
-// 		booking.ID = bookingID
-// 		if err := c.BaseController.UpdateByID(booking); err != nil {
-// 			tx.Rollback()
-// 			return fmt.Errorf("unable to update booking details: %w", err)
-// 		}
-// 	}
-
-// 	if newStartDate != nil {
-// 		timeTable.StartDate = *newStartDate
-// 	}
-// 	if newEndDate != nil {
-// 		timeTable.EndDate = *newEndDate
-// 	}
-
-// 	if newStartDate != nil || newEndDate != nil {
-// 		if err := tx.Save(&timeTable).Error; err != nil {
-// 			tx.Rollback()
-// 			return fmt.Errorf("unable to update booking dates: %w", err)
-// 		}
-// 	}
-
-// 	if err := tx.Commit().Error; err != nil {
-// 		return fmt.Errorf("transaction failed: %w", err)
-// 	}
-
-// 	fmt.Printf("Successfully updated booking with ID %d\n", bookingID)
-// 	return nil
-// }
-
-// func (c *BookingController) GetRoomBookings(roomID uint) ([]model.Booking, error) {
-// 	var bookings []model.Booking
-// 	if err := c.db.Joins("JOIN time_tables ON bookings.time_table_id = time_tables.id").
-// 		Where("time_tables.room_id = ?", roomID).
-// 		Preload("TimeTable").
-// 		Find(&bookings).Error; err != nil {
-// 		return nil, fmt.Errorf("unable to retrieve bookings for room %d: %w", roomID, err)
-// 	}
-// 	return bookings, nil
-// }
-
-// func (c *BookingController) GetAvailableRooms(startDate, endDate time.Time, roomType *model.RoomTypeEnum, capacity *int) ([]model.Room, error) {
-// 	var rooms []model.Room
-// 	query := c.db.Where("is_room_out_of_service = ?", false)
+func (c *BookingController) CreateBooking(booking model.Booking) (model.Booking, error) {
+	timeTable := c.db.Model(&model.TimeTable{}).Where("id = ?", booking.TimeTableID).First(&model.TimeTable{}).Row()
+	if timeTable == nil {
+		return booking, errors.New("time table not found")
+	}
 	
-// 	var unavailableRoomIDs []uint
-// 	if err := c.db.Table("time_tables").
-// 		Select("room_id").
-// 		Where("is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
-// 			false, startDate, startDate, endDate, endDate, startDate, endDate).
-// 		Pluck("room_id", &unavailableRoomIDs).Error; err != nil {
-// 		return nil, fmt.Errorf("unable to query unavailable room IDs: %w", err)
-// 	}
+	var startDate, endDate time.Time
+	var roomID uint
+	var isAvailable bool
 	
-// 	if len(unavailableRoomIDs) > 0 {
-// 		query = query.Where("id NOT IN ?", unavailableRoomIDs)
-// 	}
+	if err := timeTable.Scan(&startDate, &endDate, &roomID, &isAvailable); err != nil {
+		return booking, err
+	}
+	
+	if !isAvailable {
+		return booking, errors.New("time slot is not available")
+	}
+	
+	var room model.Room
+	if err := c.db.Where("id = ?", roomID).First(&room).Error; err != nil {
+		return booking, err
+	}
+	
+	if room.IsRoomOutOfService {
+		return booking, errors.New("room is out of service")
+	}
+	
+	tx := c.db.Begin()
+	
+	if err := tx.Model(&model.TimeTable{}).Where("id = ?", booking.TimeTableID).
+		Updates(map[string]interface{}{
+			"is_available": false,
+			"booking_type": model.BOOKING_TEMPORARY,
+		}).Error; err != nil {
+		tx.Rollback()
+		return booking, err
+	}
+	
+	if err := tx.Create(&booking).Error; err != nil {
+		tx.Rollback()
+		return booking, err
+	}
+	
+	if err := tx.Commit().Error; err != nil {
+		return booking, err
+	}
+	
+	c.NotifyObservers("booking_created", booking)
+	
+	return booking, nil
+}
 
-// 	if roomType != nil {
-// 		query = query.Where("room_type = ?", *roomType)
-// 	}
+func (c *BookingController) GetBooking(id uint) (model.Booking, error) {
+	return c.baseController.RetrieveByID(id, "TimeTable", "TimeTable.Room")
+}
 
-// 	if capacity != nil {
-// 		query = query.Where("capacity >= ?", *capacity)
-// 	}
+func (c *BookingController) UpdateBooking(booking model.Booking) error {
+	_, err := c.GetBooking(booking.ID)
+	if err != nil {
+		return err
+	}
+	
+	err = c.baseController.UpdateByID(booking)
+	if err != nil {
+		return err
+	}
+	
+	c.NotifyObservers("booking_updated", booking)
+	
+	return nil
+}
 
-// 	if err := query.Find(&rooms).Error; err != nil {
-// 		return nil, fmt.Errorf("unable to find available rooms: %w", err)
-// 	}
+func (c *BookingController) DeleteBooking(id uint) error {
+	booking, err := c.GetBooking(id)
+	if err != nil {
+		return err
+	}
+	
+	tx := c.db.Begin()
+	
+	if err := tx.Model(&model.TimeTable{}).Where("id = ?", booking.TimeTableID).
+		Updates(map[string]interface{}{
+			"is_available": true,
+			"booking_type": nil,
+		}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	
+	if err := tx.Delete(&booking).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	
+	c.NotifyObservers("booking_deleted", booking)
+	
+	return nil
+}
 
-// 	return rooms, nil
-// }
+func (c *BookingController) ListBookings(condition map[string]interface{}) ([]model.Booking, error) {
+	return c.baseController.List(condition, "TimeTable", "TimeTable.Room")
+}
 
-// func (c *BookingController) GetBookingDetails(bookingID uint) (*model.Booking, error) {
-// 	booking, err := c.BaseController.RetrieveByID(bookingID, "TimeTable", "TimeTable.Room")
-// 	if err != nil {
-// 		return nil, fmt.Errorf("unable to find booking with ID %d: %w", bookingID, err)
-// 	}
-// 	return &booking, nil
-// }
+func (c *BookingController) CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error) {
+	var room model.Room
+	if err := c.db.Where("id = ?", roomID).First(&room).Error; err != nil {
+		return false, err
+	}
+	
+	if room.IsRoomOutOfService {
+		return false, nil
+	}
+	
+	var count int64
+	err := c.db.Model(&model.TimeTable{}).
+		Where("room_id = ? AND is_available = ? AND ((start_date <= ? AND end_date >= ?) OR (start_date <= ? AND end_date >= ?) OR (start_date >= ? AND end_date <= ?))",
+			roomID, false, startDate, startDate, endDate, endDate, startDate, endDate).
+		Count(&count).Error
+	
+	if err != nil {
+		return false, err
+	}
+	
+	return count == 0, nil
+}
+
+func (c *BookingController) GetBookingsByTimeTable(timeTableID uint) ([]model.Booking, error) {
+	condition := map[string]interface{}{"time_table_id": timeTableID}
+	return c.baseController.List(condition, "TimeTable", "TimeTable.Room")
+}
+
+func (c *BookingController) SeedBookingsDatabase(path string) (bookings []*model.Booking, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.New("failed to create file deserializer")
+	}
+	if err := deserializer.Deserialize(&bookings); err != nil {
+		return nil, errors.New("failed to deserialize bookings")
+	}
+	for _, booking := range bookings {
+		err := c.baseController.Insert(*booking)
+		if err != nil {
+			return nil, errors.New("failed to seed Booking DB")
+		}
+	}
+	return bookings, nil
+}
