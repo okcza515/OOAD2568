@@ -12,6 +12,7 @@ type SpaceManagementState struct {
 	manager *cli.CLIMenuStateManager
 
 	//Add more menu here
+	bookingMenu *BookingMenuState
 	roomMenu *RoomMenuState
 }
 
@@ -21,6 +22,7 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 	}
 
 	spaceManagementMenu.roomMenu = NewRoomMenuState(db, manager, spaceManagementMenu)
+	spaceManagementMenu.bookingMenu = NewBookingMenuState(db, manager, spaceManagementMenu)
 
 	return spaceManagementMenu
 }
@@ -47,7 +49,7 @@ func (menu *SpaceManagementState) HandleUserInput(input string) error {
 	case "2":
 		fmt.Println("Not implemented yet...")
 	case "3":
-		fmt.Println("Not implemented yet...")
+		menu.manager.SetState(menu.bookingMenu)
 	case "4":
 		fmt.Println("Not implemented yet...")
 	case "5":
