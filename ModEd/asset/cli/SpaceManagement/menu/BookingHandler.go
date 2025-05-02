@@ -340,8 +340,7 @@ type SeedBookingsHandler struct {
 func (h *SeedBookingsHandler) Execute() error {
 	fmt.Println("=== Seed Bookings Data ===")
 	
-	fmt.Print("Enter path to bookings JSON file: ")
-	path := util.GetCommandInput()
+	path := "data/asset/TimeTable.json"
 	
 	bookings, err := h.controller.SeedBookingsDatabase(path)
 	if err != nil {
@@ -350,6 +349,10 @@ func (h *SeedBookingsHandler) Execute() error {
 	}
 	
 	fmt.Println("Successfully seeded", len(bookings), "bookings")
+	for _, booking := range bookings {
+		fmt.Println(booking)
+	}
+	
 	util.PressEnterToContinue()
 	return nil
 }
