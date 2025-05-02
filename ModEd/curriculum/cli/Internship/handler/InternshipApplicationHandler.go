@@ -83,26 +83,26 @@ func (handler *InternshipApplicationHandler) ListApplications() error {
 }
 
 func (handler *InternshipApplicationHandler) GetApplicationStatus() error {
-	id := int(utils.GetUserInputUint("\nWhat is the ID of the internship application you want to check? "))
+	id := utils.GetUserInput("\nWhat is the ID of the internship application you want to check? ")
 
-	status, err := handler.wrapper.InternshipApplication.GetApplicationStatusByID(uint(id))
+	status, err := handler.wrapper.InternshipApplication.GetApplicationStatusByID(id)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve application status: %w", err)
 	}
 
-	fmt.Printf("Application Status for ID %d: %s\n", id, status)
+	fmt.Printf("Application Status for ID %s: %s\n", id, status)
 	return nil
 }
 
 func (handler *InternshipApplicationHandler) DeleteApplication() error {
-	id := int(utils.GetUserInputUint("Enter the ID of the internship application to delete: "))
+	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
 
-	err := handler.wrapper.InternshipApplication.DeleteApplicationByID(uint(id))
+	err := handler.wrapper.InternshipApplication.DeleteApplicationByID(id)
 	if err != nil {
 		return fmt.Errorf("failed to delete internship application: %w", err)
 	}
 
-	fmt.Printf("Internship application with ID %d deleted successfully!\n", id)
+	fmt.Printf("Internship application with ID %s deleted successfully!\n", id)
 	return nil
 }
 

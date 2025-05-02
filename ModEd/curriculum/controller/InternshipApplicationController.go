@@ -49,7 +49,7 @@ func (repo InternshipApplicationController) GetAllInternshipApplications() ([]*m
 	return applications, result.Error
 }
 
-func (repo InternshipApplicationController) GetInternshipApplicationByID(id uint) (*model.InternshipApplication, error) {
+func (repo InternshipApplicationController) GetInternshipApplicationByID(id string) (*model.InternshipApplication, error) {
 	application := &model.InternshipApplication{}
 	result := repo.Connector.Preload("InternshipReport").
 			Preload("SupervisorReview").
@@ -58,25 +58,25 @@ func (repo InternshipApplicationController) GetInternshipApplicationByID(id uint
 	return application, result.Error
 }
 
-func (repo InternshipApplicationController) GetApplicationStatusByID(id uint) (string, error) {
+func (repo InternshipApplicationController) GetApplicationStatusByID(id string) (string, error) {
 	var application model.InternshipApplication
 	if err := repo.Connector.Select("approval_advisor_status", "approval_company_status").
 			Where("id = ?", id).
 			First(&application).Error; err != nil {
-			return "", fmt.Errorf("failed to find application with ID %d: %w", id, err)
+			return "", fmt.Errorf("failed to find application with ID %s: %w", id, err)
 	}
 
 	return fmt.Sprintf("Advisor Status: %s, Company Status: %s",
 			application.ApprovalAdvisorStatus, application.ApprovalCompanyStatus), nil
 }
 
-func (repo InternshipApplicationController) DeleteApplicationByID(id uint) error {
+func (repo InternshipApplicationController) DeleteApplicationByID(id string) error {
 	result := repo.Connector.Delete(&model.InternshipApplication{}, id)
 	if result.Error != nil {
-			return fmt.Errorf("failed to delete application with ID %d: %w", id, result.Error)
+			return fmt.Errorf("failed to delete application with ID %s: %w", id, result.Error)
 	}
 	if result.RowsAffected == 0 {
-			return fmt.Errorf("no application found with ID %d", id)
+			return fmt.Errorf("no application found with ID %s", id)
 	}
 	return nil
 }
