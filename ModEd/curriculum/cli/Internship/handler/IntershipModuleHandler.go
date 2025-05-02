@@ -13,7 +13,7 @@ type InternShipModuleMenuStateHandler struct {
 	wrapper     *controller.InternshipModuleWrapper
 
 	InternshipApplicationMenuStateHandler *InternshipApplicationHandler
-	InternshipEvaluationHandler           *InternshipEvaluationHandler
+	InternshipEvaluationMenuStateHandler  *InternshipEvaluationHandler
 }
 
 func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternShipModuleMenuStateHandler {
@@ -22,7 +22,7 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 		wrapper:     wrapper,
 	}
 	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
-	InternshipModule.InternshipEvaluationHandler = NewIInternshipEvaluationHandler(manager, wrapper)
+	InternshipModule.InternshipEvaluationMenuStateHandler = NewInternshipEvaluationHandler(manager, wrapper)
 
 	return InternshipModule
 }
@@ -43,11 +43,8 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
 		return nil
 	case "2":
-		err := handler.handleEvaluateStudentPerformance()
-		if err != nil {
-			fmt.Println("Error evaluating student performance:", err)
-		}
-		return err
+		handler.menuManager.SetState(handler.InternshipEvaluationMenuStateHandler)
+		return nil
 	case "3":
 		err := handler.handleEvaluateStudentReport()
 		if err != nil {

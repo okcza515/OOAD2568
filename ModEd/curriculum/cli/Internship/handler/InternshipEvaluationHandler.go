@@ -12,7 +12,7 @@ type InternshipEvaluationHandler struct {
 	wrapper *controller.InternshipModuleWrapper
 }
 
-func NewIInternshipEvaluationHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternshipEvaluationHandler {
+func NewInternshipEvaluationHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternshipEvaluationHandler {
 	return &InternshipEvaluationHandler{
 		manager: manager,
 		wrapper: wrapper,
@@ -28,7 +28,7 @@ func (handler *InternshipEvaluationHandler) Render() {
 	fmt.Print("Enter your choice: ")
 }
 
-func (handler *InternshipEvaluationHandler) HandleInput(input string) error {
+func (handler *InternshipEvaluationHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
 		if err := handler.Review_Evaluation(); err != nil {
