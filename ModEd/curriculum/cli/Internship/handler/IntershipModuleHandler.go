@@ -13,6 +13,7 @@ type InternShipModuleMenuStateHandler struct {
 	wrapper     *controller.InternshipModuleWrapper
 
 	InternshipApplicationMenuStateHandler *InternshipApplicationHandler
+	InternshipEvaluationHandler           *InternshipEvaluationHandler
 }
 
 func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternShipModuleMenuStateHandler {
@@ -21,6 +22,7 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 		wrapper:     wrapper,
 	}
 	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
+	InternshipModule.InternshipEvaluationHandler = NewIInternshipEvaluationHandler(manager, wrapper)
 
 	return InternshipModule
 }
