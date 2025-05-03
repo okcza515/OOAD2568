@@ -12,19 +12,19 @@ import (
 )
 
 type InstrumentLogMenuState struct {
-	manager                     *cli.CLIMenuStateManager
-	assetMainMenu               *AssetMenuState
+	manager *cli.CLIMenuStateManager
+
 	insertHandlerStrategy       *handler.InsertHandlerStrategy[model.InstrumentLog]
 	listHandlerStrategy         *handler.ListHandlerStrategy[model.InstrumentLog]
 	retrieveByIDHandlerStrategy *handler.RetrieveByIDHandlerStrategy[model.InstrumentLog]
 }
 
 func NewInstrumentLogMenuState(
-	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState) *InstrumentLogMenuState {
+	manager *cli.CLIMenuStateManager,
+) *InstrumentLogMenuState {
 	controllerInstance := controller.GetAssetInstance().InstrumentLog
 	return &InstrumentLogMenuState{
 		manager:                     manager,
-		assetMainMenu:               assetMainMenu,
 		insertHandlerStrategy:       handler.NewInsertHandlerStrategy[model.InstrumentLog](controllerInstance),
 		listHandlerStrategy:         handler.NewListHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
 		retrieveByIDHandlerStrategy: handler.NewRetrieveByIDHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
@@ -33,7 +33,7 @@ func NewInstrumentLogMenuState(
 
 func (menu *InstrumentLogMenuState) Render() {
 	fmt.Println()
-	fmt.Println(":/asset/instrumentLog")
+	fmt.Println(":/asset/instrument-log")
 	fmt.Println()
 	fmt.Println("Instrument Log Management")
 	fmt.Println("Your options are...")
@@ -67,7 +67,7 @@ func (menu *InstrumentLogMenuState) HandleUserInput(input string) error {
 		fmt.Println("Get detail of an Instrument Log")
 		//context.SetStrategy(menu.retrieveByIDHandlerStrategy)
 	case "back":
-		menu.manager.SetState(menu.assetMainMenu)
+		menu.manager.GoToMenu(string(MENU_ASSET))
 		return nil
 	case "exit":
 		return nil

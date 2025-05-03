@@ -14,8 +14,6 @@ import (
 type SupplyMenuState struct {
 	manager *cli.CLIMenuStateManager
 
-	assetMainMenu *AssetMenuState
-
 	insertHandlerStrategy *handler.InsertHandlerStrategy[model.Supply]
 	listHandlerStrategy   *handler.ListHandlerStrategy[model.Supply]
 	deleteHandlerStrategy *handler.DeleteHandlerStrategy[model.Supply]
@@ -23,13 +21,12 @@ type SupplyMenuState struct {
 }
 
 func NewSupplyMenuState(
-	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState,
+	manager *cli.CLIMenuStateManager,
 ) *SupplyMenuState {
 	controllerInstance := controller.GetAssetInstance().Supply
 
 	return &SupplyMenuState{
 		manager:               manager,
-		assetMainMenu:         assetMainMenu,
 		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerInstance),
 		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerInstance),
 		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerInstance),
@@ -73,7 +70,7 @@ func (menu *SupplyMenuState) HandleUserInput(input string) error {
 		fmt.Println("Delete an Supply")
 		//context.SetStrategy(menu.deleteHandlerStrategy)
 	case "back":
-		menu.manager.SetState(menu.assetMainMenu)
+		menu.manager.GoToMenu(string(MENU_ASSET))
 		return nil
 	default:
 		//context.SetStrategy(handler.DoNothingHandlerStrategy{})

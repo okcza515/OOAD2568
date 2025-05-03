@@ -17,7 +17,7 @@ type InstrumentMenuState struct {
 }
 
 func NewInstrumentMenuState(
-	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState,
+	manager *cli.CLIMenuStateManager,
 ) *InstrumentMenuState {
 	controllerInstance := controller.GetAssetInstance().Instrument
 
@@ -27,7 +27,7 @@ func NewInstrumentMenuState(
 	listHandler := handler.NewListHandlerStrategy[model.Instrument](controllerInstance)
 	updateHandler := handler.NewUpdateHandlerStrategy[model.Instrument](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.Instrument](controllerInstance)
-	backHandler := handler.NewChangeMenuHandlerStrategy(manager, assetMainMenu)
+	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
 
 	handlerContext.AddHandler("1", "Add New Instrument", insertHandler)
 	handlerContext.AddHandler("2", "List all Instrument", listHandler)

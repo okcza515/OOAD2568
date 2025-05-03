@@ -9,11 +9,6 @@ import (
 
 type AssetMenuState struct {
 	manager *cli.CLIMenuStateManager
-
-	// Add more menu here
-	instrumentMenu    *InstrumentMenuState
-	supplyMenu        *SupplyMenuState
-	instrumentLogMenu *InstrumentLogMenuState
 }
 
 func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
@@ -22,16 +17,17 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	}
 
 	// Add more menu here
-	assetMenu.instrumentMenu = NewInstrumentMenuState(manager, assetMenu)
-	assetMenu.supplyMenu = NewSupplyMenuState(manager, assetMenu)
-	assetMenu.instrumentLogMenu = NewInstrumentLogMenuState(manager, assetMenu)
+	manager.AddMenu(string(MENU_ASSET), assetMenu)
+	manager.AddMenu(string(MENU_INSTRUMENT), NewInstrumentMenuState(manager))
+	manager.AddMenu(string(MENU_SUPPLY), NewSupplyMenuState(manager))
+	manager.AddMenu(string(MENU_INSTRUMENT_LOG), NewInstrumentLogMenuState(manager))
 
 	return assetMenu
 }
 
 func (menu *AssetMenuState) Render() {
 	fmt.Println()
-	fmt.Println(":/asset/instrument")
+	fmt.Println(":/asset")
 	fmt.Println()
 	fmt.Println("Welcome to ModEd Asset Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
@@ -41,6 +37,7 @@ func (menu *AssetMenuState) Render() {
 	fmt.Println("  4:\tBorrow Page")
 	fmt.Println("  5:\tInstrument Log Page")
 	fmt.Println("  6:\tSupply Log Page")
+	fmt.Println("  7:\tDetail Report")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
@@ -50,13 +47,13 @@ func (menu *AssetMenuState) HandleUserInput(input string) error {
 	case "1":
 		fmt.Println("Not implemented yet...")
 	case "2":
-		menu.manager.SetState(menu.instrumentMenu)
+		menu.manager.GoToMenu(string(MENU_INSTRUMENT))
 	case "3":
-		menu.manager.SetState(menu.supplyMenu)
+		menu.manager.GoToMenu(string(MENU_SUPPLY))
 	case "4":
 		fmt.Println("Not implemented yet...")
 	case "5":
-		menu.manager.SetState(menu.instrumentLogMenu)
+		menu.manager.GoToMenu(string(MENU_INSTRUMENT_LOG))
 	case "6":
 		fmt.Println("Not implemented yet...")
 	default:
