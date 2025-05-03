@@ -31,6 +31,14 @@ func (controller *BaseController[T]) UpdateByID(data T) error {
 	return result.Error
 }
 
+func (controller *BaseController[T]) UpdateByCondition(condition map[string]interface{}, data T) error {
+	result := controller.db.Model(data).Where(condition).Updates(data)
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+	return result.Error
+}
+
 func (controller *BaseController[T]) RetrieveByID(id uint, preloads ...string) (T, error) {
 	var record T
 	query := controller.db
@@ -64,6 +72,16 @@ func (controller *BaseController[T]) RetrieveByCondition(condition map[string]in
 func (controller *BaseController[T]) DeleteByID(id uint) error {
 	var record T
 	result := controller.db.Where("id = ?", id).Delete(&record)
+	if result.RowsAffected == 0 {
+		return errors.New("record not found")
+	}
+
+	return result.Error
+}
+
+func (controller *BaseController[T]) DeleteByCondition(condition map[string]interface{}) error {
+	var record T
+	result := controller.db.Where(condition).Delete(&record)
 	if result.RowsAffected == 0 {
 		return errors.New("record not found")
 	}
