@@ -37,7 +37,7 @@ func AdminCLI(applicantController *controller.ApplicantController, applicationRe
 	case 1:
 		ManageApplicants(applicantController)
 	case 2:
-		//ShowApplicationReports(applicationReportCtrl)
+		ShowApplicationReports(applicationReportCtrl)
 	case 3:
 		AdminScheduleInterviewCLI(interviewCtrl, applicationReportCtrl)
 	case 4:
@@ -101,5 +101,30 @@ func DeleteInterview(interviewCtrl *controller.InterviewController) {
 
 func ManageApplicants(applicantController *controller.ApplicantController) {
 	fmt.Println("Managing Applicants...")
+	util.WaitForEnter()
+}
+
+
+func ShowApplicationReports(applicationReportCtrl *controller.ApplicationReportController) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Enter Applicant ID (number): ")
+	scanner.Scan()
+	inputID := scanner.Text()
+
+	applicantID, err := strconv.ParseUint(inputID, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid applicant ID. Please enter a valid number.")
+		util.WaitForEnter()
+		return
+	}
+
+	report, err := applicationReportCtrl.GetApplicationReportByApplicantID(uint(applicantID))
+	if err != nil {
+		fmt.Println("Error retrieving report:", err)
+	} else {
+		fmt.Println("===== Applicant Report =====")
+		fmt.Println(report)
+	}
 	util.WaitForEnter()
 }
