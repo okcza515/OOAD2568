@@ -27,7 +27,7 @@ func (menu *RoomMenuState) Render() {
 	fmt.Println("4. Update a Room")
 	fmt.Println("5. Delete a Room")
 	fmt.Println("6. Delete all Rooms")
-	fmt.Println("7. Seed Rooms Data")
+	// fmt.Println("7. Seed Rooms Data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("===========================")
 }
@@ -95,7 +95,7 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 	handlerContext.AddHandler("4", "Update a Room", updateHandler)
 	handlerContext.AddHandler("5", "Delete a Room", deleteHandler)
 	handlerContext.AddHandler("6", "Delete all Rooms", deleteAllHandler)
-	handlerContext.AddHandler("7", "Seed Rooms Data", nil)
+	// handlerContext.AddHandler("7", "Seed Rooms Data", nil)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 	return &RoomMenuState{

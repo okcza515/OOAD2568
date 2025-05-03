@@ -9,6 +9,7 @@ import (
 	"ModEd/core/cli"
 	"ModEd/core/migration"
 	"flag"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -31,18 +32,16 @@ func main() {
 		if manager.UserInput == "exit" {
 			break
 		}
-
 		err := manager.HandleUserInput()
 		if err != nil {
 			panic(err)
 		}
 	}
-
-	util.PrintByeBye()
 }
 
 func initialSpaceManagementCLI() (db *gorm.DB, err error) {
-	optionFlag := flag.String("Reset Database", "", "")
+	util.ClearScreen()
+	optionFlag := flag.String("option", "reset", "seed")
 	flag.Parse()
 	db, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
 
@@ -50,11 +49,15 @@ func initialSpaceManagementCLI() (db *gorm.DB, err error) {
 		panic(err)
 	}
 	instance := controller.GetSpaceManagementInstance(db)
-	if *optionFlag == "Reset Database" {
-		err = instance.ResetDatabase()
-		if err != nil {
-			panic(err)
-		}
+	switch *optionFlag {
+	case "reset":
+		fmt.Println("Resetting database...")
+		err = instance.ResetDB()
+	case "seed":
+		fmt.Println("Seeding database...")
+		err = instance.LoadSeedData()
+	default:
+		fmt.Println("Invalid option, please use 'reset' or 'seed'")
 	}
 	return db, err
 }
