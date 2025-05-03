@@ -62,7 +62,7 @@ func (handler AddNewRoomHandlerStrategy[T]) Execute() error {
 	isOutOfServiceStr := util.GetCommandInput()
 	isOutOfService := isOutOfServiceStr == "true"
 
-	room := model.Room{
+	room := &model.Room{
 		RoomName:           roomName,
 		RoomType:           roomType,
 		Description:        description,
@@ -87,7 +87,7 @@ func (handler AddNewRoomHandlerStrategy[T]) Execute() error {
 	fmt.Println("Instruments:", room.Instrument)
 	fmt.Println("Supplies:", room.Supply)
 
-	err := handler.controller.Insert(room)
+	err := handler.controller.Insert(*room)
 	if err != nil {
 		return err
 	}

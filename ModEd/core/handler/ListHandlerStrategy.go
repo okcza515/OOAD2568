@@ -29,12 +29,15 @@ func (handler ListHandlerStrategy[T]) Execute() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(fmt.Sprintf("Total %v record(s)", len(records)))
+	if len(records) == 0 {
+		fmt.Println("No records found.")
+		return nil
+	}
+	fmt.Printf("Total %v record(s)\n", len(records))
 	fmt.Println()
 
 	for _, record := range records {
-		fmt.Println(record.ToString())
+		fmt.Println(record)
 	}
 
 	return nil
