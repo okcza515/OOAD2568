@@ -22,14 +22,14 @@ type RoomControllerInterface interface {
 	DeleteByID(id uint) error
 	InsertMany(data []model.Room) error
 
-	addObserver(observer SpaceManagementObserverInterface[model.Room])
-	removeObserver(observer SpaceManagementObserverInterface[model.Room])
+	// addObserver(observer SpaceManagementObserverInterface[model.Room])
+	// removeObserver(observer SpaceManagementObserverInterface[model.Room])
 }
 
 type RoomController struct {
 	db *gorm.DB
 	*core.BaseController[model.Room]
-	observers map[string]SpaceManagementObserverInterface[model.Room]
+	// observers map[string]SpaceManagementObserverInterface[model.Room]
 }
 
 func NewRoomController() *RoomController {
@@ -37,17 +37,17 @@ func NewRoomController() *RoomController {
 	return &RoomController{
 		db:             db,
 		BaseController: core.NewBaseController[model.Room](db),
-		observers:      make(map[string]SpaceManagementObserverInterface[model.Room]),
+		// observers:      make(map[string]SpaceManagementObserverInterface[model.Room]),
 	}
 }
 
-func (c *RoomController) addObserver(observer SpaceManagementObserverInterface[model.Room]) {
-	c.observers[observer.GetObserverID()] = observer
-}
+// func (c *RoomController) addObserver(observer SpaceManagementObserverInterface[model.Room]) {
+// 	c.observers[observer.GetObserverID()] = observer
+// }
 
-func (c *RoomController) removeObserver(observer SpaceManagementObserverInterface[model.Room]) {
-	delete(c.observers, observer.GetObserverID())
-}
+// func (c *RoomController) removeObserver(observer SpaceManagementObserverInterface[model.Room]) {
+// 	delete(c.observers, observer.GetObserverID())
+// }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
 	deserializer, err := deserializer.NewFileDeserializer(path)
@@ -81,7 +81,8 @@ func (c *RoomController) ListAll() ([]string, error) {
 }
 
 func (c *RoomController) List(condition map[string]interface{}, preloads ...string) ([]model.Room, error) {
-	return c.BaseController.List(condition, preloads...)
+	records, err := c.BaseController.List(condition, preloads...)
+	return records, err
 }
 
 func (c *RoomController) RetrieveByID(id uint, preloads ...string) (model.Room, error) {
@@ -102,9 +103,9 @@ func (c *RoomController) RetrieveByID(id uint, preloads ...string) (model.Room, 
 }
 
 func (c *RoomController) Insert(data model.Room) error {
-	if data.ID == 0 {
-		return errors.New("invalid room data")
-	}
+	// if data.ID == 0 {
+	// 	return errors.New("invalid room data")
+	// }
 	return c.BaseController.Insert(data)
 }
 

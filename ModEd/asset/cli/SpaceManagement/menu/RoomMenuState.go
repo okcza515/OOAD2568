@@ -3,6 +3,7 @@ package menu
 
 import (
 	controller "ModEd/asset/controller"
+	spaceManagementHandler "ModEd/asset/handler"
 	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
@@ -76,12 +77,14 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 	handlerContext := handler.NewHandlerContext()
 
 	//Handler is not working yet!
-	insertHandler := handler.NewInsertHandlerStrategy[model.Room](controllerInstance)
+	// insertHandler := handler.NewInsertHandlerStrategy[model.Room](controllerInstance)
 	listHandler := handler.NewListHandlerStrategy[model.Room](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Room](controllerInstance)
 	updateHandler := handler.NewUpdateHandlerStrategy[model.Room](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.Room](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
+
+	insertHandler := spaceManagementHandler.NewAddNewRoomHandlerStrategy[model.Room](controllerInstance)
 
 	handlerContext.AddHandler("1", "Add New Room", insertHandler)
 	handlerContext.AddHandler("2", "List all Rooms", listHandler)
