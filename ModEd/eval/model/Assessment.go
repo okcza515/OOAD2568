@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	commonModel "ModEd/common/model"
@@ -43,15 +44,68 @@ type Assessment struct {
 	LastName       commonModel.Instructor
 	Submission     []AssessmentSubmission
 	observers      []AssessmentObserver
+	state          AssessmentState
+}
+
+// AssessmentState interface defines the state pattern
+type AssessmentState interface {
+	HandleSubmission(assessment *Assessment, submission *AssessmentSubmission) error
+	HandleStatusChange(assessment *Assessment, newStatus AssessmentStatus) error
+}
+
+// DraftState implements AssessmentState for draft status
+type DraftState struct{}
+
+func (s *DraftState) HandleSubmission(assessment *Assessment, submission *AssessmentSubmission) error {
+	return fmt.Errorf("cannot submit to a draft assessment")
+}
+
+func (s *DraftState) HandleStatusChange(assessment *Assessment, newStatus AssessmentStatus) error {
+	if newStatus == StatusPublished {
+		assessment.Status = newStatus
+		assessment.state = &PublishedState{}
+		return nil
+	}
+	return fmt.Errorf("invalid status transition from draft")
+}
+
+// PublishedState implements AssessmentState for published status
+type PublishedState struct{}
+
+func (s *PublishedState) HandleSubmission(assessment *Assessment, submission *AssessmentSubmission) error {
+	if time.Now().After(assessment.DueDate) {
+		return fmt.Errorf("submission deadline has passed")
+	}
+	return nil
+}
+
+func (s *PublishedState) HandleStatusChange(assessment *Assessment, newStatus AssessmentStatus) error {
+	if newStatus == StatusClosed {
+		assessment.Status = newStatus
+		assessment.state = &ClosedState{}
+		return nil
+	}
+	return fmt.Errorf("invalid status transition from published")
+}
+
+// ClosedState implements AssessmentState for closed status
+type ClosedState struct{}
+
+func (s *ClosedState) HandleSubmission(assessment *Assessment, submission *AssessmentSubmission) error {
+	return fmt.Errorf("cannot submit to a closed assessment")
+}
+
+func (s *ClosedState) HandleStatusChange(assessment *Assessment, newStatus AssessmentStatus) error {
+	return fmt.Errorf("cannot change status of a closed assessment")
 }
 
 // AssessmentSubmission represents a student's submission for either a quiz or assignment
 type AssessmentSubmission struct {
 	gorm.Model
-	StudentCode commonModel.Student
-	FirstName   commonModel.Student
-	LastName    commonModel.Student
-	Email       commonModel.Student
+	StudentCode string
+	FirstName   string
+	LastName    string
+	Email       string
 	Answers     string
 	Submitted   bool
 	SubmittedAt time.Time
@@ -59,12 +113,12 @@ type AssessmentSubmission struct {
 	Feedback    string
 }
 
-// AssessmentObserver interface for implementing observer pattern
+// AssessmentObserver interface for Observer pattern
 type AssessmentObserver interface {
 	OnStatusChanged(assessment *Assessment, oldStatus AssessmentStatus)
 }
 
-// AssessmentBuilder interface for implementing builder pattern
+// AssessmentBuilder interface for Builder pattern
 type AssessmentBuilder interface {
 	SetTitle(title string) AssessmentBuilder
 	SetDescription(description string) AssessmentBuilder
@@ -77,16 +131,6 @@ type AssessmentBuilder interface {
 // ConcreteAssessmentBuilder implements AssessmentBuilder
 type ConcreteAssessmentBuilder struct {
 	assessment *Assessment
-}
-
-// NewAssessmentBuilder creates a new builder instance
-func NewAssessmentBuilder(assessmentType AssessmentType) AssessmentBuilder {
-	return &ConcreteAssessmentBuilder{
-		assessment: &Assessment{
-			Type:   assessmentType,
-			Status: StatusDraft,
-		},
-	}
 }
 
 func (b *ConcreteAssessmentBuilder) SetTitle(title string) AssessmentBuilder {
@@ -119,7 +163,19 @@ func (b *ConcreteAssessmentBuilder) Build() *Assessment {
 	return b.assessment
 }
 
-// AssessmentFactory creates different types of assessments
+// NewAssessmentBuilder creates a new builder instance
+func NewAssessmentBuilder(assessmentType AssessmentType) AssessmentBuilder {
+	return &ConcreteAssessmentBuilder{
+		assessment: &Assessment{
+			Type:      assessmentType,
+			Status:    StatusDraft,
+			state:     &DraftState{},
+			observers: make([]AssessmentObserver, 0),
+		},
+	}
+}
+
+// AssessmentFactory for Factory pattern
 type AssessmentFactory struct{}
 
 func (f *AssessmentFactory) CreateAssessment(assessmentType AssessmentType) AssessmentBuilder {
@@ -131,21 +187,27 @@ func (a *Assessment) AddObserver(observer AssessmentObserver) {
 	a.observers = append(a.observers, observer)
 }
 
-// SetStatus updates the assessment status and notifies observers
+// SetStatus changes the assessment status using State pattern
 func (a *Assessment) SetStatus(newStatus AssessmentStatus) {
 	oldStatus := a.Status
-	a.Status = newStatus
-	a.notifyObservers(oldStatus)
+	if err := a.state.HandleStatusChange(a, newStatus); err == nil {
+		a.notifyObservers(oldStatus)
+	}
 }
 
-// notifyObservers notifies all observers about status change
+// Submit handles submission using State pattern
+func (a *Assessment) Submit(submission *AssessmentSubmission) error {
+	return a.state.HandleSubmission(a, submission)
+}
+
+// notifyObservers notifies all observers of status change
 func (a *Assessment) notifyObservers(oldStatus AssessmentStatus) {
 	for _, observer := range a.observers {
 		observer.OnStatusChanged(a, oldStatus)
 	}
 }
 
-// SubmissionStrategy interface for different submission handling strategies
+// SubmissionStrategy interface for Strategy pattern
 type SubmissionStrategy interface {
 	ValidateSubmission(submission *AssessmentSubmission) error
 	ProcessSubmission(submission *AssessmentSubmission) error
@@ -155,12 +217,14 @@ type SubmissionStrategy interface {
 type QuizSubmissionStrategy struct{}
 
 func (s *QuizSubmissionStrategy) ValidateSubmission(submission *AssessmentSubmission) error {
-	// Implement quiz-specific validation
+	if submission.Answers == "" {
+		return fmt.Errorf("quiz answers cannot be empty")
+	}
 	return nil
 }
 
 func (s *QuizSubmissionStrategy) ProcessSubmission(submission *AssessmentSubmission) error {
-	// Implement quiz-specific processing
+	// Implement quiz-specific processing logic
 	return nil
 }
 
@@ -168,11 +232,40 @@ func (s *QuizSubmissionStrategy) ProcessSubmission(submission *AssessmentSubmiss
 type AssignmentSubmissionStrategy struct{}
 
 func (s *AssignmentSubmissionStrategy) ValidateSubmission(submission *AssessmentSubmission) error {
-	// Implement assignment-specific validation
+	if submission.Answers == "" {
+		return fmt.Errorf("assignment submission cannot be empty")
+	}
 	return nil
 }
 
 func (s *AssignmentSubmissionStrategy) ProcessSubmission(submission *AssessmentSubmission) error {
-	// Implement assignment-specific processing
+	// Implement assignment-specific processing logic
 	return nil
+}
+
+// AssessmentDecorator interface for Decorator pattern
+type AssessmentDecorator interface {
+	GetAssessment() *Assessment
+	GetDescription() string
+}
+
+// TimedAssessmentDecorator adds time limit functionality
+type TimedAssessmentDecorator struct {
+	assessment *Assessment
+	timeLimit  time.Duration
+}
+
+func NewTimedAssessmentDecorator(assessment *Assessment, timeLimit time.Duration) AssessmentDecorator {
+	return &TimedAssessmentDecorator{
+		assessment: assessment,
+		timeLimit:  timeLimit,
+	}
+}
+
+func (d *TimedAssessmentDecorator) GetAssessment() *Assessment {
+	return d.assessment
+}
+
+func (d *TimedAssessmentDecorator) GetDescription() string {
+	return fmt.Sprintf("%s (Time Limit: %v)", d.assessment.Description, d.timeLimit)
 }
