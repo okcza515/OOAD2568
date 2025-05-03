@@ -5,6 +5,7 @@ package migration
 import (
 	"ModEd/core"
 	"fmt"
+
 	"github.com/cockroachdb/errors"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -72,7 +73,7 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 
 	m.DB = db
 
-	err = m.migrateToDB()
+	err = m.MigrateToDB()
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +91,7 @@ func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *Migratio
 	return m
 }
 
-func (m *MigrationManager) migrateToDB() error {
+func (m *MigrationManager) MigrateToDB() error {
 	var modelsToMigrate []interface{}
 	for i := range m.models {
 		if m.DB.Migrator().HasTable(m.models[i]) {
