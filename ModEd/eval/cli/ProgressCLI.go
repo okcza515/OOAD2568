@@ -15,10 +15,36 @@ func RunProgressCLI(db *gorm.DB) {
 
 	for {
 		fmt.Println("\nProgress CLI")
-		fmt.Println("1. Get All Progress")
-		fmt.Println("2. Get Progress By Student Code")
-		fmt.Println("3. Get Progress By Status")
-		fmt.Println("4. Get Submit Count By AssignmentID")
+		fmt.Println("1. Assignment Progress")
+		fmt.Println("2. Quiz Progress")
+		fmt.Println("3. Exit")
+		fmt.Print("Enter your choice: ")
+
+		var mainChoice int
+		fmt.Scan(&mainChoice)
+
+		switch mainChoice {
+		case 1:
+			handleAssignmentProgress(ProgressController)
+		case 2:
+			handleQuizProgress(ProgressController)
+		case 3:
+			fmt.Println("Exit")
+			return
+		default:
+			fmt.Println("Invalid choice")
+		}
+	}
+}
+
+func handleAssignmentProgress(controller *controllerProgress.ProgressController) {
+	for {
+		fmt.Println("\nAssignment Progress Menu")
+		fmt.Println("1. Get All Assignment Progress")
+		fmt.Println("2. Get Assignment Progress By Student Code")
+		fmt.Println("3. Get Assignment Progress By Status")
+		fmt.Println("4. Get Assignment Submit Count")
+		fmt.Println("5. Back")
 		fmt.Print("Enter your choice: ")
 
 		var choice int
@@ -26,112 +52,206 @@ func RunProgressCLI(db *gorm.DB) {
 
 		switch choice {
 		case 1:
-			DisplayAllProgress(ProgressController)
+			DisplayAllProgress(controller, true)
 		case 2:
-			DisplayProgressByStudentCode(ProgressController)
+			DisplayProgressByStudentCode(controller, true)
 		case 3:
-			DisplayProgressByStatus(ProgressController)
+			DisplayProgressByStatus(controller, true)
 		case 4:
-			DisplaySubmitCountByAssignmentID(ProgressController)
+			DisplayAssignmentSubmitCount(controller)
 		case 5:
-			fmt.Println("Exit")
 			return
 		default:
-			fmt.Println("This Number isn't included in choices.")
+			fmt.Println("Invalid choice")
 		}
 	}
 }
 
-func DisplayAllProgress(controller *controllerProgress.ProgressController) {
-	AssignmentId, err := util.PromptUint("Enter Assignment ID: ")
-	if err != nil {
-		fmt.Println("This Assignment ID doesn't exist.", err)
-		return
-	}
+func handleQuizProgress(controller *controllerProgress.ProgressController) {
+	for {
+		fmt.Println("\nQuiz Progress Menu")
+		fmt.Println("1. Get All Quiz Progress")
+		fmt.Println("2. Get Quiz Progress By Student Code")
+		fmt.Println("3. Get Quiz Progress By Status")
+		fmt.Println("4. Get Quiz Submit Count")
+		fmt.Println("5. Back")
+		fmt.Print("Enter your choice: ")
 
-	progressList, err := controller.GetAllProgress(uint(AssignmentId))
-	if err != nil {
-		fmt.Println("Error fetching datas", err)
-		return
-	}
+		var choice int
+		fmt.Scan(&choice)
 
-	fmt.Println("\nAll students assignment progress.")
-	fmt.Println("-----------------------------------------------------")
-	for _, p := range progressList {
-		fmt.Printf("Student ID: %s | Assignment ID: %d | Assignment Title: %s | Status: %s | Last Update: %v",
-			p.StudentCode.StudentCode, p.AssignmentId.AssignmentId, p.Title.Title, p.Status.Status, p.LastUpdate.Format("2006-01-02"))
+		switch choice {
+		case 1:
+			DisplayAllProgress(controller, false)
+		case 2:
+			DisplayProgressByStudentCode(controller, false)
+		case 3:
+			DisplayProgressByStatus(controller, false)
+		case 4:
+			DisplayQuizSubmitCount(controller)
+		case 5:
+			return
+		default:
+			fmt.Println("Invalid choice")
+		}
 	}
 }
 
-func DisplayProgressByStudentCode(controller *controllerProgress.ProgressController) {
-	AssignmentId, err := util.PromptUint("Enter Assignment ID: ")
-	StudentCode := util.PromptString("Enter Student ID: ")
+func DisplayAllProgress(controller *controllerProgress.ProgressController, isAssignment bool) {
+	var id uint64
+	var err error
 
-	if err != nil {
-		fmt.Println("Assignment ID doesn't exist.", err)
-		return
+	if isAssignment {
+		id, err = util.PromptUint("Enter Assignment ID: ")
+		if err != nil {
+			fmt.Println("Invalid Assignment ID:", err)
+			return
+		}
+		progressList, err := controller.GetAllProgress(uint(id), 0)
+		if err != nil {
+			fmt.Println("Error fetching data:", err)
+			return
+		}
+		displayProgressList(progressList, true)
+	} else {
+		id, err = util.PromptUint("Enter Quiz ID: ")
+		if err != nil {
+			fmt.Println("Invalid Quiz ID:", err)
+			return
+		}
+		progressList, err := controller.GetAllProgress(0, uint(id))
+		if err != nil {
+			fmt.Println("Error fetching data:", err)
+			return
+		}
+		displayProgressList(progressList, false)
+	}
+}
+
+func DisplayProgressByStudentCode(controller *controllerProgress.ProgressController, isAssignment bool) {
+	var id uint64
+	var err error
+
+	if isAssignment {
+		id, err = util.PromptUint("Enter Assignment ID: ")
+		if err != nil {
+			fmt.Println("Invalid Assignment ID:", err)
+			return
+		}
+	} else {
+		id, err = util.PromptUint("Enter Quiz ID: ")
+		if err != nil {
+			fmt.Println("Invalid Quiz ID:", err)
+			return
+		}
 	}
 
-	progressList, err := controller.GetProgressByStudentCode(uint(AssignmentId), StudentCode)
+	StudentCode := util.PromptString("Enter Student Code: ")
+
+	var progressList []controllerProgress.Progress
+	if isAssignment {
+		progressList, err = controller.GetProgressByStudentCode(uint(id), 0, StudentCode)
+	} else {
+		progressList, err = controller.GetProgressByStudentCode(0, uint(id), StudentCode)
+	}
+
 	if err != nil {
-		fmt.Println("Error fetching data.", err)
+		fmt.Println("Error fetching data:", err)
 		return
 	}
 
 	if len(progressList) == 0 {
-		fmt.Println("Student ID doesn't exist.:", StudentCode)
+		fmt.Println("No progress found for student:", StudentCode)
 		return
 	}
 
-	fmt.Println("\nDisplaying progress of the selected student for the given Assignment ID:")
-	fmt.Println("-----------------------------------------------------")
-	for _, p := range progressList {
-		fmt.Printf("Student ID: %s | Assignment ID: %d | Assignment Title: %s | Status: %s | Last Update: %v",
-			p.StudentCode.StudentCode, p.AssignmentId.AssignmentId, p.Title.Title, p.Status.Status, p.LastUpdate.Format("2006-01-02"))
-	}
+	displayProgressList(progressList, isAssignment)
 }
 
-func DisplayProgressByStatus(controller *controllerProgress.ProgressController) {
-	AssignmentId, err := util.PromptUint("Enter Assignment ID: ")
-	Status := util.PromptString("Enter student assignment Status: ")
+func DisplayProgressByStatus(controller *controllerProgress.ProgressController, isAssignment bool) {
+	var id uint64
+	var err error
 
-	if err != nil {
-		fmt.Println("Assignment ID doesn't exist.", err)
-		return
+	if isAssignment {
+		id, err = util.PromptUint("Enter Assignment ID: ")
+		if err != nil {
+			fmt.Println("Invalid Assignment ID:", err)
+			return
+		}
+	} else {
+		id, err = util.PromptUint("Enter Quiz ID: ")
+		if err != nil {
+			fmt.Println("Invalid Quiz ID:", err)
+			return
+		}
 	}
 
-	progressList, err := controller.GetProgressByStatus(uint(AssignmentId), Status)
+	fmt.Println("Status options: completed, in_progress, not_started")
+	Status := util.PromptString("Enter status: ")
+
+	var progressList []controllerProgress.Progress
+	if isAssignment {
+		progressList, err = controller.GetProgressByStatus(uint(id), 0, Status)
+	} else {
+		progressList, err = controller.GetProgressByStatus(0, uint(id), Status)
+	}
+
 	if err != nil {
-		fmt.Println("Error fetching data.", err)
+		fmt.Println("Error fetching data:", err)
 		return
 	}
 
 	if len(progressList) == 0 {
-		fmt.Println("No progress found for status.", Status)
+		fmt.Println("No progress found with status:", Status)
 		return
 	}
 
-	fmt.Printf("\nDisplaying progress for Assignment ID %d with status '%s':\n", AssignmentId, Status)
+	displayProgressList(progressList, isAssignment)
+}
+
+func displayProgressList(progressList []controllerProgress.Progress, isAssignment bool) {
+	fmt.Println("\nProgress List:")
 	fmt.Println("-----------------------------------------------------")
 	for _, p := range progressList {
-		fmt.Printf("Student ID: %s | Assignment ID: %d | Assignment Title: %s | Status: %s | Last Update: %v",
-			p.StudentCode.StudentCode, p.AssignmentId.AssignmentId, p.Title.Title, p.Status.Status, p.LastUpdate.Format("2006-01-02"))
+		fmt.Printf("Student Code: %s\n", p.StudentCode.StudentCode)
+		if isAssignment {
+			fmt.Printf("Assignment ID: %d | Status: %s\n", p.AssignmentId, p.AssignmentStatus)
+		} else {
+			fmt.Printf("Quiz ID: %d | Status: %s\n", p.QuizId, p.QuizStatus)
+		}
+		fmt.Printf("Last Update: %v | Total Submit: %d\n\n",
+			p.LastUpdate.Format("2006-01-02 15:04:05"), p.TotalSubmit)
 	}
 }
 
-func DisplaySubmitCountByAssignmentID(controller *controllerProgress.ProgressController) {
-	AssignmentId, err := util.PromptUint("Enter Assignment ID: ")
-
+func DisplayAssignmentSubmitCount(controller *controllerProgress.ProgressController) {
+	id, err := util.PromptUint("Enter Assignment ID: ")
 	if err != nil {
-		fmt.Println("This Assignment ID doesn't exist.", err)
+		fmt.Println("Invalid Assignment ID:", err)
 		return
 	}
 
-	count, err := controller.GetSubmitCountByAssignmentID(uint(AssignmentId))
+	count, err := controller.GetSubmitCountByAssignmentID(uint(id))
 	if err != nil {
-		fmt.Println("Error", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Printf("Total Submission for Assignment %d is %d.", AssignmentId, count)
+	fmt.Printf("Total submissions for Assignment %d: %d\n", id, count)
+}
+
+func DisplayQuizSubmitCount(controller *controllerProgress.ProgressController) {
+	id, err := util.PromptUint("Enter Quiz ID: ")
+	if err != nil {
+		fmt.Println("Invalid Quiz ID:", err)
+		return
+	}
+
+	count, err := controller.GetSubmitCountByQuizID(uint(id))
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Printf("Total submissions for Quiz %d: %d\n", id, count)
 }
