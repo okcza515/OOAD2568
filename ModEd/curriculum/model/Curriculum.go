@@ -15,15 +15,14 @@ type Curriculum struct {
 	Name         string `gorm:"not null" csv:"name" json:"name"`
 	StartYear    int    `gorm:"not null" csv:"start_year" json:"start_year"`
 	EndYear      int    `gorm:"not null" csv:"end_year" json:"end_year"`
-	// TODO: Removable DepartmentName?
-	DepartmentName string `gorm:"not null" csv:"department_name" json:"department_name"`
 
-	Department  model.Department  `gorm:"-" csv:"-" json:"-"`
-	ProgramType model.ProgramType `gorm:"type:text;not null" csv:"program_type" json:"program_type"`
-	CourseList  []Course          `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-"`
-	CreatedAt   time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
-	UpdatedAt   time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
-	DeletedAt   gorm.DeletedAt    `csv:"-" json:"-"`
+	DepartmentId uint              `gorm:"not null" csv:"department_id" json:"department_id"`
+	Department   model.Department  `gorm:"foreignKey:ID;references:DepartmentId" csv:"-" json:"-"`
+	ProgramType  model.ProgramType `gorm:"type:text;not null" csv:"program_type" json:"program_type"`
+	CourseList   []Course          `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-"`
+	CreatedAt    time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
+	UpdatedAt    time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
+	DeletedAt    gorm.DeletedAt    `csv:"-" json:"-"`
 	*core.SerializableRecord
 }
 
@@ -50,6 +49,16 @@ func (c *Curriculum) Validate() error {
 
 // Testing functions
 func (c *Curriculum) Print() {
-	fmt.Printf("Curriculum Id: %d, Name: %s, Start Year: %d, End Year: %d, Department Name: %s, Program Type: %s\n",
-		c.CurriculumId, c.Name, c.StartYear, c.EndYear, c.DepartmentName, c.ProgramType)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("CURRICULUM DETAILS %-58s\n", "")
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("ID:          %-60d\n", c.CurriculumId)
+	fmt.Printf("Name:        %-60s\n", c.Name)
+	fmt.Printf("Start Year:  %-60d\n", c.StartYear)
+	fmt.Printf("End Year:    %-60d\n", c.EndYear)
+	fmt.Printf("Department Id: %-60d\n", c.DepartmentId)
+	fmt.Printf("Program Type: %-60s\n", c.ProgramType)
+	fmt.Printf("Created At:  %-60s\n", c.CreatedAt)
+	fmt.Printf("Updated At:  %-60s\n", c.UpdatedAt)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
 }

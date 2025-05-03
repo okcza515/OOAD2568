@@ -3,45 +3,74 @@ package curriculum
 
 import (
 	"ModEd/curriculum/cli/curriculum/handler"
-	curriculumController "ModEd/curriculum/controller"
-	"ModEd/curriculum/utils"
+	"ModEd/curriculum/controller"
+	"errors"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
-func RunCurriculumModuleCLI(
-	db *gorm.DB,
-	courseController curriculumController.CourseControllerInterface,
-	classController curriculumController.ClassControllerInterface,
-	curriculumController curriculumController.CurriculumControllerInterface,
-) {
+type CurriculumCLIParams struct {
+	CurriculumController controller.CurriculumControllerInterface
+	CourseController     controller.CourseControllerInterface
+	ClassController      controller.ClassControllerInterface
+}
 
-	input := ""
-	for input != "exit" {
-		displayOptions()
-		choice := utils.GetUserChoice()
-		fmt.Println("choice: ", choice)
-		switch choice {
-		case "1":
-			handler.RunCurriculumCLIHandler(curriculumController)
-		case "2":
-			handler.RunCourseCLIHandler(courseController)
-		case "3":
-			handler.RunClassCLIHandler(classController)
-		case "0":
+func RunCurriculumModuleCLI(params *CurriculumCLIParams) {
+	curriculumCLI := newCurriculumCLI(params)
+	menuManager := handler.NewMenuManager(map[string]func() error{
+		"1": curriculumCLI.RunCurriculumCLIHandler,
+		"2": curriculumCLI.RunCourseCLIHandler,
+		"3": curriculumCLI.RunClassCLIHandler,
+		"0": func() error {
 			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option. Please try again.")
+			return handler.ExitCommand
+		},
+	})
+
+	for {
+		choice := menuManager.HandlerUserInput(printCurriculumMenu)
+		_, ok := menuManager.Actions[choice]
+		if !ok {
+			fmt.Println("Invalid option")
+			continue
+		}
+
+		err := menuManager.Execute(choice)
+		if err != nil {
+			if errors.Is(err, handler.ExitCommand) {
+				return
+			}
+			fmt.Println("Error executing choice:", err)
 		}
 	}
 }
 
-func displayOptions() {
+func printCurriculumMenu() {
 	fmt.Println("\nCurriculum Module Menu:")
 	fmt.Println("1. Curriculum")
 	fmt.Println("2. Course")
 	fmt.Println("3. Class")
 	fmt.Println("0. Exit")
+}
+
+func newCurriculumCLI(params *CurriculumCLIParams) *CurriculumCLIParams {
+	return &CurriculumCLIParams{
+		CurriculumController: params.CurriculumController,
+		CourseController:     params.CourseController,
+		ClassController:      params.ClassController,
+	}
+}
+
+func (c *CurriculumCLIParams) RunCurriculumCLIHandler() error {
+	handler.RunCurriculumCLIHandler(c.CurriculumController)
+	return nil
+}
+
+func (c *CurriculumCLIParams) RunCourseCLIHandler() error {
+	handler.RunCourseCLIHandler(c.CourseController)
+	return nil
+}
+
+func (c *CurriculumCLIParams) RunClassCLIHandler() error {
+	handler.RunClassCLIHandler(c.ClassController)
+	return nil
 }

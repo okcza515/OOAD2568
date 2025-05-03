@@ -49,6 +49,16 @@ func (c *Course) Validate() error {
 
 // Testing functions
 func (c *Course) Print() {
-	fmt.Printf("Course Id: %d, Name: %s, Description: %s, Curriculum Id: %d, Optional: %t, Course Status: %d\n",
-		c.CourseId, c.Name, c.Description, c.CurriculumId, c.Optional, c.CourseStatus)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("COURSE DETAILS %-58s\n", "")
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("ID:          %-60d\n", c.CourseId)
+	fmt.Printf("Name:        %-60s\n", c.Name)
+	fmt.Printf("Description: %-60s\n", c.Description)
+	fmt.Printf("Curriculum:  %-60d\n", c.CurriculumId)
+	fmt.Printf("Optional:    %-60t\n", c.Optional)
+	fmt.Printf("Status:      %-60s\n", CourseStatusLabel[c.CourseStatus])
+	fmt.Printf("Created At:  %-60s\n", c.CreatedAt)
+	fmt.Printf("Updated At:  %-60s\n", c.UpdatedAt)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
 }

@@ -4,7 +4,10 @@ package handler
 import (
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
+	"errors"
 	"fmt"
+	"strconv"
+	"time"
 )
 
 const (
@@ -12,43 +15,34 @@ const (
 )
 
 func RunClassCLIHandler(classController controller.ClassControllerInterface) {
-	for {
-		printClassMenu()
-		choice := utils.GetUserChoice()
+	handler := newClassHandler(classController)
 
-		switch choice {
-		case "1":
-			dataPath := utils.GetInputDataPath("class", defaultClassDataPath)
-			_, err := classController.CreateSeedClass(dataPath)
-			if err != nil {
-				fmt.Println("Error creating seed class:", err)
-			}
-			return
-		case "2":
-			err := listClasses(classController)
-			if err != nil {
-				fmt.Println("Error listing classes:", err)
-			}
-		case "3":
-			err := getClassById(classController)
-			if err != nil {
-				fmt.Println("Error getting class:", err)
-			}
-		case "4":
-			err := updateClassById(classController)
-			if err != nil {
-				fmt.Println("Error updating class:", err)
-			}
-		case "5":
-			err := deleteClassById(classController)
-			if err != nil {
-				fmt.Println("Error deleting class:", err)
-			}
-		case "0":
+	menuManager := NewMenuManager(map[string]func() error{
+		"1": handler.createSeedClass,
+		"2": handler.listClasses,
+		"3": handler.getClassById,
+		"4": handler.updateClassById,
+		"5": handler.deleteClassById,
+		"0": func() error {
 			fmt.Println("Exiting...")
-			return
-		default:
+			return ExitCommand
+		},
+	})
+
+	for {
+		choice := menuManager.HandlerUserInput(printClassMenu)
+		_, ok := menuManager.Actions[choice]
+		if !ok {
 			fmt.Println("Invalid option")
+			continue
+		}
+
+		err := menuManager.Execute(choice)
+		if err != nil {
+			if errors.Is(err, ExitCommand) {
+				return
+			}
+			fmt.Println("Error executing choice:", err)
 		}
 	}
 }
@@ -63,8 +57,28 @@ func printClassMenu() {
 	fmt.Println("0. Exit")
 }
 
-func listClasses(classController controller.ClassControllerInterface) (err error) {
-	classes, err := classController.GetClasses()
+type classHandler struct {
+	classController controller.ClassControllerInterface
+}
+
+func newClassHandler(classController controller.ClassControllerInterface) *classHandler {
+	return &classHandler{
+		classController: classController,
+	}
+}
+
+func (h *classHandler) createSeedClass() (err error) {
+	dataPath := utils.GetInputDataPath("class", defaultClassDataPath)
+	_, err = h.classController.CreateSeedClass(dataPath)
+	if err != nil {
+		fmt.Println("Error creating seed class:", err)
+		return err
+	}
+	return nil
+}
+
+func (h *classHandler) listClasses() (err error) {
+	classes, err := h.classController.GetClasses()
 	if err != nil {
 		fmt.Println("Error getting classes:", err)
 		return err
@@ -76,9 +90,9 @@ func listClasses(classController controller.ClassControllerInterface) (err error
 	return nil
 }
 
-func getClassById(classController controller.ClassControllerInterface) (err error) {
+func (h *classHandler) getClassById() (err error) {
 	classId := utils.GetUserInputUint("Enter the class ID: ")
-	class, err := classController.GetClass(classId)
+	class, err := h.classController.GetClass(classId)
 	if err != nil {
 		fmt.Println("Error getting class:", err)
 		return err
@@ -87,13 +101,83 @@ func getClassById(classController controller.ClassControllerInterface) (err erro
 	return nil
 }
 
-func updateClassById(classController controller.ClassControllerInterface) (err error) {
-	//TODO: Implement update class by ID
+func (h *classHandler) updateClassById() (err error) {
+	classId := utils.GetUserInputUint("Enter the class ID: ")
+	class, err := h.classController.GetClass(classId)
+	if err != nil {
+		fmt.Println("Error getting class:", err)
+		return err
+	}
+
+	fmt.Println("\nCurrent class information:")
+	class.Print()
+
+	fmt.Println("\nEnter new values (leave blank to keep current value):")
+
+	// Update CourseId
+	newCourseId := utils.GetUserInput(fmt.Sprintf("Course ID [%d]: ", class.CourseId))
+	if newCourseId != "" {
+		courseId, err := strconv.Atoi(newCourseId)
+		if err == nil {
+			class.CourseId = uint(courseId)
+		} else {
+			fmt.Println("Invalid course ID format, keeping current value")
+		}
+	}
+
+	// Update Section
+	newSection := utils.GetUserInput(fmt.Sprintf("Section [%d]: ", class.Section))
+	if newSection != "" {
+		section, err := strconv.Atoi(newSection)
+		if err == nil {
+			class.Section = section
+		} else {
+			fmt.Println("Invalid section format, keeping current value")
+		}
+	}
+
+	if !class.Schedule.IsZero() {
+		newSchedule := utils.GetUserInput(fmt.Sprintf("Schedule [%s]: ", class.Schedule.Format("2006-01-02 15:04:05")))
+		if newSchedule != "" {
+			schedule, err := time.Parse("2006-01-02 15:04:05", newSchedule)
+			if err == nil {
+				class.Schedule = schedule
+			} else {
+				fmt.Println("Invalid schedule format, keeping current value. Use format: YYYY-MM-DD HH:MM:SS")
+			}
+		}
+	} else {
+		newSchedule := utils.GetUserInput("Schedule [none]: ")
+		if newSchedule != "" {
+			schedule, err := time.Parse("2006-01-02 15:04:05", newSchedule)
+			if err == nil {
+				class.Schedule = schedule
+			} else {
+				fmt.Println("Invalid schedule format, keeping no schedule. Use format: YYYY-MM-DD HH:MM:SS")
+			}
+		}
+	}
+
+	confirm := utils.GetUserInput("Are you sure you want to update this class? (y/n): ")
+	if confirm != "y" {
+		fmt.Println("Update cancelled.")
+		return nil
+	}
+
+	updatedClass, err := h.classController.UpdateClass(class)
+	if err != nil {
+		fmt.Println("Error updating class:", err)
+		return err
+	}
+
+	fmt.Println("Class updated successfully:")
+	updatedClass.Print()
+
 	return nil
 }
 
-func deleteClassById(classController controller.ClassControllerInterface) (err error) {
-	classes, err := classController.GetClasses()
+func (h *classHandler) deleteClassById() (err error) {
+	classes, err := h.classController.GetClasses()
 	if err != nil {
 		fmt.Println("Error getting classes:", err)
 		return err
@@ -111,7 +195,7 @@ func deleteClassById(classController controller.ClassControllerInterface) (err e
 		return nil
 	}
 
-	_, err = classController.DeleteClass(classId)
+	_, err = h.classController.DeleteClass(classId)
 	if err != nil {
 		fmt.Println("Error deleting class:", err)
 		return err

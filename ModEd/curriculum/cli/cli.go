@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	defaultDBPath = "../../data/curriculum.db"
+	defaultDBPath = "../data/curriculum.db"
 )
 
 type Command interface {
@@ -30,7 +30,11 @@ type CurriculumCommand struct {
 }
 
 func (c *CurriculumCommand) Execute() error {
-	curriculum.RunCurriculumModuleCLI(c.db, c.courseController, c.classController, c.curriculumController)
+	curriculum.RunCurriculumModuleCLI(&curriculum.CurriculumCLIParams{
+		CourseController:     c.courseController,
+		ClassController:      c.classController,
+		CurriculumController: c.curriculumController,
+	})
 	return nil
 }
 

@@ -3,8 +3,11 @@ package handler
 
 import (
 	controller "ModEd/curriculum/controller"
+	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
+	"errors"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -12,43 +15,34 @@ const (
 )
 
 func RunCourseCLIHandler(courseController controller.CourseControllerInterface) {
-	for {
-		printCourseMenu()
-		choice := utils.GetUserChoice()
+	handler := newCourseHandler(courseController)
 
-		switch choice {
-		case "1":
-			dataPath := utils.GetInputDataPath("course", defaultCourseDataPath)
-			_, err := courseController.CreateSeedCourse(dataPath)
-			if err != nil {
-				fmt.Println("Error creating seed course:", err)
-			}
-			return
-		case "2":
-			err := listCourses(courseController)
-			if err != nil {
-				fmt.Println("Error listing courses:", err)
-			}
-		case "3":
-			err := getCourseById(courseController)
-			if err != nil {
-				fmt.Println("Error getting course:", err)
-			}
-		case "4":
-			err := updateCourseById(courseController)
-			if err != nil {
-				fmt.Println("Error updating course:", err)
-			}
-		case "5":
-			err := deleteCourseById(courseController)
-			if err != nil {
-				fmt.Println("Error deleting course:", err)
-			}
-		case "0":
+	menuManager := NewMenuManager(map[string]func() error{
+		"1": handler.createSeedCourse,
+		"2": handler.listCourses,
+		"3": handler.getCourseById,
+		"4": handler.updateCourseById,
+		"5": handler.deleteCourseById,
+		"0": func() error {
 			fmt.Println("Exiting...")
-			return
-		default:
+			return ExitCommand
+		},
+	})
+
+	for {
+		choice := menuManager.HandlerUserInput(printCourseMenu)
+		_, ok := menuManager.Actions[choice]
+		if !ok {
 			fmt.Println("Invalid option")
+			continue
+		}
+
+		err := menuManager.Execute(choice)
+		if err != nil {
+			if errors.Is(err, ExitCommand) {
+				return
+			}
+			fmt.Println("Error executing choice:", err)
 		}
 	}
 }
@@ -63,8 +57,28 @@ func printCourseMenu() {
 	fmt.Println("0. Exit")
 }
 
-func listCourses(courseController controller.CourseControllerInterface) (err error) {
-	courses, err := courseController.GetCourses()
+type courseHandler struct {
+	courseController controller.CourseControllerInterface
+}
+
+func newCourseHandler(courseController controller.CourseControllerInterface) *courseHandler {
+	return &courseHandler{
+		courseController: courseController,
+	}
+}
+
+func (h *courseHandler) createSeedCourse() (err error) {
+	dataPath := utils.GetInputDataPath("course", defaultCourseDataPath)
+	_, err = h.courseController.CreateSeedCourse(dataPath)
+	if err != nil {
+		fmt.Println("Error creating seed course:", err)
+		return err
+	}
+	return nil
+}
+
+func (h *courseHandler) listCourses() (err error) {
+	courses, err := h.courseController.GetCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)
 		return err
@@ -76,9 +90,9 @@ func listCourses(courseController controller.CourseControllerInterface) (err err
 	return nil
 }
 
-func getCourseById(courseController controller.CourseControllerInterface) (err error) {
+func (h *courseHandler) getCourseById() (err error) {
 	courseId := utils.GetUserInputUint("Enter the course ID: ")
-	course, err := courseController.GetCourse(courseId)
+	course, err := h.courseController.GetCourse(courseId)
 	if err != nil {
 		fmt.Println("Error getting course:", err)
 		return err
@@ -87,13 +101,86 @@ func getCourseById(courseController controller.CourseControllerInterface) (err e
 	return nil
 }
 
-func updateCourseById(courseController controller.CourseControllerInterface) (err error) {
-	//TODO: Implement update course logic
+func (h *courseHandler) updateCourseById() (err error) {
+	courseId := utils.GetUserInputUint("Enter the course ID: ")
+	course, err := h.courseController.GetCourse(courseId)
+	if err != nil {
+		fmt.Println("Error getting course:", err)
+		return err
+	}
+
+	fmt.Println("\nCurrent course information:")
+	course.Print()
+
+	fmt.Println("\nEnter new values (leave blank to keep current value):")
+
+	newName := utils.GetUserInput(fmt.Sprintf("Name [%s]: ", course.Name))
+	if newName != "" {
+		course.Name = newName
+	}
+
+	newDescription := utils.GetUserInput(fmt.Sprintf("Description [%s]: ", course.Description))
+	if newDescription != "" {
+		course.Description = newDescription
+	}
+
+	newCurriculumId := utils.GetUserInput(fmt.Sprintf("Curriculum ID [%d]: ", course.CurriculumId))
+	if newCurriculumId != "" {
+		curriculumId, err := strconv.Atoi(newCurriculumId)
+		if err == nil {
+			course.CurriculumId = uint(curriculumId)
+		} else {
+			fmt.Println("Invalid curriculum ID format, keeping current value")
+		}
+	}
+
+	// Update Optional flag
+	fmt.Println("Is this course optional?")
+	fmt.Println("1. Yes")
+	fmt.Println("2. No")
+	optionalChoice := utils.GetUserInput(fmt.Sprintf("Optional [%v] (1/2): ", course.Optional))
+	if optionalChoice == "1" {
+		course.Optional = true
+	} else if optionalChoice == "2" {
+		course.Optional = false
+	}
+
+	// Update CourseStatus
+	fmt.Println("Course Status options:")
+	for key, value := range model.CourseStatusLabel {
+		fmt.Printf("%d. %s\n", key, value)
+	}
+	statusChoice := utils.GetUserInput(fmt.Sprintf("Course Status [%s]: ", course.CourseStatus))
+	if statusChoice != "" {
+		status, err := strconv.Atoi(statusChoice)
+		if err == nil && status >= 1 && status <= 2 {
+			course.CourseStatus = model.CourseStatus(status)
+		} else {
+			fmt.Println("Invalid course status, keeping current value")
+		}
+	}
+
+	// Confirm update
+	confirm := utils.GetUserInput("Are you sure you want to update this course? (y/n): ")
+	if confirm != "y" {
+		fmt.Println("Update cancelled.")
+		return nil
+	}
+
+	updatedCourse, err := h.courseController.UpdateCourse(course)
+	if err != nil {
+		fmt.Println("Error updating course:", err)
+		return err
+	}
+
+	fmt.Println("Course updated successfully:")
+	updatedCourse.Print()
+
 	return nil
 }
 
-func deleteCourseById(courseController controller.CourseControllerInterface) (err error) {
-	courses, err := courseController.GetCourses()
+func (h *courseHandler) deleteCourseById() (err error) {
+	courses, err := h.courseController.GetCourses()
 	if err != nil {
 		fmt.Println("Error getting courses:", err)
 		return err
@@ -111,7 +198,7 @@ func deleteCourseById(courseController controller.CourseControllerInterface) (er
 		return nil
 	}
 
-	_, err = courseController.DeleteCourse(courseId)
+	_, err = h.courseController.DeleteCourse(courseId)
 	if err != nil {
 		fmt.Println("Error deleting course:", err)
 		return err
