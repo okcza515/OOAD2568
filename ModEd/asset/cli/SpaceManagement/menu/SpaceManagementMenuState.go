@@ -14,6 +14,8 @@ type SpaceManagementState struct {
 	//Add more menu here
 	bookingMenu *BookingMenuState
 	roomMenu *RoomMenuState
+	//instrumentManagementMenu *InstrumentManagementMenuState
+	//supplyManagementMenu *SupplyManagementMenuState
 }
 
 func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *SpaceManagementState {
@@ -23,6 +25,8 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 
 	spaceManagementMenu.roomMenu = NewRoomMenuState(db, manager, spaceManagementMenu)
 	spaceManagementMenu.bookingMenu = NewBookingMenuState(db, manager, spaceManagementMenu)
+	//spaceManagementMenu.instrumentManagementMenu = NewInstrumentManagementMenuState(db, manager, spaceManagementMenu)
+	//spaceManagementMenu.supplyManagementMenu = NewSupplyManagementMenuState(db, manager, spaceManagementMenu)
 
 	return spaceManagementMenu
 }

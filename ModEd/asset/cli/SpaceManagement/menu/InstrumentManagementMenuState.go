@@ -1,15 +1,23 @@
 // MEP-1013
-package menu
+  package menu
 
 // import (
 // 	controller "ModEd/asset/controller"
 // 	model "ModEd/asset/model"
 // 	"ModEd/asset/util"
+// 	"ModEd/core/cli"
+// 	"ModEd/core/handler"
 // 	"fmt"
+// 	"gorm.io/gorm"
 // 	"strconv"
 // )
 
-// func printInstrumentManagementOptions() {
+// type InstrumentManagementMenuState struct{
+// 	manager			*cli.CLIMenuStateManager //changing the state(handler)
+// 	handlerContext	*handler.HandlerContext //selecting the func(strategy)
+// }
+
+// func (menu *InstrumentManagementMenuState) Render() {
 // 	fmt.Println("========== Instrument Management ==========")
 // 	fmt.Println("Please select your action")
 // 	fmt.Println("1. See all Instrument Management")
@@ -20,6 +28,40 @@ package menu
 // 	fmt.Println("6. Delete the Instrument Management")
 // 	fmt.Println("Type 'back' to return to previous menu")
 // 	fmt.Println("========================================")
+// }
+
+// func (menu *InstrumentManagementMenuState) HandleUserInput(input string) error{
+// 	err := menu.handlerContext.HandleInput(input)
+// 	if err != nil {
+// 		fmt.Println("Error handling user input", err)
+// 	}
+// 	if input == "back" {
+
+// 		util.PressEnterToContinue()
+
+// 	}
+// 	return err
+// }
+
+// func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManagementMenu *SpaceManagementState) *InstrumentManagementMenuState {
+// 	if db == nil {
+// 		fmt.Println("Error: Database connection is nil")
+// 		return &InstrumentManagementMenuState{
+// 			manager:        manager,
+// 			handlerContext: handler.NewHandlerContext(),
+// 		}
+// 	}
+
+// 	controllerFacade := controller.GetSpaceManagementInstance(db)
+// 	if controllerFacade == nil {
+// 		fmt.Println("Error: Space Management Controller Facade is nil")
+// 		return &InstrumentManagementMenuState{
+// 			manager:        manager,
+// 			handlerContext: handler.NewHandlerContext(),
+// 		}
+// 	}
+
+
 // }
 
 // func InstrumentManagementHandler(facade *controller.SpaceManagementControllerFacade) {
