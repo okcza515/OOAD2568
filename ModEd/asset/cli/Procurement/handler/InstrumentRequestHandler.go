@@ -19,7 +19,6 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 		case "1":
 			fmt.Println("Create New Instrument Request")
 			deptID := util.GetUintInput("Enter Department ID: ")
-			// budgetapproverID := util.GetUintInput("Enter Approver ID: ")
 
 			newRequest := &model.InstrumentRequest{
 				DepartmentID: deptID,
@@ -29,22 +28,52 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)
 			if err != nil {
 				fmt.Println("Failed to create request:", err)
-			} else {
-				fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
+				WaitForEnter()
+				break
 			}
 
+			fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
+
 			newBudgetApproval := &model.BudgetApproval{
-				// ApproverID: budgetapproverID,
 				InstrumentRequestID: newRequest.InstrumentRequestID,
 				Status:              model.BudgetStatusPending,
 			}
 			err1 := facade.BudgetApproval.CreateBudgetRequest(newBudgetApproval)
-
 			if err1 != nil {
-				fmt.Println("Failed to create request:", err1)
+				fmt.Println("Failed to create budget approval:", err1)
 			} else {
 				fmt.Println("Budget Approval created with ID:", newBudgetApproval.InstrumentRequestID)
 			}
+
+			addMore := util.GetStringInput("\nDo you want to add instruments to this request now? (y/n): ")
+
+			for addMore == "y" || addMore == "Y" {
+				fmt.Println("\n--- Add Instrument ---")
+				label := util.GetStringInput("Enter Instrument Label: ")
+				desc := util.GetStringInput("Enter Description: ")
+				categoryID := util.GetUintInput("Enter Category ID: ")
+				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
+				quantity := util.GetUintInput("Enter Quantity: ")
+
+				detail := &model.InstrumentDetail{
+					InstrumentLabel:     label,
+					Description:         &desc,
+					CategoryID:          categoryID,
+					EstimatedPrice:      estimatedPrice,
+					Quantity:            int(quantity),
+					InstrumentRequestID: newRequest.InstrumentRequestID,
+				}
+
+				err := facade.RequestedItem.AddInstrumentToRequest(newRequest.InstrumentRequestID, detail)
+				if err != nil {
+					fmt.Println("Failed to add instrument:", err)
+				} else {
+					fmt.Println("Instrument added to request!")
+				}
+
+				addMore = util.GetStringInput("\nAdd another instrument? (y/n): ")
+			}
+
 			WaitForEnter()
 		case "2":
 			fmt.Println("List All Instrument Requests")
@@ -103,7 +132,26 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			WaitForEnter()
 		case "5":
-			fmt.Println("Show Instrument Request with Details")
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if err != nil {
+				fmt.Println("Failed to retrieve requests:", err)
+				WaitForEnter()
+				break
+			}
+
+			if len(*requests) == 0 {
+				fmt.Println("No instrument requests available.")
+				WaitForEnter()
+				break
+			}
+
+			fmt.Println("Available Instrument Requests:")
+			for _, request := range *requests {
+				fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+			}
+
+			fmt.Println()
+			fmt.Println("5: View Request with Instrument Details")
 			requestID := util.GetUintInput("Enter Instrument Request ID: ")
 
 			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
@@ -147,7 +195,7 @@ func printInstrumentRequestOption() {
 	fmt.Println("  2:\tList All Instrument Requests")
 	fmt.Println("  3:\tGet Instrument Request by ID")
 	fmt.Println("  4:\tAdd Instrument to Request")
-	fmt.Println("  5:\tShow Request with Details")
+	fmt.Println("  5:\tView Request with Instrument Details")
 	fmt.Println("  6:\tEdit Request by ID")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
