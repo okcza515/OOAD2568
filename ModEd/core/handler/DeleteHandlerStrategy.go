@@ -29,11 +29,11 @@ func (handler DeleteHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	fmt.Println(fmt.Sprintf("Total %v record(s)", len(records)))
+	fmt.Printf("Total %v record(s)\n", len(records))
 	fmt.Println()
 
 	for _, record := range records {
-		fmt.Println(record.ToString())
+		fmt.Println(record)
 	}
 
 	fmt.Print("Enter ID to delete: ")
