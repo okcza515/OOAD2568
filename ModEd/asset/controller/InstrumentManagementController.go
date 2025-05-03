@@ -4,18 +4,33 @@ package controller
 
 import (
 	model "ModEd/asset/model"
-	"errors"
-	"gorm.io/gorm"
 	"ModEd/core"
+	"ModEd/core/migration"
+	"errors"
+
+	"gorm.io/gorm"
 )
+
+type InstrumentManagementInterface interface {
+    GetAll() (*[]model.InstrumentManagement, error)
+    GetById(id uint) (*model.InstrumentManagement, error)
+    GetByRoomId(roomID uint) (*[]model.InstrumentManagement, error)
+    Create(payload *model.InstrumentManagement) error
+    Update(id uint, payload *model.InstrumentManagement) error
+    Delete(id uint) error
+}
 
 type InstrumentManagementController struct {
 	db *gorm.DB
 	*core.BaseController[model.InstrumentManagement]
 }
 
-func NewInstrumentManagementController(db *gorm.DB) *InstrumentManagementController {
-	return &InstrumentManagementController{BaseController: core.NewBaseController[model.InstrumentManagement](db)}
+func NewInstrumentManagementController() *InstrumentManagementController {
+	db := migration.GetInstance().DB
+	return &InstrumentManagementController{
+		db : db,
+		BaseController: core.NewBaseController[model.InstrumentManagement](db),
+	}
 }
 
 func (c *InstrumentManagementController) GetAll() (*[]model.InstrumentManagement, error) {

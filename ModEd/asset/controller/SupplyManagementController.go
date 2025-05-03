@@ -3,18 +3,33 @@ package controller
 
 import (
 	model "ModEd/asset/model"
-	"errors"
-	"gorm.io/gorm"
 	"ModEd/core"
+	"ModEd/core/migration"
+	"errors"
+
+	"gorm.io/gorm"
 )
+
+type SupplyManagementInterface interface {
+    GetAll() (*[]model.SupplyManagement, error)
+    GetById(id uint) (*model.SupplyManagement, error)
+    GetByRoomId(roomID uint) (*[]model.SupplyManagement, error)
+    Create(payload *model.SupplyManagement) error
+    Update(id uint, payload *model.SupplyManagement) error
+    Delete(id uint) error
+}
 
 type SupplyManagementController struct {
 	db *gorm.DB
 	*core.BaseController[model.SupplyManagement]
 }
 
-func NewSupplyManagementController(db *gorm.DB) *SupplyManagementController {
-	return &SupplyManagementController{BaseController: core.NewBaseController[model.SupplyManagement](db)}
+func NewSupplyManagementController() *SupplyManagementController {
+	db := migration.GetInstance().DB
+	return &SupplyManagementController{
+		db : db,
+		BaseController: core.NewBaseController[model.SupplyManagement](db),
+	}
 }
 
 func (c *SupplyManagementController) GetAll() (*[]model.SupplyManagement, error) {
