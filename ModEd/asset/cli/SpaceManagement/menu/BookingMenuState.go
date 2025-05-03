@@ -221,16 +221,16 @@ func (h *UpdateBookingHandler) Execute() error {
 	}
 	
 	fmt.Printf("Current User Role: %s\n", booking.UserRole)
-	fmt.Print("Enter new User Role (STUDENT/TEACHER/STAFF) (or press Enter to keep current): ")
+	fmt.Print("Enter new User Role (STUDENT/ADVISOR/ADMIN) (or press Enter to keep current): ")
 	newRole := util.GetCommandInput()
 	if newRole != "" {
 		newRole = strings.ToUpper(strings.TrimSpace(newRole))
 		switch newRole {
 		case "STUDENT":
 			booking.UserRole = model.ROLE_STUDENT
-		case "TEACHER":
+		case "ADVISOR":
 			booking.UserRole = model.ROLE_ADVISOR
-		case "STAFF":
+		case "ADMIN":
 			booking.UserRole = model.ROLE_ADMIN
 		default:
 			fmt.Println("Invalid role. Keeping current role.")
