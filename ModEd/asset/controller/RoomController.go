@@ -20,6 +20,7 @@ type RoomControllerInterface interface {
 	Insert(data model.Room) error
 	UpdateByID(data model.Room) error
 	DeleteByID(id uint) error
+	DeleteAll() error
 	InsertMany(data []model.Room) error
 
 	// addObserver(observer SpaceManagementObserverInterface[model.Room])
@@ -123,6 +124,19 @@ func (c *RoomController) DeleteByID(id uint) error {
 	}
 	result := c.db.Model(&existingRoom).UpdateColumn("DeletedAt", time.Now())
 	return result.Error
+}
+
+func (c *RoomController) DeleteAll() error {
+	rooms, err := c.List(nil)
+	if err != nil {
+		return err
+	}
+	for _, room := range rooms {
+		if err := c.DeleteByID(room.ID); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c *RoomController) InsertMany(data []model.Room) error {

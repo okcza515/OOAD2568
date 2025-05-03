@@ -13,7 +13,7 @@ type SpaceManagementState struct {
 
 	//Add more menu here
 	bookingMenu *BookingMenuState
-	roomMenu *RoomMenuState
+	roomMenu    *RoomMenuState
 	//instrumentManagementMenu *InstrumentManagementMenuState
 	//supplyManagementMenu *SupplyManagementMenuState
 }
@@ -42,7 +42,7 @@ func (menu *SpaceManagementState) Render() {
 	fmt.Println("  3:\tBooking Page")
 	fmt.Println("  4:\tPermanent Schedule Page")
 	fmt.Println("  5:\tRoom Page")
-	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
+	fmt.Println("  exit:\tExit the program (or Ctrl+C")
 	fmt.Println()
 }
 
@@ -59,7 +59,7 @@ func (menu *SpaceManagementState) HandleUserInput(input string) error {
 	case "5":
 		menu.manager.SetState(menu.roomMenu)
 	case "exit":
-		return nil
+		util.PrintByeBye()
 	default:
 		fmt.Println("Invalid input, please try again.")
 	}

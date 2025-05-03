@@ -2,8 +2,10 @@
 package controller
 
 import (
+	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
+	"ModEd/utils/deserializer"
 	"errors"
 
 	"gorm.io/gorm"
@@ -15,7 +17,7 @@ type SpaceManagementControllerManager struct {
 	SupplyManagement     	SupplyManagementInterface
 	Booking              	BookingControllerInterface
 	// PermanentSchedule    PermanentBookingController
-	Room 					RoomControllerInterface
+	Room RoomControllerInterface
 }
 
 var spaceManagementInstance *SpaceManagementControllerManager
@@ -62,5 +64,42 @@ func (manager *SpaceManagementControllerManager) ResetDatabase() error {
 		return errors.New("failed to migrate database")
 	}
 
+	return nil
+}
+
+func (manager *SpaceManagementControllerManager) LoadSeedData() error {
+	seedData := map[string]interface{}{
+		"Room":    &[]model.Room{},
+		"Booking": &[]model.Booking{},
+	}
+	for filename, m := range seedData {
+		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".JSON")
+		if err != nil {
+			return err
+		}
+
+		err = fd.Deserialize(m)
+		if err != nil {
+			return err
+		}
+
+		result := migration.GetInstance().DB.Create(m)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+	return nil
+}
+
+func (manager *SpaceManagementControllerManager) ResetDB() error {
+	err := migration.GetInstance().DropAllTables()
+	if err != nil {
+		return err
+	}
+
+	_, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
+	if err != nil {
+		return err
+	}
 	return nil
 }
