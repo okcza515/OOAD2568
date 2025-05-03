@@ -13,12 +13,12 @@ import (
 
 // Quiz represents a quiz assessment
 type Quiz struct {
-	BaseAssessment
-	TimeLimit    time.Duration
-	Questions    []Question
-	MaxAttempts  int
-	ShowAnswers  bool
-	Randomize    bool
+	BaseAssessment `gorm:"embedded"`
+	TimeLimit     time.Duration
+	Questions     []Question
+	MaxAttempts   int
+	ShowAnswers   bool
+	Randomize     bool
 }
 
 // NewQuiz creates a new quiz with default values

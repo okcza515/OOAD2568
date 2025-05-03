@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	commonModel "ModEd/common/model"
@@ -122,7 +123,8 @@ const (
 type Submission struct {
 	gorm.Model
 	Student     commonModel.Student
-	Assessment  BaseAssessment
+	Assessment  *BaseAssessment `gorm:"foreignKey:AssessmentID"`
+	AssessmentID uint
 	Content     string
 	Status      SubmissionStatus
 	SubmittedAt time.Time

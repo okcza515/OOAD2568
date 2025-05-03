@@ -12,12 +12,12 @@ import (
 
 // Assignment represents an assignment assessment
 type Assignment struct {
-	BaseAssessment
-	MaxFileSize  int64
-	AllowedTypes []string
-	GroupSize    int
-	IsGroup      bool
-	Attachments  []Attachment
+	BaseAssessment `gorm:"embedded"`
+	MaxFileSize    int64
+	AllowedTypes   []string
+	GroupSize      int
+	IsGroup        bool
+	Attachments    []Attachment
 }
 
 // Attachment represents a file attachment for an assignment
@@ -88,12 +88,12 @@ func (a *Assignment) GetAllowedTypes() []string {
 	return a.AllowedTypes
 }
 
-// GetGroupSize returns the maximum group size
+// GetGroupSize returns the group size
 func (a *Assignment) GetGroupSize() int {
 	return a.GroupSize
 }
 
-// IsGroup returns whether this is a group assignment
-func (a *Assignment) IsGroup() bool {
+// IsGroupAssignment returns whether this is a group assignment
+func (a *Assignment) IsGroupAssignment() bool {
 	return a.IsGroup
 }
