@@ -36,10 +36,14 @@ func (handler RetrieveByIDHandlerStrategy[T]) Execute() error {
 	record, err := handler.controller.RetrieveByID(id, handler.preloads...)
 
 	if err != nil {
+		if err.Error() == "record not found" {
+			fmt.Println("Record not found.")
+			return nil
+		}
 		return err
 	}
 
-	fmt.Println(record.ToString())
+	fmt.Println(record)
 
 	return nil
 }

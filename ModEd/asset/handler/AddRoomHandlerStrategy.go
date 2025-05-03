@@ -3,28 +3,26 @@ package handler
 import (
 	"ModEd/asset/model"
 	"ModEd/asset/util"
-	"ModEd/core"
 	"fmt"
 	"strconv"
 )
 
-type AddNewRoomHandlerStrategy[T core.RecordInterface] struct {
+type AddRoomHandlerStrategy struct {
 	controller interface {
 		Insert(dataContext model.Room) error
 	}
 }
 
-func NewAddNewRoomHandlerStrategy[T core.RecordInterface](
+func NewAddRoomHandlerStrategy(
 	controller interface {
 		Insert(dataContext model.Room) error
 	},
-) *AddNewRoomHandlerStrategy[T] {
-	return &AddNewRoomHandlerStrategy[T]{controller: controller}
+) *AddRoomHandlerStrategy {
+	return &AddRoomHandlerStrategy{controller: controller}
 }
 
-func (handler AddNewRoomHandlerStrategy[T]) Execute() error {
-
-	fmt.Println("Add new Room")
+func (handler AddRoomHandlerStrategy) Execute() error {
+	fmt.Println("------- Add new Room -------")
 	fmt.Println("Please enter the name of the new Room:")
 	roomName := util.GetCommandInput()
 

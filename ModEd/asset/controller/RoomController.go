@@ -103,14 +103,11 @@ func (c *RoomController) RetrieveByID(id uint, preloads ...string) (model.Room, 
 }
 
 func (c *RoomController) Insert(data model.Room) error {
-	// if data.ID == 0 {
-	// 	return errors.New("invalid room data")
-	// }
 	return c.BaseController.Insert(data)
 }
 
 func (c *RoomController) UpdateByID(data model.Room) error {
-	if data.ID == 0 {
+	if data.GetID() == 0 {
 		return errors.New("invalid info")
 	}
 	return c.BaseController.UpdateByID(data)

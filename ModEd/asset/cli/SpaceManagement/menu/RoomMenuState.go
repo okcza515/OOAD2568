@@ -80,12 +80,13 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 	// insertHandler := handler.NewInsertHandlerStrategy[model.Room](controllerInstance)
 	listHandler := handler.NewListHandlerStrategy[model.Room](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Room](controllerInstance)
-	updateHandler := handler.NewUpdateHandlerStrategy[model.Room](controllerInstance)
+	// updateHandler := handler.NewUpdateHandlerStrategy[model.Room](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.Room](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
 
-	insertHandler := spaceManagementHandler.NewAddNewRoomHandlerStrategy[model.Room](controllerInstance)
-
+	//DIY
+	insertHandler := spaceManagementHandler.NewAddRoomHandlerStrategy(controllerInstance)
+	updateHandler := spaceManagementHandler.NewUpdateRoomHandlerStrategy(controllerInstance)
 	handlerContext.AddHandler("1", "Add New Room", insertHandler)
 	handlerContext.AddHandler("2", "List all Rooms", listHandler)
 	handlerContext.AddHandler("3", "Get full detail of a Room", getHandler)
