@@ -31,6 +31,7 @@ func (menu *BookingMenuState) Render() {
 	fmt.Println("6. Check Room Availability")
 	fmt.Println("7. Get Bookings by TimeTable")
 	fmt.Println("8. Seed Bookings Data")
+	fmt.Println("9. Delete Seed Bookings Data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("=============================")
 }
@@ -398,7 +399,7 @@ func (h *SeedBookingsHandler) Execute() error {
 	fmt.Println("===== Seed Bookings Data =====")
 
 	
-	path := "data/asset/TimeTable.json"
+	path := "data/asset/Booking.json"
 	
 	fmt.Print("Seeding database from " + path + "... ")
 	bookings, err := h.controller.SeedBookingsDatabase(path)
@@ -415,15 +416,47 @@ func (h *SeedBookingsHandler) Execute() error {
 	fmt.Println("==========================================================")
 	fmt.Println(" No | Booking ID | TimeTable  | User ID |    Event Name   ")
 	fmt.Println("----------------------------------------------------------")
-	for i, booking := range bookings {
-		fmt.Printf(" %2d | %-9d | %-11d | %-7d | %-21s \n", 
-			i+1, booking.ID, booking.TimeTableID, booking.UserID, truncateString(booking.EventName, 21))
-	}
+		for i, booking := range bookings {
+			fmt.Printf(" %2d | %-9d | %-7d | %-7s | %-21s \n", 
+				i+1, booking.ID, booking.UserID, booking.UserRole, truncateString(booking.EventName, 21))
+		}
 	fmt.Println("==========================================================")
 	
 	util.PressEnterToContinue()
 	return nil
 }
+
+type DeleteSeedBookingsHandler struct {
+	controller controller.BookingControllerInterface
+}
+
+func (h *DeleteSeedBookingsHandler) Execute() error {
+	fmt.Println("===== Delete Seed Bookings Data =====")
+	
+	fmt.Print("Are you sure you want to delete all seeded bookings? (y/n): ")
+	var confirm string
+	fmt.Scanln(&confirm)
+	if strings.ToLower(strings.TrimSpace(confirm)) != "y" {
+		fmt.Println("Deletion cancelled")
+		util.PressEnterToContinue()
+		return nil
+	}
+	
+	fmt.Print("Deleting all seeded bookings... ")
+	count, err := h.controller.DeleteSeedBookings()
+	if err != nil {
+		fmt.Println("ERROR")
+		fmt.Println("Error deleting seeded bookings:", err)
+		return err
+	}
+	
+	fmt.Println("SUCCESS")
+	fmt.Printf("\nSuccessfully deleted %d booking(s)\n", count)
+	
+	util.PressEnterToContinue()
+	return nil
+}
+
 
 func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManagementMenu *SpaceManagementState) *BookingMenuState {
 	if db == nil {
@@ -462,6 +495,7 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 	checkAvailabilityHandler := &CheckRoomAvailabilityHandler{controller: bookingController}
 	getByTimeTableHandler := &GetBookingsByTimeTableHandler{controller: bookingController}
 	seedHandler := &SeedBookingsHandler{controller: bookingController}
+	deleteSeedHandler := &DeleteSeedBookingsHandler{controller: bookingController}
 	
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
 
@@ -473,6 +507,7 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 	handlerContext.AddHandler("6", "Check Room Availability", checkAvailabilityHandler)
 	handlerContext.AddHandler("7", "Get Bookings by TimeTable", getByTimeTableHandler)
 	handlerContext.AddHandler("8", "Seed Bookings Data", seedHandler)
+	handlerContext.AddHandler("9", "Delete Seed Bookings Data", deleteSeedHandler)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 	return &BookingMenuState{

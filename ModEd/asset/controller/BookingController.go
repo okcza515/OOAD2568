@@ -20,6 +20,7 @@ type BookingControllerInterface interface {
 	ListBookings(condition map[string]interface{}) ([]model.Booking, error)
 	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
 	GetBookingsByTimeTable(timeTableID uint) ([]model.Booking, error)
+	DeleteSeedBookings() (int, error)
 }
 
 type BookingController struct {
@@ -197,4 +198,42 @@ func (c *BookingController) CheckRoomAvailability(roomID uint, startDate, endDat
 func (c *BookingController) GetBookingsByTimeTable(timeTableID uint) ([]model.Booking, error) {
 	condition := map[string]interface{}{"time_table_id": timeTableID}
 	return c.baseController.List(condition, "TimeTable", "TimeTable.Room")
+}
+
+func (c *BookingController) DeleteSeedBookings() (int, error) {
+	tx := c.db.Begin()
+	
+	var bookings []model.Booking
+	if err := tx.Find(&bookings).Error; err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	
+	deletedCount := 0
+	
+	for _, booking := range bookings {
+		if err := tx.Delete(&booking).Error; err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+		
+		if err := tx.Model(&model.TimeTable{}).Where("id = ?", booking.TimeTableID).
+			Updates(map[string]interface{}{
+				"is_available": true,
+				"booking_type": nil,
+			}).Error; err != nil {
+			tx.Rollback()
+			return 0, err
+		}
+		
+		c.NotifyObservers("booking_deleted", booking)
+		
+		deletedCount++
+	}
+	
+	if err := tx.Commit().Error; err != nil {
+		return 0, err
+	}
+	
+	return deletedCount, nil
 }
