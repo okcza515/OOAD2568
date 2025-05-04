@@ -4,7 +4,6 @@ import (
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -71,32 +70,21 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 	})
 }
 
-func (c *ResignationStudentHRController) ReviewStudentResignRequest(tx *gorm.DB, requestID string, action string, reason string) error {
-	tm := &util.TransactionManager{DB: c.db}
-	return tm.Execute(func(tx *gorm.DB) error {
-		id, err := strconv.ParseUint(requestID, 10, 32)
-		if err != nil {
-			return fmt.Errorf("invalid request ID: %v", err)
-		}
-
-		request, err := c.getByID(uint(id))
-		if err != nil {
-			return fmt.Errorf("failed to get leave request: %v", err)
-		}
-
-		if action == "approve" {
-			request.Status = action
-		} else if action == "reject" {
-			request.Status = action
-			request.Reason = reason
-		} else {
-			return fmt.Errorf("invalid action: %s", action)
-		}
-
-		if err := tx.Save(&request).Error; err != nil {
-			return fmt.Errorf("failed to update resignation request: %v", err)
-		}
-
-		return nil
-	})
+func (c *ResignationStudentHRController) ReviewStudentResignRequest(
+	tx *gorm.DB,
+	requestID, action, reason string,
+) error {
+		return ReviewRequest(
+			requestID,
+			action,
+			reason,
+			// fetch
+			func(id uint) (Reviewable, error) {
+				return c.getByID(id)
+			},
+			// save
+			func(r Reviewable) error {
+				return tx.Save(r).Error
+			},
+		)
 }
