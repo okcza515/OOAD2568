@@ -418,11 +418,6 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 
 	handlerContext := handler.NewHandlerContext()
 	
-	// checkAvailabilityHandler := &CheckRoomAvailabilityHandler{controller: bookingController}
-	// getByTimeTableHandler := &GetBookingsByTimeTableHandler{controller: bookingController}
-	// seedHandler := &SeedBookingsHandler{controller: bookingController}
-	// deleteSeedHandler := &DeleteSeedBookingsHandler{controller: bookingController}
-	
 	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.Booking](bookingController)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Booking](bookingController)
@@ -442,8 +437,6 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 	handlerContext.AddHandler("5", "Delete a Booking", deleteHandler)
 	handlerContext.AddHandler("6", "Check Room Availability", checkAvailabilityHandler)
 	handlerContext.AddHandler("7", "Get Bookings by TimeTable", getByTimeTableHandler)
-	// handlerContext.AddHandler("8", "Seed Bookings Data", seedHandler)
-	// handlerContext.AddHandler("9", "Delete Seed Bookings Data", deleteSeedHandler)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 	return &BookingMenuState{

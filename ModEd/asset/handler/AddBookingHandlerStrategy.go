@@ -23,7 +23,6 @@ func NewAddBookingHandlerStrategy(
 
 func (h *AddBookingHandlerStrategy) Execute() error {
 	fmt.Println("===== Create New Booking =====")
-
 	
 	var booking model.Booking
 	
@@ -47,14 +46,14 @@ func (h *AddBookingHandlerStrategy) Execute() error {
 	}
 	booking.UserID = uint(userID)
 	
-	fmt.Print("Enter User Role (STUDENT/TEACHER/ADMIN): ")
+	fmt.Print("Enter User Role (STUDENT/ADVISOR/ADMIN): ")
 	var role string
 	fmt.Scanln(&role)
 	role = strings.ToUpper(strings.TrimSpace(role))
 	switch role {
 	case "STUDENT":
 		booking.UserRole = model.ROLE_STUDENT
-	case "TEACHER":
+	case "ADVISOR":
 		booking.UserRole = model.ROLE_ADVISOR
 	case "ADMIN":
 		booking.UserRole = model.ROLE_ADMIN
