@@ -14,10 +14,12 @@ func (cmd *ListInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list-instructor", flag.ExitOnError)
 	fs.Parse(args)
 
-	instructorInfos, err := controller.GetAllInstructors(tx)
+	instructorController := controller.CreateInstructorHRController(tx)
+	instructorInfos, err := instructorController.GetAllInstructors(tx)
 	if err != nil {
 		return fmt.Errorf("error listing instructors: %v", err)
 	}
+
 
 	// TODO: Add more fields to display
 	fmt.Println("Human Resource Instructor Info:")
