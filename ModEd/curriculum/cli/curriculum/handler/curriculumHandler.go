@@ -5,7 +5,6 @@ import (
 	"ModEd/common/model"
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -13,50 +12,6 @@ import (
 const (
 	defaultCurriculumDataPath = "../../data/curriculum/curriculum.json"
 )
-
-func RunCurriculumCLIHandler(curriculumController controller.CurriculumControllerInterface) {
-	handler := newCurriculumHandler(curriculumController)
-
-	menuManager := NewMenuManager(map[string]func() error{
-		"1": handler.createSeedCurriculum,
-		"2": handler.listCurriculums,
-		"3": handler.getCurriculumById,
-		"4": handler.updateCurriculumById,
-		"5": handler.deleteCurriculumById,
-		"0": func() error {
-			fmt.Println("Exiting...")
-			return ExitCommand
-		},
-	})
-
-	for {
-
-		choice := menuManager.HandlerUserInput(printCurriculumMenu)
-		_, ok := menuManager.Actions[choice]
-		if !ok {
-			fmt.Println("Invalid option")
-			continue
-		}
-
-		err := menuManager.Execute(choice)
-		if err != nil {
-			if errors.Is(err, ExitCommand) {
-				return
-			}
-			fmt.Println("Error executing choice:", err)
-		}
-	}
-}
-
-func printCurriculumMenu() {
-	fmt.Println("\nCurriculum Menu:")
-	fmt.Println("1. Create Seed Curriculum")
-	fmt.Println("2. List all Curriculums")
-	fmt.Println("3. Get Curriculum by Id")
-	fmt.Println("4. Update Curriculum by Id")
-	fmt.Println("5. Delete Curriculum by Id")
-	fmt.Println("0. Exit")
-}
 
 type curriculumHandler struct {
 	curriculumController controller.CurriculumControllerInterface

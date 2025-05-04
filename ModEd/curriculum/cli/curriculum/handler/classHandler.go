@@ -4,7 +4,6 @@ package handler
 import (
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -13,49 +12,6 @@ import (
 const (
 	defaultClassDataPath = "../../data/curriculum/class.json"
 )
-
-func RunClassCLIHandler(classController controller.ClassControllerInterface) {
-	handler := newClassHandler(classController)
-
-	menuManager := NewMenuManager(map[string]func() error{
-		"1": handler.createSeedClass,
-		"2": handler.listClasses,
-		"3": handler.getClassById,
-		"4": handler.updateClassById,
-		"5": handler.deleteClassById,
-		"0": func() error {
-			fmt.Println("Exiting...")
-			return ExitCommand
-		},
-	})
-
-	for {
-		choice := menuManager.HandlerUserInput(printClassMenu)
-		_, ok := menuManager.Actions[choice]
-		if !ok {
-			fmt.Println("Invalid option")
-			continue
-		}
-
-		err := menuManager.Execute(choice)
-		if err != nil {
-			if errors.Is(err, ExitCommand) {
-				return
-			}
-			fmt.Println("Error executing choice:", err)
-		}
-	}
-}
-
-func printClassMenu() {
-	fmt.Println("\nClass Menu:")
-	fmt.Println("1. Create Seed Class")
-	fmt.Println("2. List all Classes")
-	fmt.Println("3. Get Class by Id")
-	fmt.Println("4. Update Class by Id")
-	fmt.Println("5. Delete Class by Id")
-	fmt.Println("0. Exit")
-}
 
 type classHandler struct {
 	classController controller.ClassControllerInterface
