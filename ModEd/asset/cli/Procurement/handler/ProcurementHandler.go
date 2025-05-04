@@ -45,7 +45,8 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			procurement, err := facade.Procurement.GetProcurementByID(id)
 			if err != nil {
 				fmt.Printf("Failed to retrieve procurement with ID %d: %v\n", id, err)
-				return
+				WaitForEnter()
+				ProcurementHandler(facade)
 			}
 			approverID := "Not Assigned"
 			if procurement.ApproverID != nil {
@@ -73,6 +74,13 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 		case "5":
 			fmt.Println("Delete Procurement")
 			ListAllProcurements(facade)
+			id := util.GetUintInput("Enter procurement ID to delete: ")
+			err := facade.Procurement.Delete(id)
+			if err != nil {
+				fmt.Printf("Failed to delete procurement with ID %d: %v\n", id, err)
+				return
+			}
+			fmt.Printf("Procurement with ID %d deleted successfully.\n", id)
 			WaitForEnter()
 		}
 
