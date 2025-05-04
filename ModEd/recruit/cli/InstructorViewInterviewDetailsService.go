@@ -9,7 +9,7 @@ import (
 )
 
 type InstructorViewInterviewDetailsService interface {
-	ViewInterviewDetails(instructorID uint, status string, instructorCtrl *controller.InstructorController) ([]model.Interview, error)
+	ViewInterviewDetails(instructorID uint, status string, interviewCtrl *controller.InterviewController) ([]model.Interview, error)
 }
 
 type instructorViewInterviewDetailsService struct {
@@ -22,18 +22,32 @@ func NewInstructorViewInterviewDetailsService(DB *gorm.DB) InstructorViewIntervi
 	}
 }
 
-func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(instructorID uint, statusfilter string,instructorCtrl *controller.InstructorController) ([]model.Interview, error) {
-	interviews, err := instructorCtrl.GetInterviewsByInstructor(instructorID)
+func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(
+	instructorID uint,
+	status string,
+	interviewCtrl *controller.InterviewController,
+) ([]model.Interview, error) {
+
+	filters := []controller.FilterStrategy{
+		&controller.FilterByInstructorID{InstructorID: instructorID},
+		&controller.FilterByStatus{Status: status},
+	}
+
+	report := controller.InterviewReport{
+		InterviewProvider: interviewCtrl,
+		Filters:           filters,
+	}
+
+	rawData, err := report.GetReport()
 	if err != nil {
+		println("can't get report")
 		return nil, err
 	}
 
-	filtered := make([]model.Interview, 0)
-	for _, interview := range interviews {
-		if statusfilter == "all" || string(interview.InterviewStatus) == statusfilter {
-			filtered = append(filtered, interview)
-		}
+	filteredData, err := report.FilterReport(rawData)
+	if err != nil {
+		println("can't filter report")
+		return nil, err
 	}
-
-	return filtered, nil
+	return filteredData, nil
 }
