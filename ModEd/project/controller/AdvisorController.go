@@ -26,17 +26,13 @@ func (ac *AdvisorController) AssignAdvisor(projectId, instructorId uint, isPrima
 		return nil, err
 	}
 
-	advisor, err := utils.NewAdvisorBuilder().
-		SetProjectID(projectId).
-		SetInstructorID(instructorId).
-		SetPrimaryStatus(isPrimary).
-		Build()
-
-	if err != nil {
-		return nil, err
+	advisor := &model.Advisor{
+		ProjectID:    projectId,
+		InstructorID: instructorId,
+		IsPrimary:    isPrimary,
 	}
 
-	if err := ac.DB.Create(&advisor).Error; err != nil {
+	if err := ac.DB.Create(advisor).Error; err != nil {
 		return nil, errors.New("failed to assign advisor")
 	}
 
