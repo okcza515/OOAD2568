@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/gorm"
 )
+
 type LeaveInstructorHRController struct {
 	db *gorm.DB
 }
@@ -50,9 +51,9 @@ func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]
 	return requests, nil
 }
 
-func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
+func SubmitInstructorLeaveRequest(db *gorm.DB, instructorID, leaveType, reason, leaveDateStr string) error {
 
-	tm := &util.TransactionManager{DB:db}
+	tm := &util.TransactionManager{DB: db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorController := CreateLeaveInstructorHRController(tx)
@@ -69,5 +70,3 @@ func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, l
 		return nil
 	})
 }
-
-	
