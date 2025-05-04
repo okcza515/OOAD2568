@@ -37,7 +37,7 @@ func (handler ListHandlerStrategy[T]) Execute() error {
 	fmt.Println()
 
 	for _, record := range records {
-		fmt.Println(record)
+		fmt.Println(record.ToString())
 	}
 
 	return nil
