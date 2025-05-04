@@ -17,8 +17,8 @@ func CreateResignationStudentHRController(db *gorm.DB) *ResignationStudentHRCont
 	return &ResignationStudentHRController{db: db}
 }
 
-func (c *ResignationStudentHRController) insert(db *gorm.DB, request *model.RequestResignationStudent) error {
-	return db.Create(request).Error
+func (c *ResignationStudentHRController) insert(request *model.RequestResignationStudent) error {
+	return c.db.Create(request).Error
 }
 
 func (c *ResignationStudentHRController) getByStudentID(id string) (*model.RequestResignationStudent, error) {
@@ -29,13 +29,15 @@ func (c *ResignationStudentHRController) getByStudentID(id string) (*model.Reque
 	return &req, nil
 }
 
-func (c *ResignationStudentHRController) update(db *gorm.DB, req *model.RequestResignationStudent) error {
-	return db.Save(req).Error
+func (c *ResignationStudentHRController) update(req *model.RequestResignationStudent) error {
+	return c.db.Save(req).Error
 }
 
 func (c *ResignationStudentHRController) SubmitResignationStudent(studentID string, reason string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
+		studentController := CreateResignationStudentHRController(tx)
+
 		factory, err := model.GetFactory("student")
 		if err != nil {
 			return fmt.Errorf("failed to get student factory: %v", err)
@@ -51,7 +53,7 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
 		}
 
-		if err := c.insert(tx, req); err != nil {
+		if err := studentController.insert(req); err != nil {
 			return fmt.Errorf("failed to insert resignation request within transaction: %v", err)
 		}
 
