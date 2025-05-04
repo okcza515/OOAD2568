@@ -46,7 +46,7 @@ func (c *InstructorHRController) delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
-func (c *InstructorHRController) GetAllInstructors(tx *gorm.DB) ([]*model.InstructorInfo, error) {
+func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, error) {
 	instructors, err := c.getAll()
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving instructors: %v", err)
@@ -54,8 +54,8 @@ func (c *InstructorHRController) GetAllInstructors(tx *gorm.DB) ([]*model.Instru
 	return instructors, nil
 }
 
-func (c *InstructorHRController) UpdateInstructorInfo(tx *gorm.DB, instructorID, field, value string) error {
-	tm := &util.TransactionManager{DB: tx}
+func (c *InstructorHRController) UpdateInstructorInfo( instructorID, field, value string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorInfo, err := c.getById(instructorID)
 		if err != nil {
@@ -84,7 +84,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(tx *gorm.DB, instructorID,
 	})
 }
 
-func (c *InstructorHRController) ImportInstructors(tx *gorm.DB, instructors []*model.InstructorInfo) error {
+func (c *InstructorHRController) ImportInstructors(instructors []*model.InstructorInfo) error {
 	for _, instructor := range instructors {
 		if instructor.ID == 0 || instructor.FirstName == "" {
 			return fmt.Errorf("invalid instructor data: %+v", instructor)

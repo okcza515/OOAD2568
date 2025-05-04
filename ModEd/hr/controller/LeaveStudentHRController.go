@@ -52,9 +52,9 @@ func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.Req
 }
 
 
-func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
+func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(studentID, leaveType, reason, leaveDateStr string) error {
 
-	tm := &util.TransactionManager{DB: db}
+	tm := &util.TransactionManager{DB: c.db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
 		leaveController := CreateLeaveStudentHRController(tx) // ใช้ transaction ของตัวนี้เลย
