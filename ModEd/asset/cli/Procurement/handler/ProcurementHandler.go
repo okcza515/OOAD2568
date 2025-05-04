@@ -41,6 +41,30 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			WaitForEnter()
 		case "3":
 			fmt.Println("View Procurement by ID")
+			id := util.GetUintInput("Enter procurement ID: ")
+			procurement, err := facade.Procurement.GetProcurementByID(id)
+			if err != nil {
+				fmt.Printf("Failed to retrieve procurement with ID %d: %v\n", id, err)
+				return
+			}
+			approverID := "Not Assigned"
+			if procurement.ApproverID != nil {
+				approverID = fmt.Sprintf("%d", *procurement.ApproverID)
+			}
+			approvalTime := "-"
+			if procurement.ApprovalTime != nil {
+				approvalTime = procurement.ApprovalTime.Format("2006-01-02 15:04:05")
+			}
+			deletedAt := "-"
+			if procurement.DeletedAt.Valid {
+				deletedAt = procurement.DeletedAt.Time.Format("2006-01-02 15:04:05")
+			}
+			fmt.Println("Procurement Detail:")
+			fmt.Printf("ID: %d\n", procurement.ProcurementID)
+			fmt.Printf("ApproverID: %s\n", approverID)
+			fmt.Printf("Status: %s\n", procurement.Status)
+			fmt.Printf("ApprovalTime: %s\n", approvalTime)
+			fmt.Printf("DeletedAt: %s\n", deletedAt)
 			WaitForEnter()
 		case "4":
 			fmt.Println("Update Procurement Status")
