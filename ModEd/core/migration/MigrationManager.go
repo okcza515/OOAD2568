@@ -73,7 +73,7 @@ func (m *MigrationManager) BuildDB() (*gorm.DB, error) {
 
 	m.DB = db
 
-	err = m.MigrateToDB()
+	err = m.migrateToDB()
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (m *MigrationManager) MigrateModule(module core.ModuleOptionEnum) *Migratio
 	return m
 }
 
-func (m *MigrationManager) MigrateToDB() error {
+func (m *MigrationManager) migrateToDB() error {
 	var modelsToMigrate []interface{}
 	for i := range m.models {
 		if m.DB.Migrator().HasTable(m.models[i]) {
