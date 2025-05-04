@@ -15,7 +15,8 @@ func (cmd *ListStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("list-student", flag.ExitOnError)
 	fs.Parse(args)
 
-	studentInfos, err := controller.GetAllStudents(tx)
+	studentController := controller.NewStudentHRController(tx)
+	studentInfos, err := studentController.GetAllStudents()
 	if err != nil {
 		return fmt.Errorf("error listing students: %v", err)
 	}

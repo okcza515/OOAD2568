@@ -29,7 +29,8 @@ func (cmd *ImportStudentCommand) Execute(args []string, tx *gorm.DB) error {
 
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
-		if err := controller.ImportStudents(tx, *filePath); err != nil {
+		studentController := controller.NewStudentHRController(tx)
+		if err := studentController.ImportStudents(*filePath); err != nil {
 			return err
 		}
 		fmt.Println("Students imported successfully!")

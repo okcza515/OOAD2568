@@ -27,7 +27,8 @@ func (cmd *ExportStudentsCommand) Execute(args []string, tx *gorm.DB) error {
 	}
 
 	// Delegate the export logic to the controller
-	if err := controller.ExportStudents(tx, *filePath, *format); err != nil {
+	studentController := controller.NewStudentHRController(tx)
+	if err := studentController.ExportStudents(tx, *filePath, *format); err != nil {
 		return fmt.Errorf("failed to export students: %v", err)
 	}
 

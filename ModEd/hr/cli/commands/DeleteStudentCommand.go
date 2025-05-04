@@ -28,7 +28,8 @@ func (cmd *DeleteStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	err = controller.DeleteStudent(tx, *studentID)
+	studentController := controller.NewStudentHRController(tx)
+	err = studentController.DeleteStudent(*studentID)
 
 	if err != nil {
 		return fmt.Errorf("failed to delete student: %v", err)
