@@ -14,7 +14,7 @@ import (
 
 func InstructorCLI(
 	instructorViewInterviewDetailsService InstructorViewInterviewDetailsService,
-	instructorEvaluateApplicantService InstructorEvaluateApplicantService, applicantReportService ApplicantReportService, loginCtrl *controller.LoginController, instructorCtrl *controller.InstructorController ) {
+	instructorEvaluateApplicantService InstructorEvaluateApplicantService, applicantReportService ApplicantReportService, loginCtrl *controller.LoginController, instructorCtrl *controller.InstructorController,applicationReportCtrl *controller.ApplicationReportController) {
 
 	instructorID, err := promptInstructorCredentials()
 	if err != nil {
@@ -76,7 +76,7 @@ func InstructorCLI(
 			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Evaluated",instructorCtrl)
 			util.WaitForEnter()
 		case 4:
-			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint)
+			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint,applicationReportCtrl)
 		case 5:
 			fmt.Println("Exiting...")
 			return

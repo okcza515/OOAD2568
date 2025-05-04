@@ -2,6 +2,7 @@
 package cli
 
 import (
+	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
@@ -13,6 +14,7 @@ import (
 func ShowApplicantReportCLI(
 	ApplicantReportService ApplicantReportService,
 	InterviewService InterviewService,
+	applicationReportCtrl *controller.ApplicationReportController,
 ) {
 	util.ClearScreen()
 	scanner := bufio.NewScanner(os.Stdin)
@@ -27,7 +29,7 @@ func ShowApplicantReportCLI(
 		return
 	}
 
-	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(uint(applicantReportID))
+	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(uint(applicantReportID),applicationReportCtrl)
 	if err != nil {
 		fmt.Println("Error fetching application report:", err)
 		return

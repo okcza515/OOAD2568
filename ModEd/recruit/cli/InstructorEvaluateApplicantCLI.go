@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"ModEd/recruit/controller"
 	recruitUtil "ModEd/recruit/util"
 	"bufio"
 	"fmt"
@@ -8,7 +9,7 @@ import (
 	"strconv"
 )
 
-func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateApplicantService, ApplicantReportService ApplicantReportService, instructorID uint) {
+func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateApplicantService, ApplicantReportService ApplicantReportService, instructorID uint,applicationReportCtrl *controller.ApplicationReportController) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Enter Application Report ID: ")
@@ -33,7 +34,7 @@ func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateAppl
 		return
 	}
 
-	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(applicationReportID)
+	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(applicationReportID,applicationReportCtrl)
 	if err != nil {
 		fmt.Println("Failed to fetch application report:", err)
 		recruitUtil.WaitForEnter()

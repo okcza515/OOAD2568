@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService, loginController controller.LoginController) {
+func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService, loginController controller.LoginController,applicationReportCtrl *controller.ApplicationReportController) {
 
 	for {
 		util.ClearScreen()
@@ -30,7 +30,7 @@ func UserCLI(applicantRegistrationService ApplicantRegistrationService, applican
 		case 1:
 			ApplicantRegistrationCLI(applicantRegistrationService)
 		case 2:
-			ShowApplicantReportCLI(applicantReportService, interviewService)
+			ShowApplicantReportCLI(applicantReportService, interviewService,applicationReportCtrl)
 		case 3:
 			fmt.Println("Exiting...")
 			return

@@ -8,7 +8,7 @@ import (
 )
 
 type ApplicantReportService interface {
-	GetFullApplicationReportByApplicationID(applicantionReportID uint) (*model.ApplicationReport, error)
+	GetFullApplicationReportByApplicationID(applicantionReportID uint,applicationReportCtrl *controller.ApplicationReportController) (*model.ApplicationReport, error)
 }
 
 type InterviewService interface {
@@ -29,9 +29,8 @@ func NewApplicantReportService(DB *gorm.DB) *applicantReportService {
 	}
 }
 
-func (s *applicantReportService) GetFullApplicationReportByApplicationID(applicantionReportID uint) (*model.ApplicationReport, error) {
-	reportController := controller.NewApplicationReportController(s.DB)
-	return reportController.GetFullApplicationReportByApplicationID(applicantionReportID)
+func (s *applicantReportService) GetFullApplicationReportByApplicationID(applicantionReportID uint,applicationReportCtrl *controller.ApplicationReportController) (*model.ApplicationReport, error) {
+	return applicationReportCtrl.GetFullApplicationReportByApplicationID(applicantionReportID)
 }
 
 func NewInterviewService(DB *gorm.DB) *interviewService {
