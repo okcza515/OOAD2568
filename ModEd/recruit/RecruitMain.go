@@ -103,16 +103,19 @@ func main() {
 		util.ClearScreen()
 
 		if role == "" {
+			// Display the main menu
 			fmt.Println("\n\033[1;34m╔══════════════════════════════════════╗")
 			fmt.Println("║       Moded Recruitment System       ║")
 			fmt.Println("╚══════════════════════════════════════╝\033[0m")
 
+			// Options for role selection
 			fmt.Println("\n\033[1;36m[1]\033[0m  User")
 			fmt.Println("\033[1;36m[2]\033[0m  Admin")
 			fmt.Println("\033[1;36m[3]\033[0m  Instructor")
 			fmt.Println("\033[1;36m[4]\033[0m  Exit")
 			fmt.Print("\n\033[1;33mSelect role:\033[0m ")
 
+			// Get user input for role selection
 			var roleChoice int
 			fmt.Scanln(&roleChoice)
 
@@ -122,11 +125,12 @@ func main() {
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
 				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
-				cli.AdminCLI(adminDeps)
 				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
+				cli.AdminCLI(adminDeps)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, interviewController, applicationReportCtrl)
+
 			case 4:
 				fmt.Println("Exiting...")
 				return
