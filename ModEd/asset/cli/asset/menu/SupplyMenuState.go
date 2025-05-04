@@ -70,7 +70,10 @@ func (menu *SupplyMenuState) HandleUserInput(input string) error {
 		fmt.Println("Delete an Supply")
 		//context.SetStrategy(menu.deleteHandlerStrategy)
 	case "back":
-		menu.manager.GoToMenu(string(MENU_ASSET))
+		err := menu.manager.GoToMenu(string(MENU_ASSET))
+		if err != nil {
+			return err
+		}
 		return nil
 	default:
 		//context.SetStrategy(handler.DoNothingHandlerStrategy{})

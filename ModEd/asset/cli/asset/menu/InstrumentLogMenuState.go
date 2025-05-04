@@ -67,7 +67,11 @@ func (menu *InstrumentLogMenuState) HandleUserInput(input string) error {
 		fmt.Println("Get detail of an Instrument Log")
 		//context.SetStrategy(menu.retrieveByIDHandlerStrategy)
 	case "back":
-		menu.manager.GoToMenu(string(MENU_ASSET))
+		err := menu.manager.GoToMenu(string(MENU_ASSET))
+		if err != nil {
+			return err
+		}
+
 		return nil
 	case "exit":
 		return nil
