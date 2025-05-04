@@ -15,7 +15,7 @@ func (cmd *ListInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs.Parse(args)
 
 	instructorController := controller.CreateInstructorHRController(tx)
-	instructorInfos, err := instructorController.GetAllInstructors(tx)
+	instructorInfos, err := instructorController.GetAllInstructors()
 	if err != nil {
 		return fmt.Errorf("error listing instructors: %v", err)
 	}
