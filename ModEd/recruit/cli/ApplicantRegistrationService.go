@@ -9,6 +9,8 @@ import (
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -134,9 +136,16 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 }
 
 func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) {
-	fmt.Print("Enter CSV or JSON file path: ")
-	scanner.Scan()
-	filePath := scanner.Text()
+
+	curDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting current directory:", err)
+		return
+	}
+	parentDir := filepath.Dir(curDir)
+
+	defaultRegisDataPath := filepath.Join(parentDir, "recruit", "data", "RegisData.csv")
+	filePath := defaultRegisDataPath
 
 	// Read applicants from the file
 	applicants, err := s.applicantCtrl.ReadApplicantsFromFile(filePath)

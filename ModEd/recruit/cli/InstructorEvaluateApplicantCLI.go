@@ -40,11 +40,12 @@ func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateAppl
 		return
 	}
 
-	err = instructorEvaluateApplicantService.EvaluateApplicant(applicationReportID, report.ApplicationRound.RoundName)
+	err = instructorEvaluateApplicantService.EvaluateApplicant(applicationReportID, report.ApplicationRound.RoundName, report.Faculty.Name, report.Department.Name)
 	if err != nil {
 		fmt.Println("Error updating interview score:", err)
 	} else {
 		fmt.Println("Score updated successfully!")
 	}
+
 	recruitUtil.WaitForEnter()
 }

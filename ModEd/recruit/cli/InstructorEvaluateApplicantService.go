@@ -14,18 +14,23 @@ import (
 
 type InstructorEvaluateApplicantService interface {
 	HasPermissionToEvaluate(instructorID, applicationReportID uint) (bool, error)
-	EvaluateApplicant(applicationReportID uint, roundName string) error
+	EvaluateApplicant(applicationReportID uint, roundName, facultyName, departmentName string) error
+	DetermineInterviewStatus(roundName, facultyName, departmentName string, totalScore float64) (model.ApplicationStatus, error)
 }
 
 type instructorEvaluateApplicantService struct {
-	DB            *gorm.DB
-	InterviewCtrl *controller.InterviewController
+	DB                    *gorm.DB
+	InterviewCtrl         *controller.InterviewController
+	InterviewCriteriaCtrl *controller.InterviewCriteriaCtrl
+	ApplicationReportCtrl *controller.ApplicationReportController
 }
 
-func NewInstructorEvaluateApplicantService(db *gorm.DB) InstructorEvaluateApplicantService {
+func NewInstructorEvaluateApplicantService(db *gorm.DB, interviewCreiteriaCtrl *controller.InterviewCriteriaCtrl, applicationReportCtrl *controller.ApplicationReportController) InstructorEvaluateApplicantService {
 	return &instructorEvaluateApplicantService{
-		DB:            db,
-		InterviewCtrl: controller.NewInterviewController(db),
+		DB:                    db,
+		InterviewCtrl:         controller.NewInterviewController(db),
+		InterviewCriteriaCtrl: interviewCreiteriaCtrl,
+		ApplicationReportCtrl: applicationReportCtrl,
 	}
 }
 
@@ -37,7 +42,7 @@ func (s *instructorEvaluateApplicantService) HasPermissionToEvaluate(instructorI
 	return interview.InstructorID == instructorID, nil
 }
 
-func (s *instructorEvaluateApplicantService) EvaluateApplicant(applicationReportID uint, roundName string) error {
+func (s *instructorEvaluateApplicantService) EvaluateApplicant(applicationReportID uint, roundName, facultyName, departmentName string) error {
 
 	strat, err := controller.GetStrategyByRoundName(roundName)
 	if err != nil {
@@ -74,7 +79,7 @@ func (s *instructorEvaluateApplicantService) EvaluateApplicant(applicationReport
 		ScheduledAppointment: interviewModel.ScheduledAppointment,
 		TotalScore:           totalScore,
 		EvaluatedAt:          time.Now(),
-		InterviewStatus:      model.Pending,
+		InterviewStatus:      model.Evaluated,
 	}
 
 	err = interview.SetCriteriaScores(scores)
@@ -82,5 +87,41 @@ func (s *instructorEvaluateApplicantService) EvaluateApplicant(applicationReport
 		return fmt.Errorf("failed to set criteria scores: %w", err)
 	}
 
-	return s.InterviewCtrl.SaveInterviewEvaluation(interview)
+	status, err := s.DetermineInterviewStatus(roundName, facultyName, departmentName, totalScore)
+	if err != nil {
+		return fmt.Errorf("failed to determine interview status: %w", err)
+	}
+
+	err = s.ApplicationReportCtrl.UpdateApplicationStatus(applicationReportID, status)
+	if err != nil {
+		return fmt.Errorf("failed to update interview status: %w", err)
+	}
+
+	err = s.InterviewCtrl.SaveInterviewEvaluation(interview)
+	if err != nil {
+		return fmt.Errorf("failed to save interview evaluation: %w", err)
+	}
+	return nil
+}
+
+func (s *instructorEvaluateApplicantService) DetermineInterviewStatus(roundName, facultyName, departmentName string, totalScore float64) (model.ApplicationStatus, error) {
+	allCriteria, err := s.InterviewCriteriaCtrl.GetFullInterviewCriteria()
+	if err != nil {
+		return "", fmt.Errorf("failed to get interview criteria: %w", err)
+	}
+
+	for _, c := range allCriteria {
+		if c.ApplicationRound.RoundName == roundName &&
+			c.Faculty.Name == facultyName &&
+			c.Department.Name == departmentName {
+
+			if totalScore >= c.PassingScore {
+				return model.Accepted, nil
+			}
+			return model.Rejected, nil
+		}
+	}
+
+	return "", fmt.Errorf("criteria not found")
+
 }

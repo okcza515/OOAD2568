@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint) {
-	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID)
+func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint, filter string) {
+	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID, filter)
 	if err != nil {
 		fmt.Println("Error retrieving interviews:", err)
 		return
@@ -27,6 +27,19 @@ func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewIn
 			interview.ApplicationReport.Applicant.LastName)
 		fmt.Printf("Application ID     : %d\n", interview.ApplicationReportID)
 		fmt.Printf("Appointment Date   : %s\n", interview.ScheduledAppointment.Format("2006-01-02 15:04"))
+
+		if interview.InterviewStatus == "Evaluated" {
+			criteriaScores, err := interview.GetCriteriaScores()
+			if err != nil {
+				fmt.Println("Error retrieving criteria scores:", err)
+			} else {
+				fmt.Println("Criteria Scores    :")
+				for criterion, score := range criteriaScores {
+					fmt.Printf("  - %s: %.2f\n", criterion, score)
+				}
+			}
+		}
+
 		fmt.Printf("Interview Status   : %s\n", interview.InterviewStatus)
 		fmt.Println("----------------------------------------")
 	}

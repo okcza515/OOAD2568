@@ -13,15 +13,14 @@ import (
 )
 
 func main() {
-	// Command-line flags for file paths and role
 	var (
-		database      string
-		roundsCSVPath string
-		adminCSVPath  string
-		role          string
+		database              string
+		roundsCSVPath         string
+		adminCSVPath          string
+		interviewCreteriaPath string
+		role                  string
 	)
 
-	// Get the current working directory
 	curDir, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Error getting current directory:", err)
@@ -33,12 +32,14 @@ func main() {
 	defaultDBPath := filepath.Join(parentDir, "data", "ModEd.bin")
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
 	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
+	defaultInterviewCreteriaPath := filepath.Join(parentDir, "recruit", "data", "InterviewCriteria.csv")
 
 	// Parse command-line flags
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
 	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
 	flag.StringVar(&role, "role", "", "Specify the role (user/admin/instructor)")
+	flag.StringVar(&interviewCreteriaPath, "criteria", defaultInterviewCreteriaPath, "")
 	flag.Parse()
 
 	// Initialize the database
@@ -50,17 +51,21 @@ func main() {
 	interviewController := controller.NewInterviewController(db.DB)
 	applicationRoundCtrl := controller.NewApplicationRoundController(db.DB)
 
-	// Create admin controller and read admins from CSV
 	adminCtrl := controller.NewAdminController(db.DB)
 	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
 		fmt.Println(err)
 	}
 
-	// Other controllers
 	facultyCtrl := common.CreateFacultyController(db.DB)
 	departmentCtrl := common.CreateDepartmentController(db.DB)
+	interviewCriteriaCtrl := controller.NewInterviewCriteriaCtrl(db.DB)
+
 	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB)
-	instructorEvaluateApplicantService := cli.NewInstructorEvaluateApplicantService(db.DB)
+	instructorEvaluateApplicantService := cli.NewInstructorEvaluateApplicantService(
+		db.DB,
+		interviewCriteriaCtrl,
+		applicationReportCtrl,
+	)
 	applicantRegistrationService := cli.NewApplicantRegistrationService(
 		applicantController,
 		applicationRoundCtrl,
@@ -71,15 +76,16 @@ func main() {
 	applicantReportService := cli.NewApplicantReportService(db.DB)
 	interviewService := cli.NewInterviewService(db.DB)
 
-	// Initialize application rounds from CSV
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
 		fmt.Println("Failed to initialize application rounds:", err)
 		return
 	}
-
-	loginController := controller.LoginController{
-		Strategy: controller.NewLoginStrategy(role, db.DB),
+	if err := interviewCriteriaCtrl.ReadInterviewCriteriaFromCSV(interviewCreteriaPath); err != nil {
+		fmt.Println("Failed to initialize interview criteria:", err)
+		return
 	}
+
+	loginController := controller.LoginController{Strategy: controller.NewLoginStrategy(role, db.DB)}
 
 	for {
 		util.ClearScreen()

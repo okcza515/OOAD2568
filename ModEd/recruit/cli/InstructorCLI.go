@@ -47,12 +47,16 @@ func InstructorCLI(
 
 	for {
 		util.ClearScreen()
-		fmt.Println("\n==== Instructor Menu ====")
-		fmt.Println("1. View Interview Details")
-		fmt.Println("2. Evaluate an Applicant")
-		fmt.Println("3. Exit")
-		fmt.Print("Select an option: ")
+		fmt.Println("\n\033[1;35m╔══════════════════════════════════════╗")
+		fmt.Println("║           Instructor Menu            ║")
+		fmt.Println("╚══════════════════════════════════════╝\033[0m")
 
+		fmt.Println("\n\033[1;36m[1]\033[0m  View All Interview Details")
+		fmt.Println("\033[1;36m[2]\033[0m  View Pending Interviews")
+		fmt.Println("\033[1;36m[3]\033[0m  View Evaluated Interviews")
+		fmt.Println("\033[1;36m[4]\033[0m  Evaluate an Applicant")
+		fmt.Println("\033[1;36m[5]\033[0m  Exit")
+		fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 		var choice int
 		scanner.Scan()
 		_, err := fmt.Sscan(scanner.Text(), &choice)
@@ -63,11 +67,17 @@ func InstructorCLI(
 
 		switch choice {
 		case 1:
-			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint)
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "all")
 			util.WaitForEnter()
 		case 2:
-			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint)
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Pending")
+			util.WaitForEnter()
 		case 3:
+			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Evaluated")
+			util.WaitForEnter()
+		case 4:
+			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint)
+		case 5:
 			fmt.Println("Exiting...")
 			return
 		default:
