@@ -2,11 +2,12 @@
 package cli
 
 import (
+	"ModEd/recruit/controller"
 	"fmt"
 )
 
-func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint, filter string) {
-	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID, filter)
+func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint, filter string,instructorCtrl *controller.InstructorController) {
+	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID, filter, instructorCtrl)
 	if err != nil {
 		fmt.Println("Error retrieving interviews:", err)
 		return

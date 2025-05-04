@@ -4,6 +4,6 @@ remark: Initiate the data(Faculty, Department, Instructors) by using common (\Mo
 
 go run common/cli/CommonDataCLI.go --database="data/ModEd.bin" --path="data/common/DepartmentList.csv"
 
-go run common/cli/CommonDataCLI.go --database="data/ModEd.bin" --path="data/FacultyList.csv"
+go run common/cli/CommonDataCLI.go --database="data/ModEd.bin" --path="data/common/FacultyList.csv"
 
-go run common/cli/CommonDataCLI.go --database="data/ModEd.bin" --path="data/InstructorList.csv"
+go run common/cli/CommonDataCLI.go --database="data/ModEd.bin" --path="data/common/InstructorsList.csv"

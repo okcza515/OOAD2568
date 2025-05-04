@@ -50,6 +50,7 @@ func main() {
 	applicantController := controller.NewApplicantController(db.DB)
 	interviewController := controller.NewInterviewController(db.DB)
 	applicationRoundCtrl := controller.NewApplicationRoundController(db.DB)
+	instructorCtrl := controller.NewInstructorController(db.DB)
 
 	adminCtrl := controller.NewAdminController(db.DB)
 	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
@@ -116,7 +117,7 @@ func main() {
 				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, instructorCtrl)
 			case 4:
 				fmt.Println("Exiting...")
 				return
