@@ -88,6 +88,16 @@ func main() {
 
 	loginController := controller.LoginController{Strategy: controller.NewLoginStrategy(role, db.DB)}
 
+	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
+	adminDeps := cli.AdminDependencies{
+		ApplicantController:         applicantController,
+		ApplicationReportCtrl:       applicationReportCtrl,
+		InterviewCtrl:               interviewController,
+		AdminCtrl:                   adminCtrl,
+		LoginCtrl:                   &loginController,
+		AdminInterviewService:       cli.NewAdminInterviewService(interviewController),
+	}
+
 	for {
 		util.ClearScreen()
 
@@ -111,7 +121,8 @@ func main() {
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService, loginController,applicationReportCtrl)
 			case 2:
 				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
+				cli.AdminCLI(adminDeps)
+				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
 				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, instructorCtrl,applicationReportCtrl)
