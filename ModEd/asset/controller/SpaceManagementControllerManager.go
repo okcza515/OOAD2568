@@ -72,7 +72,7 @@ func (manager *SpaceManagementControllerManager) LoadSeedData() error {
 	seedData := map[string]interface{}{
 		"Room":     &[]model.Room{},
 		"Booking":  &[]model.Booking{},
-		"Schedule": &[]model.PermanentSchedule{},
+		// "Schedule": &[]model.PermanentSchedule{},
 	}
 	for filename, m := range seedData {
 		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".JSON")
