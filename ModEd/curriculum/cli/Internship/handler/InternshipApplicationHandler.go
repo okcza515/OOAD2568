@@ -25,7 +25,7 @@ func NewInternshipApplicationHandler(manager *cli.CLIMenuStateManager, wrapper *
 func (handler *InternshipApplicationHandler) handleCreateInternshipApplication() error {
 
 	studentCode := utils.GetUserInput("Enter Student Code: ")
-	if studentCode == "" {
+	if len(studentCode) != 11 {
 		fmt.Println("Student Code cannot be empty.")
 		return fmt.Errorf("invalid input: student code is empty")
 	}
