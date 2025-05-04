@@ -4,6 +4,7 @@ package migration
 
 import (
 	"ModEd/core"
+	"ModEd/utils/deserializer"
 	"fmt"
 
 	"github.com/cockroachdb/errors"
@@ -18,6 +19,7 @@ type MigrationManager struct {
 	err                  error
 	pathDB               string
 	models               []interface{}
+	seedDatas            map[string]interface{}
 	migrationStrategyMap map[core.ModuleOptionEnum]MigrationStrategy
 }
 
@@ -46,6 +48,7 @@ func newMigrationManager() *MigrationManager {
 
 	return &MigrationManager{
 		migrationStrategyMap: migrationMap,
+		seedDatas:            make(map[string]interface{}),
 	}
 }
 
@@ -118,5 +121,32 @@ func (m *MigrationManager) DropAllTables() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (m *MigrationManager) AddSeedData(path string, model interface{}) *MigrationManager {
+	m.seedDatas[path] = model
+
+	return m
+}
+
+func (m *MigrationManager) LoadSeedData() error {
+	for path, md := range m.seedDatas {
+		fd, err := deserializer.NewFileDeserializer(path)
+		if err != nil {
+			return err
+		}
+
+		err = fd.Deserialize(md)
+		if err != nil {
+			return err
+		}
+
+		result := m.DB.Create(md)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+
 	return nil
 }
