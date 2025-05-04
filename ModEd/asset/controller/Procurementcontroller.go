@@ -12,13 +12,14 @@ type ProcurementController struct {
 }
 
 func CreateProcurementController(db *gorm.DB) *ProcurementController {
-	procurement := ProcurementController{db: db}
-	db.AutoMigrate(&model.Procurement{})
-	return &procurement
+	return &ProcurementController{db: db}
 }
 
-// List all procurements with related data
-func (c *ProcurementController) ListAll() ([]model.Procurement, error) {
+func (c *ProcurementController) CreateProcurement(body *model.Procurement) error {
+	return c.db.Create(body).Error
+}
+
+func (c *ProcurementController) ListAllProcurement() ([]model.Procurement, error) {
 	var procurements []model.Procurement
 	err := c.db.
 		Preload("TOR.InstrumentRequest.Instruments.Category").
