@@ -43,6 +43,19 @@ func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 	return string(interview.InterviewStatus), nil
 }
 
+func (c *InterviewController) GetAllInterviews() ([]*model.Interview, error) {
+	var interviews []*model.Interview
+	err := c.DB.
+		Preload("Instructor").
+		Preload("ApplicationReport").
+		Preload("ApplicationReport.Applicant").
+		Find(&interviews).Error
+	if err != nil {
+		return nil, err
+	}
+	return interviews, nil
+}
+
 func (c *InterviewController) GetInterviewByApplicationReportID(reportID uint) (*model.Interview, error) {
 	var interview model.Interview
 	err := c.DB.Where("application_report_id = ?", reportID).First(&interview).Error

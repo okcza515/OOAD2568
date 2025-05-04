@@ -18,7 +18,7 @@ type RequestLeaveFactory struct{}
 
 // Create instantiates and returns a leave request based on the role.
 func (f *RequestLeaveFactory) Create(role, id, leaveType, reason, dateStr string) (RequestLeaveProductInterface, error) {
-	t, err := time.Parse("2006-01-02", dateStr)
+	t, err := time.Parse("02-01-2006", dateStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format: %w", err)
 	}

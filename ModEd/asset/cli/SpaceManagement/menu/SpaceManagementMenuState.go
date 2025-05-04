@@ -20,6 +20,7 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 	//Add more menu here
 	manager.AddMenu("room", NewRoomMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("booking", NewBookingMenuState(db, manager, spaceManagementMenu))
+	manager.AddMenu("Schedule", NewPermanentScheduleState(db, manager, spaceManagementMenu))
 
 	return spaceManagementMenu
 }
@@ -48,7 +49,7 @@ func (menu *SpaceManagementState) HandleUserInput(input string) error {
 	case "3":
 		menu.manager.GoToMenu("booking")
 	case "4":
-		fmt.Println("Not implemented yet...")
+		menu.manager.GoToMenu("Schedule")
 	case "5":
 		menu.manager.GoToMenu("room")
 	case "exit":

@@ -7,11 +7,12 @@ import (
 
 	"gorm.io/gorm"
 )
+
 type LeaveInstructorHRController struct {
 	db *gorm.DB
 }
 
-func createLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
+func CreateLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
 	db.AutoMigrate(&model.RequestLeaveInstructor{})
 	return &LeaveInstructorHRController{db: db}
 }
@@ -50,12 +51,12 @@ func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]
 	return requests, nil
 }
 
-func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
+func SubmitInstructorLeaveRequest(db *gorm.DB, instructorID, leaveType, reason, leaveDateStr string) error {
 
-	tm := &util.TransactionManager{DB:db}
+	tm := &util.TransactionManager{DB: db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorController := createLeaveInstructorHRController(tx)
+		instructorController := CreateLeaveInstructorHRController(tx)
 		factory := &model.RequestLeaveFactory{}
 
 		req, err := factory.Create("instructor", instructorID, leaveType, reason, leaveDateStr)
@@ -69,5 +70,3 @@ func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, l
 		return nil
 	})
 }
-
-	

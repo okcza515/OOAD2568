@@ -16,8 +16,8 @@ type SpaceManagementControllerManager struct {
 	InstrumentManagement InstrumentManagementInterface
 	SupplyManagement     SupplyManagementInterface
 	Booking              BookingControllerInterface
-	// PermanentSchedule    PermanentBookingController
-	Room RoomControllerInterface
+	PermanentSchedule    PermanentBookingControllerInterface
+	Room                 RoomControllerInterface
 }
 
 var spaceManagementInstance *SpaceManagementControllerManager
@@ -50,6 +50,7 @@ func NewSpaceManagementControllerManager(db *gorm.DB) (*SpaceManagementControlle
 	manager.Room = NewRoomController()
 	manager.InstrumentManagement = NewInstrumentManagementController()
 	manager.SupplyManagement = NewSupplyManagementController()
+	manager.PermanentSchedule = NewPermanentBookingController()
 	return manager, nil
 }
 
@@ -69,8 +70,9 @@ func (manager *SpaceManagementControllerManager) ResetDatabase() error {
 
 func (manager *SpaceManagementControllerManager) LoadSeedData() error {
 	seedData := map[string]interface{}{
-		"Room":    &[]model.Room{},
-		"Booking": &[]model.Booking{},
+		"Room":     &[]model.Room{},
+		"Booking":  &[]model.Booking{},
+		"Schedule": &[]model.PermanentSchedule{},
 	}
 	for filename, m := range seedData {
 		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".JSON")

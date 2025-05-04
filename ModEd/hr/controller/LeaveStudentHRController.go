@@ -12,7 +12,7 @@ type LeaveStudentHRController struct {
 	db *gorm.DB
 }
 
-func createLeaveStudentHRController(db *gorm.DB) *LeaveStudentHRController {
+func CreateLeaveStudentHRController(db *gorm.DB) *LeaveStudentHRController {
 	db.AutoMigrate(&model.RequestLeaveStudent{})
 	return &LeaveStudentHRController{db: db}
 }
@@ -52,12 +52,12 @@ func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.Req
 }
 
 
-func SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
+func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(db *gorm.DB,studentID, leaveType, reason, leaveDateStr string) error {
 
 	tm := &util.TransactionManager{DB: db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
-		leaveController := createLeaveStudentHRController(tx) // ใช้ transaction ของตัวนี้เลย
+		leaveController := CreateLeaveStudentHRController(tx) // ใช้ transaction ของตัวนี้เลย
 		factory := &model.RequestLeaveFactory{}
 
 		req, err := factory.Create("student", studentID, leaveType, reason, leaveDateStr)
