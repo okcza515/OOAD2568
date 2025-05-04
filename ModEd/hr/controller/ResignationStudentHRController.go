@@ -12,13 +12,13 @@ type ResignationStudentHRController struct {
 	db *gorm.DB
 }
 
-func createResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
+func CreateResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
 	db.AutoMigrate(&model.RequestResignationStudent{})
 	return &ResignationStudentHRController{db: db}
 }
 
-func (c *ResignationStudentHRController) insert(request *model.RequestResignationStudent) error {
-	return c.db.Create(request).Error
+func (c *ResignationStudentHRController) insert(db *gorm.DB, request *model.RequestResignationStudent) error {
+	return db.Create(request).Error
 }
 
 func (c *ResignationStudentHRController) getByStudentID(id string) (*model.RequestResignationStudent, error) {
@@ -29,23 +29,32 @@ func (c *ResignationStudentHRController) getByStudentID(id string) (*model.Reque
 	return &req, nil
 }
 
-func (c *ResignationStudentHRController) update(req *model.RequestResignationStudent) error {
-	return c.db.Save(req).Error
+func (c *ResignationStudentHRController) update(db *gorm.DB, req *model.RequestResignationStudent) error {
+	return db.Save(req).Error
 }
 
-func SubmitResignationStudent(db *gorm.DB,studentID string, reason string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *ResignationStudentHRController) SubmitResignationStudent(studentID string, reason string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		
-		controller := createResignationStudentHRController(tx)
-		factory := &model.RequestResignationFactory{}
-		req, err := factory.Create("student", studentID, reason)
+		factory, err := model.GetFactory("student")
 		if err != nil {
-			return fmt.Errorf("failed to build resignation request: %v", err)
+			return fmt.Errorf("failed to get student factory: %v", err)
 		}
-		if err := controller.insert(req.(*model.RequestResignationStudent)); err != nil {
-			return fmt.Errorf("failed to insert resignation request: %v", err)
+
+		reqInterface, err := factory.CreateResignation(studentID, reason)
+		if err != nil {
+			return fmt.Errorf("failed to create resignation request using factory: %v", err)
 		}
+
+		req, ok := reqInterface.(*model.RequestResignationStudent)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
+		}
+
+		if err := c.insert(tx, req); err != nil {
+			return fmt.Errorf("failed to insert resignation request within transaction: %v", err)
+		}
+
 		return nil
 	})
 }

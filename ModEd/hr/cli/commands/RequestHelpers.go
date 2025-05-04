@@ -35,7 +35,8 @@ func handleLeaveRequest(target string, args []string, tx *gorm.DB) error {
 				fs.Usage()
 				return fmt.Errorf("validation error for student leave: %v", err)
 			}
-			return controller.SubmitStudentLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+			leaveStudentController := controller.CreateLeaveStudentHRController(tx)
+			return leaveStudentController.SubmitStudentLeaveRequest(*id, *leaveType, *reason, *leaveDateStr)
 		},
 		"instructor": func() error {
 			validator.Field("id").Required().IsInstructorID()
@@ -43,7 +44,8 @@ func handleLeaveRequest(target string, args []string, tx *gorm.DB) error {
 				fs.Usage()
 				return fmt.Errorf("validation error for instructor leave: %v", err)
 			}
-			return controller.SubmitInstructorLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+			leaveInstructorController := controller.CreateLeaveInstructorHRController(tx)
+			return leaveInstructorController.SubmitInstructorLeaveRequest(*id, *leaveType, *reason, *leaveDateStr)
 		},
 	}
 
@@ -83,7 +85,8 @@ func handleResignationRequest(target string, args []string, tx *gorm.DB) error {
 				fs.Usage()
 				return fmt.Errorf("validation error for student: %v", err)
 			}
-			return controller.SubmitResignationStudent(tx, *id, *reason)
+			controller := controller.CreateResignationStudentHRController(tx)
+			return controller.SubmitResignationStudent(*id, *reason)
 		},
 		"instructor": func() error {
 			validator.Field("id").Required().IsInstructorID()
@@ -91,7 +94,8 @@ func handleResignationRequest(target string, args []string, tx *gorm.DB) error {
 				fs.Usage()
 				return fmt.Errorf("validation error for instructor: %v", err)
 			}
-			return controller.SubmitResignationInstructor(tx, *id, *reason)
+			controller := controller.CreateResignationInstructorHRController(tx)
+			return controller.SubmitResignationInstructor(*id, *reason)
 		},
 	}
 

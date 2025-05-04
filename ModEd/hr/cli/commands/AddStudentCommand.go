@@ -17,6 +17,11 @@ func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	firstName := fs.String("fname", "", "First Name")
 	lastName := fs.String("lname", "", "Last Name")
 	email := fs.String("email", "", "Email")
+	startDate := fs.String("startDate", "", "Start Date")
+	birthDate := fs.String("birthDate", "", "Birth Date")
+	program := fs.String("program", "", "Program")
+	department := fs.String("department", "", "Department")
+	status := fs.String("status", "", "Status")
 	gender := fs.String("gender", "", "Gender")
 	citizenID := fs.String("citizenID", "", "Citizen ID")
 	phoneNumber := fs.String("phone", "", "Phone Number")
@@ -36,12 +41,17 @@ func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	err = controller.AddStudent(
-		tx,
+	studentController := controller.NewStudentHRController(tx)
+	err = studentController.AddStudent(
 		*studentID,
 		*firstName,
 		*lastName,
 		*email,
+		*startDate,
+		*birthDate,
+		*program,
+		*department,
+		*status,
 		*gender,
 		*citizenID,
 		*phoneNumber,

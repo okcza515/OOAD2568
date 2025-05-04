@@ -31,8 +31,7 @@ func (handler *InternShipModuleMenuStateHandler) Render() {
 	fmt.Println("\n==== Internship Application System ====")
 	fmt.Println("1. Application Management")
 	fmt.Println("2. Evaluate Student Performance")
-	fmt.Println("3. Evaluate Student Report")
-	fmt.Println("4. Update Approval Status")
+	fmt.Println("3. Update Approval Status")
 	fmt.Println("Type 'exit' to quit")
 	fmt.Print("Enter your choice: ")
 }
@@ -46,12 +45,6 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 		handler.menuManager.SetState(handler.InternshipEvaluationMenuStateHandler)
 		return nil
 	case "3":
-		err := handler.handleEvaluateStudentReport()
-		if err != nil {
-			fmt.Println("Error evaluating student report:", err)
-		}
-		return err
-	case "4":
 		err := handler.handleUpdateApprovalStatus()
 		if err != nil {
 			fmt.Println("Error updating approval status:", err)
@@ -90,52 +83,5 @@ func (handler *InternShipModuleMenuStateHandler) handleUpdateApprovalStatus() er
 	}
 
 	fmt.Println("Approval statuses updated successfully!")
-	return nil
-}
-
-func (handler *InternShipModuleMenuStateHandler) handleEvaluateStudentPerformance() error {
-	studentCode := utils.GetUserInput("Enter Student Code: ")
-	if studentCode == "" {
-		return fmt.Errorf("error: student code cannot be empty")
-	}
-
-	reportScore := int(utils.GetUserInputUint("Enter Report Score: "))
-
-	if reportScore < 0 {
-		return fmt.Errorf("error: invalid report score, must be a positive integer")
-	}
-
-	err := handler.wrapper.Report.UpdateReportScore(studentCode, reportScore)
-	if err != nil {
-		return fmt.Errorf("error updating report score: %w", err)
-	}
-
-	fmt.Println("Student performance evaluated successfully!")
-	return nil
-}
-
-func (handler *InternShipModuleMenuStateHandler) handleEvaluateStudentReport() error {
-	studentCode := utils.GetUserInput("Enter Student Code: ")
-	if studentCode == "" {
-		return fmt.Errorf("error: student code cannot be empty")
-	}
-
-	supervisorScore := int(utils.GetUserInputUint("Enter Supervisor Score:"))
-
-	if supervisorScore < 0 {
-		return fmt.Errorf("error: invalid supervisor score, must be a positive integer")
-	}
-
-	mentorScore := int(utils.GetUserInputUint("Enter Mentor Score: "))
-	if mentorScore < 0 {
-		return fmt.Errorf("error: invalid mentor score, must be a positive integer")
-	}
-
-	err := handler.wrapper.Review.UpdateReviewScore(studentCode, supervisorScore, mentorScore)
-	if err != nil {
-		return fmt.Errorf("error updating review score: %w", err)
-	}
-
-	fmt.Println("Student report evaluated successfully!")
 	return nil
 }

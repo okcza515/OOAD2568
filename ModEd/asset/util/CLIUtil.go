@@ -102,6 +102,23 @@ func GetUintInput(prompt string) uint {
 	return input
 }
 
+func GetUintPointerInput(prompt string) *uint {
+	fmt.Print(prompt)
+	var input string
+	_, err := fmt.Scanln(&input)
+	if err != nil || input == "" {
+		return nil
+	}
+
+	var value uint
+	_, err = fmt.Sscanf(input, "%d", &value)
+	if err != nil {
+		return nil
+	}
+
+	return &value
+}
+
 func GetFloatInput(prompt string) float64 {
 	var input float64
 	fmt.Print(prompt)

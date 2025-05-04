@@ -7,23 +7,24 @@ import (
 
 	"gorm.io/gorm"
 )
+
 type LeaveInstructorHRController struct {
 	db *gorm.DB
 }
 
-func createLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
+func CreateLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
 	db.AutoMigrate(&model.RequestLeaveInstructor{})
 	return &LeaveInstructorHRController{db: db}
 }
 
-func (c *LeaveInstructorHRController) insert(request *model.RequestLeaveInstructor) error {
-	return c.db.Create(request).Error
+func (c *LeaveInstructorHRController) insert(db *gorm.DB, request *model.RequestLeaveInstructor) error {
+	return db.Create(request).Error
 }
-func (c *LeaveInstructorHRController) update(request *model.RequestLeaveInstructor) error {
-	return c.db.Save(request).Error
+func (c *LeaveInstructorHRController) update(db *gorm.DB, request *model.RequestLeaveInstructor) error {
+	return db.Save(request).Error
 }
-func (c *LeaveInstructorHRController) delete(request *model.RequestLeaveInstructor) error {
-	return c.db.Delete(request).Error
+func (c *LeaveInstructorHRController) delete(db *gorm.DB, request *model.RequestLeaveInstructor) error {
+	return db.Delete(request).Error
 }
 func (c *LeaveInstructorHRController) getAll() ([]model.RequestLeaveInstructor, error) {
 	var requests []model.RequestLeaveInstructor
@@ -50,24 +51,28 @@ func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]
 	return requests, nil
 }
 
-func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
-
-	tm := &util.TransactionManager{DB:db}
-
+func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID, leaveType, reason, leaveDateStr string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorController := createLeaveInstructorHRController(tx)
-		factory := &model.RequestLeaveFactory{}
-
-		req, err := factory.Create("instructor", instructorID, leaveType, reason, leaveDateStr)
+		factory, err := model.GetFactory("instructor")
 		if err != nil {
-			return fmt.Errorf("failed to build leave request: %v", err)
+			return fmt.Errorf("failed to get student factory: %v", err)
 		}
 
-		if err := instructorController.insert(req.(*model.RequestLeaveInstructor)); err != nil {
-			return fmt.Errorf("failed to submit leave request: %v", err)
+		reqInterface, err := factory.CreateLeave(instructorID, leaveType, reason, leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to create resignation request using factory: %v", err)
 		}
+
+		req, ok := reqInterface.(*model.RequestLeaveInstructor)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
+		}
+
+		if err := c.insert(tx, req); err != nil {
+			return fmt.Errorf("failed to insert resignation request within transaction: %v", err)
+		}
+
 		return nil
 	})
 }
-
-	

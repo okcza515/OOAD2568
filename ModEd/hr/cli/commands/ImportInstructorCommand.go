@@ -41,7 +41,8 @@ func (cmd *ImportInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
-		if err := controller.ImportInstructors(tx, instructors); err != nil {
+		instructorController := controller.CreateInstructorHRController(tx)
+		if err := instructorController.ImportInstructors(instructors); err != nil {
 			return err
 		}
 		fmt.Println("Instructors imported successfully!")

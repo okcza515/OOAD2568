@@ -32,8 +32,8 @@ func (cmd *UpdateStudentInfoCommand) Execute(args []string, tx *gorm.DB) error {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
 	}
-
-	if err := controller.UpdateStudentInfo(tx, *studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber, *email); err != nil {
+	studentController := controller.NewStudentHRController(tx)
+	if err := studentController.UpdateStudentInfo(*studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber, *email); err != nil {
 		return fmt.Errorf("failed to update student info: %v", err)
 	}
 

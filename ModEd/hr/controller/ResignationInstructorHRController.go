@@ -3,8 +3,7 @@ package controller
 import (
 	"ModEd/hr/model"
 	"ModEd/hr/util"
-	"fmt"	
-
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -13,13 +12,14 @@ type ResignationInstructorHRController struct {
 	db *gorm.DB
 }
 
-func createResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
-    db.AutoMigrate(&model.RequestResignationInstructor{})
-    return &ResignationInstructorHRController{db: db}
+func CreateResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
+	db.AutoMigrate(&model.RequestResignationInstructor{})
+	return &ResignationInstructorHRController{db: db}
 }
 
-func (c *ResignationInstructorHRController) insert(request *model.RequestResignationInstructor) error {
-	return c.db.Create(request).Error
+// Use the passed db object (which will be 'tx' in the transaction context)
+func (c *ResignationInstructorHRController) insert(db *gorm.DB, request *model.RequestResignationInstructor) error {
+	return db.Create(request).Error
 }
 
 func (c *ResignationInstructorHRController) getByInstructorID(id string) (*model.RequestResignationInstructor, error) {
@@ -30,23 +30,30 @@ func (c *ResignationInstructorHRController) getByInstructorID(id string) (*model
 	return &req, nil
 }
 
-func (c *ResignationInstructorHRController) update(req *model.RequestResignationInstructor) error {
-	return c.db.Save(req).Error
+func (c *ResignationInstructorHRController) update(db *gorm.DB, req *model.RequestResignationInstructor) error {
+	return db.Save(req).Error
 }
 
-func SubmitResignationInstructor(db *gorm.DB, instructorID string, reason string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *ResignationInstructorHRController) SubmitResignationInstructor(instructorID string, reason string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		
-		controller := createResignationInstructorHRController(tx)
-		factory := &model.RequestResignationFactory{}
-		req, err := factory.Create("instructor", instructorID, reason)
+		factory, err := model.GetFactory("instructor")
 		if err != nil {
-			return fmt.Errorf("failed to build resignation request: %v", err)
+			return fmt.Errorf("failed to get instructor factory: %v", err)
 		}
 
-		if err := controller.insert(req.(*model.RequestResignationInstructor)); err != nil {
-			return fmt.Errorf("failed to insert resignation request: %v", err)
+		reqInterface, err := factory.CreateResignation(instructorID, reason)
+		if err != nil {
+			return fmt.Errorf("failed to create resignation request using factory: %v", err)
+		}
+
+		req, ok := reqInterface.(*model.RequestResignationInstructor)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
+		}
+
+		if err := c.insert(tx, req); err != nil {
+			return fmt.Errorf("failed to insert resignation request within transaction: %v", err)
 		}
 
 		return nil
