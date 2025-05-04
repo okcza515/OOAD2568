@@ -10,10 +10,6 @@ import (
 
 type SpaceManagementState struct {
 	manager *cli.CLIMenuStateManager
-
-	//Add more menu here
-	bookingMenu *BookingMenuState
-	roomMenu    *RoomMenuState
 }
 
 func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *SpaceManagementState {
@@ -22,8 +18,8 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 	}
 
 	//Add more menu here
-	manager.AddMenu("room", spaceManagementMenu.roomMenu)
-	manager.AddMenu("booking", spaceManagementMenu.bookingMenu)
+	manager.AddMenu("room", NewRoomMenuState(db, manager, spaceManagementMenu))
+	manager.AddMenu("booking", NewBookingMenuState(db, manager, spaceManagementMenu))
 
 	return spaceManagementMenu
 }

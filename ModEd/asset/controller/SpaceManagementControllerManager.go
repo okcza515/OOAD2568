@@ -12,10 +12,10 @@ import (
 )
 
 type SpaceManagementControllerManager struct {
-	db *gorm.DB
-	InstrumentManagement 	InstrumentManagementInterface
-	SupplyManagement     	SupplyManagementInterface
-	Booking              	BookingControllerInterface
+	db                   *gorm.DB
+	InstrumentManagement InstrumentManagementInterface
+	SupplyManagement     SupplyManagementInterface
+	Booking              BookingControllerInterface
 	// PermanentSchedule    PermanentBookingController
 	Room RoomControllerInterface
 }
@@ -26,14 +26,14 @@ func GetSpaceManagementInstance(db *gorm.DB) *SpaceManagementControllerManager {
 	if spaceManagementInstance != nil {
 		return spaceManagementInstance
 	}
-	spaceManagementInstance, err := NewSpaceManagementControllerFacade(db)
+	spaceManagementInstance, err := NewSpaceManagementControllerManager(db)
 	if err != nil {
 		panic("failed to create SpaceManagementControllerManager instance")
 	}
 	return spaceManagementInstance
 }
 
-func NewSpaceManagementControllerFacade(db *gorm.DB) (*SpaceManagementControllerManager, error) {
+func NewSpaceManagementControllerManager(db *gorm.DB) (*SpaceManagementControllerManager, error) {
 	// db := migration.GetInstance().DB
 	if db == nil {
 		return nil, errors.New("db not initialized")
