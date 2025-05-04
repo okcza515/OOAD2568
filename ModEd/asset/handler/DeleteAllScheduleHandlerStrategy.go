@@ -3,17 +3,20 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller"
 	"ModEd/asset/util"
 	"fmt"
 	"strings"
 )
 
 type DeleteAllSchedulesHandler struct {
-	controller controller.PermanentBookingControllerInterface
+	controller interface {
+		DeleteAll() error
+	}
 }
 
-func NewDeleteAllSchedulesHandler(controller controller.PermanentBookingControllerInterface) *DeleteAllSchedulesHandler {
+func NewDeleteAllSchedulesHandler(controller interface {
+	DeleteAll() error
+}) *DeleteAllSchedulesHandler {
 	return &DeleteAllSchedulesHandler{
 		controller: controller,
 	}

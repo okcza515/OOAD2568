@@ -3,17 +3,21 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller"
+	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
 	"strconv"
 )
 
 type GetScheduleDetailsHandler struct {
-	controller controller.PermanentBookingControllerInterface
+	controller interface {
+		RetrieveByID(id uint) (model.PermanentSchedule, error)
+	}
 }
 
-func NewGetScheduleDetailsHandler(controller controller.PermanentBookingControllerInterface) *GetScheduleDetailsHandler {
+func NewGetScheduleDetailsHandler(controller interface {
+	RetrieveByID(id uint) (model.PermanentSchedule, error)
+}) *GetScheduleDetailsHandler {
 	return &GetScheduleDetailsHandler{
 		controller: controller,
 	}

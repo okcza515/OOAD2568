@@ -2,6 +2,7 @@ package handler
 
 import (
 	procurement "ModEd/asset/controller"
+	model "ModEd/asset/model"
 	util "ModEd/asset/util"
 	"fmt"
 )
@@ -17,9 +18,26 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Create Procurement")
+			PID := util.GetUintInput("Enter Procurement ID: ")
+			AID := util.GetUintPointerInput("Enter Approver ID: ")
+			newProcurement := &model.Procurement{
+				ProcurementID: PID,
+				ApproverID:    AID,
+				Status:        model.ProcurementStatusPending,
+			}
+
+			err := facade.Procurement.CreateProcurement(newProcurement)
+			if err != nil {
+				fmt.Println("Failed to Procurement:", err)
+				WaitForEnter()
+				break
+			}
+			fmt.Println("Procurement created with ID:", newProcurement.ProcurementID)
 			WaitForEnter()
+
 		case "2":
 			fmt.Println("List All Procurements")
+			facade.Procurement.ListAllProcurement()
 			WaitForEnter()
 		case "3":
 			fmt.Println("View Procurement by ID")

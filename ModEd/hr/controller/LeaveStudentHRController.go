@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-	
 )
+
 type LeaveStudentHRController struct {
 	db *gorm.DB
 }
@@ -51,22 +51,30 @@ func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.Req
 	return requests, nil
 }
 
-
 func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(studentID, leaveType, reason, leaveDateStr string) error {
 
 	tm := &util.TransactionManager{DB: c.db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
-		leaveController := CreateLeaveStudentHRController(tx) // ใช้ transaction ของตัวนี้เลย
-		factory := &model.RequestLeaveFactory{}
+		leaveController := CreateLeaveStudentHRController(tx)
 
-		req, err := factory.Create("student", studentID, leaveType, reason, leaveDateStr)
+		factory, err := model.GetFactory("student")
 		if err != nil {
-			return fmt.Errorf("failed to build leave request: %v", err)
+			return fmt.Errorf("failed to get student factory: %v", err)
 		}
 
-		if err := leaveController.insert(req.(*model.RequestLeaveStudent)); err != nil {
-			return fmt.Errorf("failed to submit leave request: %v", err)
+		reqInterface, err := factory.CreateLeave(studentID, leaveType, reason, leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to create leave request using factory: %v", err)
+		}
+
+		req, ok := reqInterface.(*model.RequestLeaveStudent)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for student leave request")
+		}
+
+		if err := leaveController.insert(req); err != nil {
+			return fmt.Errorf("failed to submit leave request within transaction: %v", err)
 		}
 		return nil
 	})

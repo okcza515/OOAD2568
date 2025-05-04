@@ -1,0 +1,492 @@
+[
+    {
+      "time_table_id": 101,
+      "time_table": {
+        "start_date": "2025-05-06T09:00:00Z",
+        "end_date": "2025-05-06T10:30:00Z",
+        "room_id": 201,
+        "room": {
+          "room_name": "Engineering Block A-101",
+          "room_type": "Lecture Room",
+          "description": "Spacious lecture hall with advanced audio-visual equipment",
+          "floor": 1,
+          "building": "Engineering Block A",
+          "location": "North Campus, Wing B",
+          "capacity": 60,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 301,
+      "faculty": {
+        "name": "Dr. Sarah Johnson",
+        "email": "sarah.johnson@moded.edu",
+        "department_id": 401
+      },
+      "department_id": 401,
+      "department": {
+        "name": "Computer Science",
+        "code": "CS",
+        "description": "Department of Computer Science and Engineering"
+      },
+      "programtype_id": 0,
+      "course_id": 601,
+      "course": {
+        "course_code": "CS3001",
+        "course_name": "Database Systems",
+        "credits": 4,
+        "description": "Introduction to database design and implementation"
+      },
+      "class_id": 701,
+      "class": {
+        "section": 1,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2023"
+      }
+    },
+    {
+      "time_table_id": 102,
+      "time_table": {
+        "start_date": "2025-05-06T11:00:00Z",
+        "end_date": "2025-05-06T13:00:00Z",
+        "room_id": 202,
+        "room": {
+          "room_name": "Science Building Lab S-205",
+          "room_type": "Lab Room",
+          "description": "Well-equipped physics laboratory for practical experiments",
+          "floor": 2,
+          "building": "Science Building",
+          "location": "East Campus, Room 205",
+          "capacity": 45,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 302,
+      "faculty": {
+        "name": "Prof. Michael Chen",
+        "email": "michael.chen@moded.edu",
+        "department_id": 402
+      },
+      "department_id": 402,
+      "department": {
+        "name": "Physics",
+        "code": "PHY",
+        "description": "Department of Physics and Applied Sciences"
+      },
+      "programtype_id": 0,
+      "course_id": 602,
+      "course": {
+        "course_code": "PHY2002",
+        "course_name": "Modern Physics Lab",
+        "credits": 2,
+        "description": "Laboratory experiments in modern physics concepts"
+      },
+      "class_id": 702,
+      "class": {
+        "section": 2,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2024"
+      }
+    },
+    {
+      "time_table_id": 103,
+      "time_table": {
+        "start_date": "2025-05-07T14:00:00Z",
+        "end_date": "2025-05-07T16:00:00Z",
+        "room_id": 203,
+        "room": {
+          "room_name": "Business School Seminar Hall BS-301",
+          "room_type": "Seminar Room",
+          "description": "Large seminar hall with circular seating arrangement",
+          "floor": 3,
+          "building": "Business School",
+          "location": "South Campus, Room 301",
+          "capacity": 75,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 303,
+      "faculty": {
+        "name": "Dr. Emily Rodriguez",
+        "email": "emily.rodriguez@moded.edu",
+        "department_id": 403
+      },
+      "department_id": 403,
+      "department": {
+        "name": "Business Administration",
+        "code": "BUS",
+        "description": "School of Business Administration and Management"
+      },
+      "programtype_id": 1,
+      "course_id": 603,
+      "course": {
+        "course_code": "BUS5004",
+        "course_name": "Strategic Management",
+        "credits": 3,
+        "description": "Advanced concepts in business strategy and management"
+      },
+      "class_id": 703,
+      "class": {
+        "section": 1,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2025"
+      }
+    },
+    {
+      "time_table_id": 104,
+      "time_table": {
+        "start_date": "2025-05-08T09:00:00Z",
+        "end_date": "2025-05-08T11:00:00Z",
+        "room_id": 204,
+        "room": {
+          "room_name": "Engineering Block B-105",
+          "room_type": "Lecture Room",
+          "description": "Medium-sized lecture room with modern facilities",
+          "floor": 1,
+          "building": "Engineering Block B",
+          "location": "West Campus, Room 105",
+          "capacity": 50,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 304,
+      "faculty": {
+        "name": "Prof. David Kim",
+        "email": "david.kim@moded.edu",
+        "department_id": 404
+      },
+      "department_id": 404,
+      "department": {
+        "name": "Electrical Engineering",
+        "code": "EE",
+        "description": "Department of Electrical and Electronics Engineering"
+      },
+      "programtype_id": 0,
+      "course_id": 604,
+      "course": {
+        "course_code": "EE3005",
+        "course_name": "Digital Signal Processing",
+        "credits": 4,
+        "description": "Theory and applications of digital signal processing"
+      },
+      "class_id": 704,
+      "class": {
+        "section": 2,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2023"
+      }
+    },
+    {
+      "time_table_id": 105,
+      "time_table": {
+        "start_date": "2025-05-09T13:00:00Z",
+        "end_date": "2025-05-09T15:00:00Z",
+        "room_id": 205,
+        "room": {
+          "room_name": "Arts Building Tutorial Room A-201",
+          "room_type": "Tutorial Room",
+          "description": "Intimate tutorial room with round table setup",
+          "floor": 2,
+          "building": "Arts Building",
+          "location": "Central Campus, Room 201",
+          "capacity": 40,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 305,
+      "faculty": {
+        "name": "Dr. Rachel Singh",
+        "email": "rachel.singh@moded.edu",
+        "department_id": 405
+      },
+      "department_id": 405,
+      "department": {
+        "name": "English Literature",
+        "code": "ENG",
+        "description": "Department of English Literature and Language"
+      },
+      "programtype_id": 1,
+      "course_id": 605,
+      "course": {
+        "course_code": "ENG4003",
+        "course_name": "Contemporary Literary Theory",
+        "credits": 3,
+        "description": "Advanced study of modern literary criticism and theory"
+      },
+      "class_id": 705,
+      "class": {
+        "section": 1,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2024"
+      }
+    },
+    {
+      "time_table_id": 106,
+      "time_table": {
+        "start_date": "2025-05-10T08:30:00Z",
+        "end_date": "2025-05-10T10:30:00Z",
+        "room_id": 206,
+        "room": {
+          "room_name": "Computer Science Lab CS-103",
+          "room_type": "Lab Room",
+          "description": "Computer lab with 30 workstations and specialized software",
+          "floor": 1,
+          "building": "Technology Center",
+          "location": "North Campus, Room 103",
+          "capacity": 30,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 306,
+      "faculty": {
+        "name": "Dr. James Wilson",
+        "email": "james.wilson@moded.edu",
+        "department_id": 401
+      },
+      "department_id": 401,
+      "department": {
+        "name": "Computer Science",
+        "code": "CS",
+        "description": "Department of Computer Science and Engineering"
+      },
+      "programtype_id": 0,
+      "course_id": 606,
+      "course": {
+        "course_code": "CS2005",
+        "course_name": "Data Structures Lab",
+        "credits": 2,
+        "description": "Practical implementation of fundamental data structures"
+      },
+      "class_id": 706,
+      "class": {
+        "section": 2,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2024"
+      }
+    },
+    {
+      "time_table_id": 107,
+      "time_table": {
+        "start_date": "2025-05-10T11:00:00Z",
+        "end_date": "2025-05-10T13:00:00Z",
+        "room_id": 207,
+        "room": {
+          "room_name": "Psychology Research Lab PSY-201",
+          "room_type": "Research Lab",
+          "description": "Specialized lab for psychology experiments and research",
+          "floor": 2,
+          "building": "Social Sciences Building",
+          "location": "East Campus, Room 201",
+          "capacity": 20,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 307,
+      "faculty": {
+        "name": "Prof. Lisa Torres",
+        "email": "lisa.torres@moded.edu",
+        "department_id": 406
+      },
+      "department_id": 406,
+      "department": {
+        "name": "Psychology",
+        "code": "PSY",
+        "description": "Department of Psychology and Behavioral Sciences"
+      },
+      "programtype_id": 1,
+      "course_id": 607,
+      "course": {
+        "course_code": "PSY6001",
+        "course_name": "Advanced Research Methods",
+        "credits": 4,
+        "description": "Advanced methodologies in psychological research"
+      },
+      "class_id": 707,
+      "class": {
+        "section": 1,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2023"
+      }
+    },
+    {
+      "time_table_id": 108,
+      "time_table": {
+        "start_date": "2025-05-11T09:00:00Z",
+        "end_date": "2025-05-11T11:00:00Z",
+        "room_id": 208,
+        "room": {
+          "room_name": "Mechanical Engineering Workshop ME-105",
+          "room_type": "Workshop",
+          "description": "Fully equipped mechanical engineering workshop",
+          "floor": 1,
+          "building": "Engineering Block C",
+          "location": "South Campus, Room 105",
+          "capacity": 35,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 308,
+      "faculty": {
+        "name": "Dr. Robert Patel",
+        "email": "robert.patel@moded.edu",
+        "department_id": 407
+      },
+      "department_id": 407,
+      "department": {
+        "name": "Mechanical Engineering",
+        "code": "ME",
+        "description": "Department of Mechanical and Automotive Engineering"
+      },
+      "programtype_id": 0,
+      "course_id": 608,
+      "course": {
+        "course_code": "ME3006",
+        "course_name": "Machine Design Workshop",
+        "credits": 3,
+        "description": "Practical workshop on designing mechanical components"
+      },
+      "class_id": 708,
+      "class": {
+        "section": 1,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2023"
+      }
+    },
+    {
+      "time_table_id": 109,
+      "time_table": {
+        "start_date": "2025-05-11T14:00:00Z",
+        "end_date": "2025-05-11T16:00:00Z",
+        "room_id": 209,
+        "room": {
+          "room_name": "Finance Trading Lab FIN-302",
+          "room_type": "Specialized Lab",
+          "description": "Stock trading simulation lab with real-time market data",
+          "floor": 3,
+          "building": "Business School",
+          "location": "West Wing, Room 302",
+          "capacity": 30,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 309,
+      "faculty": {
+        "name": "Dr. Alicia Wong",
+        "email": "alicia.wong@moded.edu",
+        "department_id": 408
+      },
+      "department_id": 408,
+      "department": {
+        "name": "Finance",
+        "code": "FIN",
+        "description": "Department of Finance and Investment"
+      },
+      "programtype_id": 1,
+      "course_id": 609,
+      "course": {
+        "course_code": "FIN5003",
+        "course_name": "Investment Analysis",
+        "credits": 3,
+        "description": "Advanced techniques in portfolio management and investment"
+      },
+      "class_id": 709,
+      "class": {
+        "section": 2,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2024"
+      }
+    },
+    {
+      "time_table_id": 110,
+      "time_table": {
+        "start_date": "2025-05-12T10:00:00Z",
+        "end_date": "2025-05-12T12:00:00Z",
+        "room_id": 210,
+        "room": {
+          "room_name": "Architecture Studio ARC-401",
+          "room_type": "Studio",
+          "description": "Spacious architecture design studio with drafting tables",
+          "floor": 4,
+          "building": "Design Building",
+          "location": "Central Campus, Room 401",
+          "capacity": 25,
+          "is_room_out_of_service": false,
+          "instruments": [],
+          "supplies": []
+        },
+        "is_available": false,
+        "booking_type": "permanent"
+      },
+      "faculty_id": 310,
+      "faculty": {
+        "name": "Prof. Thomas Nakamura",
+        "email": "thomas.nakamura@moded.edu",
+        "department_id": 409
+      },
+      "department_id": 409,
+      "department": {
+        "name": "Architecture",
+        "code": "ARC",
+        "description": "School of Architecture and Urban Planning"
+      },
+      "programtype_id": 0,
+      "course_id": 610,
+      "course": {
+        "course_code": "ARC4002",
+        "course_name": "Architectural Design Studio",
+        "credits": 5,
+        "description": "Comprehensive architectural design and modeling studio"
+      },
+      "class_id": 710,
+      "class": {
+        "section": 3,
+        "academic_year": "2025-2026",
+        "semester": "Spring",
+        "batch": "2022"
+      }
+    }
+  ]
