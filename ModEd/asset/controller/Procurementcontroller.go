@@ -19,14 +19,10 @@ func (c *ProcurementController) CreateProcurement(body *model.Procurement) error
 	return c.db.Create(body).Error
 }
 
-func (c *ProcurementController) ListAllProcurement() ([]model.Procurement, error) {
+func (c *ProcurementController) ListAllProcurement() (*[]model.Procurement, error) {
 	var procurements []model.Procurement
-	err := c.db.
-		Preload("TOR.InstrumentRequest.Instruments.Category").
-		Preload("TOR.InstrumentRequest").
-		Preload("Approver").
-		Find(&procurements).Error
-	return procurements, err
+	err := c.db.Find(&procurements).Error
+	return &procurements, err
 }
 
 // Get a procurement by ID

@@ -37,16 +37,18 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 
 		case "2":
 			fmt.Println("List All Procurements")
-			facade.Procurement.ListAllProcurement()
+			ListAllProcurements(facade)
 			WaitForEnter()
 		case "3":
 			fmt.Println("View Procurement by ID")
 			WaitForEnter()
 		case "4":
 			fmt.Println("Update Procurement Status")
+			ListAllProcurements(facade)
 			WaitForEnter()
 		case "5":
 			fmt.Println("Delete Procurement")
+			ListAllProcurements(facade)
 			WaitForEnter()
 		}
 
@@ -67,4 +69,22 @@ func printProcurementOptions() {
 	fmt.Println("  5:\tDelete Procurement")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
+}
+
+func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
+	procurements, err := facade.Procurement.ListAllProcurement()
+	if err != nil {
+		fmt.Println("Failed to list procurements:", err)
+		return
+	} else {
+
+		fmt.Println("Procurement List:")
+		for _, procurement := range *procurements {
+			approverID := "Not Assigned"
+			if procurement.ApproverID != nil {
+				approverID = fmt.Sprintf("%d", *procurement.ApproverID)
+			}
+			fmt.Printf("ID: %d, ApproverID: %s, Status: %s\n", procurement.ProcurementID, approverID, procurement.Status)
+		}
+	}
 }
