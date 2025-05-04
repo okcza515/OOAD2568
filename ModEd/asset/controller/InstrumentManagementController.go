@@ -12,12 +12,12 @@ import (
 )
 
 type InstrumentManagementInterface interface {
-    GetAll() (*[]model.InstrumentManagement, error)
-    GetById(id uint) (*model.InstrumentManagement, error)
-    GetByRoomId(roomID uint) (*[]model.InstrumentManagement, error)
-    Create(payload *model.InstrumentManagement) error
-    Update(id uint, payload *model.InstrumentManagement) error
-    Delete(id uint) error
+    List(condition map[string]interface{}, preloads ...string)([]model.InstrumentManagement, error) //Getall
+    RetrieveByID(id uint, preloads ...string) (model.InstrumentManagement, error)
+    RetrieveByRoomId(roomID uint) (*[]model.InstrumentManagement, error)
+    Insert(payload *model.InstrumentManagement) error
+    UpdateByID(data model.InstrumentManagement) error
+    DeleteByID(id uint) error
 }
 
 type InstrumentManagementController struct {
@@ -33,21 +33,23 @@ func NewInstrumentManagementController() *InstrumentManagementController {
 	}
 }
 
-func (c *InstrumentManagementController) GetAll() (*[]model.InstrumentManagement, error) {
-    assetList := []model.InstrumentManagement{}
-    records, err := c.BaseController.List(nil)
-    assetList = records
-    return &assetList, err
+func (c *InstrumentManagementController) List(condition map[string]interface{}, preloads ...string) ([]model.InstrumentManagement, error) {
+    records, err := c.BaseController.List(condition, preloads...)
+    if err != nil {
+        return nil, err
+    }
+    return records, err
 }
 
-func (c *InstrumentManagementController) GetById(Id uint) (*model.InstrumentManagement, error) {
-	asset := model.InstrumentManagement{}
-	record, err := c.BaseController.RetrieveByID(Id)
-	asset = record
-	return &asset, err
+func (c *InstrumentManagementController) RetrieveByID(id uint, preloads ...string) (model.InstrumentManagement, error) {
+    record, err := c.BaseController.RetrieveByID(id, preloads...)
+    if err != nil {
+        return model.InstrumentManagement{}, err
+    }
+    return record, nil
 }
 
-func (c *InstrumentManagementController) GetByRoomId(roomID uint) (*[]model.InstrumentManagement, error) {
+func (c *InstrumentManagementController) RetrieveByRoomId(roomID uint) (*[]model.InstrumentManagement, error) {
 	if roomID == 0 {
 		return nil, errors.New("no RoomID provided")
 	}
@@ -59,7 +61,7 @@ func (c *InstrumentManagementController) GetByRoomId(roomID uint) (*[]model.Inst
 }
 
 
-func (c *InstrumentManagementController) Create(payload *model.InstrumentManagement) error {
+func (c *InstrumentManagementController) Insert(payload *model.InstrumentManagement) error {
 	if payload == nil {
 		return errors.New("invalid instrument management data")
 	}
@@ -67,15 +69,15 @@ func (c *InstrumentManagementController) Create(payload *model.InstrumentManagem
 	return err
 }
 
-func (c *InstrumentManagementController) Update(Id uint, payload *model.InstrumentManagement) error {
-	if payload == nil || Id == 0 {
-		return errors.New("invalid info")
-	}
-	err := c.BaseController.UpdateByID(*payload)
-	return err
+func (c *InstrumentManagementController) UpdateByID(data model.InstrumentManagement) error {
+    if data.GetID() == 0 {
+        return errors.New("invalid ID: ID cannot be zero")
+    }
+    err := c.BaseController.UpdateByID(data)
+    return err
 }
 
-func (c *InstrumentManagementController) Delete(Id uint) error {
+func (c *InstrumentManagementController) DeleteByID(Id uint) error {
 	if Id == 0 {
 		return errors.New("no Id provide")
 	 }
