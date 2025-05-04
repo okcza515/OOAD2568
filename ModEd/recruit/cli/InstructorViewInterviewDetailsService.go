@@ -9,7 +9,7 @@ import (
 )
 
 type InstructorViewInterviewDetailsService interface {
-	ViewInterviewDetails(instructorID uint, status string, instructorCtrl *controller.InstructorController) ([]model.Interview, error)
+	ViewInterviewDetails(instructorID uint, status string) ([]model.Interview, error)
 }
 
 type instructorViewInterviewDetailsService struct {
@@ -22,7 +22,9 @@ func NewInstructorViewInterviewDetailsService(DB *gorm.DB) InstructorViewIntervi
 	}
 }
 
-func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(instructorID uint, statusfilter string,instructorCtrl *controller.InstructorController) ([]model.Interview, error) {
+func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(instructorID uint, statusfilter string) ([]model.Interview, error) {
+	instructorCtrl := controller.NewInstructorController(s.DB)
+
 	interviews, err := instructorCtrl.GetInterviewsByInstructor(instructorID)
 	if err != nil {
 		return nil, err

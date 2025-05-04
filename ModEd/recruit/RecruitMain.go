@@ -50,7 +50,6 @@ func main() {
 	applicantController := controller.NewApplicantController(db.DB)
 	interviewController := controller.NewInterviewController(db.DB)
 	applicationRoundCtrl := controller.NewApplicationRoundController(db.DB)
-	instructorCtrl := controller.NewInstructorController(db.DB)
 
 	adminCtrl := controller.NewAdminController(db.DB)
 	if err := adminCtrl.ReadAdminsFromCSV(defaultAdminPath); err != nil {
@@ -90,14 +89,14 @@ func main() {
 
 	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
 	adminDeps := cli.AdminDependencies{
-		ApplicantController:         applicantController,
-		ApplicationReportCtrl:       applicationReportCtrl,
-		InterviewCtrl:               interviewController,
-		AdminCtrl:                   adminCtrl,
-		LoginCtrl:                   &loginController,
-		AdminInterviewService:       cli.NewAdminInterviewService(interviewController),
-		AdminShowApplicationReportsService:  cli.NewAdminShowApplicationReportsService(applicationReportCtrl),
-		AdminScheduleInterviewService: cli.NewAdminScheduleInterviewService(interviewController,applicationReportCtrl),
+		ApplicantController:                applicantController,
+		ApplicationReportCtrl:              applicationReportCtrl,
+		InterviewCtrl:                      interviewController,
+		AdminCtrl:                          adminCtrl,
+		LoginCtrl:                          &loginController,
+		AdminInterviewService:              cli.NewAdminInterviewService(interviewController),
+		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl),
+		AdminScheduleInterviewService:      cli.NewAdminScheduleInterviewService(interviewController, applicationReportCtrl),
 	}
 
 	for {
@@ -120,14 +119,14 @@ func main() {
 			switch roleChoice {
 			case 1:
 				loginController.SetStrategy(controller.NewLoginStrategy("user", db.DB))
-				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService, loginController,applicationReportCtrl)
+				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
 				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
 				cli.AdminCLI(adminDeps)
 				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, instructorCtrl,applicationReportCtrl)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController)
 			case 4:
 				fmt.Println("Exiting...")
 				return
