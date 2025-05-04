@@ -103,8 +103,8 @@ func (fv *FieldValidator) IsInstructorID() *FieldValidator {
 }
 
 func (fv *FieldValidator) IsDate() *FieldValidator {
-	// YYYY-MM-DD format
-	return fv.Regex(`^\d{4}-\d{2}-\d{2}$`)
+	// dd-mm-yyyy format
+	return fv.Regex(`^\d{2}-\d{2}-\d{4}$`)
 }
 
 func (fv *FieldValidator) IsEmail() *FieldValidator {

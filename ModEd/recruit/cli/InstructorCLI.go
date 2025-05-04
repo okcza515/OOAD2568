@@ -76,7 +76,7 @@ func InstructorCLI(
 			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Evaluated", interviewController)
 			util.WaitForEnter()
 		case 4:
-			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint, applicationReportCtrl)
+			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint)
 		case 5:
 			fmt.Println("Exiting...")
 			return

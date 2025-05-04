@@ -87,6 +87,18 @@ func main() {
 
 	loginController := controller.LoginController{Strategy: controller.NewLoginStrategy(role, db.DB)}
 
+	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
+	adminDeps := cli.AdminDependencies{
+		ApplicantController:                applicantController,
+		ApplicationReportCtrl:              applicationReportCtrl,
+		InterviewCtrl:                      interviewController,
+		AdminCtrl:                          adminCtrl,
+		LoginCtrl:                          &loginController,
+		AdminInterviewService:              cli.NewAdminInterviewService(interviewController),
+		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl),
+		AdminScheduleInterviewService:      cli.NewAdminScheduleInterviewService(interviewController, applicationReportCtrl),
+	}
+
 	for {
 		util.ClearScreen()
 
@@ -113,10 +125,12 @@ func main() {
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
 				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
-				cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
+				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
+				cli.AdminCLI(adminDeps)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, interviewController, applicationReportCtrl)
+
 			case 4:
 				fmt.Println("Exiting...")
 				return

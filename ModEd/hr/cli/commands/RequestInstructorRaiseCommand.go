@@ -33,7 +33,9 @@ func (cmd *RequestInstructorRaiseCommand) Execute(args []string, tx *gorm.DB) er
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	err = controller.SubmitRaiseRequest(tx, *id, *amount, *reason)
+	controller := controller.NewRaiseHRController(tx)
+
+	err = controller.SubmitRaiseRequest(*id, *amount, *reason)
 	if err != nil {
 		return fmt.Errorf("failed to submit raise request: %v", err)
 	}

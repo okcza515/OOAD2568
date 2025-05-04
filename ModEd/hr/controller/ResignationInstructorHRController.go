@@ -3,8 +3,7 @@ package controller
 import (
 	"ModEd/hr/model"
 	"ModEd/hr/util"
-	"fmt"	
-
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -13,9 +12,9 @@ type ResignationInstructorHRController struct {
 	db *gorm.DB
 }
 
-func createResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
-    db.AutoMigrate(&model.RequestResignationInstructor{})
-    return &ResignationInstructorHRController{db: db}
+func CreateResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
+	db.AutoMigrate(&model.RequestResignationInstructor{})
+	return &ResignationInstructorHRController{db: db}
 }
 
 func (c *ResignationInstructorHRController) insert(request *model.RequestResignationInstructor) error {
@@ -34,18 +33,17 @@ func (c *ResignationInstructorHRController) update(req *model.RequestResignation
 	return c.db.Save(req).Error
 }
 
-func SubmitResignationInstructor(db *gorm.DB, instructorID string, reason string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *ResignationInstructorHRController) SubmitResignationInstructor(instructorID string, reason string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		
-		controller := createResignationInstructorHRController(tx)
+
 		factory := &model.RequestResignationFactory{}
 		req, err := factory.Create("instructor", instructorID, reason)
 		if err != nil {
 			return fmt.Errorf("failed to build resignation request: %v", err)
 		}
 
-		if err := controller.insert(req.(*model.RequestResignationInstructor)); err != nil {
+		if err := c.insert(req.(*model.RequestResignationInstructor)); err != nil {
 			return fmt.Errorf("failed to insert resignation request: %v", err)
 		}
 

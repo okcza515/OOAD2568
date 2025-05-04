@@ -30,9 +30,10 @@ func (cmd *UpdateInstructorInfoCommand) Execute(args []string, tx *gorm.DB) erro
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	if err := controller.UpdateInstructorInfo(tx, *instructorID, *field, *value); err != nil {
-		return fmt.Errorf("failed to update instructor info: %v", err)
-	}
+	instructorController := controller.CreateInstructorHRController(tx)
+    if err := instructorController.UpdateInstructorInfo(tx, *instructorID, *field, *value); err != nil {
+        return fmt.Errorf("failed to update instructor info: %v", err)
+    }
 
 	fmt.Println("Instructor updated successfully!")
 	return nil
