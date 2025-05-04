@@ -23,40 +23,37 @@ func handleLeaveRequest(target string, args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	var submitErr error
 	validator := util.NewValidationChain(fs)
-
 	validator.Field("type").Required()
 	validator.Field("reason").Required()
 	validator.Field("date").Required().IsDate()
 
-	switch target {
-	case "student":
-		validator.Field("id").Required().IsStudentID()
-		err := validator.Validate()
-		if err != nil {
-			fs.Usage()
-			return fmt.Errorf("validation error for student leave: %v", err)
-		}
-		submitErr = controller.SubmitStudentLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+	operations := map[string]func() error{
+		"student": func() error {
+			validator.Field("id").Required().IsStudentID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for student leave: %v", err)
+			}
+			return controller.SubmitStudentLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+		},
+		"instructor": func() error {
+			validator.Field("id").Required().IsInstructorID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for instructor leave: %v", err)
+			}
+			return controller.SubmitInstructorLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
+		},
+	}
 
-	case "instructor":
-		// Instructor Code in demo data is different from real instructor ID in LEB2.
-		validator.Field("id").Required().IsInstructorID()
-
-		err := validator.Validate()
-		if err != nil {
-			fs.Usage()
-			return fmt.Errorf("validation error for instructor leave: %v", err)
-		}
-		submitErr = controller.SubmitInstructorLeaveRequest(tx, *id, *leaveType, *reason, *leaveDateStr)
-
-	default:
+	operation, exists := operations[target]
+	if !exists {
 		return fmt.Errorf("internal error: invalid target '%s' for handleLeaveRequest", target)
 	}
 
-	if submitErr != nil {
-		return fmt.Errorf("failed to submit %s leave request: %v", target, submitErr)
+	if err := operation(); err != nil {
+		return fmt.Errorf("failed to submit %s leave request: %v", target, err)
 	}
 
 	fmt.Printf("%s leave request submitted successfully.\n", target)
@@ -77,35 +74,34 @@ func handleResignationRequest(target string, args []string, tx *gorm.DB) error {
 		return fmt.Errorf("failed to parse flags: %v", err)
 	}
 
-	var submitErr error
 	validator := util.NewValidationChain(fs)
 
-	switch target {
-	case "student":
-		validator.Field("id").Required().IsStudentID()
-		err := validator.Validate()
-		if err != nil {
-			fs.Usage()
-			return fmt.Errorf("validation error for student: %v", err)
-		}
-		submitErr = controller.SubmitResignationStudent(tx, *id, *reason)
+	operations := map[string]func() error{
+		"student": func() error {
+			validator.Field("id").Required().IsStudentID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for student: %v", err)
+			}
+			return controller.SubmitResignationStudent(tx, *id, *reason)
+		},
+		"instructor": func() error {
+			validator.Field("id").Required().IsInstructorID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for instructor: %v", err)
+			}
+			return controller.SubmitResignationInstructor(tx, *id, *reason)
+		},
+	}
 
-	case "instructor":
-		// Instructor Code in demo data is different from real instructor ID in LEB2.
-		validator.Field("id").Required().IsInstructorID()
-		err := validator.Validate()
-		if err != nil {
-			fs.Usage()
-			return fmt.Errorf("validation error for instructor: %v", err)
-		}
-		submitErr = controller.SubmitResignationInstructor(tx, *id, *reason)
-
-	default:
+	operation, exists := operations[target]
+	if !exists {
 		return fmt.Errorf("internal error: invalid target '%s' for handleResignationRequest", target)
 	}
 
-	if submitErr != nil {
-		return fmt.Errorf("failed to submit resignation request: %v", submitErr)
+	if err := operation(); err != nil {
+		return fmt.Errorf("failed to submit resignation request: %v", err)
 	}
 
 	fmt.Printf("%s resignation request submitted successfully.\n", target)
