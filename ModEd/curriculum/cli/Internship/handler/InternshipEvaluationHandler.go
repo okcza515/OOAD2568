@@ -55,19 +55,14 @@ func (handler *InternshipEvaluationHandler) Review_Evaluation() error {
 
 	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
 
-	application, err := handler.wrapper.InternshipApplication.GetInternshipApplicationByID(id)
+	InstructorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
+	MentorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
+
+	err := handler.wrapper.Review.UpdateReviewScore(id, InstructorScore, MentorScore)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve internship application: %w", err)
+		return fmt.Errorf("error updating review score: %w", err)
 	}
 
-	InstructorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
-	application.SupervisorReview.InstructorScore = InstructorScore
-	MentorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
-	application.SupervisorReview.MentorScore = MentorScore
-	err = handler.wrapper.InternshipApplication.UpdateInternshipApplication(application)
-	if err != nil {
-		return fmt.Errorf("failed to update internship application: %w", err)
-	}
 	fmt.Println("Internship application updated successfully.")
 
 	return nil
@@ -76,16 +71,11 @@ func (handler *InternshipEvaluationHandler) Review_Evaluation() error {
 func (handler *InternshipEvaluationHandler) Report_Evaluation() error {
 	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
 
-	application, err := handler.wrapper.InternshipApplication.GetInternshipApplicationByID(id)
-	if err != nil {
-		return fmt.Errorf("failed to retrieve internship application: %w", err)
-	}
-
 	ReportScore := int(utils.GetUserInputUint("Enter the report score (0-100): "))
-	application.InternshipReport.ReportScore = ReportScore
-	err = handler.wrapper.InternshipApplication.UpdateInternshipApplication(application)
+
+	err := handler.wrapper.Report.UpdateReportScore(id, ReportScore)
 	if err != nil {
-		return fmt.Errorf("failed to update internship application: %w", err)
+		return fmt.Errorf("error updating report score: %w", err)
 	}
 	fmt.Println("Internship application updated successfully.")
 
