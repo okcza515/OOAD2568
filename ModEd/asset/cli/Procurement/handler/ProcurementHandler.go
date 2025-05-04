@@ -84,7 +84,15 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 			if procurement.ApproverID != nil {
 				approverID = fmt.Sprintf("%d", *procurement.ApproverID)
 			}
-			fmt.Printf("ID: %d, ApproverID: %s, Status: %s\n", procurement.ProcurementID, approverID, procurement.Status)
+			approvalTime := "-"
+			if procurement.ApprovalTime != nil {
+				approvalTime = procurement.ApprovalTime.Format("2006-01-02 15:04:05")
+			}
+			deletedAt := "-"
+			if procurement.DeletedAt.Valid {
+				deletedAt = procurement.DeletedAt.Time.Format("2006-01-02 15:04:05")
+			}
+			fmt.Printf("ID: %d, ApproverID: %s, Status: %s, ApprovalTime: %s, DeletedAt: %s\n", procurement.ProcurementID, approverID, procurement.Status, approvalTime, deletedAt)
 		}
 	}
 }
