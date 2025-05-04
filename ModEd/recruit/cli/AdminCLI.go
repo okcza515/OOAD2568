@@ -5,10 +5,7 @@ import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
-	"bufio"
 	"fmt"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -38,9 +35,11 @@ func AdminCLI(dep AdminDependencies) {
 		case 1:
 			ManageApplicants(dep.ApplicantController)
 		case 2:
-			ShowApplicationReports(dep.ApplicationReportCtrl)
+			// ShowApplicationReports(dep.ApplicationReportCtrl)
+			AdminShowApplicationReportsCLI(dep.AdminShowApplicationReportsService)
+			util.WaitForEnter()
 		case 3:
-			AdminScheduleInterviewCLI(dep.InterviewCtrl, dep.ApplicationReportCtrl)
+			AdminScheduleInterviewCLI(dep.AdminScheduleInterviewService)
 		case 4:
 			AdminDeleteInterviewCLI(dep.AdminInterviewService)
 			util.WaitForEnter()
@@ -78,57 +77,7 @@ func AdminLogin(loginCtrl *controller.LoginController) (string, error) {
 	return username, nil
 }
 
-// func DeleteInterview(interviewCtrl *controller.InterviewController) {
-// 	var interviewID uint
-
-// 	scanner := bufio.NewScanner(os.Stdin)
-
-// 	fmt.Print("Enter Interview ID to delete: ")
-// 	scanner.Scan()
-// 	inputID := scanner.Text()
-// 	convInterviewID, err := strconv.ParseUint(inputID, 10, 32)
-// 	if err != nil {
-// 		fmt.Println("Invalid Interview ID. Please enter a valid number.")
-// 		return
-// 	}
-// 	interviewID = uint(convInterviewID)
-
-// 	err = interviewCtrl.DeleteInterview(interviewID)
-// 	if err != nil {
-// 		fmt.Println("Failed to delete interview:", err)
-// 		return
-// 	}
-
-// 	fmt.Println("Interview deleted successfully!")
-// 	util.WaitForEnter()
-// }
-
 func ManageApplicants(applicantController *controller.ApplicantController) {
 	fmt.Println("Managing Applicants...")
-	util.WaitForEnter()
-}
-
-
-func ShowApplicationReports(applicationReportCtrl *controller.ApplicationReportController) {
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Print("Enter Applicant ID (number): ")
-	scanner.Scan()
-	inputID := scanner.Text()
-
-	applicantID, err := strconv.ParseUint(inputID, 10, 32)
-	if err != nil {
-		fmt.Println("Invalid applicant ID. Please enter a valid number.")
-		util.WaitForEnter()
-		return
-	}
-
-	report, err := applicationReportCtrl.GetApplicationReportByApplicantID(uint(applicantID))
-	if err != nil {
-		fmt.Println("Error retrieving report:", err)
-	} else {
-		fmt.Println("===== Applicant Report =====")
-		fmt.Println(report)
-	}
 	util.WaitForEnter()
 }

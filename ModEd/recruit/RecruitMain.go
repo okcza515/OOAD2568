@@ -96,6 +96,8 @@ func main() {
 		AdminCtrl:                   adminCtrl,
 		LoginCtrl:                   &loginController,
 		AdminInterviewService:       cli.NewAdminInterviewService(interviewController),
+		AdminShowApplicationReportsService:  cli.NewAdminShowApplicationReportsService(applicationReportCtrl),
+		AdminScheduleInterviewService: cli.NewAdminScheduleInterviewService(interviewController,applicationReportCtrl),
 	}
 
 	for {
