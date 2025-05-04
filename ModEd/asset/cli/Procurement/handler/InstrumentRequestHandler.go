@@ -180,6 +180,110 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				}
 			}
 			WaitForEnter()
+		case "6":
+			fmt.Println("Edit Instrument Items in Request")
+
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if err != nil {
+				fmt.Println("Failed to retrieve requests:", err)
+				WaitForEnter()
+				break
+			}
+
+			if len(*requests) == 0 {
+				fmt.Println("No requests available.")
+				WaitForEnter()
+				break
+			}
+
+			fmt.Println("Available Requests:")
+			for _, r := range *requests {
+				fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", r.InstrumentRequestID, r.DepartmentID, r.Status)
+			}
+
+			requestID := util.GetUintInput("\nEnter Instrument Request ID: ")
+
+			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
+			if err != nil {
+				fmt.Println("Request not found:", err)
+				WaitForEnter()
+				break
+			}
+
+			if len(request.Instruments) == 0 {
+				fmt.Println("No instrument items in this request.")
+				WaitForEnter()
+				break
+			}
+
+			fmt.Println("\nInstrument Items:")
+			for _, inst := range request.Instruments {
+				fmt.Printf("  ID: %d | Label: %s | Qty: %d | Price: %.2f\n",
+					inst.InstrumentDetailID, inst.InstrumentLabel, inst.Quantity, inst.EstimatedPrice)
+			}
+
+			detailID := util.GetUintInput("\nEnter Instrument Detail ID to edit: ")
+
+			var selected *model.InstrumentDetail
+			for _, inst := range request.Instruments {
+				if inst.InstrumentDetailID == detailID {
+					selected = &inst
+					break
+				}
+			}
+
+			if selected == nil {
+				fmt.Println("Instrument Detail not found in request.")
+				WaitForEnter()
+				break
+			}
+
+			fmt.Println("\nCurrent Values:")
+			fmt.Printf("  Label: %s\n", selected.InstrumentLabel)
+			fmt.Printf("  Description: %s\n", deref(selected.Description))
+			fmt.Printf("  Category ID: %d\n", selected.CategoryID)
+			fmt.Printf("  Quantity: %d\n", selected.Quantity)
+			fmt.Printf("  Estimated Price: %.2f\n", selected.EstimatedPrice)
+
+			newLabel := util.GetStringInput("New Label (Enter to keep): ")
+			newDesc := util.GetStringInput("New Description (Enter to keep): ")
+			newCategory := util.GetStringInput("New Category ID (Enter to keep): ")
+			newQty := util.GetStringInput("New Quantity (Enter to keep): ")
+			newPrice := util.GetStringInput("New Estimated Price (Enter to keep): ")
+
+			// Update fields if provided
+			if newLabel != "" {
+				selected.InstrumentLabel = newLabel
+			}
+			if newDesc != "" {
+				selected.Description = &newDesc
+			}
+			if newCategory != "" {
+				if val, err := parseUint(newCategory); err == nil {
+					selected.CategoryID = val
+				}
+			}
+			if newQty != "" {
+				if val, err := parseUint(newQty); err == nil {
+					selected.Quantity = int(val)
+				}
+			}
+			if newPrice != "" {
+				var price float64
+				_, err := fmt.Sscanf(newPrice, "%f", &price)
+				if err == nil {
+					selected.EstimatedPrice = price
+				}
+			}
+
+			err = facade.RequestedItem.UpdateInstrumentDetail(selected.InstrumentDetailID, selected)
+			if err != nil {
+				fmt.Println("Failed to update item:", err)
+			} else {
+				fmt.Println("Instrument item updated successfully.")
+			}
+
+			WaitForEnter()
 		}
 		util.ClearScreen()
 	}
@@ -210,4 +314,11 @@ func parseUint(input string) (uint, error) {
 	var result uint
 	_, err := fmt.Sscanf(input, "%d", &result)
 	return result, err
+}
+
+func deref(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }
