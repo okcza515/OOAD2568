@@ -7,7 +7,6 @@ import (
 
 type InstrumentManagement struct {
 	core.BaseModel
-	AssetManagementID  uint             `gorm:"type:integer" json:"asset_management_id" csv:"asset_management_id"`
 	BorrowUserID       uint             `gorm:"type:integer" json:"borrow_id" csv:"borrow_id"`
 	BorrowInstrument   BorrowInstrument `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"borrow_instrument"`
 	RoomID             uint             `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id"`
