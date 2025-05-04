@@ -38,13 +38,29 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaise, error) {
 }
 
 func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
-	tm := &util.TransactionManager{DB: c.db}
+    tm := &util.TransactionManager{DB: c.db}
 
-	return tm.Execute(func(tx *gorm.DB) error {
-		request := model.NewRequestRaise(instructorID, reason, amount)
-		if err := c.insert(request); err != nil {
-			return fmt.Errorf("failed to submit raise request: %v", err)
-		}
-		return nil
-	})
+    return tm.Execute(func(tx *gorm.DB) error {
+        raiseController := NewRaiseHRController(tx)
+
+        factory, err := model.GetFactory("instructor")
+        if err != nil {
+            return fmt.Errorf("failed to get factory: %v", err)
+        }
+
+        requestObj, err := factory.CreateRaise(instructorID, reason, amount)
+        if err != nil {
+            return fmt.Errorf("failed to create raise request using factory: %v", err)
+        }
+
+        request, ok := requestObj.(*model.RequestRaise)
+        if !ok {
+            return fmt.Errorf("factory returned unexpected type for raise request")
+        }
+
+        if err := raiseController.insert(request); err != nil {
+            return fmt.Errorf("failed to submit raise request: %v", err)
+        }
+        return nil
+    })
 }

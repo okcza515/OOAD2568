@@ -2,16 +2,20 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller"
+	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
 )
 
 type ListPermanentSchedulesHandler struct {
-	controller controller.PermanentBookingControllerInterface
+	controller interface {
+		List(condition map[string]interface{}) ([]model.PermanentSchedule, error)
+	}
 }
 
-func NewListPermanentSchedulesHandler(controller controller.PermanentBookingControllerInterface) *ListPermanentSchedulesHandler {
+func NewListPermanentSchedulesHandler(controller interface {
+	List(condition map[string]interface{}) ([]model.PermanentSchedule, error)
+}) *ListPermanentSchedulesHandler {
 	return &ListPermanentSchedulesHandler{
 		controller: controller,
 	}

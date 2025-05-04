@@ -2,7 +2,7 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller"
+	"ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
 	"strconv"
@@ -10,10 +10,16 @@ import (
 )
 
 type DeleteScheduleHandler struct {
-	controller controller.PermanentBookingControllerInterface
+	controller interface {
+		RetrieveByID(id uint) (model.PermanentSchedule, error)
+		DeleteByID(id uint) error
+	}
 }
 
-func NewDeleteScheduleHandler(controller controller.PermanentBookingControllerInterface) *DeleteScheduleHandler {
+func NewDeleteScheduleHandler(controller interface {
+	RetrieveByID(id uint) (model.PermanentSchedule, error)
+	DeleteByID(id uint) error
+}) *DeleteScheduleHandler {
 	return &DeleteScheduleHandler{
 		controller: controller,
 	}

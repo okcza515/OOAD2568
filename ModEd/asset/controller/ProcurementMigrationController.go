@@ -13,7 +13,7 @@ type ProcurementMigrationController struct {
 }
 
 func (c *ProcurementMigrationController) migrateToDB() error {
-	err := c.db.AutoMigrate(&model.InstrumentRequest{}, &model.InstrumentDetail{}, &model.Category{}, &model.BudgetApproval{})
+	err := c.db.AutoMigrate(&model.InstrumentRequest{}, &model.InstrumentDetail{}, &model.Category{}, &model.BudgetApproval{}, &model.Procurement{})
 
 	if err != nil {
 		return errors.New("err: migration failed")

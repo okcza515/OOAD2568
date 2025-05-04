@@ -18,7 +18,6 @@ func NewUpdateRoomHandlerStrategy(controller interface {
 }) *UpdateRoomHandlerStrategy {
 	return &UpdateRoomHandlerStrategy{controller: controller}
 }
-
 func (handler UpdateRoomHandlerStrategy) Execute() error {
 	fmt.Println("------- Update a Room -------")
 	fmt.Println("Please enter the ID of the Room:")

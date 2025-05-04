@@ -17,8 +17,18 @@ func CreateResignationInstructorHRController(db *gorm.DB) *ResignationInstructor
 	return &ResignationInstructorHRController{db: db}
 }
 
+// Use the passed db object (which will be 'tx' in the transaction context)
 func (c *ResignationInstructorHRController) insert(request *model.RequestResignationInstructor) error {
 	return c.db.Create(request).Error
+}
+
+func (c *ResignationInstructorHRController) getByID(id uint) (*model.RequestResignationInstructor, error) {
+	var request model.RequestResignationInstructor
+	err := c.db.First(&request, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &request, nil
 }
 
 func (c *ResignationInstructorHRController) getByInstructorID(id string) (*model.RequestResignationInstructor, error) {
@@ -37,16 +47,46 @@ func (c *ResignationInstructorHRController) SubmitResignationInstructor(instruct
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 
-		factory := &model.RequestResignationFactory{}
-		req, err := factory.Create("instructor", instructorID, reason)
+		instructorController := CreateResignationInstructorHRController(tx)
+
+		factory, err := model.GetFactory("instructor")
 		if err != nil {
-			return fmt.Errorf("failed to build resignation request: %v", err)
+			return fmt.Errorf("failed to get instructor factory: %v", err)
 		}
 
-		if err := c.insert(req.(*model.RequestResignationInstructor)); err != nil {
-			return fmt.Errorf("failed to insert resignation request: %v", err)
+		reqInterface, err := factory.CreateResignation(instructorID, reason)
+		if err != nil {
+			return fmt.Errorf("failed to create resignation request using factory: %v", err)
+		}
+
+		req, ok := reqInterface.(*model.RequestResignationInstructor)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
+		}
+
+		if err := instructorController.insert(req); err != nil {
+			return fmt.Errorf("failed to insert resignation request within transaction: %v", err)
 		}
 
 		return nil
 	})
+}
+
+func (c *ResignationInstructorHRController) ReviewInstructorResignRequest(
+	tx *gorm.DB,
+	requestID, action, reason string,
+) error {
+	return ReviewRequest(
+		requestID,
+		action,
+		reason,
+		// fetch
+		func(id uint) (Reviewable, error) {
+			return c.getByID(id)
+		},
+		// save
+		func(r Reviewable) error {
+			return tx.Save(r).Error
+		},
+	)
 }

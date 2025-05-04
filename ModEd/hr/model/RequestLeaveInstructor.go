@@ -1,35 +1,21 @@
 package model
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
+import "fmt"
 
 type RequestLeaveInstructor struct {
-	gorm.Model
+	BaseLeaveRequest
 	InstructorCode string `gorm:"not null"`
-	Status         string `gorm:"default:Pending"`
-	LeaveType      string
-	Reason         string
-	LeaveDate      time.Time
 }
 
-func (r RequestLeaveInstructor) GetID() string {
-	return r.InstructorCode
-}
-
-func (r RequestLeaveInstructor) GetLeaveType() string {
-	return r.LeaveType
-}
-
-func (r RequestLeaveInstructor) GetReason() string {
-	return r.Reason
-}
-
-func (r RequestLeaveInstructor) GetLeaveDate() time.Time {
-	return r.LeaveDate
-}
-
-func (r RequestLeaveInstructor) GetStatus() string {
-	return r.Status
+func (r *RequestLeaveInstructor) ApplyStatus(action, reason string) error {
+	switch action {
+	case "approve":
+		r.Status = action
+	case "reject":
+		r.Status = action
+		r.Reason = reason
+	default:
+		return fmt.Errorf("invalid action: %q", action)
+	}
+	return nil
 }

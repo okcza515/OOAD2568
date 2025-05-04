@@ -3,7 +3,6 @@
 package handler
 
 import (
-	controller "ModEd/asset/controller"
 	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
@@ -12,11 +11,15 @@ import (
 )
 
 type CreatePermanentScheduleHandler struct {
-	controller controller.PermanentBookingControllerInterface
+	controller interface {
+		CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+		NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error)
+	}
 }
 
 func NewCreatePermanentScheduleHandler(controller interface {
-	controller.PermanentBookingControllerInterface
+	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+	NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error)
 }) *CreatePermanentScheduleHandler {
 	return &CreatePermanentScheduleHandler{
 		controller: controller,

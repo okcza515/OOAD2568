@@ -4,7 +4,6 @@ import (
 	model "ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
-	"ModEd/utils/deserializer"
 	"errors"
 
 	"time"
@@ -13,7 +12,6 @@ import (
 )
 
 type RoomControllerInterface interface {
-	SeedRoomsDatabase(path string) ([]*model.Room, error)
 	ListAll() ([]string, error)
 	List(condition map[string]interface{}, preloads ...string) ([]model.Room, error)
 	RetrieveByID(id uint, preloads ...string) (model.Room, error)
@@ -35,23 +33,6 @@ func NewRoomController() *RoomController {
 		db:             db,
 		BaseController: core.NewBaseController[model.Room](db),
 	}
-}
-
-func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
-	deserializer, err := deserializer.NewFileDeserializer(path)
-	if err != nil {
-		return nil, errors.New("failed to create file deserializer")
-	}
-	if err := deserializer.Deserialize(&rooms); err != nil {
-		return nil, errors.New("failed to deserialize curriculums")
-	}
-	for _, room := range rooms {
-		err := c.Insert(*room)
-		if err != nil {
-			return nil, errors.New("failed to seed Room DB")
-		}
-	}
-	return rooms, nil
 }
 
 func (c *RoomController) ListAll() ([]string, error) {

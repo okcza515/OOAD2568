@@ -5,7 +5,6 @@ import (
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -13,49 +12,6 @@ import (
 const (
 	defaultCourseDataPath = "../../data/curriculum/course.json"
 )
-
-func RunCourseCLIHandler(courseController controller.CourseControllerInterface) {
-	handler := newCourseHandler(courseController)
-
-	menuManager := NewMenuManager(map[string]func() error{
-		"1": handler.createSeedCourse,
-		"2": handler.listCourses,
-		"3": handler.getCourseById,
-		"4": handler.updateCourseById,
-		"5": handler.deleteCourseById,
-		"0": func() error {
-			fmt.Println("Exiting...")
-			return ExitCommand
-		},
-	})
-
-	for {
-		choice := menuManager.HandlerUserInput(printCourseMenu)
-		_, ok := menuManager.Actions[choice]
-		if !ok {
-			fmt.Println("Invalid option")
-			continue
-		}
-
-		err := menuManager.Execute(choice)
-		if err != nil {
-			if errors.Is(err, ExitCommand) {
-				return
-			}
-			fmt.Println("Error executing choice:", err)
-		}
-	}
-}
-
-func printCourseMenu() {
-	fmt.Println("\nCourse Menu:")
-	fmt.Println("1. Create Seed Course")
-	fmt.Println("2. List all Courses")
-	fmt.Println("3. Get Course by Id")
-	fmt.Println("4. Update Course by Id")
-	fmt.Println("5. Delete Course by Id")
-	fmt.Println("0. Exit")
-}
 
 type courseHandler struct {
 	courseController controller.CourseControllerInterface

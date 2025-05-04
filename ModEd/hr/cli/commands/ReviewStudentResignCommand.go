@@ -12,6 +12,7 @@ type ReviewStudentResignCommand struct{}
 
 func (cmd *ReviewStudentResignCommand) Execute(args []string, tx *gorm.DB) error {
 	// TODO: Add controller method
+	controller := controller.CreateResignationStudentHRController(tx)
 	return handleReviewCommand(
 		args,
 		tx,
