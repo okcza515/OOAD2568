@@ -74,8 +74,8 @@ func (c *StudentController) ManualAddStudent() error {
 	var status model.StudentStatus
 	fmt.Scan(&status)
 	
-	parseStartDate, _ := time.Parse("2006-01-02", startDate)
-	parseBirthDate, _ := time.Parse("2006-01-02", birthDate)
+	parseStartDate, _ := time.Parse("02-01-2006", startDate)
+	parseBirthDate, _ := time.Parse("02-01-2006", birthDate)
 
 	student := &model.Student{
 		StudentCode: studentCode, 

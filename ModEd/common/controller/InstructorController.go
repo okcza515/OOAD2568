@@ -61,7 +61,7 @@ func (c *InstructorController) ManualAddInstructor() error {
 	var department string
 	fmt.Scan(&department)
 
-	parseStartDate, err := time.Parse("2006-01-02", startDate)
+	parseStartDate, err := time.Parse("02-01-2006", startDate)
 	if err != nil {
 		return fmt.Errorf("invalid date format: %w", err)
 	}
