@@ -46,6 +46,7 @@ func NewUpdatedStudentInfo(
 		PhoneNumber: util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber),
 	}
 }
+
 func (StudentInfo) TableName() string {
 	return "student_infos"
 }
