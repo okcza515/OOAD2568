@@ -27,3 +27,7 @@ func UpdateInstructorByCode(db *gorm.DB, code string, updated map[string]any) er
 func DeleteInstructorByCode(db *gorm.DB, code string) error {
 	return db.Where("instructor_code = ?", code).Delete(&Instructor{}).Error
 }
+
+func ManualAddInstructor(db *gorm.DB, instructor *Instructor) error {
+	return db.Create(instructor).Error
+}

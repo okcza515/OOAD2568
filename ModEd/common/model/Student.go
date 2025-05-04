@@ -30,3 +30,7 @@ func UpdateStudentByCode(db *gorm.DB, code string, updated map[string]interface{
 func DeleteStudentByCode(db *gorm.DB, code string) error {
 	return db.Where("student_code = ?", code).Delete(&Student{}).Error
 }
+
+func ManualAddStudent(db *gorm.DB, student *Student) error {
+	return db.Create(student).Error
+}
