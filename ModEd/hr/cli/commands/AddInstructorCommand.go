@@ -14,7 +14,7 @@ type AddInstructorCommand struct{}
 func (cmd *AddInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("add-instructor", flag.ExitOnError)
 	instructorCode := fs.String("code", "", "Instructor Code")
-	firstName := fs.String("fname", "", "First Name")
+	firstName := fs.String("fname", "", "First Name")¯
 	lastName := fs.String("lname", "", "Last Name")
 	email := fs.String("email", "", "Email")
 	startDate := fs.String("startDate", "", "Start Date")
