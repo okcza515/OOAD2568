@@ -92,9 +92,9 @@ func (c *StudentHRController) AddStudent(
 	}
 
 	instructorController := CreateInstructorHRController(c.db)
-    if _, err := instructorController.getById(advisorCode); err != nil {
-        return fmt.Errorf("failed to retrieve instructor with code %s: %w", advisorCode, err)
-    }
+	if _, err := instructorController.getById(advisorCode); err != nil {
+		return fmt.Errorf("failed to retrieve instructor with code %s: %w", advisorCode, err)
+	}
 
 	tm := &util.TransactionManager{DB: c.db}
 
@@ -115,7 +115,7 @@ func (c *StudentHRController) AddStudent(
 			return fmt.Errorf("insert failed in common model: %w", err)
 		}
 
-		if migrateErr := MigrateStudentsToHR(tx); migrateErr != nil {
+		if migrateErr := c.MigrateStudentRecords(); migrateErr != nil {
 			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
@@ -180,7 +180,7 @@ func (c *StudentHRController) UpdateStudentInfo(
 		}
 
 		// 2) Migrate students to HR.
-		if err := MigrateStudentsToHR(tx); err != nil {
+		if err := c.MigrateStudentRecords(); err != nil {
 			return fmt.Errorf("failed to migrate student to HR module: %v", err)
 		}
 
@@ -294,24 +294,26 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 }
 
 func (c *StudentHRController) MigrateStudentRecords() error {
-	var commonStudents []commonModel.Student
-	if err := c.db.Find(&commonStudents).Error; err != nil {
-		return fmt.Errorf("failed to retrieve common students: %w", err)
-	}
-
-	for _, s := range commonStudents {
-		studentInfo := model.StudentInfo{
-			Student:     s,  // Embed the common student data
-			Gender:      "", // Initialize HR fields as empty
-			CitizenID:   "",
-			PhoneNumber: "",
+	tm := &util.TransactionManager{DB: c.db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		var commonStudents []commonModel.Student
+		if err := tx.Find(&commonStudents).Error; err != nil {
+			return fmt.Errorf("failed to retrieve common students: %w", err)
 		}
 
-		if err := c.db.Where("student_code = ?", s.StudentCode).
-			FirstOrCreate(&studentInfo).Error; err != nil {
-			return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
-		}
-	}
+		for _, s := range commonStudents {
+			studentInfo := model.StudentInfo{
+				Student:     s,  // Embed the common student data
+				Gender:      "", // Initialize HR fields as empty
+				CitizenID:   "",
+				PhoneNumber: "",
+			}
 
-	return nil
+			if err := tx.Where("student_code = ?", s.StudentCode).
+				FirstOrCreate(&studentInfo).Error; err != nil {
+				return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
+			}
+		}
+		return nil
+	})
 }

@@ -135,35 +135,38 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 }
 
 func (c *InstructorHRController) MigrateInstructorRecords() error {
-	var commonInstructors []commonModel.Instructor
-	if err := c.db.Find(&commonInstructors).Error; err != nil {
-		return fmt.Errorf("failed to retrieve common instructors: %w", err)
-	}
-
-	for _, ci := range commonInstructors {
-		commonInstructor := &commonModel.Instructor{
-			InstructorCode: ci.InstructorCode,
-			FirstName:      ci.FirstName,
-			LastName:       ci.LastName,
-			Email:          ci.Email,
-			StartDate:      ci.StartDate,
-			Department:     ci.Department,
+	tm := &util.TransactionManager{DB: c.db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		var commonInstructors []commonModel.Instructor
+		if err := tx.Find(&commonInstructors).Error; err != nil {
+			return fmt.Errorf("failed to retrieve common instructors: %w", err)
 		}
-		instructorInfo := model.NewInstructorInfo(
-			*commonInstructor,
-			"",
-			"",
-			"",
-			0,
-			model.AcademicPosition(0),
-			model.DepartmentPosition(0),
-		)
 
-		if err := c.db.Where("instructor_code = ?", ci.InstructorCode).
-			FirstOrCreate(&instructorInfo).Error; err != nil {
-			return fmt.Errorf("failed to migrate instructor %s: %w", ci.InstructorCode, err)
+		for _, ci := range commonInstructors {
+			commonInstructor := &commonModel.Instructor{
+				InstructorCode: ci.InstructorCode,
+				FirstName:      ci.FirstName,
+				LastName:       ci.LastName,
+				Email:          ci.Email,
+				StartDate:      ci.StartDate,
+				Department:     ci.Department,
+			}
+			instructorInfo := model.NewInstructorInfo(
+				*commonInstructor,
+				"",
+				"",
+				"",
+				0,
+				model.AcademicPosition(0),
+				model.DepartmentPosition(0),
+			)
+
+			if err := tx.Where("instructor_code = ?", ci.InstructorCode).
+				FirstOrCreate(&instructorInfo).Error; err != nil {
+				return fmt.Errorf("failed to migrate instructor %s: %w", ci.InstructorCode, err)
+			}
 		}
-	}
 
-	return nil
+		return nil
+	})
 }
