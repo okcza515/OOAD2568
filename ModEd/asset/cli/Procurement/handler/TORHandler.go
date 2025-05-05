@@ -30,12 +30,16 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			torID := util.GetUintInput("Enter TOR ID: ")
 			scope := util.GetStringInput("Enter TOR Scope: ")
 			deliverables := util.GetStringInput("Enter TOR Deliverables: ")
+			timeline := util.GetStringInput("Enter TOR Timeline: ")
+			committee := util.GetStringInput("Enter TOR Comittee: ")
 		
 			tor := &model.TOR{
 				TORID:               torID,
 				InstrumentRequestID: instrumentRequestID,
 				Scope:               scope,
 				Deliverables:        deliverables,
+				Timeline:			 timeline,
+				Committee:			 committee,
 				CreatedAt:           time.Now(),
 			}
 		
