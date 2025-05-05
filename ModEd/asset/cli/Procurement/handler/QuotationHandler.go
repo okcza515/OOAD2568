@@ -22,21 +22,19 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 
 		switch inputBuffer {
 		case "1":
-			// fmt.Println("Import Quotations")
-			// QID := util.GetUintInput("Enter Quotation ID: ")
-			// Quotation := &model.Quotation{
-			// 	QuotationID: QID,
-			// 	Status:   model.QuotationStatusPending,
-			// }
-			// jsonPath := "path/to/Quotation.json"
-			// if err := ImportQuotationByID(db, jsonPath, QID); err != nil {
-			// 	fmt.Println("Error:", err)
-			// }
-
+			fmt.Println("Import Quotations")
+			filename := util.GetStringInput("Enter path to the JSON file (e.g., data/quotations.json): ")
+		
+			err := ImportQuotationsFromJSON(facade.GetDB(), filename)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Import successful.")
+			}
 			WaitForEnter()
 		case "2":
 			fmt.Println("List by TOR ID")
-
+			ListQuotationsByTORID(facade.GetDB())
 			WaitForEnter()
 		case "3":
 			fmt.Println("Quotation Selection")
@@ -61,36 +59,49 @@ func printQuotationSupplierOptions() {
 	fmt.Println()
 }
 
-func ImportQuotationByID(db *gorm.DB, jsonPath string, targetID uint) error {
-	file, err := os.Open(jsonPath)
+func ImportQuotationsFromJSON(db *gorm.DB, filename string) error {
+	var quotations []model.Quotation
+
+	file, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("failed to open file: %w", err)
+		return fmt.Errorf("failed to open JSON file: %v", err)
 	}
 	defer file.Close()
 
-	var quotations []model.Quotation
 	if err := json.NewDecoder(file).Decode(&quotations); err != nil {
-		return fmt.Errorf("failed to decode JSON: %w", err)
+		return fmt.Errorf("failed to decode JSON: %v", err)
 	}
 
-	var found *model.Quotation
 	for _, q := range quotations {
-		if q.QuotationID == targetID {
-			found = &q
-			break
+		err := db.Omit("TOR", "Supplier", "Details").Create(&q).Error
+		if err != nil {
+			return fmt.Errorf("failed to insert quotation ID %d: %v", q.QuotationID, err)
 		}
 	}
 
-	if found == nil {
-		return fmt.Errorf("quotation with ID %d not found", targetID)
-	}
-
-	found.Status = model.QuotationStatusPending
-
-	if err := db.Create(found).Error; err != nil {
-		return fmt.Errorf("failed to insert quotation: %w", err)
-	}
-
-	fmt.Println("Quotation imported successfully.")
+	fmt.Println("Quotations imported successfully.")
 	return nil
+}
+
+func ListQuotationsByTORID(db *gorm.DB) {
+	torID := util.GetUintInput("Enter TOR ID: ")
+
+	var quotations []model.Quotation
+	err := db.Where("tor_id = ?", torID).Find(&quotations).Error
+	if err != nil {
+		fmt.Println("Failed to retrieve quotations:", err)
+		return
+	}
+
+	if len(quotations) == 0 {
+		fmt.Println("No quotations found for the specified TOR ID.")
+		return
+	}
+
+	fmt.Printf("Quotations for TOR ID %d:\n", torID)
+	for _, q := range quotations {
+		fmt.Printf("  QuotationID: %d | SupplierID: %d | Status: %s | Total Offered Price: %.2f\n",
+			q.QuotationID, q.SupplierID, q.Status, q.TotalOfferedPrice)
+	}
+
 }

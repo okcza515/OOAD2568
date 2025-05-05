@@ -3,7 +3,6 @@ package controller
 import (
 	"ModEd/core"
 	"ModEd/project/model"
-	utils "ModEd/project/utils"
 	"errors"
 
 	"gorm.io/gorm"
@@ -27,9 +26,9 @@ func (ac *AdvisorController) AssignAdvisor(projectId, instructorId uint, isPrima
 	}
 
 	advisor := &model.Advisor{
-		ProjectID:    projectId,
-		InstructorID: instructorId,
-		IsPrimary:    isPrimary,
+		SeniorProjectId: projectId,
+		InstructorId:    instructorId,
+		IsPrimary:       isPrimary,
 	}
 
 	if err := ac.DB.Create(advisor).Error; err != nil {

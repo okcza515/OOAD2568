@@ -30,12 +30,16 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			torID := util.GetUintInput("Enter TOR ID: ")
 			scope := util.GetStringInput("Enter TOR Scope: ")
 			deliverables := util.GetStringInput("Enter TOR Deliverables: ")
+			timeline := util.GetStringInput("Enter TOR Timeline: ")
+			committee := util.GetStringInput("Enter TOR Comittee: ")
 		
 			tor := &model.TOR{
 				TORID:               torID,
 				InstrumentRequestID: instrumentRequestID,
 				Scope:               scope,
 				Deliverables:        deliverables,
+				Timeline:			 timeline,
+				Committee:			 committee,
 				CreatedAt:           time.Now(),
 			}
 		
@@ -87,6 +91,8 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			fmt.Printf("TOR with ID %d deleted successfully.\n", id)
 			WaitForEnter()
+		case "5":
+			QuotationHandler(facade)
 		}
 
 		util.ClearScreen()
@@ -104,6 +110,7 @@ func printTOROptions() {
 	fmt.Println("  2:\tList All TORs")
 	fmt.Println("  3:\tView TOR by ID")
 	fmt.Println("  4:\tDelete TOR")
+	fmt.Println("  5:\tQuotation Page")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit")
 	fmt.Println()
 }

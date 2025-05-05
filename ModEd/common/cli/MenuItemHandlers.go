@@ -146,8 +146,8 @@ type TestHandler struct {
 }
 
 func (h *TestHandler) ExecuteItem(parameters []string) {
-	instructorController := controller.CreateInstructorController(h.db)
-	instructorController.ManualAddInstructor()
+	studentController := controller.CreateStudentController(h.db)
+	studentController.UpdateByField("student_code", "64070501092", map[string]any{"first_name": "John Doe"})
 }
 
 type DefaultHandler struct{}
