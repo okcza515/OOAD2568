@@ -11,7 +11,6 @@ import (
 
 type MeetingControllerInterface interface {
 	List(condition map[string]interface{}) ([]*model.Meeting, error)
-
 	RetrieveByID(id uint) (*model.Meeting, error)
 	CreateMeeting(body *model.Meeting) error
 	CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error
@@ -58,15 +57,7 @@ func (c *MeetingController) AddAttendee(meetingID uint, attendee model.AttendeeA
 		return err
 	}
 
-	attendeeRecord := model.MeetingAttendee{
-		MeetingID:    meetingID,
-		AttendeeCode: attendee.GetCode(),
-		AttendeeType: attendee.GetType(),
-	}
-
-	if err := c.Connector.First(&meeting, &meetingID).Error; err != nil {
-		return err
-	}
+	attendeeRecord := attendee.ToMeetingAttendee(meetingID)
 
 	if err := c.Connector.Model(&meeting).Association("Attendees").Append(&attendeeRecord); err != nil {
 		return err
