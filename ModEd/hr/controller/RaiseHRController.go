@@ -44,7 +44,7 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaiseInstructor, error) {
 }
 func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.RequestRaiseInstructor, error) {
 	var requests []model.RequestRaiseInstructor
-	err := c.db.Where("instructor_id = ?", instructorID).Find(&requests).Error
+	err := c.db.Where("instructor_code = ?", instructorID).Find(&requests).Error
 	if err != nil {
 		return nil, err
 	}
