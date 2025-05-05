@@ -100,6 +100,7 @@ func NewCoursePlanHandler(db *gorm.DB) CoursePlanHandler {
 func (c CoursePlanHandler) Execute() {
 	coursePlanMenu := NewMenuHandler("Course Plan Menu", true)
 	coursePlanMenu.Add("Create Course Plan", CreateCoursePlan{db: c.db})
+	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db}) // Add ListAllCoursePlans option
 	coursePlanMenu.SetBackHandler(Back{})
 	coursePlanMenu.SetDefaultHandler(UnknownCommand{})
 	coursePlanMenu.Execute()
@@ -133,4 +134,29 @@ func (c CreateCoursePlan) Execute() {
 	}
 
 	fmt.Println("Course Plan created successfully with ID:", id)
+}
+
+type ListAllCoursePlans struct {
+	db *gorm.DB
+}
+
+func (l ListAllCoursePlans) Execute() {
+	coursePlanController := controller.NewCoursePlanController(l.db)
+
+	coursePlans, err := coursePlanController.ListAllCoursePlans()
+	if err != nil {
+		fmt.Println("Error listing course plans:", err)
+		return
+	}
+
+	if len(coursePlans) == 0 {
+		fmt.Println("No course plans found.")
+		return
+	}
+
+	fmt.Println("List of All Course Plans:")
+	for _, plan := range coursePlans {
+		fmt.Printf("ID: %d, Course ID: %d, Week: %d, Date: %s, Instructor ID: %d, Topic: %s, Description: %s\n",
+			plan.ID, plan.CourseId, plan.Week, plan.Date.Format("2006-01-02"), plan.InstructorId, plan.Topic, plan.Description)
+	}
 }
