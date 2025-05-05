@@ -115,13 +115,13 @@ func (c *StudentHRController) AddStudent(
 			return fmt.Errorf("insert failed in common model: %w", err)
 		}
 
-		if migrateErr := c.MigrateStudentRecords(); migrateErr != nil {
+		studentController := NewStudentHRController(tx)
+		if migrateErr := studentController.MigrateStudentRecords(); migrateErr != nil {
 			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
 		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber, advisorCode)
 
-		studentController := NewStudentHRController(tx)
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
 			return fmt.Errorf("failed to update HR student info: %w", updateErr)
 		}
@@ -180,7 +180,7 @@ func (c *StudentHRController) UpdateStudentInfo(
 		}
 
 		// 2) Migrate students to HR.
-		if err := c.MigrateStudentRecords(); err != nil {
+		if err := studentController.MigrateStudentRecords(); err != nil {
 			return fmt.Errorf("failed to migrate student to HR module: %v", err)
 		}
 
