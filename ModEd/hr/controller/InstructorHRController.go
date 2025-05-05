@@ -85,7 +85,7 @@ func (c *InstructorHRController) AddInstructor(
 
 		// Migrate here !!
 
-		hrInstructor := model.NewInstructorInfo(instructorCode, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
+		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
 		instructorController := CreateInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)

@@ -114,7 +114,7 @@ func (c *StudentHRController) AddStudent(
 			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
-		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phoneNumber)
+		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber)
 
 		studentController := NewStudentHRController(tx)
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
