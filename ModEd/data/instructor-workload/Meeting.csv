@@ -1,7 +1,5 @@
-id,created_at,updated_at,deleted_at,title,description,date,location,start_time,end_time
-1,2023-01-01 08:00:00,2023-01-01 08:30:00,,Office Hours,Meet with students to discuss progress,2023-01-10,CPE1121,09:00,10:00
-2,2023-01-02 09:00:00,2023-01-02 09:30:00,,Lecture Preparation,Prepare materials for next lecture,2023-01-12,CPE1119,14:00,16:00
-3,2023-01-03 10:00:00,2023-01-03 10:30:00,,Student Consultation,Discuss project progress with student,2023-01-15,CPE1121,11:00,12:00
-4,2023-01-04 13:00:00,2023-01-04 13:30:00,,Course Review,Review course curriculum and assignments,2023-01-16,CPE1133,15:00,16:30
-5,2023-01-05 14:00:00,2023-01-05 14:30:00,,Office Hours,Answer student questions and provide feedback,2023-01-17,CPE1121,09:00,10:30
-6,2023-01-06 15:00:00,2023-01-06 15:30:00,,Department Meeting,Discuss departmental goals and activities,2023-01-18,CPE1145,13:00,14:30
+"id","created_at","updated_at","deleted_at","title","description","date","location","start_time","end_time"
+1,"2025-05-05 22:37:25.3371471+07:00","2025-05-05 23:50:39.4094775+07:00",,Daily Meeting,Weekly meeting to discuss project progress,"2025-05-05 23:50:13.5513759+07:00",Room 101,"2025-05-05 23:50:13.5513759+07:00","2025-05-06 01:50:13.5513759+07:00"
+2,"2025-05-05 23:51:05.3934162+07:00","2025-05-06 00:44:59.2683707+07:00",,Monthly Meeting,Weekly meeting to discuss project progress,"2025-05-05 23:50:13.5513759+07:00",Room 102,"2025-05-05 23:50:13.5513759+07:00","2025-05-06 01:50:13.5513759+07:00"
+3,"2025-05-06 00:01:53.9615723+07:00","2025-05-06 00:01:53.9615723+07:00",,Weekly Meeting,Weekly meeting to discuss project progress,"2025-05-06 00:01:41.9193061+07:00",Room 103,"2025-05-06 00:01:41.9193061+07:00","2025-05-06 02:01:41.9193061+07:00"
+4,"2025-05-06 00:01:53.9615723+07:00","2025-05-06 00:01:53.9615723+07:00",,Emergency Meeting,Weekly meeting to discuss project progress,"2025-05-06 00:01:41.9193061+07:00",Room 104,"2025-05-06 00:01:41.9193061+07:00","2025-05-06 02:01:41.9193061+07:00"
