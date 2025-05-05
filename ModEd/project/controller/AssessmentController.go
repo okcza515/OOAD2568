@@ -29,14 +29,14 @@ func (c *AssessmentController) ListAllAssessments() ([]*model.Assessment, error)
 	return assessments, nil
 }
 
-func (c *AssessmentController) RetrieveAssessment(id uint) (*model.Assessment, error) {
-	assessment, err := c.RetrieveByID(id)
-	if err != nil {
-		return nil, err
-	}
+// func (c *AssessmentController) RetrieveAssessment(id uint) (*model.Assessment, error) {
+// 	assessment, err := c.RetrieveByID(id)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return assessment, nil
-}
+// 	return assessment, nil
+// }
 
 func (c *AssessmentController) RetrieveAssessmentBySeniorProjectId(seniorProjectId uint) (*model.Assessment, error) {
 	assessment, err := c.RetrieveByCondition(map[string]interface{}{"senior_project_id": seniorProjectId})
@@ -63,10 +63,10 @@ func (c *AssessmentController) InsertAssessment(seniorProjectId uint) (*model.As
 	return &assessment, c.Insert(&assessment)
 }
 
-func (c *AssessmentController) UpdateAssessment(id uint, assessment *model.Assessment) error {
-	return c.UpdateByID(assessment)
-}
+// func (c *AssessmentController) UpdateAssessment(id uint, assessment *model.Assessment) error {
+// 	return c.UpdateByID(assessment)
+// }
 
-func (c *AssessmentController) DeleteAssessment(id uint) error {
-	return c.DeleteByID(id)
-}
+// func (c *AssessmentController) DeleteAssessment(id uint) error {
+// 	return c.DeleteByID(id)
+// }

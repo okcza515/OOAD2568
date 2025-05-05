@@ -92,7 +92,7 @@ func listCriteriaLinkedToAssessment(criteriaCtrl *controller.AssessmentCriteriaC
 
 		io.Println("Linked Criteria:")
 		for _, link := range links {
-			criteria, err := criteriaCtrl.RetrieveAssessmentCriteria(link.AssessmentCriteriaId)
+			criteria, err := criteriaCtrl.RetrieveByID(link.AssessmentCriteriaId)
 			if err != nil {
 				log.Printf("Error retrieving criteria (ID %d): %v", link.AssessmentCriteriaId, err)
 				continue
@@ -133,7 +133,7 @@ func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaControl
 
 		io.Println("Currently linked criteria:")
 		for _, link := range links {
-			criteria, err := criteriaCtrl.RetrieveAssessmentCriteria(link.AssessmentCriteriaId)
+			criteria, err := criteriaCtrl.RetrieveByID(link.AssessmentCriteriaId)
 			if err != nil || criteria == nil {
 				log.Printf("Error retrieving criteria (ID %d): %v", link.AssessmentCriteriaId, err)
 				continue
@@ -167,7 +167,7 @@ func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaControl
 			return
 		}
 
-		criteria, err := criteriaCtrl.RetrieveAssessmentCriteria(uint(criteriaId))
+		criteria, err := criteriaCtrl.RetrieveByID(uint(criteriaId))
 		if err != nil || criteria == nil {
 			io.Println(fmt.Sprintf("Criteria ID %v not found.", criteriaId))
 			return
@@ -215,7 +215,7 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 			return
 		}
 
-		assessment, err := assessmentCtrl.RetrieveAssessment(uint(seniorProjectID))
+		assessment, err := assessmentCtrl.RetrieveByID(uint(seniorProjectID))
 		if err != nil {
 			if assessment == nil {
 				assessment, err = assessmentCtrl.InsertAssessment(uint(seniorProjectID))
@@ -237,7 +237,7 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 
 		io.Println("Current Linked Criteria:")
 		for _, mapper := range mappers {
-			assessmentCriteria, err := criteriaCtrl.RetrieveAssessmentCriteria(mapper.AssessmentCriteriaId)
+			assessmentCriteria, err := criteriaCtrl.RetrieveByID(mapper.AssessmentCriteriaId)
 			if err != nil {
 				log.Printf("Error retrieving assessmentCriteria (ID %d): %v", mapper.AssessmentCriteriaId, err)
 				continue
@@ -299,7 +299,7 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 		}
 
 		assessmentCriteriaLink.AssessmentCriteriaId = uint(newCriteriaID)
-		err = linkCtrl.UpdateAssessmentCriteriaLink(assessmentCriteriaLink.ID, assessmentCriteriaLink)
+		err = linkCtrl.UpdateByID(assessmentCriteriaLink)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error updating assessmentCriteriaLink: %v", err))
 		} else {
@@ -327,7 +327,7 @@ func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtr
 			return
 		}
 
-		assessment, err := assessmentCtrl.RetrieveAssessment(uint(seniorProjectID))
+		assessment, err := assessmentCtrl.RetrieveByID(uint(seniorProjectID))
 		if err != nil || assessment == nil {
 			io.Println("Assessment not found.")
 			return
@@ -345,7 +345,7 @@ func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtr
 		}
 
 		for _, mapper := range mappers {
-			criteria, err := criteriaCtrl.RetrieveAssessmentCriteria(mapper.AssessmentCriteriaId)
+			criteria, err := criteriaCtrl.RetrieveByID(mapper.AssessmentCriteriaId)
 			if err != nil {
 				log.Printf("Error retrieving criteria (ID %d): %v", mapper.AssessmentCriteriaId, err)
 				continue
