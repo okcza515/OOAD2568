@@ -116,6 +116,12 @@ func (h *courseHandler) updateCourseById() (err error) {
 		}
 	}
 
+	// Validate updated course
+	if err := course.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
 	// Confirm update
 	confirm := utils.GetUserInput("Are you sure you want to update this course? (y/n): ")
 	if confirm != "y" {

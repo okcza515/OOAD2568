@@ -5,7 +5,6 @@ import (
 	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
-	"ModEd/utils/deserializer"
 	"errors"
 	"time"
 
@@ -110,39 +109,19 @@ func (manager *SpaceManagementControllerManager) ResetDatabase() error {
 }
 
 func (manager *SpaceManagementControllerManager) LoadSeedData() error {
-	seedData := map[string]interface{}{
-		"Room":     &[]model.Room{},
-		"Booking":  &[]model.Booking{},
-		"Schedule": &[]model.PermanentSchedule{},
-	}
-	for filename, m := range seedData {
-		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".JSON")
-		if err != nil {
-			return err
-		}
-
-		err = fd.Deserialize(m)
-		if err != nil {
-			return err
-		}
-
-		result := migration.GetInstance().DB.Create(m)
-		if result.Error != nil {
-			return result.Error
-		}
-	}
-	return nil
-}
-
-func (manager *SpaceManagementControllerManager) ResetDB() error {
-	err := migration.GetInstance().DropAllTables()
+	err := manager.ResetDatabase()
 	if err != nil {
 		return err
 	}
 
-	_, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
+	err = migration.GetInstance().AddSeedData(("data/asset/Room.JSON"), &[]model.Room{}).
+		AddSeedData(("data/asset/Booking.JSON"), &[]model.Booking{}).
+		AddSeedData(("data/asset/PermanentSchedule.JSON"), &[]model.PermanentSchedule{}).
+		//Add more seed data as needed
+		LoadSeedData()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

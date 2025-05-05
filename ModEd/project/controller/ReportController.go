@@ -39,6 +39,24 @@ func (c *ReportController) ListAllReports() ([]model.Report, error) {
 	return reports, nil
 }
 
+func (c *ReportController) UpdateReport(reportID uint, newDueDate string) error {
+	var report model.Report
+	if err := c.db.First(&report, reportID).Error; err != nil {
+		return fmt.Errorf("error retrieving report: %w", err)
+	}
+	dueDate, err := time.Parse("2006-01-02", newDueDate)
+	if err != nil {
+		return fmt.Errorf("invalid due date format: %w", err)
+	}
+
+	report.DueDate = dueDate
+	if err := c.db.Save(&report).Error; err != nil {
+		return fmt.Errorf("error updating report: %w", err)
+	}
+
+	return nil
+}
+
 func (c *ReportController) InsertReport(report model.Report) error {
 	if !report.ReportType.IsValid() {
 		return fmt.Errorf("invalid report type: %s", report.ReportType)

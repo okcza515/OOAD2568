@@ -138,10 +138,15 @@ func (m *MigrationManager) LoadSeedData() error {
 			return err
 		}
 
+		// Print fd
+		fmt.Println(fd)
+
 		err = fd.Deserialize(md)
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(md)
 
 		result := m.DB.Create(md)
 		if result.Error != nil {

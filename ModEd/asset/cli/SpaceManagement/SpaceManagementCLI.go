@@ -54,7 +54,7 @@ func initialSpaceManagementCLI() (db *gorm.DB, err error) {
 		switch *optionFlag {
 		case "reset":
 			fmt.Println("Resetting database...")
-			err = instance.ResetDB()
+			err = instance.ResetDatabase()
 		case "seed":
 			fmt.Println("Seeding database...")
 			err = instance.LoadSeedData()

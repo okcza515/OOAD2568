@@ -10,9 +10,9 @@ type InstructorInfo struct {
 	Gender             string             `csv:"Gender"`
 	CitizenID          string             `csv:"CitizenID"`
 	PhoneNumber        string             `csv:"PhoneNumber"`
-	Salary             int                `csv:"Salary"`
-	AcademicPosition   AcademicPosition   `csv:"AcademicPosition"`
-	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition"`
+	Salary             int                `csv:"Salary" default:"0"`
+	AcademicPosition   AcademicPosition   `csv:"AcademicPosition" default:"0"`
+	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition" default:"0"`
 }
 
 func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary int, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
