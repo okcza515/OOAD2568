@@ -25,3 +25,7 @@ func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, 
 		DepartmentPosition: DepartmentPosition,
 	}
 }
+
+func (InstructorInfo) TableName() string {
+	return "instructor_infos"
+}

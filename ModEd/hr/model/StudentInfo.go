@@ -47,3 +47,7 @@ func NewUpdatedStudentInfo(
 
 	}
 }
+
+func (InstructorInfo) TableName() string {
+    return "student_infos"
+}
