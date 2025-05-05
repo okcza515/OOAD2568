@@ -1,0 +1,63 @@
+[
+    {
+      "QuotationID": 1,
+      "TORID": 1,
+      "SupplierID": 1,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 2,
+      "TORID": 1,
+      "SupplierID": 2,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 3,
+      "TORID": 1,
+      "SupplierID": 3,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 4,
+      "TORID": 2,
+      "SupplierID": 4,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 5,
+      "TORID": 2,
+      "SupplierID": 5,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 6,
+      "TORID": 3,
+      "SupplierID": 6,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 7,
+      "TORID": 3,
+      "SupplierID": 7,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 8,
+      "TORID": 4,
+      "SupplierID": 8,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 9,
+      "TORID": 5,
+      "SupplierID": 9,
+      "Status": "pending"
+    },
+    {
+      "QuotationID": 10,
+      "TORID": 5,
+      "SupplierID": 10,
+      "Status": "pending"
+    }
+  ]
+  

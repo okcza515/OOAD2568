@@ -1,0 +1,53 @@
+[
+    {
+      "SupplierID": 1,
+      "Name": "Alpha Supplies Co., Ltd.",
+      "ContactInfo": "contact@alphasupplies.com"
+    },
+    {
+      "SupplierID": 2,
+      "Name": "Beta Engineering",
+      "ContactInfo": "sales@betaeng.com"
+    },
+    {
+      "SupplierID": 3,
+      "Name": "Gamma Traders",
+      "ContactInfo": "info@gammatraders.com"
+    },
+    {
+      "SupplierID": 4,
+      "Name": "Delta Solutions",
+      "ContactInfo": "support@delta.solutions"
+    },
+    {
+      "SupplierID": 5,
+      "Name": "Epsilon Tech",
+      "ContactInfo": "hello@epsilontechnologies.io"
+    },
+    {
+      "SupplierID": 6,
+      "Name": "Zeta Group",
+      "ContactInfo": "zeta@zetagroup.com"
+    },
+    {
+      "SupplierID": 7,
+      "Name": "Eta Hardware",
+      "ContactInfo": "contact@etahardware.com"
+    },
+    {
+      "SupplierID": 8,
+      "Name": "Theta Systems",
+      "ContactInfo": "support@thetasystems.com"
+    },
+    {
+      "SupplierID": 9,
+      "Name": "Iota Innovations",
+      "ContactInfo": "info@iotainnovations.com"
+    },
+    {
+      "SupplierID": 10,
+      "Name": "Kappa Equipments",
+      "ContactInfo": "kappa@equipments.com"
+    }
+  ]
+  
