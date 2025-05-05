@@ -109,7 +109,7 @@ func (manager *SpaceManagementControllerManager) ResetDatabase() error {
 }
 
 func (manager *SpaceManagementControllerManager) LoadSeedData() error {
-	err := manager.ResetDB()
+	err := manager.ResetDatabase()
 	if err != nil {
 		return err
 	}
@@ -123,18 +123,5 @@ func (manager *SpaceManagementControllerManager) LoadSeedData() error {
 		return err
 	}
 
-	return nil
-}
-
-func (manager *SpaceManagementControllerManager) ResetDB() error {
-	err := migration.GetInstance().DropAllTables()
-	if err != nil {
-		return err
-	}
-
-	_, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
-	if err != nil {
-		return err
-	}
 	return nil
 }
