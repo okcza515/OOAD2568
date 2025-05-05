@@ -85,7 +85,7 @@ func (c *InstructorHRController) AddInstructor(
 
 		// Migrate here !!
 
-		hrInstructor := model.NewInstructorInfo(instructorCode, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
+		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
 		instructorController := CreateInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
@@ -94,6 +94,10 @@ func (c *InstructorHRController) AddInstructor(
 		return nil
 	})
 	return err
+}
+
+func (c *InstructorHRController) ImportInstructors(filePath string) error {
+	return nil
 }
 
 func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, error) {
@@ -134,15 +138,39 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 	})
 }
 
-func (c *InstructorHRController) ImportInstructors(instructors []*model.InstructorInfo) error {
-	for _, instructor := range instructors {
-		if instructor.ID == 0 || instructor.FirstName == "" {
-			return fmt.Errorf("invalid instructor data: %+v", instructor)
+func (c *InstructorHRController) MigrateInstructorRecords() error {
+	tm := &util.TransactionManager{DB: c.db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		var commonInstructors []commonModel.Instructor
+		if err := tx.Find(&commonInstructors).Error; err != nil {
+			return fmt.Errorf("failed to retrieve common instructors: %w", err)
 		}
 
-		if err := c.insert(instructor); err != nil {
-			return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
+		for _, ci := range commonInstructors {
+			commonInstructor := &commonModel.Instructor{
+				InstructorCode: ci.InstructorCode,
+				FirstName:      ci.FirstName,
+				LastName:       ci.LastName,
+				Email:          ci.Email,
+				StartDate:      ci.StartDate,
+				Department:     ci.Department,
+			}
+			instructorInfo := model.NewInstructorInfo(
+				*commonInstructor,
+				"",
+				"",
+				"",
+				0,
+				model.AcademicPosition(0),
+				model.DepartmentPosition(0),
+			)
+
+			if err := tx.Where("instructor_code = ?", ci.InstructorCode).
+				FirstOrCreate(&instructorInfo).Error; err != nil {
+				return fmt.Errorf("failed to migrate instructor %s: %w", ci.InstructorCode, err)
+			}
 		}
-	}
-	return nil
+
+		return nil
+	})
 }

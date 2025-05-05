@@ -69,7 +69,7 @@ func (c *StudentHRController) GetAllStudents() ([]*model.StudentInfo, error) {
 
 func (c *StudentHRController) AddStudent(
 	studentCode string, firstName string, lastName string, email string, startDate string, birthdate string, program string, department string, status string,
-	gender string, citizenID string, phoneNumber string,
+	gender string, citizenID string, phoneNumber string, advisorCode string,
 ) error {
 	startDateParsed, err := time.Parse("02-01-2006", startDate)
 	if err != nil {
@@ -91,6 +91,11 @@ func (c *StudentHRController) AddStudent(
 		return fmt.Errorf("failed to parse status: %w", err)
 	}
 
+	instructorController := CreateInstructorHRController(c.db)
+	if _, err := instructorController.getById(advisorCode); err != nil {
+		return fmt.Errorf("failed to retrieve instructor with code %s: %w", advisorCode, err)
+	}
+
 	tm := &util.TransactionManager{DB: c.db}
 
 	err = tm.Execute(func(tx *gorm.DB) error {
@@ -110,11 +115,11 @@ func (c *StudentHRController) AddStudent(
 			return fmt.Errorf("insert failed in common model: %w", err)
 		}
 
-		if migrateErr := MigrateStudentsToHR(tx); migrateErr != nil {
+		if migrateErr := c.MigrateStudentRecords(); migrateErr != nil {
 			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
-		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phoneNumber)
+		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber, advisorCode)
 
 		studentController := NewStudentHRController(tx)
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
@@ -175,7 +180,7 @@ func (c *StudentHRController) UpdateStudentInfo(
 		}
 
 		// 2) Migrate students to HR.
-		if err := MigrateStudentsToHR(tx); err != nil {
+		if err := c.MigrateStudentRecords(); err != nil {
 			return fmt.Errorf("failed to migrate student to HR module: %v", err)
 		}
 
@@ -288,25 +293,27 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 	return nil
 }
 
-func (c *StudentHRController) MigrateStudentRecord() error {
-	var students []commonModel.Student
-	if err := c.db.Find(&students).Error; err != nil {
-		return fmt.Errorf("failed to retrieve common students: %w", err)
-	}
-
-	for _, s := range students {
-		studentInfo := model.StudentInfo{
-			Student:     s,  // Embed the common student data
-			Gender:      "", // Initialize HR fields as empty
-			CitizenID:   "",
-			PhoneNumber: "",
+func (c *StudentHRController) MigrateStudentRecords() error {
+	tm := &util.TransactionManager{DB: c.db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		var commonStudents []commonModel.Student
+		if err := tx.Find(&commonStudents).Error; err != nil {
+			return fmt.Errorf("failed to retrieve common students: %w", err)
 		}
 
-		if err := c.db.Where("student_code = ?", s.StudentCode).
-			FirstOrCreate(&studentInfo).Error; err != nil {
-			return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
-		}
-	}
+		for _, s := range commonStudents {
+			studentInfo := model.StudentInfo{
+				Student:     s,  // Embed the common student data
+				Gender:      "", // Initialize HR fields as empty
+				CitizenID:   "",
+				PhoneNumber: "",
+			}
 
-	return nil
+			if err := tx.Where("student_code = ?", s.StudentCode).
+				FirstOrCreate(&studentInfo).Error; err != nil {
+				return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
+			}
+		}
+		return nil
+	})
 }
