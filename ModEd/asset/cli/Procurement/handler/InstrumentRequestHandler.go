@@ -293,13 +293,11 @@ func deref(s *string) string {
 func showAvailableRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
 		fmt.Println("Failed to retrieve requests:", err)
-		WaitForEnter()
 		return false
 	}
 
 	if len(*requests) == 0 {
 		fmt.Println("No instrument requests available.")
-		WaitForEnter()
 		return false
 	}
 

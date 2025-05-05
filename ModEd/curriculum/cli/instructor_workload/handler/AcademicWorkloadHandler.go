@@ -97,9 +97,11 @@ func (c CreateClassMaterial) Execute() {
 	fmt.Println("ClassMaterial created successfully!")
 }
 func (r RetrieveClassMaterial) Execute() {
+	var id uint
+	fmt.Print("Enter ID to retrieve: ")
+	fmt.Scanln(&id)
 	ClassMaterialController := controller.NewClassMaterialController(r.db)
-
-	classMaterial, err := ClassMaterialController.RetrieveByID(1)
+	classMaterial, err := ClassMaterialController.RetrieveByID(id)
 	if err != nil {
 		fmt.Println("Error retrieving ClassMaterial:", err)
 		return
@@ -113,9 +115,11 @@ func (r RetrieveClassMaterial) Execute() {
 }
 func (u UpdateClassMaterial) Execute() {
 	ClassMaterialController := controller.NewClassMaterialController(u.db)
-
+	var id uint
+	fmt.Print("Enter ID to Update: ")
+	fmt.Scanln(&id)
 	mockClassMaterial := &model.ClassMaterial{
-		ClassId: 1,
+		ClassId: id,
 		FileName: "bla_example.txt",
 		FilePath: "/path/to/bla_example.txt",
 	}
@@ -128,8 +132,11 @@ func (u UpdateClassMaterial) Execute() {
 }
 func (d DeleteClassMaterial) Execute() {
 	ClassMaterialController := controller.NewClassMaterialController(d.db)
+	var id uint
+	fmt.Print("Enter ID to Delete: ")
+	fmt.Scanln(&id)
 
-	if err := ClassMaterialController.DeleteByID(2); err != nil {
+	if err := ClassMaterialController.DeleteByID(id); err != nil {
 		fmt.Println("Error deleting ClassMaterial:", err)
 		return
 	}
@@ -168,13 +175,29 @@ func NewCoursePlanHandler(db *gorm.DB) CoursePlanHandler {
 func (c CoursePlanHandler) Execute() {
 	coursePlanMenu := NewMenuHandler("Course Plan Menu", true)
 	coursePlanMenu.Add("Create Course Plan", CreateCoursePlan{db: c.db})
+	coursePlanMenu.Add("Retrieve Course Plan", RetrieveCoursePlan{db: c.db})
+	coursePlanMenu.Add("Update Course Plan", UpdateCoursePlan{db: c.db})
+	coursePlanMenu.Add("Delete Course Plan", DeleteCoursePlan{db: c.db})
 	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db})
+	coursePlanMenu.Add("List Upcoming Course Plans", ListAllCoursePlans{db: c.db}) 
 	coursePlanMenu.SetBackHandler(Back{})
 	coursePlanMenu.SetDefaultHandler(UnknownCommand{})
 	coursePlanMenu.Execute()
 }
 
 type CreateCoursePlan struct {
+	db *gorm.DB
+}
+type RetrieveCoursePlan struct {
+	db *gorm.DB
+}
+type UpdateCoursePlan struct {
+	db *gorm.DB
+}
+type DeleteCoursePlan struct {
+	db *gorm.DB
+}
+type ListAllCoursePlans struct {
 	db *gorm.DB
 }
 
@@ -204,8 +227,61 @@ func (c CreateCoursePlan) Execute() {
 	fmt.Println("Course Plan created successfully with ID:", id)
 }
 
-type ListAllCoursePlans struct {
-	db *gorm.DB
+func (r RetrieveCoursePlan) Execute() {	
+	coursePlanController := controller.NewCoursePlanController(r.db)
+	var id uint
+	fmt.Print("Enter ID to retrieve: ")
+	fmt.Scanln(&id)
+
+	coursePlan, err := coursePlanController.RetrieveByID(id)
+	if err != nil {
+		fmt.Println("Error retrieving course plan:", err)
+		return
+	}
+
+	fmt.Println("Retrieved Course Plan:")
+	fmt.Printf("ID: %d\n", coursePlan.ID)
+	fmt.Printf("Course ID: %d\n", coursePlan.CourseId)
+	fmt.Printf("Week: %d\n", coursePlan.Week)
+	fmt.Printf("Date: %s\n", coursePlan.Date.Format("2006-01-02"))
+	fmt.Printf("Instructor ID: %d\n", coursePlan.InstructorId)
+	fmt.Printf("Topic: %s\n", coursePlan.Topic)
+	fmt.Printf("Description: %s\n", coursePlan.Description)
+}
+
+func (u UpdateCoursePlan) Execute() {
+	coursePlanController := controller.NewCoursePlanController(u.db)
+	var id uint
+	fmt.Print("Enter ID to Update: ")
+	fmt.Scanln(&id)
+	mockCoursePlan := &model.CoursePlan{
+		CourseId:     id,
+		Week:         2,
+		Date:         time.Now().AddDate(0, 0, 7),
+		InstructorId: 101,
+		Topic:        "Updated Introduction of Course",
+		Description:  "Updated detailing the course objectives and syllabus",
+	}
+
+	if err := coursePlanController.UpdateByID(mockCoursePlan); err != nil {
+		fmt.Println("Error updating course plan:", err)
+		return
+	}
+
+	fmt.Println("Course Plan updated successfully!")
+}
+func (d DeleteCoursePlan) Execute() {
+	coursePlanController := controller.NewCoursePlanController(d.db)
+	var id uint
+	fmt.Print("Enter ID to Delete: ")
+	fmt.Scanln(&id)
+
+	if err := coursePlanController.DeleteByID(id); err != nil {
+		fmt.Println("Error deleting course plan:", err)
+		return
+	}
+
+	fmt.Println("Course Plan deleted successfully!")
 }
 
 func (l ListAllCoursePlans) Execute() {
