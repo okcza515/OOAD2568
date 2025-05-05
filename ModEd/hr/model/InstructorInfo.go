@@ -30,7 +30,7 @@ func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, 
 func NewUpdatedInstructorInfo(
 	instructorInfo *InstructorInfo,
 	firstName string, lastName string, email string,
-	gender string, citizenID string, phoneNumber string,
+	gender string, citizenID string, phoneNumber string, academicPos AcademicPosition, departmentPos DepartmentPosition,
 ) *InstructorInfo {
 	return &InstructorInfo{
 		Instructor: model.Instructor{
@@ -45,8 +45,8 @@ func NewUpdatedInstructorInfo(
 		CitizenID:          util.IfNotEmpty(citizenID, instructorInfo.CitizenID),
 		PhoneNumber:        util.IfNotEmpty(phoneNumber, instructorInfo.PhoneNumber),
 		Salary:             instructorInfo.Salary,
-		AcademicPosition:   instructorInfo.AcademicPosition,
-		DepartmentPosition: instructorInfo.DepartmentPosition,
+		AcademicPosition:   AcademicPosition(util.IfNotZero(int(academicPos), int(instructorInfo.AcademicPosition))),
+		DepartmentPosition: DepartmentPosition(util.IfNotZero(int(departmentPos), int(instructorInfo.DepartmentPosition))),
 	}
 }
 
