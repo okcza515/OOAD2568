@@ -2,6 +2,7 @@ package controller
 
 import (
 	commonModel "ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -97,7 +98,49 @@ func (c *InstructorHRController) AddInstructor(
 }
 
 func (c *InstructorHRController) ImportInstructors(filePath string) error {
-	return nil
+	tm := &util.TransactionManager{DB: c.db}
+	err := tm.Execute(func(tx *gorm.DB) error {
+		hrMapper, err := core.CreateMapper[model.InstructorInfo](filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create mapper: %w", err)
+		}
+		hrRecords := hrMapper.Deserialize()
+		hrRecordsMap := make(map[string]model.InstructorInfo)
+		for _, record := range hrRecords {
+			if _, exists := hrRecordsMap[record.InstructorCode]; exists {
+				return fmt.Errorf("duplicate instructor code found: %s", record.InstructorCode)
+			}
+			if record != nil {
+				hrRecordsMap[record.InstructorCode] = *record
+			} else {
+				continue
+			}
+		}
+
+		instructorController := NewInstructorHRController(tx)
+		for instructorCode, record := range hrRecordsMap {
+			instructorInfo, err := instructorController.getById(instructorCode)
+			if err != nil {
+				return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorCode, err)
+			}
+
+			importInstructor := model.NewUpdatedInstructorInfo(
+				instructorInfo,
+				instructorInfo.FirstName,
+				instructorInfo.LastName,
+				instructorInfo.Email,
+				record.Gender,
+				record.CitizenID,
+				record.PhoneNumber,
+			)
+			if err := instructorController.update(importInstructor); err != nil {
+				return fmt.Errorf("error updating instructor with ID %s: %v", instructorCode, err)
+			}
+
+		}
+		return nil
+	})
+	return err
 }
 
 func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, error) {
@@ -112,7 +155,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorController := NewInstructorHRController(tx)
-		
+
 		instructorInfo, err := instructorController.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
@@ -132,10 +175,9 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 			return fmt.Errorf("unknown field for instructor update: %s", field)
 		}
 
-
 		if err := instructorController.update(instructorInfo); err != nil {
-            return fmt.Errorf("error updating instructor: %v", err)
-        }
+			return fmt.Errorf("error updating instructor: %v", err)
+		}
 		fmt.Println("Instructor updated successfully!")
 		return nil
 	})

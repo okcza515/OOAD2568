@@ -71,6 +71,9 @@
         return nil
       }
     ```
+  - Reducing Duplicate Import/Export Code
+    - All of the code for different types of import/export commands is the same, differing only in the controller logic and file type.
+    - Controller logic is passed in as a callback, keeping import/export commands flexible and decoupled.
 
 - #### Controller
 
@@ -145,6 +148,8 @@
             )
     }
     ```
+  - Refactor `ImportInstructors` Method
+    - Improved the `ImportInstructors` method in the `InstructorHRController` to enhance readability, maintainability, and reduce duplication.
 
 - #### Model
 
