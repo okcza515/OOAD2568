@@ -68,7 +68,7 @@ func main() {
 
 	// Register commands
 	invoker.RegisterCommand("delete", &commands.DeleteStudentCommand{})
-	invoker.RegisterCommand("migrate", &commands.MigrateStudentsCommand{})
+	invoker.RegisterCommand("migrate", &commands.MigrateCommand{})
 	invoker.RegisterCommand("export", &commands.ExportStudentsCommand{})
 	invoker.RegisterCommand("list-student", &commands.ListStudentCommand{})
 	invoker.RegisterCommand("add-student", &commands.AddStudentCommand{})
