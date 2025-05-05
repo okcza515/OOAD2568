@@ -4,6 +4,7 @@ import (
 	"ModEd/core"
 	"ModEd/project/model"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -40,7 +41,7 @@ func (c *AssignmentController) RetrieveAssignmentsBySeniorProjectId(seniorProjec
 	return assignments, nil
 }
 
-func (c *AssignmentController) InsertAssignment(seniorProjectId uint) (*model.Assignment, error) {
+func (c *AssignmentController) InsertAssignment(seniorProjectId uint, name, description string, dueDate time.Time) (*model.Assignment, error) {
 	existing, err := c.List(map[string]interface{}{"senior_project_id": seniorProjectId})
 	if err != nil {
 		return nil, fmt.Errorf("failed to check existing assignments: %w", err)
@@ -48,9 +49,15 @@ func (c *AssignmentController) InsertAssignment(seniorProjectId uint) (*model.As
 	if len(existing) > 0 {
 		return nil, fmt.Errorf("assignment already exists for project %d", seniorProjectId)
 	}
+	if dueDate.IsZero() {
+		return nil, fmt.Errorf("due date cannot be empty")
+	}
 
 	assignment := model.Assignment{
+		Name:            name,
 		SeniorProjectId: seniorProjectId,
+		Description:     description,
+		DueDate:         dueDate,
 	}
 
 	return &assignment, c.Insert(&assignment)

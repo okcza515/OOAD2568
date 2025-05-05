@@ -3,11 +3,11 @@ package handler
 
 import (
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
 	"strings"
@@ -86,14 +86,14 @@ func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string)
 func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication() error {
 	WILProjectApplicationModel := model.WILProjectApplication{}
 
-	numStudents := utils.ExecuteUserInputStep(utils.UintInputStep{
+	numStudents := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "\nHow many students are in the project? 2 or 3: ",
 		FieldNameText: "Number of Students",
 	}).(uint)
 	for numStudents != 2 && numStudents != 3 {
 		fmt.Println("Invalid input. Please enter 2 or 3.")
-		// numStudents = int(utils.GetUserInputUint("\nHow many students are in the project? 2 or 3: "))
-		numStudents = utils.ExecuteUserInputStep(utils.UintInputStep{
+		// numStudents = int(core.GetUserInputUint("\nHow many students are in the project? 2 or 3: "))
+		numStudents = core.ExecuteUserInputStep(core.UintInputStep{
 			PromptText:    "\nHow many students are in the project? 2 or 3: ",
 			FieldNameText: "Number of Students",
 		}).(uint)
@@ -102,7 +102,7 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 	var StudentsId []string
 	studentIdSet := make(map[string]bool)
 	for uint(len(StudentsId)) < numStudents {
-		studentId := utils.ExecuteUserInputStep(utils.StringInputStep{
+		studentId := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "\nEnter Student ID: ",
 			FieldNameText: "Student ID",
 		}).(string)
@@ -118,27 +118,27 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 		StudentsId = append(StudentsId, studentId)
 	}
 
-	WILProjectApplicationModel.ProjectName = utils.ExecuteUserInputStep(utils.StringInputStep{
+	WILProjectApplicationModel.ProjectName = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "\nEnter Project Name: ",
 		FieldNameText: "Project Name",
 	}).(string)
-	WILProjectApplicationModel.ProjectDetail = utils.ExecuteUserInputStep(utils.StringInputStep{
+	WILProjectApplicationModel.ProjectDetail = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "\nEnter Project Detail: ",
 		FieldNameText: "Project Detail",
 	}).(string)
-	WILProjectApplicationModel.Semester = utils.ExecuteUserInputStep(utils.StringInputStep{
+	WILProjectApplicationModel.Semester = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "\nEnter Semester: ",
 		FieldNameText: "Semester",
 	}).(string)
-	WILProjectApplicationModel.CompanyId = utils.ExecuteUserInputStep(utils.UintInputStep{
+	WILProjectApplicationModel.CompanyId = core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "\nEnter Company Id: ",
 		FieldNameText: "Company Id",
 	}).(uint)
-	WILProjectApplicationModel.Mentor = utils.ExecuteUserInputStep(utils.StringInputStep{
+	WILProjectApplicationModel.Mentor = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "\nEnter Mentor Name: ",
 		FieldNameText: "Mentor Name",
 	}).(string)
-	WILProjectApplicationModel.AdvisorId = utils.ExecuteUserInputStep(utils.UintInputStep{
+	WILProjectApplicationModel.AdvisorId = core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "\nEnter Advisor Id: ",
 		FieldNameText: "Advisor Id",
 	}).(uint)
@@ -184,7 +184,7 @@ func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() e
 	}
 
 	// Step 2: Enter the Project ID
-	projectID := utils.ExecuteUserInputStep(utils.UintInputStep{
+	projectID := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "\nEnter the Project ID to edit: ",
 		FieldNameText: "Project ID",
 	}).(uint)
@@ -204,7 +204,7 @@ func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() e
 	// Step 4: Select a column to update
 	for {
 		showProjectDetail(*selectedApplication)
-		column := utils.ExecuteUserInputStep(utils.UintInputStep{
+		column := core.ExecuteUserInputStep(core.UintInputStep{
 			PromptText:    "\nEnter the number of the column to update (1-10): ",
 			FieldNameText: "Column Number",
 		}).(uint)
@@ -214,38 +214,38 @@ func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() e
 
 		switch column {
 		case 1:
-			selectedApplication.ProjectName = utils.ExecuteUserInputStep(utils.StringInputStep{
+			selectedApplication.ProjectName = core.ExecuteUserInputStep(core.StringInputStep{
 				PromptText:    "\nEnter new Project Name: ",
 				FieldNameText: "Project Name",
 			}).(string)
 		case 2:
-			selectedApplication.ProjectDetail = utils.ExecuteUserInputStep(utils.StringInputStep{
+			selectedApplication.ProjectDetail = core.ExecuteUserInputStep(core.StringInputStep{
 				PromptText:    "\nEnter new Project Detail: ",
 				FieldNameText: "Project Detail",
 			}).(string)
 		case 3:
-			selectedApplication.Semester = utils.ExecuteUserInputStep(utils.StringInputStep{
+			selectedApplication.Semester = core.ExecuteUserInputStep(core.StringInputStep{
 				PromptText:    "\nEnter new Semester: ",
 				FieldNameText: "Semester",
 			}).(string)
 		case 4:
-			selectedApplication.CompanyId = utils.ExecuteUserInputStep(utils.UintInputStep{
+			selectedApplication.CompanyId = core.ExecuteUserInputStep(core.UintInputStep{
 				PromptText:    "\nEnter new Company ID: ",
 				FieldNameText: "Company ID",
 			}).(uint)
 		case 5:
-			selectedApplication.Mentor = utils.ExecuteUserInputStep(utils.StringInputStep{
+			selectedApplication.Mentor = core.ExecuteUserInputStep(core.StringInputStep{
 				PromptText:    "\nEnter new Mentor Name: ",
 				FieldNameText: "Mentor Name",
 			}).(string)
 		case 6:
-			selectedApplication.AdvisorId = utils.ExecuteUserInputStep(utils.UintInputStep{
+			selectedApplication.AdvisorId = core.ExecuteUserInputStep(core.UintInputStep{
 				PromptText:    "\nEnter new Advisor ID: ",
 				FieldNameText: "Advisor ID",
 			}).(uint)
 		case 7:
 			for {
-				newStatus := utils.ExecuteUserInputStep(utils.StringInputStep{
+				newStatus := core.ExecuteUserInputStep(core.StringInputStep{
 					PromptText:    "\nEnter new Application Status (e.g., Pending, Approved, Rejected): ",
 					FieldNameText: "Application Status",
 				}).(string)
@@ -256,7 +256,7 @@ func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() e
 				fmt.Println("Invalid Application Status. Please enter a valid status (Pending, Approved, Rejected).")
 			}
 		case 8:
-			newDate := utils.ExecuteUserInputStep(utils.StringInputStep{
+			newDate := core.ExecuteUserInputStep(core.StringInputStep{
 				PromptText:    "\nEnter new Turn-in Date (YYYY-MM-DD): ",
 				FieldNameText: "Turn-in Date",
 			}).(string)
@@ -284,7 +284,7 @@ func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() e
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) searchWILProjectApplication() error {
-	searchTerm := utils.ExecuteUserInputStep(utils.StringInputStep{
+	searchTerm := core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "\nEnter search term (Project Name or ID): ",
 		FieldNameText: "Search Term",
 	}).(string)

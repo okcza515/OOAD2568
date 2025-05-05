@@ -3,10 +3,10 @@ package handler
 
 import (
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
-	"ModEd/curriculum/utils"
 
 	"ModEd/curriculum/model"
 	"fmt"
@@ -113,15 +113,15 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 	newIndependentStudy := model.IndependentStudy{}
 	fmt.Println("\nAssign new indepndent study topic")
 	var turnInDateTime string = ""
-	newIndependentStudy.WILProject.ID = utils.ExecuteUserInputStep(utils.UintInputStep{
+	newIndependentStudy.WILProject.ID = core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter WIL project group ID you want to assign : ",
 		FieldNameText: "WIL project group ID",
 	}).(uint)
-	newIndependentStudy.IndependentStudyTopic = utils.ExecuteUserInputStep(utils.StringInputStep{
+	newIndependentStudy.IndependentStudyTopic = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter Independent study topic: ",
 		FieldNameText: "Independent study topic",
 	}).(string)
-	newIndependentStudy.IndependentStudyContent = utils.ExecuteUserInputStep(utils.StringInputStep{
+	newIndependentStudy.IndependentStudyContent = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter Independent study content: ",
 		FieldNameText: "Independent study content",
 	}).(string)
@@ -129,17 +129,17 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 	fmt.Println("Do you want this IS to has turn-in date?")
 	fmt.Println("1. Have turn-in date")
 	fmt.Println("2. No turn-in date")
-	flag := utils.ExecuteUserInputStep(utils.UintInputStep{
+	flag := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter your choice: ",
 		FieldNameText: "your choice",
 	}).(uint)
 
 	if flag == 1 {
-		turnInDate := utils.ExecuteUserInputStep(utils.StringInputStep{
+		turnInDate := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "Enter turn-in date [YYYY-mm-dd]: ",
 			FieldNameText: "turn-in date",
 		}).(string)
-		turnTime := utils.ExecuteUserInputStep(utils.StringInputStep{
+		turnTime := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "Enter turn-in time [hh:mm:ss]: ",
 			FieldNameText: "turn-in time",
 		}).(string)
@@ -153,7 +153,7 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 }
 
 func (menu *IndependentStudyMenuStateHandler) findISByID() error {
-	id := utils.ExecuteUserInputStep(utils.UintInputStep{
+	id := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter IS ID: ",
 		FieldNameText: "IS ID",
 	}).(uint)

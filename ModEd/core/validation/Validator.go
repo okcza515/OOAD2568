@@ -1,4 +1,6 @@
-package utils
+package validation
+
+// Wrote by MEP-1010
 
 import (
 	"regexp"

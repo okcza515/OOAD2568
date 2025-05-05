@@ -25,6 +25,7 @@ func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	gender := fs.String("gender", "", "Gender")
 	citizenID := fs.String("citizenID", "", "Citizen ID")
 	phoneNumber := fs.String("phone", "", "Phone Number")
+	advisorCode := fs.String("advisorID", "", "Advisor Code") 
 	fs.Parse(args)
 
 	validator := util.NewValidationChain(fs)
@@ -35,6 +36,7 @@ func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 	validator.Field("gender").Required().AllowedValues([]string{"Male", "Female", "Other"})
 	validator.Field("citizenID").Required().Length(13)
 	validator.Field("phone").Required()
+	validator.Field("advisorID").Required() 
 	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
@@ -55,6 +57,7 @@ func (cmd *AddStudentCommand) Execute(args []string, tx *gorm.DB) error {
 		*gender,
 		*citizenID,
 		*phoneNumber,
+		*advisorCode,
 	)
 
 	if err != nil {

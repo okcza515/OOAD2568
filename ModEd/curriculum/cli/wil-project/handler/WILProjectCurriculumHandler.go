@@ -3,10 +3,10 @@ package handler
 
 import (
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
 )
@@ -72,15 +72,15 @@ func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) 
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) createWILCourse() error {
-	courseName := utils.ExecuteUserInputStep(utils.StringInputStep{
+	courseName := core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter course name:",
 		FieldNameText: "Course Name",
 	}).(string)
-	description := utils.ExecuteUserInputStep(utils.StringInputStep{
+	description := core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter course description:",
 		FieldNameText: "Course Description",
 	}).(string)
-	semester := utils.ExecuteUserInputStep(utils.StringInputStep{
+	semester := core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter semester:",
 		FieldNameText: "Semester",
 	}).(string)
@@ -101,11 +101,11 @@ func (menu *WILProjectCurriculumMenuStateHandler) createWILCourse() error {
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) createWILClass() error {
-	courseId := utils.ExecuteUserInputStep(utils.UintInputStep{
+	courseId := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter course Id:",
 		FieldNameText: "Course Id",
 	}).(uint)
-	section := utils.ExecuteUserInputStep(utils.UintInputStep{
+	section := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter section:",
 		FieldNameText: "Section",
 	}).(uint)

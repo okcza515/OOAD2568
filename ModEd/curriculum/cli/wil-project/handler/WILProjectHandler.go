@@ -3,6 +3,7 @@ package handler
 
 import (
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
@@ -78,19 +79,19 @@ func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
 }
 
 func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
-	classId := utils.ExecuteUserInputStep(utils.UintInputStep{
+	classId := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter class Id:",
 		FieldNameText: "ClassId",
 	}).(uint)
-	seniorProjectId := utils.ExecuteUserInputStep(utils.UintInputStep{
+	seniorProjectId := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter Senior Project Id:",
 		FieldNameText: "SeniorProjectId",
 	}).(uint)
-	companyId := utils.ExecuteUserInputStep(utils.UintInputStep{
+	companyId := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter company Id:",
 		FieldNameText: "CompanyId",
 	}).(uint)
-	mentor := utils.ExecuteUserInputStep(utils.StringInputStep{
+	mentor := core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter Mentor:",
 		FieldNameText: "Mentor",
 	}).(string)
@@ -112,7 +113,7 @@ func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
 }
 
 func (menu *WILProjectMenuStateHandler) editWILProject() error {
-	WILProjectID := utils.ExecuteUserInputStep(utils.UintInputStep{
+	WILProjectID := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter WIL Project Id:",
 		FieldNameText: "ClassId",
 	}).(uint)
@@ -137,7 +138,7 @@ func (menu *WILProjectMenuStateHandler) editWILProject() error {
 
 	}
 	if msg == "yes" || msg == "y" {
-		temp := utils.ExecuteUserInputStep(utils.UintInputStep{
+		temp := core.ExecuteUserInputStep(core.UintInputStep{
 			PromptText:    "New Class Id: ",
 			FieldNameText: "ClassId",
 		}).(uint)
@@ -149,7 +150,7 @@ func (menu *WILProjectMenuStateHandler) editWILProject() error {
 		msg = utils.GetUserInput(fmt.Sprintf("\nSeniorProjectId : %d | Want to change SeniorProjectId [yes/no]: ", WILProject.SeniorProjectId))
 	}
 	if msg == "yes" || msg == "y" {
-		temp := utils.ExecuteUserInputStep(utils.UintInputStep{
+		temp := core.ExecuteUserInputStep(core.UintInputStep{
 			PromptText:    "New Senior Project Id: ",
 			FieldNameText: "SeniorProjectId",
 		}).(uint)
@@ -161,7 +162,7 @@ func (menu *WILProjectMenuStateHandler) editWILProject() error {
 		msg = utils.GetUserInput(fmt.Sprintf("\nCompany : %d | Want to change Company [yes/no]: ", WILProject.Company))
 	}
 	if msg == "yes" || msg == "y" {
-		temp := utils.ExecuteUserInputStep(utils.UintInputStep{
+		temp := core.ExecuteUserInputStep(core.UintInputStep{
 			PromptText:    "New Company: ",
 			FieldNameText: "Company",
 		}).(uint)
@@ -173,7 +174,7 @@ func (menu *WILProjectMenuStateHandler) editWILProject() error {
 		msg = utils.GetUserInput(fmt.Sprintf("\nMentor : %s | Want to change Mentor [yes/no]: ", WILProject.Mentor))
 	}
 	if msg == "yes" || msg == "y" {
-		temp := utils.ExecuteUserInputStep(utils.StringInputStep{
+		temp := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "New Mentor: ",
 			FieldNameText: "Mentor",
 		}).(string)
@@ -207,7 +208,7 @@ func (menu *WILProjectMenuStateHandler) listAllWILProject() error {
 func (menu *WILProjectMenuStateHandler) getWILProjectDetailByID() error {
 	var WILProject model.WILProject
 	var err error
-	WILProjectID := utils.ExecuteUserInputStep(utils.UintInputStep{
+	WILProjectID := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter WIL Project Id:",
 		FieldNameText: "WILProjectId",
 	}).(uint)
@@ -227,7 +228,7 @@ func (menu *WILProjectMenuStateHandler) getWILProjectDetailByID() error {
 }
 
 func (menu *WILProjectMenuStateHandler) deleteWILProjectByID() error {
-	WILProjectID := utils.ExecuteUserInputStep(utils.UintInputStep{
+	WILProjectID := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter WIL Project Id:",
 		FieldNameText: "WILProjectId",
 	}).(uint)
