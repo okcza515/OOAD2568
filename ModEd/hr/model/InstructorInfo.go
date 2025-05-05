@@ -2,6 +2,7 @@ package model
 
 import (
 	"ModEd/common/model"
+	"ModEd/hr/util"
 )
 
 type InstructorInfo struct {
@@ -23,6 +24,29 @@ func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, 
 		Salary:             Salary,
 		AcademicPosition:   AcademicPosition,
 		DepartmentPosition: DepartmentPosition,
+	}
+}
+
+func NewUpdatedInstructorInfo(
+	instructorInfo *InstructorInfo,
+	firstName string, lastName string, email string,
+	gender string, citizenID string, phoneNumber string,
+) *InstructorInfo {
+	return &InstructorInfo{
+		Instructor: model.Instructor{
+			InstructorCode: instructorInfo.InstructorCode,
+			FirstName:      util.IfNotEmpty(firstName, instructorInfo.FirstName),
+			LastName:       util.IfNotEmpty(lastName, instructorInfo.LastName),
+			Email:          util.IfNotEmpty(email, instructorInfo.Email),
+			StartDate:      instructorInfo.StartDate,
+			Department:     instructorInfo.Department,
+		},
+		Gender:             util.IfNotEmpty(gender, instructorInfo.Gender),
+		CitizenID:          util.IfNotEmpty(citizenID, instructorInfo.CitizenID),
+		PhoneNumber:        util.IfNotEmpty(phoneNumber, instructorInfo.PhoneNumber),
+		Salary:             instructorInfo.Salary,
+		AcademicPosition:   instructorInfo.AcademicPosition,
+		DepartmentPosition: instructorInfo.DepartmentPosition,
 	}
 }
 
