@@ -1,5 +1,7 @@
 package core
 
+// Wrote by MEP-1010
+
 import (
 	"ModEd/core/validation"
 	"bufio"
