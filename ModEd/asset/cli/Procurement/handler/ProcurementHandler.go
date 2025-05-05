@@ -155,7 +155,7 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 			if procurement.ApprovalTime != nil {
 				approvalTime = procurement.ApprovalTime.Format("2006-01-02 15:04:05")
 			}
-			fmt.Printf("ID: %d, ApproverID: %s, Status: %s, ApprovalTime: %s\n", procurement.ProcurementID, approverID, procurement.Status, approvalTime)
+			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | ApprovalTime: %s\n", procurement.ProcurementID, approverID, procurement.Status, approvalTime)
 		}
 	}
 }
