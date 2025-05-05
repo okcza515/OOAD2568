@@ -14,7 +14,7 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 
 	switch choice {
 	case 0:
-		fmt.Println("Exit\n")
+		fmt.Println("Exit")
 		return
 	case 1:
 		registerModel(db, &deserializer,

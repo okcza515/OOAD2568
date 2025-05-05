@@ -17,7 +17,7 @@ type MenuHandler struct {
 	backHandler    MenuItemHandler
 	itemHandlerMap map[string]MenuItemHandler
 	itemLabelMap   map[string]string
-	items          []string // To maintain order of menu items
+	items          []string
 }
 
 func NewMenuHandler() *MenuHandler {
@@ -61,14 +61,13 @@ func (handler *MenuHandler) Execute(selectedMenu string, parameters []string) {
 }
 
 func (handler *MenuHandler) DisplayMenu() {
-	fmt.Println("Select an option:")
+	fmt.Println("\nSelect an option:")
 	for i, key := range handler.items {
 		fmt.Printf("%d. %s\n", i, handler.itemLabelMap[key])
 	}
 	fmt.Print("choice: ")
 }
 
-// GetMenuChoice prompts the user to select a menu option and returns the key
 func (handler *MenuHandler) GetMenuChoice() string {
 	var choiceIndex int
 	fmt.Scan(&choiceIndex)
@@ -102,7 +101,7 @@ func main() {
 	menu.AppendItem("delete", "Delete", &DeleteHandler{db: db})
 	menu.AppendItem("cleardb", "Clear DB", &ClearDBHandler{db: db})
 	menu.AppendItem("exit", "Exit", &ExitHandler{})
-	// menu.AppendItem("test", "Test", &TestHandler{db: db})
+	menu.AppendItem("test", "Test", &TestHandler{db: db})
 
 	menu.SetDefaultHandler(&DefaultHandler{})
 
