@@ -10,16 +10,17 @@ type StudentInfo struct {
 	Gender      string `csv:"Gender" json:"Gender"`
 	CitizenID   string `csv:"CitizenID" json:"CitizenID"`
 	PhoneNumber string `csv:"PhoneNumber" json:"PhoneNumber"`
-	// Advisor     model.Instructor `csv:"Advisor" json:"Advisor"`
-	// Department  model.Department `csv:"Department" json:"Department"`
+	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode"`
+    Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`	// Department  model.Department `csv:"Department" json:"Department"`
 }
 
-func NewStudentInfo(Stu model.Student, Gender string, CitizenID string, PhoneNumber string) *StudentInfo {
+func NewStudentInfo(StudentCode string, Gender string, CitizenID string, PhoneNumber string, advisorCode string) *StudentInfo {
 	return &StudentInfo{
 		Student:     Stu,
 		Gender:      Gender,
 		CitizenID:   CitizenID,
 		PhoneNumber: PhoneNumber,
+		AdvisorCode: advisorCode,
 	}
 }
 
@@ -42,5 +43,7 @@ func NewUpdatedStudentInfo(
 		Gender:      util.IfNotEmpty(gender, studentInfo.Gender),
 		CitizenID:   util.IfNotEmpty(citizenID, studentInfo.CitizenID),
 		PhoneNumber: util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber),
+        AdvisorCode: studentInfo.AdvisorCode,
+
 	}
 }

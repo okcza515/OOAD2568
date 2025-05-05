@@ -69,7 +69,7 @@ func (c *StudentHRController) GetAllStudents() ([]*model.StudentInfo, error) {
 
 func (c *StudentHRController) AddStudent(
 	studentCode string, firstName string, lastName string, email string, startDate string, birthdate string, program string, department string, status string,
-	gender string, citizenID string, phoneNumber string,
+	gender string, citizenID string, phoneNumber string, advisorCode string,
 ) error {
 	startDateParsed, err := time.Parse("02-01-2006", startDate)
 	if err != nil {
@@ -90,6 +90,11 @@ func (c *StudentHRController) AddStudent(
 	if err != nil {
 		return fmt.Errorf("failed to parse status: %w", err)
 	}
+
+	instructorController := CreateInstructorHRController(c.db)
+    if _, err := instructorController.getById(advisorCode); err != nil {
+        return fmt.Errorf("failed to retrieve instructor with code %s: %w", advisorCode, err)
+    }
 
 	tm := &util.TransactionManager{DB: c.db}
 
@@ -114,7 +119,7 @@ func (c *StudentHRController) AddStudent(
 			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
-		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber)
+		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phoneNumber, advisorCode)
 
 		studentController := NewStudentHRController(tx)
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
