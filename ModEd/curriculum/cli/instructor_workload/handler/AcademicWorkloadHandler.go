@@ -115,9 +115,11 @@ func (r RetrieveClassMaterial) Execute() {
 }
 func (u UpdateClassMaterial) Execute() {
 	ClassMaterialController := controller.NewClassMaterialController(u.db)
-	
+	var id uint
+	fmt.Print("Enter ID to Update: ")
+	fmt.Scanln(&id)
 	mockClassMaterial := &model.ClassMaterial{
-		ClassId: 1,
+		ClassId: id,
 		FileName: "bla_example.txt",
 		FilePath: "/path/to/bla_example.txt",
 	}
@@ -249,8 +251,11 @@ func (r RetrieveCoursePlan) Execute() {
 
 func (u UpdateCoursePlan) Execute() {
 	coursePlanController := controller.NewCoursePlanController(u.db)
+	var id uint
+	fmt.Print("Enter ID to Update: ")
+	fmt.Scanln(&id)
 	mockCoursePlan := &model.CoursePlan{
-		CourseId:     1,
+		CourseId:     id,
 		Week:         2,
 		Date:         time.Now().AddDate(0, 0, 7),
 		InstructorId: 101,
