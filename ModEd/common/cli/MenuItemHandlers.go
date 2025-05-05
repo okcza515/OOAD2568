@@ -22,7 +22,6 @@ func (h *ReadFileHandler) ExecuteItem(parameters []string) {
 	}
 }
 
-// Register
 type RegisterHandler struct {
 	db   *gorm.DB
 	path string
@@ -35,7 +34,7 @@ func (h *RegisterHandler) ExecuteItem(parameters []string) {
 	}
 
 	submenu := NewMenuHandler()
-	submenu.AppendItem("exit", "Exit", &ExitHandler{})
+	submenu.AppendItem("back", "Back", &BackHandler{})
 	submenu.AppendItem("student", "Student", &RegisterModelHandler{db: h.db, modelType: 1, path: h.path})
 	submenu.AppendItem("instructor", "Instuctor", &RegisterModelHandler{db: h.db, modelType: 2, path: h.path})
 	submenu.AppendItem("department", "Department", &RegisterModelHandler{db: h.db, modelType: 3, path: h.path})
@@ -56,14 +55,13 @@ func (h *RegisterModelHandler) ExecuteItem(parameters []string) {
 	controller.GenericRegister(h.modelType, h.db, h.path)
 }
 
-// RetrieveHandler handles retrieving data
 type RetrieveHandler struct {
 	db *gorm.DB
 }
 
 func (h *RetrieveHandler) ExecuteItem(parameters []string) {
 	submenu := NewMenuHandler()
-	submenu.AppendItem("exit", "Exit", &ExitHandler{})
+	submenu.AppendItem("back", "Back", &BackHandler{})
 	submenu.AppendItem("student", "Student", &RetrieveModelHandler{db: h.db, modelType: 1})
 	submenu.AppendItem("instructor", "Instuctor", &RetrieveModelHandler{db: h.db, modelType: 2})
 	submenu.AppendItem("department", "Department", &RetrieveModelHandler{db: h.db, modelType: 3})
@@ -83,15 +81,13 @@ func (h *RetrieveModelHandler) ExecuteItem(parameters []string) {
 	controller.GenericRetrieve(h.modelType, h.db)
 }
 
-// DeleteHandler
 type DeleteHandler struct {
 	db *gorm.DB
 }
 
 func (h *DeleteHandler) ExecuteItem(parameters []string) {
-	// Create a submenu for deletion
 	submenu := NewMenuHandler()
-	submenu.AppendItem("exit", "Exit", &ExitHandler{})
+	submenu.AppendItem("back", "Back", &BackHandler{})
 	submenu.AppendItem("student", "Student", &DeleteModelHandler{db: h.db, modelType: 1})
 	submenu.AppendItem("instructor", "Instuctor", &DeleteModelHandler{db: h.db, modelType: 2})
 	submenu.AppendItem("department", "Department", &DeleteModelHandler{db: h.db, modelType: 3})
@@ -102,7 +98,6 @@ func (h *DeleteHandler) ExecuteItem(parameters []string) {
 	submenu.Execute(choice, parameters)
 }
 
-// DeleteModelHandler handles deleting specific model types
 type DeleteModelHandler struct {
 	db        *gorm.DB
 	modelType int
@@ -112,7 +107,6 @@ func (h *DeleteModelHandler) ExecuteItem(parameters []string) {
 	controller.GenericDelete(h.modelType, h.db)
 }
 
-// ClearDBHandler handles clearing the database
 type ClearDBHandler struct {
 	db *gorm.DB
 }
@@ -142,7 +136,11 @@ func (h *ExitHandler) ExecuteItem(parameters []string) {
 	os.Exit(0)
 }
 
-// Warn: TestHandler handles the test option
+type BackHandler struct{}
+
+func (h *BackHandler) ExecuteItem(parameters []string) {
+}
+
 type TestHandler struct {
 	db *gorm.DB
 }
@@ -152,7 +150,6 @@ func (h *TestHandler) ExecuteItem(parameters []string) {
 	instructorController.ManualAddInstructor()
 }
 
-// DefaultHandler handles invalid choices
 type DefaultHandler struct{}
 
 func (h *DefaultHandler) ExecuteItem(parameters []string) {
