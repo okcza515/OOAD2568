@@ -96,6 +96,10 @@ func (c *InstructorHRController) AddInstructor(
 	return err
 }
 
+func (c *InstructorHRController) ImportInstructors(filePath string) error {
+	return nil
+}
+
 func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, error) {
 	instructors, err := c.getAll()
 	if err != nil {
