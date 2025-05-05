@@ -1,3 +1,4 @@
+// MEP-1013
 package menu
 
 import (
@@ -19,6 +20,7 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 
 	//Add more menu here
 	manager.AddMenu("Instrument Management", NewInstrumentMenuState(db, manager, spaceManagementMenu))
+	manager.AddMenu("Supply Management", NewSupplyMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("room", NewRoomMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("booking", NewBookingMenuState(db, manager, spaceManagementMenu))
 	// manager.AddMenu("Schedule", NewPermanentScheduleState(db, manager, spaceManagementMenu))
@@ -46,7 +48,7 @@ func (menu *SpaceManagementState) HandleUserInput(input string) error {
 	case "1":
 		menu.manager.GoToMenu("Instrument Management")
 	case "2":
-		fmt.Println("Not implemented yet...")
+		menu.manager.GoToMenu("Supply Management")
 	case "3":
 		menu.manager.GoToMenu("booking")
 	case "4":

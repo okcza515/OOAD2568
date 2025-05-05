@@ -11,12 +11,12 @@ import (
 )
 
 type SupplyManagementInterface interface {
-    GetAll() (*[]model.SupplyManagement, error)
-    GetById(id uint) (*model.SupplyManagement, error)
-    GetByRoomId(roomID uint) (*[]model.SupplyManagement, error)
-    Create(payload *model.SupplyManagement) error
-    Update(id uint, payload *model.SupplyManagement) error
-    Delete(id uint) error
+    List(condition map[string]interface{}, preloads ...string)([]model.SupplyManagement, error) //Getall
+    RetrieveByID(id uint, preloads ...string) (model.SupplyManagement, error)
+    RetrieveByRoomId(roomID uint) (*[]model.SupplyManagement, error)
+    Insert(payload *model.SupplyManagement) error
+    UpdateById(payload *model.SupplyManagement) error
+    DeleteByID(id uint) error
 }
 
 type SupplyManagementController struct {
@@ -32,51 +32,61 @@ func NewSupplyManagementController() *SupplyManagementController {
 	}
 }
 
-func (c *SupplyManagementController) GetAll() (*[]model.SupplyManagement, error) {
-	assetList := []model.SupplyManagement{}
-    records, err := c.BaseController.List(nil)
-    assetList = records
-    return &assetList, err
-}
-
-func (c *SupplyManagementController) GetById(Id uint) (*model.SupplyManagement, error) {
-    asset := model.SupplyManagement{}
-    record, err := c.BaseController.RetrieveByID(Id)
+func (c *SupplyManagementController) List(condition map[string]interface{}, preloads ...string) ([]model.SupplyManagement, error) {
+	records, err := c.BaseController.List(condition, preloads...)
     if err != nil {
         return nil, err
     }
-    asset = record
-    return &asset, nil
+    return records, err
 }
 
-func (c *SupplyManagementController) GetByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
-	if roomID == 0 {
-		return nil, errors.New("no RoomID provided")
-	}
-
-	assetList := new([]model.SupplyManagement)
-	result := c.db.Where("room_id = ?", roomID).Find(&assetList)
-
-	return assetList, result.Error
+func (c *SupplyManagementController) RetrieveByID(id uint, preloads ...string) (model.SupplyManagement, error) {
+    record, err := c.BaseController.RetrieveByID(id, preloads...)
+    if err != nil {
+        return model.SupplyManagement{}, err
+    }
+    return record, nil
 }
 
-func (c *SupplyManagementController) Create(payload *model.SupplyManagement) error {
+func (c *SupplyManagementController) RetrieveByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
+    if roomID == 0 {
+        return nil, errors.New("invalid room ID: ID cannot be zero")
+    }
+
+    condition := map[string]interface{}{
+        "room_id": roomID,
+    }
+
+    records, err := c.BaseController.List(condition)
+    if err != nil {
+        return nil, err
+    }
+
+    return &records, nil
+}
+
+func (c *SupplyManagementController) Insert(payload *model.SupplyManagement) error {
 	if payload == nil {
-		return errors.New("invalid supply management data")
+		return errors.New("invalid instrument management data")
 	}
 	err := c.BaseController.Insert(*payload)
 	return err
 }
 
-func (c *SupplyManagementController) Update(Id uint, payload *model.SupplyManagement) error {
-	if payload == nil || Id == 0 {
-		return errors.New("invalid info")
-	}
-	err := c.BaseController.UpdateByID(*payload)
-	return err
+func (c *SupplyManagementController) UpdateById(payload *model.SupplyManagement) error {
+    if payload == nil {
+        return errors.New("payload cannot be nil")
+    }
+    
+    if payload.GetID() == 0 {
+        return errors.New("invalid ID: ID cannot be zero")
+    }
+    
+    err := c.BaseController.UpdateByID(*payload)
+    return err
 }
 
-func (c *SupplyManagementController) Delete(Id uint) error {
+func (c *SupplyManagementController) DeleteByID(Id uint) error {
 	if Id == 0 {
 		return errors.New("no Id provide")
 	 }
