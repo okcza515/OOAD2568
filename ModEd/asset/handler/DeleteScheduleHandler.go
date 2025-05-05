@@ -11,13 +11,13 @@ import (
 
 type DeleteScheduleHandler struct {
 	controller interface {
-		RetrieveByID(id uint) (model.PermanentSchedule, error)
+		RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 		DeleteByID(id uint) error
 	}
 }
 
 func NewDeleteScheduleHandler(controller interface {
-	RetrieveByID(id uint) (model.PermanentSchedule, error)
+	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 	DeleteByID(id uint) error
 }) *DeleteScheduleHandler {
 	return &DeleteScheduleHandler{
