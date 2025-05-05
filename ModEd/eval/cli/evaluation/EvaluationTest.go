@@ -23,18 +23,3 @@ func main() {
 	cli.RunEvaluationCLI(evalController)
 	fmt.Println("Program exited")
 }
-
-// package main
-
-// //"ModEd/eval/cli"
-// // "gorm.io/gorm"
-
-// func main()
-// 	//fmt.Println("Hello from Main")
-
-// 	//cli.PrintAssignment()
-// 	//cli.PrintEvaluation()
-// 	//cli.RecordEvaluation()
-
-// 	//cli.RunEvaluationCLI()
-// }

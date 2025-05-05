@@ -20,11 +20,13 @@ func NewEvaluationController(evals []*model.Evaluation, csvPath string) *Evaluat
 	}
 }
 
-func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentID uint, score uint) {
+func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentID uint, score uint, comment string) {
 	for _, e := range ec.evaluations {
 		if e.StudentCode == studentCode && e.AssignmentID != nil && *e.AssignmentID == assignmentID {
 			e.Score = score
+			e.Comment = comment
 			e.EvaluatedAt = time.Now()
+			model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 			return
 		}
 	}
@@ -33,26 +35,19 @@ func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode s
 		InstructorCode: instructorCode,
 		AssignmentID:   &assignmentID,
 		Score:          score,
+		Comment:        comment,
 		EvaluatedAt:    time.Now(),
 	})
 	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 }
 
-func (ec *EvaluationController) CommentAssignment(studentCode string, assignmentID uint, comment string) {
-	for _, e := range ec.evaluations {
-		if e.StudentCode == studentCode && e.AssignmentID != nil && *e.AssignmentID == assignmentID {
-			e.Comment = comment
-			return
-		}
-	}
-	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
-}
-
-func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizID uint, score uint) {
+func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizID uint, score uint, comment string) {
 	for _, e := range ec.evaluations {
 		if e.StudentCode == studentCode && e.QuizID != nil && *e.QuizID == quizID {
 			e.Score = score
+			e.Comment = comment
 			e.EvaluatedAt = time.Now()
+			model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
 			return
 		}
 	}
@@ -61,6 +56,7 @@ func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string,
 		InstructorCode: instructorCode,
 		QuizID:         &quizID,
 		Score:          score,
+		Comment:        comment,
 		EvaluatedAt:    time.Now(),
 	})
 	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
