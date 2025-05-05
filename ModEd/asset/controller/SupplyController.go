@@ -14,6 +14,8 @@ import (
 type SupplyController struct {
 	db *gorm.DB
 	*core.BaseController[model.Supply]
+
+	observers map[string]AssetObserver[model.Supply]
 }
 
 type SupplyControllerInterface interface {
@@ -24,15 +26,32 @@ type SupplyControllerInterface interface {
 	UpdateByID(data model.Supply) error
 	DeleteByID(id uint) error
 	InsertMany(data []model.Supply) error
+
+	addObserver(observer AssetObserver[model.Supply])
+	removeObserver(observer AssetObserver[model.Supply])
 }
 
 func NewSupplyController() *SupplyController {
-	//observers := make(map[string]AssetObserver[model.Supply])
+	observers := make(map[string]AssetObserver[model.Supply])
 	db := migration.GetInstance().DB
 	return &SupplyController{
 		db:             db,
 		BaseController: core.NewBaseController[model.Supply](db),
-		//observers:      observers,
+		observers:      observers,
+	}
+}
+
+func (c *SupplyController) addObserver(observer AssetObserver[model.Supply]) {
+	c.observers[observer.GetObserverID()] = observer
+}
+
+func (c *SupplyController) removeObserver(observer AssetObserver[model.Supply]) {
+	delete(c.observers, observer.GetObserverID())
+}
+
+func (c *SupplyController) notifyAll(eventType model.SupplyLogActionEnum, dataContext model.Supply) {
+	for _, observer := range c.observers {
+		observer.HandleEvent(eventType.String(), dataContext)
 	}
 }
 
