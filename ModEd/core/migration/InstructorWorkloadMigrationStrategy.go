@@ -17,5 +17,6 @@ func (s *InstructorWorkloadMigrationStrategy) GetModels() []interface{} {
 		&model.ExternalMeeting{},
 		&model.ProjectEvaluation{},
 		&model.CoursePlan{},
+		&model.ClassMaterial{},
 	}
 }
