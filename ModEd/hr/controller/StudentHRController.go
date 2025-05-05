@@ -288,13 +288,13 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 	return nil
 }
 
-func (c *StudentHRController) MigrateStudentRecord() error {
-	var students []commonModel.Student
-	if err := c.db.Find(&students).Error; err != nil {
+func (c *StudentHRController) MigrateStudentRecords() error {
+	var commonStudents []commonModel.Student
+	if err := c.db.Find(&commonStudents).Error; err != nil {
 		return fmt.Errorf("failed to retrieve common students: %w", err)
 	}
 
-	for _, s := range students {
+	for _, s := range commonStudents {
 		studentInfo := model.StudentInfo{
 			Student:     s,  // Embed the common student data
 			Gender:      "", // Initialize HR fields as empty

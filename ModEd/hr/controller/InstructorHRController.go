@@ -134,15 +134,36 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 	})
 }
 
-func (c *InstructorHRController) ImportInstructors(instructors []*model.InstructorInfo) error {
-	for _, instructor := range instructors {
-		if instructor.ID == 0 || instructor.FirstName == "" {
-			return fmt.Errorf("invalid instructor data: %+v", instructor)
-		}
+func (c *InstructorHRController) MigrateInstructorRecords() error {
+	var commonInstructors []commonModel.Instructor
+	if err := c.db.Find(&commonInstructors).Error; err != nil {
+		return fmt.Errorf("failed to retrieve common instructors: %w", err)
+	}
 
-		if err := c.insert(instructor); err != nil {
-			return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
+	for _, ci := range commonInstructors {
+		commonInstructor := &commonModel.Instructor{
+			InstructorCode: ci.InstructorCode,
+			FirstName:      ci.FirstName,
+			LastName:       ci.LastName,
+			Email:          ci.Email,
+			StartDate:      ci.StartDate,
+			Department:     ci.Department,
+		}
+		instructorInfo := model.NewInstructorInfo(
+			*commonInstructor,
+			"",
+			"",
+			"",
+			0,
+			model.AcademicPosition(0),
+			model.DepartmentPosition(0),
+		)
+
+		if err := c.db.Where("instructor_code = ?", ci.InstructorCode).
+			FirstOrCreate(&instructorInfo).Error; err != nil {
+			return fmt.Errorf("failed to migrate instructor %s: %w", ci.InstructorCode, err)
 		}
 	}
+
 	return nil
 }
