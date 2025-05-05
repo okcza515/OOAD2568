@@ -6,6 +6,7 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
+
 	// "strconv"
 	"time"
 )
@@ -13,6 +14,8 @@ import (
 type InternshipApplicationHandler struct {
 	manager *cli.CLIMenuStateManager
 	wrapper *controller.InternshipModuleWrapper
+
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternshipApplicationHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternshipApplicationHandler {
@@ -54,8 +57,8 @@ func (handler *InternshipApplicationHandler) handleCreateInternshipApplication()
 		ApprovalAdvisorStatus: model.WAIT,
 		ApprovalCompanyStatus: model.WAIT,
 		// AdvisorCode:           uint(advisorCode),
-		CompanyId:             company.ID,
-		StudentCode:           studentCode,
+		CompanyId:   company.ID,
+		StudentCode: studentCode,
 	}
 
 	err = handler.wrapper.InternshipApplication.RegisterInternshipApplications([]*model.InternshipApplication{application})
@@ -117,7 +120,7 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 	case "4":
 		return handler.DeleteApplication()
 	case "back":
-		fmt.Println("Returning to the previous menu...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")

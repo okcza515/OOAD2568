@@ -69,9 +69,9 @@ func (repo InternshipApplicationController) GetInternshipApplicationByID(id stri
 func (repo InternshipApplicationController) GetApplicationStatusByID(id string) (string, error) {
 	var application model.InternshipApplication
 	if err := repo.Connector.Select("approval_advisor_status", "approval_company_status").
-		Where("id = ?", id).
+		Where("student_code = ?", id).
 		First(&application).Error; err != nil {
-		return "", fmt.Errorf("failed to find application with ID %s: %w", id, err)
+		return "", fmt.Errorf("failed to find application with Student Code %s: %w", id, err)
 	}
 
 	return fmt.Sprintf("Advisor Status: %s, Company Status: %s",
