@@ -1,34 +1,53 @@
 package cli
 
 import (
+	"ModEd/core/cli"
 	"ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 )
 
-func AdminShowApplicationReportsCLI(service AdminShowApplicationReportsService) {
-	reader := bufio.NewReader(os.Stdin)
+type AdminShowApplicationReportMenuState struct {
+	manager *cli.CLIMenuStateManager
+	service AdminShowApplicationReportsService
+	parent  cli.MenuState
+}
 
-	fmt.Print("Enter Applicant ID (number): ")
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
+func NewAdminShowApplicationReportMenuState(
+	manager *cli.CLIMenuStateManager,
+	service AdminShowApplicationReportsService,
+	parent cli.MenuState,
+) *AdminShowApplicationReportMenuState {
+	return &AdminShowApplicationReportMenuState{
+		manager: manager,
+		service: service,
+		parent:  parent,
+	}
+}
 
+func (menu *AdminShowApplicationReportMenuState) Render() {
+	util.ClearScreen()
+	fmt.Print("Enter Applicant ID to view the report: ")
+}
+
+func (menu *AdminShowApplicationReportMenuState) HandleUserInput(input string) error {
 	applicantID, err := strconv.ParseUint(input, 10, 32)
 	if err != nil {
-		fmt.Println("Invalid applicant ID. Please enter a valid number.")
-		util.WaitForEnter()
-		return
+		fmt.Println("Invalid applicant ID:", err)
+	} else {
+		report, err := menu.service.GetApplicationReport(uint(applicantID))
+		if err != nil {
+			fmt.Println("Error retrieving report:", err)
+		} else {
+			fmt.Println("\n===== Applicant Report =====")
+			fmt.Println(report)
+		}
 	}
 
-	report, err := service.GetApplicationReport(uint(applicantID))
-	if err != nil {
-		fmt.Println("Error retrieving report:", err)
-	} else {
-		fmt.Println("===== Applicant Report =====")
-		fmt.Println(report)
-	}
-	util.WaitForEnter()
+	fmt.Println("\nPress Enter to return...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	menu.manager.SetState(menu.parent)
+	return nil
 }
