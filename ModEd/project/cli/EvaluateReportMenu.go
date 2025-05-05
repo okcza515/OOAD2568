@@ -61,7 +61,7 @@ func BuildEvaluateReportMenu(
 						AdvisorId: uint(advisorId),
 						Score:     score,
 					}
-					if err := scoreReportAdvisorController.InsertAdvisorScore(newScore); err != nil {
+					if err := scoreReportAdvisorController.Insert(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
 					} else {
 						io.Println("Advisor score submitted successfully!")
@@ -114,10 +114,54 @@ func BuildEvaluateReportMenu(
 						CommitteeId: uint(committeeId),
 						Score:       score,
 					}
-					if err := scoreReportCommitteeController.InsertCommitteeScore(newScore); err != nil {
+					if err := scoreReportCommitteeController.Insert(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 					} else {
 						io.Println("Committee score submitted successfully!")
+					}
+				},
+				},
+			{
+				Title: "Check Score",
+				Action: func(io *utils.MenuIO) {
+					io.Println("Checking Scores for Report...")
+
+					io.Print("Enter Report ID (-1 to cancel): ")
+					reportIdStr, err := io.ReadInput()
+					if err != nil || reportIdStr == "-1" {
+						io.Println("Cancelled.")
+						return
+					}
+					reportId, err := strconv.Atoi(reportIdStr)
+					if err != nil {
+						io.Println("Invalid Report ID.")
+						return
+					}
+
+					// Fetch advisor scores
+					advisorScores, err := scoreReportAdvisorController.ListAdvisorScoresByCondition("report_id", reportId)
+					if err != nil {
+						io.Println(fmt.Sprintf("Error fetching advisor scores: %v", err))
+					} else if len(advisorScores) == 0 {
+						io.Println("No advisor scores found for this report.")
+					} else {
+						io.Println("Advisor Scores:")
+						for _, score := range advisorScores {
+							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
+						}
+					}
+
+					// Fetch committee scores
+					committeeScores, err := scoreReportCommitteeController.ListCommitteeScoresByCondition("report_id", reportId)
+					if err != nil {
+						io.Println(fmt.Sprintf("Error fetching committee scores: %v", err))
+					} else if len(committeeScores) == 0 {
+						io.Println("No committee scores found for this report.")
+					} else {
+						io.Println("Committee Scores:")
+						for _, score := range committeeScores {
+							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
+						}
 					}
 				},
 			},
