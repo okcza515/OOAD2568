@@ -29,9 +29,10 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 
 func (handler *InternShipModuleMenuStateHandler) Render() {
 	fmt.Println("\n==== Internship Application System ====")
-	fmt.Println("1. Application Management")
-	fmt.Println("2. Evaluate Student Performance")
-	fmt.Println("3. Update Approval Status")
+	fmt.Println("1. Load csv data")
+	fmt.Println("2. Application Management")
+	fmt.Println("3. Evaluate Student Performance")
+	fmt.Println("4. Update Approval Status")
 	fmt.Println("Type 'exit' to quit")
 	fmt.Print("Enter your choice: ")
 }
@@ -39,12 +40,15 @@ func (handler *InternShipModuleMenuStateHandler) Render() {
 func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
+		handler.wrapper.GenericImport.ImportCompanies("")
+		handler.wrapper.GenericImport.ImportInternStudents("")
+	case "2":
 		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
 		return nil
-	case "2":
+	case "3":
 		handler.menuManager.SetState(handler.InternshipEvaluationMenuStateHandler)
 		return nil
-	case "3":
+	case "4":
 		err := handler.handleUpdateApprovalStatus()
 		if err != nil {
 			fmt.Println("Error updating approval status:", err)
