@@ -107,14 +107,14 @@ func (c *StudentHRController) AddStudent(
 		}
 
 		if err := commonModel.ManualAddStudent(tx, common); err != nil {
-			return fmt.Errorf("Insert failed in common model: %w", err)
+			return fmt.Errorf("insert failed in common model: %w", err)
 		}
 
 		if migrateErr := MigrateStudentsToHR(tx); migrateErr != nil {
-			return fmt.Errorf("MigrateStudentsToHR failed: %w", migrateErr)
+			return fmt.Errorf("migrateStudentsToHR failed: %w", migrateErr)
 		}
 
-		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phoneNumber)
+		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber)
 
 		studentController := NewStudentHRController(tx)
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
@@ -283,6 +283,29 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 		}
 	default:
 		return fmt.Errorf("invalid format. Supported formats are 'csv' and 'json'")
+	}
+
+	return nil
+}
+
+func (c *StudentHRController) MigrateStudentRecords() error {
+	var commonStudents []commonModel.Student
+	if err := c.db.Find(&commonStudents).Error; err != nil {
+		return fmt.Errorf("failed to retrieve common students: %w", err)
+	}
+
+	for _, s := range commonStudents {
+		studentInfo := model.StudentInfo{
+			Student:     s,  // Embed the common student data
+			Gender:      "", // Initialize HR fields as empty
+			CitizenID:   "",
+			PhoneNumber: "",
+		}
+
+		if err := c.db.Where("student_code = ?", s.StudentCode).
+			FirstOrCreate(&studentInfo).Error; err != nil {
+			return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)
+		}
 	}
 
 	return nil

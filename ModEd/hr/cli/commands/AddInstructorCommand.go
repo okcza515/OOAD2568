@@ -47,8 +47,8 @@ func (cmd *AddInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	}
 
 	// TODO: Implement Add Instructor logic
-	err = controller.AddInstructor(
-		tx,
+	instructorController := controller.CreateInstructorHRController(tx)
+	err = instructorController.AddInstructor(
 		*instructorCode,
 		*firstName,
 		*lastName,

@@ -5,6 +5,7 @@ package controller
 import (
 	"ModEd/asset/model"
 	"ModEd/core"
+	"ModEd/core/migration"
 
 	"gorm.io/gorm"
 )
@@ -15,37 +16,19 @@ type CategoryController struct {
 }
 
 type CategoryControllerInterface interface {
-	getAll() (*[]model.Category, error)
-	Insert(data core.RecordInterface) error
-	RetrieveByID(id uint, preloads ...string) (core.RecordInterface, error)
+	ListAll() ([]string, error)
+	List(condition map[string]interface{}, preloads ...string) ([]model.Category, error)
+	RetrieveByID(id uint, preloads ...string) (model.Category, error)
+	Insert(data model.Category) error
+	UpdateByID(data model.Category) error
+	DeleteByID(id uint) error
+	InsertMany(data []model.Category) error
 }
 
-func (c *CategoryController) getAll() (*[]model.Category, error) {
-	categories := new([]model.Category)
-	result := c.db.Find(&categories)
-	return categories, result.Error
+func NewCategoryController() *CategoryController {
+	db := migration.GetInstance().DB
+	return &CategoryController{
+		db:             db,
+		BaseController: core.NewBaseController[model.Category](db),
+	}
 }
-
-/*
-func (c *CategoryController) GetByID(supplyID uint) (*model.Category, error) {
-	categories := new(model.Category)
-	result := c.db.First(&categories, "ID = ?", supplyID)
-	return categories, result.Error
-}
-
-func (c *CategoryController) Create(body *model.Category) error {
-	result := c.db.Create(body)
-	return result.Error
-}
-
-func (c *CategoryController) Update(categoryID uint, body *model.Category) error {
-	body.ID = categoryID
-	result := c.db.Updates(body)
-	return result.Error
-}
-
-func (c *CategoryController) Delete(categoryID uint) error {
-	result := c.db.Model(&model.Category{}).Where("ID = ?", categoryID).Update("deleted_at", time.Now())
-	return result.Error
-}
-*/

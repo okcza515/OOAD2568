@@ -14,11 +14,9 @@ type StudentInfo struct {
 	// Department  model.Department `csv:"Department" json:"Department"`
 }
 
-func NewStudentInfo(StudentCode string, Gender string, CitizenID string, PhoneNumber string) *StudentInfo {
+func NewStudentInfo(Stu model.Student, Gender string, CitizenID string, PhoneNumber string) *StudentInfo {
 	return &StudentInfo{
-		Student: model.Student{
-			StudentCode: StudentCode,
-		},
+		Student:     Stu,
 		Gender:      Gender,
 		CitizenID:   CitizenID,
 		PhoneNumber: PhoneNumber,
@@ -45,8 +43,4 @@ func NewUpdatedStudentInfo(
 		CitizenID:   util.IfNotEmpty(citizenID, studentInfo.CitizenID),
 		PhoneNumber: util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber),
 	}
-}
-
-func (StudentInfo) TableName() string {
-	return "student_infos"
 }

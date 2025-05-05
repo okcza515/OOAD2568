@@ -7,8 +7,8 @@ import (
 
 type WILProject struct {
 	core.BaseModel
-	ClassId         uint   `gorm:"not null"`
-	SeniorProjectId uint   `gorm:"not null"`
-	Company         uint   `gorm:"not null"`
-	Mentor          string `gorm:"not null"`
+	Mentor          string `gorm:"not null" validation:"required"`
+	ClassId         uint   `gorm:"not null" validation:"required,uint"`
+	SeniorProjectId uint   `gorm:"not null" validation:"required,uint"`
+	Company         uint   `gorm:"not null" validation:"required,uint"`
 }
