@@ -132,6 +132,8 @@ func (c *InstructorHRController) ImportInstructors(filePath string) error {
 				record.Gender,
 				record.CitizenID,
 				record.PhoneNumber,
+				record.AcademicPosition,
+				record.DepartmentPosition,
 			)
 			if err := instructorController.update(importInstructor); err != nil {
 				return fmt.Errorf("error updating instructor with ID %s: %v", instructorCode, err)
