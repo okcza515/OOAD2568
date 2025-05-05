@@ -1,51 +1,30 @@
 package handler
 
 import (
-	"ModEd/core/cli"
-
-	"ModEd/curriculum/controller"
 	"fmt"
 )
 
-type AcademicWorkloadMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.InstructorWorkloadModuleWrapper
+type AcademicWorkload struct{}
+type Back struct{}
 
-	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler
+func (b Back) Execute() {
+	return
 }
 
-func NewAcademicWorkloadMenuStateHandler(
-	manager *cli.CLIMenuStateManager,
-	wrapper *controller.InstructorWorkloadModuleWrapper,
-	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler,
-) *SeniorProjectWorkloadMenuStateHandler {
-	return &SeniorProjectWorkloadMenuStateHandler{
-		manager:                                  manager,
-		wrapper:                                  wrapper,
-		instructorWorkloadModuleMenuStateHandler: instructorWorkloadModuleMenuStateHandler,
-	}
+type UnknownCommand struct{}
+
+func (u UnknownCommand) Execute() {
+	fmt.Println("Unknown command, please try again.")
 }
 
-func (menu *AcademicWorkloadMenuStateHandler) Render() {
-	fmt.Println("1. View Class Lecture")
-}
-
-func (menu *AcademicWorkloadMenuStateHandler) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		classList, err := menu.wrapper.ClassController.GetClasses()
-		if err != nil {
-			fmt.Println("Error fetching meetings:", err.Error())
-			return err
-		}
-		for _, class := range classList {
-			fmt.Printf("Class: %d, Course Name: %s\n, Schedule: %s\n", class.ClassId, class.Course.Name, class.Schedule)
-		}
-	case "exit":
-		fmt.Println("Exiting...")
-		return nil
-	default:
-		fmt.Println("Invalid option")
-	}
-	return nil
+func (c AcademicWorkload) Execute() {
+	academicMenu := NewMenuHandler("Academic Workload Menu", true)
+	academicMenu.Add("Curriculum", nil)
+	academicMenu.Add("Course", nil)
+	academicMenu.Add("Class", nil)
+	academicMenu.Add("Class Material", nil)
+	academicMenu.Add("Course Plan", nil)
+	academicMenu.SetBackHandler(Back{})
+	academicMenu.SetDefaultHandler(UnknownCommand{})
+	academicMenu.Execute()
 }

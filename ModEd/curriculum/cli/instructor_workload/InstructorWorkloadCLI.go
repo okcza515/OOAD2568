@@ -2,13 +2,26 @@
 package instructorworkload
 
 import (
-	"ModEd/core/cli"
+	"fmt"
+
 	"ModEd/curriculum/cli/instructor_workload/handler"
+
 	controller "ModEd/curriculum/controller"
-	"ModEd/curriculum/utils"
 
 	"gorm.io/gorm"
 )
+
+type Back struct{}
+
+func (b Back) Execute() {
+	return
+}
+
+type UnknownCommand struct{}
+
+func (u UnknownCommand) Execute() {
+	fmt.Println("Unknown command, please try again.")
+}
 
 func RunInstructorWorkloadModuleCLI(
 	db *gorm.DB,
@@ -16,23 +29,12 @@ func RunInstructorWorkloadModuleCLI(
 	classController controller.ClassControllerInterface,
 	curriculumController controller.CurriculumControllerInterface,
 ) {
-
-	menuManager := cli.NewCLIMenuManager()
-	wrapper := controller.NewInstructorWorkloadModuleWrapper(
-		db,
-		courseController,
-		classController,
-		curriculumController,
-	)
-	instructorWorkloadModuleState := handler.NewInstructorWorkloadModuleMenuStateHandler(menuManager, wrapper)
-	menuManager.SetState(instructorWorkloadModuleState)
-
-	for {
-		menuManager.Render()
-		menuManager.UserInput = utils.GetUserChoice()
-		err := menuManager.HandleUserInput()
-		if err != nil {
-			panic(err)
-		}
-	}
+	menu := handler.NewMenuHandler("Instructor Workload Menu", true)
+	menu.Add("Academic", handler.AcademicWorkload{})
+	menu.Add("Adminstrative", handler.AdminstrativeWorkload{})
+	menu.Add("Senior Project", handler.SeniorProjectWorkload{})
+	menu.Add("Student Advisor", handler.StudentAdvisorWokrload{})
+	menu.SetBackHandler(Back{})
+	menu.SetDefaultHandler(UnknownCommand{})
+	menu.Execute()
 }
