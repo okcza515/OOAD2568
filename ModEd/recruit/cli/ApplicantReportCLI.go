@@ -3,8 +3,10 @@ package cli
 
 import (
 	"ModEd/core/cli"
+	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
+	recruitUtil "ModEd/recruit/util"
 	"bufio"
 	"fmt"
 	"os"
@@ -38,17 +40,32 @@ func (menu *ApplicantReportMenuState) Render() {
 }
 
 func (menu *ApplicantReportMenuState) HandleUserInput(input string) error {
-	applicantID, err := strconv.ParseUint(input, 10, 32)
+	applicantionID, err := strconv.ParseUint(input, 10, 32)
 	if err != nil {
 		fmt.Println("Invalid applicant ID:", err)
 	} else {
-		report, err := menu.reportService.GetFullApplicationReportByApplicationID(uint(applicantID))
+		reportList, err := menu.reportService.GetFullApplicationReportByApplicationID(uint(applicantionID))
+		if err != nil {
+			fmt.Println("Failed to fetch application report:", err)
+			recruitUtil.WaitForEnter()
+			return nil
+		}
+
+		if len(reportList) == 0 {
+			fmt.Println("No application report found.")
+			recruitUtil.WaitForEnter()
+			return nil
+		}
+
+		report := reportList[0]
 		if err != nil {
 			fmt.Println("Error fetching application report:", err)
 		} else {
-			displayApplicantReport(report)
-			if report != nil && report.ApplicationStatuses == model.InterviewStage {
-				ReportInterviewDetails(menu.interviewService, uint(applicantID))
+			reportDisplay := controller.ApplicationReport{}
+			reportDisplay.DisplayReport([]model.ApplicationReport{report})
+
+			if report.ApplicationStatuses == model.InterviewStage {
+				ReportInterviewDetails(menu.interviewService, report.Applicant.ApplicantID)
 			}
 		}
 	}

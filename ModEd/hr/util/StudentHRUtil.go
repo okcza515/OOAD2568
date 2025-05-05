@@ -60,3 +60,10 @@ func IfNotEmpty(newValue, fallback string) string {
 	}
 	return fallback
 }
+
+func IfNotZero(newValue, fallback int) int {
+	if newValue != 0 {
+		return newValue
+	}
+	return fallback
+}

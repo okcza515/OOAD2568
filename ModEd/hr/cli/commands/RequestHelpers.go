@@ -111,3 +111,56 @@ func handleResignationRequest(target string, args []string, tx *gorm.DB) error {
 	fmt.Printf("%s resignation request submitted successfully.\n", target)
 	return nil
 }
+
+// usage: go run hr/cli/HumanResourceCLI.go request instructor raise -id="66050001" -amount=10000 -reason="ดีมาก"
+// usage (student): go run hr/cli/HumanResourceCLI.go request student raise -id="66050001" -amount=10000 -reason="ดีมาก"
+func handleRaiseRequest(target string, args []string, tx *gorm.DB) error {
+	commandName := fmt.Sprintf("request-%s-raise", target)
+	fs := flag.NewFlagSet(commandName, flag.ExitOnError)
+
+	idUsage := fmt.Sprintf("%s ID", target)
+	id := fs.String("id", "", idUsage)
+	amount := fs.Int("amount", 0, "Raise amount")
+	reason := fs.String("reason", "", "Reason for raise")
+
+	if err := fs.Parse(args); err != nil {
+		return fmt.Errorf("failed to parse flags: %v", err)
+	}
+
+	validator := util.NewValidationChain(fs)
+	validator.Field("amount").Required()
+	validator.Field("reason").Required()
+
+	operations := map[string]func() error{
+		"student": func() error {
+			validator.Field("id").Required().IsStudentID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for student raise: %v", err)
+			}
+			controller := controller.CreateRaiseInstructorHRController(tx)
+			return controller.SubmitRaiseRequest(*id, *amount, *reason)
+		},
+		"instructor": func() error {
+			validator.Field("id").Required().IsInstructorID()
+			if err := validator.Validate(); err != nil {
+				fs.Usage()
+				return fmt.Errorf("validation error for instructor raise: %v", err)
+			}
+			controller := controller.NewRaiseHRController(tx)
+			return controller.SubmitRaiseRequest(*id, *amount, *reason)
+		},
+	}
+
+	operation, exists := operations[target]
+	if !exists {
+		return fmt.Errorf("internal error: invalid target '%s' for handleRaiseRequest", target)
+	}
+
+	if err := operation(); err != nil {
+		return fmt.Errorf("failed to submit raise request: %v", err)
+	}
+
+	fmt.Printf("%s raise request submitted successfully.\n", target)
+	return nil
+}
