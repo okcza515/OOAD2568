@@ -28,7 +28,7 @@ func (c *InstructorHRController) getAll() ([]*model.InstructorInfo, error) {
 
 func (c *InstructorHRController) getById(id string) (*model.InstructorInfo, error) {
 	var instructorInfo model.InstructorInfo
-	if err := c.db.Where("instructor_id = ?", id).First(&instructorInfo).Error; err != nil {
+	if err := c.db.Where("instructor_code = ?", id).First(&instructorInfo).Error; err != nil {
 		return nil, err
 	}
 	return &instructorInfo, nil
@@ -45,7 +45,7 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 }
 
 func (c *InstructorHRController) delete(id string) error {
-	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+	return c.db.Where("instructor_code = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
 func (c *InstructorHRController) AddInstructor(
