@@ -53,7 +53,7 @@ func (handler *InternshipEvaluationHandler) HandleUserInput(input string) error 
 
 func (handler *InternshipEvaluationHandler) Review_Evaluation() error {
 
-	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
+	id := utils.GetUserInput("Enter the Student ID: ")
 
 	InstructorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
 	MentorScore := int(utils.GetUserInputUint("Enter the review score (0-100): "))
@@ -63,13 +63,13 @@ func (handler *InternshipEvaluationHandler) Review_Evaluation() error {
 		return fmt.Errorf("error updating review score: %w", err)
 	}
 
-	fmt.Println("Internship application updated successfully.")
+	fmt.Println("Internship review updated successfully.")
 
 	return nil
 }
 
 func (handler *InternshipEvaluationHandler) Report_Evaluation() error {
-	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
+	id := utils.GetUserInput("Enter the Student ID: ")
 
 	ReportScore := int(utils.GetUserInputUint("Enter the report score (0-100): "))
 
@@ -77,13 +77,13 @@ func (handler *InternshipEvaluationHandler) Report_Evaluation() error {
 	if err != nil {
 		return fmt.Errorf("error updating report score: %w", err)
 	}
-	fmt.Println("Internship application updated successfully.")
+	fmt.Println("Internship report updated successfully.")
 
 	return nil
 }
 
 func (handler *InternshipEvaluationHandler) Search_Review_Report_Scores() error {
-	id := utils.GetUserInput("Enter the ID of the internship application to delete: ")
+	id := utils.GetUserInput("Enter the Student ID: ")
 
 	application, err := handler.wrapper.InternshipApplication.GetInternshipApplicationByID(id)
 	if err != nil {
@@ -92,11 +92,11 @@ func (handler *InternshipEvaluationHandler) Search_Review_Report_Scores() error 
 
 	fmt.Printf("Internship Application ID: %s\n", application.StudentCode)
 	fmt.Printf("Company Name: %s\n", application.Company.CompanyName)
-	fmt.Printf("Review Scores:\n")
+	fmt.Printf("-Review Scores-\n")
 	fmt.Printf("Instructor Score: %d\n", application.SupervisorReview.InstructorScore)
 	fmt.Printf("Mentor Score: %d\n", application.SupervisorReview.MentorScore)
-	fmt.Printf("Report Scores:\n")
-	fmt.Printf("Report Score: %d\n", application.InternshipReport.ReportScore)
+	fmt.Printf("-Report Scores-\n")
+	fmt.Printf("Score: %d\n", application.InternshipReport.ReportScore)
 
 	return nil
 }
