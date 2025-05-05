@@ -1,37 +1,62 @@
 [
   {
-    "asset_management_id": 1,
-    "borrow_id": 1001,
     "room_id": 101,
-    "instrument_id": 501,
-    "instrument_label": "OSC-001"
+    "instrument_serial_id": 1001,
+    "instrument_label": "Guitar A-001",
+    "borrow_id": 0
   },
   {
-    "asset_management_id": 2,
-    "borrow_id": 1002,
     "room_id": 102,
-    "instrument_id": 502,
-    "instrument_label": "MM-002"
+    "instrument_serial_id": 1002,
+    "instrument_label": "Piano P-001",
+    "borrow_id": 1
   },
   {
-    "asset_management_id": 3,
-    "borrow_id": 1003,
-    "room_id": 103,
-    "instrument_id": 503,
-    "instrument_label": "FG-003"
-  },
-  {
-    "asset_management_id": 4,
-    "borrow_id": 1004,
-    "room_id": 104,
-    "instrument_id": 504,
-    "instrument_label": "PS-004"
-  },
-  {
-    "asset_management_id": 5,
-    "borrow_id": 1005,
     "room_id": 101,
-    "instrument_id": 505,
-    "instrument_label": "SA-005"
+    "instrument_serial_id": 1003,
+    "instrument_label": "Drums D-001",
+    "borrow_id": 0
+  },
+  {
+    "room_id": 103,
+    "instrument_serial_id": 1004,
+    "instrument_label": "Violin V-001",
+    "borrow_id": 2
+  },
+  {
+    "room_id": 102,
+    "instrument_serial_id": 1005,
+    "instrument_label": "Bass B-001",
+    "borrow_id": 0
+  },
+  {
+    "room_id": 103,
+    "instrument_serial_id": 1006,
+    "instrument_label": "Saxophone S-001",
+    "borrow_id": 3
+  },
+  {
+    "room_id": 101,
+    "instrument_serial_id": 1007,
+    "instrument_label": "Trumpet T-001",
+    "borrow_id": 0
+  },
+  {
+    "room_id": 102,
+    "instrument_serial_id": 1008,
+    "instrument_label": "Flute F-001",
+    "borrow_id": 4
+  },
+  {
+    "room_id": 103,
+    "instrument_serial_id": 1009,
+    "instrument_label": "Clarinet C-001",
+    "borrow_id": 0
+  },
+  {
+    "room_id": 101,
+    "instrument_serial_id": 1010,
+    "instrument_label": "Keyboard K-001",
+    "borrow_id": 5
   }
 ]

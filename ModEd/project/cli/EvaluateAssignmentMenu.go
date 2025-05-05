@@ -16,7 +16,7 @@ func BuildEvaluateAssignmentMenu(
 		Title: "Evaluate Assignment",
 		Children: []*utils.MenuItem{
 			{
-				Title: "For Advisor",
+				Title: "Insert Score For Advisor",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Evaluating Assignment for Advisor...")
 
@@ -61,7 +61,7 @@ func BuildEvaluateAssignmentMenu(
 						AdvisorId:    uint(advisorId),
 						Score:        score,
 					}
-					if err := scoreAssignmentAdvisorController.InsertAdvisorScore(newScore); err != nil {
+					if err := scoreAssignmentAdvisorController.Insert(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
 					} else {
 						io.Println("Advisor score submitted successfully!")
@@ -69,7 +69,7 @@ func BuildEvaluateAssignmentMenu(
 				},
 			},
 			{
-				Title: "For Committee",
+				Title: "Insert Score For Committee",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Evaluating Assignment for Committee...")
 
@@ -114,10 +114,54 @@ func BuildEvaluateAssignmentMenu(
 						CommitteeId:  uint(committeeId),
 						Score:        score,
 					}
-					if err := scoreAssignmentCommitteeController.InsertCommitteeScore(newScore); err != nil {
+					if err := scoreAssignmentCommitteeController.Insert(newScore); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 					} else {
 						io.Println("Committee score submitted successfully!")
+					}
+				},
+			},
+			{
+				Title: "Check Score",
+				Action: func(io *utils.MenuIO) {
+					io.Println("Checking Scores for Assignment...")
+
+					io.Print("Enter Assignment ID (-1 to cancel): ")
+					assignmentIdStr, err := io.ReadInput()
+					if err != nil || assignmentIdStr == "-1" {
+						io.Println("Cancelled.")
+						return
+					}
+					assignmentId, err := strconv.Atoi(assignmentIdStr)
+					if err != nil {
+						io.Println("Invalid Assignment ID.")
+						return
+					}
+
+					// Fetch advisor scores
+					advisorScores, err := scoreAssignmentAdvisorController.ListAdvisorScoresByCondition("assignment_id", assignmentId)
+					if err != nil {
+						io.Println(fmt.Sprintf("Error fetching advisor scores: %v", err))
+					} else if len(advisorScores) == 0 {
+						io.Println("No advisor scores found for this assignment.")
+					} else {
+						io.Println("Advisor Scores:")
+						for _, score := range advisorScores {
+							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
+						}
+					}
+
+					// Fetch committee scores
+					committeeScores, err := scoreAssignmentCommitteeController.ListCommitteeScoresByCondition("assignment_id", assignmentId)
+					if err != nil {
+						io.Println(fmt.Sprintf("Error fetching committee scores: %v", err))
+					} else if len(committeeScores) == 0 {
+						io.Println("No committee scores found for this assignment.")
+					} else {
+						io.Println("Committee Scores:")
+						for _, score := range committeeScores {
+							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
+						}
 					}
 				},
 			},

@@ -28,9 +28,34 @@ func ApprovalHandler(facade *controller.ProcurementControllerFacade) {
 	}
 }
 
+func printApprovalList(observer controller.ApprovalObserver) {
+	switch o := observer.(type) {
+	case *controller.BudgetApprovalController:
+		approvals, err := o.ListAllApprovals()
+		if err != nil {
+			fmt.Println("Failed to fetch budget approvals:", err)
+			return
+		}
+		if len(approvals) == 0 {
+			fmt.Println("No budget approvals found.")
+			return
+		}
+		fmt.Println("Available Budget Approvals:")
+		for _, a := range approvals {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
+				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
+		}
+	}
+}
+
 func printApprovalOption(observer controller.ApprovalObserver) {
 	for {
 		util.ClearScreen()
+		printApprovalList(observer)
 		fmt.Println(":/Approval Menu")
 		fmt.Println("  1:\tApprove by ID")
 		fmt.Println("  2:\tReject by ID")
@@ -40,16 +65,27 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 		cmd := util.GetCommandInput()
 
 		switch cmd {
+		
 		case "1":
 			id := util.GetUintInput("Enter ID to Approve: ")
-			observer.OnApproved(id)
-			fmt.Println("Approved successfully.")
-			WaitForEnter()
+			approverID := util.GetUintInput("Enter Your Instructor ID (Approver): ")
+			err := observer.OnApproved(id, approverID)
+			if err != nil {
+				fmt.Println("Failed to approve:", err)
+			} else {
+				fmt.Println("Approved successfully.")
+			}
+			WaitForEnter()		
 		case "2":
 			id := util.GetUintInput("Enter ID to Reject: ")
-			observer.OnRejected(id)
-			fmt.Println("Rejected successfully.")
-			WaitForEnter()
+			approverID := util.GetUintInput("Enter Approver ID: ")
+			err := observer.OnRejected(id, approverID)
+			if err != nil {
+				fmt.Println("Rejection failed:", err)
+			} else {
+				fmt.Println("Rejected successfully.")
+			}
+			WaitForEnter()		
 		case "back":
 			return
 		default:

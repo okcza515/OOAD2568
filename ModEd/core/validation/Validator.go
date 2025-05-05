@@ -1,4 +1,6 @@
-package utils
+package validation
+
+// Wrote by MEP-1010
 
 import (
 	"regexp"
@@ -35,6 +37,17 @@ func NewValidator() *Validator {
 	return validator
 }
 
+func (v *Validator) IsNumberValid(num string) bool {
+	if !v.IsStringNotEmpty(num) {
+		return false
+	}
+	numericRegex := lazyRegexCompile(numericRegexString)()
+	if numericRegex == nil {
+		return false
+	}
+	return numericRegex.MatchString(num)
+}
+
 func (v *Validator) ParseNumber(num string) (float64, bool) {
 	if !v.IsStringNotEmpty(num) {
 		return 0, false
@@ -48,6 +61,17 @@ func (v *Validator) ParseNumber(num string) (float64, bool) {
 		return 0, false
 	}
 	return value, true
+}
+
+func (v *Validator) IsUintValid(num string) bool {
+	if !v.IsStringNotEmpty(num) {
+		return false
+	}
+	numberRegex := lazyRegexCompile(numberRegexString)()
+	if numberRegex == nil {
+		return false
+	}
+	return numberRegex.MatchString(num)
 }
 
 func (v *Validator) ParseUint(num string) (uint, bool) {

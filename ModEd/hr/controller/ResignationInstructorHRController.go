@@ -12,7 +12,7 @@ type ResignationInstructorHRController struct {
 	db *gorm.DB
 }
 
-func CreateResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
+func NewResignationInstructorHRController(db *gorm.DB) *ResignationInstructorHRController {
 	db.AutoMigrate(&model.RequestResignationInstructor{})
 	return &ResignationInstructorHRController{db: db}
 }
@@ -47,7 +47,7 @@ func (c *ResignationInstructorHRController) SubmitResignationInstructor(instruct
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 
-		instructorController := CreateResignationInstructorHRController(tx)
+		instructorController := NewResignationInstructorHRController(tx)
 
 		factory, err := model.GetFactory("instructor")
 		if err != nil {

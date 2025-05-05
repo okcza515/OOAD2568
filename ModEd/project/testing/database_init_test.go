@@ -41,7 +41,7 @@ func Init() (*gorm.DB, *controller.AssessmentController, *controller.AssessmentC
 
 	assessmentController := controller.NewAssessmentController(db)
 	assignmentController := controller.NewAssignmentController(db)
-	presentationController := controller.NewPresentationController(db).(*controller.PresentationController)
+	presentationController := controller.NewPresentationController(db)
 	reportController := controller.NewReportController(db)
 	assessmentCriteriaController := controller.NewAssessmentCriteriaController(db)
 	assessmentCriteriaLinkController := controller.NewAssessmentCriteriaLinkController(db)

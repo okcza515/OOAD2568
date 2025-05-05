@@ -1,37 +1,62 @@
 [
   {
-    "asset_management_id": 11,
     "room_id": 101,
-    "supply_id": 301,
-    "supply_label": "Wires - Red",
+    "supply_id": 501,
+    "supply_label": "Whiteboard Marker M-001",
     "quantity": 50
   },
   {
-    "asset_management_id": 12,
     "room_id": 102,
-    "supply_id": 302,
-    "supply_label": "Resistors - 220 Ohm",
-    "quantity": 200
+    "supply_id": 502,
+    "supply_label": "Paper Sheets P-001",
+    "quantity": 1000
   },
   {
-    "asset_management_id": 13,
     "room_id": 103,
-    "supply_id": 303,
-    "supply_label": "Capacitors - 10uF",
-    "quantity": 150
+    "supply_id": 503,
+    "supply_label": "Erasers E-001",
+    "quantity": 30
   },
   {
-    "asset_management_id": 14,
-    "room_id": 104,
-    "supply_id": 304,
-    "supply_label": "Breadboards",
+    "room_id": 101,
+    "supply_id": 504,
+    "supply_label": "Chalk C-001",
+    "quantity": 100
+  },
+  {
+    "room_id": 102,
+    "supply_id": 505,
+    "supply_label": "Pencils P-002",
     "quantity": 75
   },
   {
-    "asset_management_id": 15,
+    "room_id": 103,
+    "supply_id": 506,
+    "supply_label": "Notebooks N-001",
+    "quantity": 45
+  },
+  {
     "room_id": 101,
-    "supply_id": 305,
-    "supply_label": "LEDs - Green",
-    "quantity": 120
+    "supply_id": 507,
+    "supply_label": "Staplers S-001",
+    "quantity": 10
+  },
+  {
+    "room_id": 102,
+    "supply_id": 508,
+    "supply_label": "Tape Rolls T-001",
+    "quantity": 25
+  },
+  {
+    "room_id": 103,
+    "supply_id": 509,
+    "supply_label": "Scissors S-002",
+    "quantity": 15
+  },
+  {
+    "room_id": 101,
+    "supply_id": 510,
+    "supply_label": "Glue Sticks G-001",
+    "quantity": 40
   }
 ]

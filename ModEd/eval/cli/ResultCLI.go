@@ -3,6 +3,8 @@ package cli
 import (
 	result_controller "ModEd/eval/controller"
 	"ModEd/eval/util"
+	"strconv"
+
 	// "bufio"
 	// "os"
 	// "strings"
@@ -21,8 +23,8 @@ func RunResultCLI(db *gorm.DB) {
 
 	for {
 		fmt.Println("\nResult CLI")
-		fmt.Println("1. Create Result")
-		fmt.Println("2. Display All Results by StudentID")
+		fmt.Println("1. Create Result by ExamID")
+		fmt.Println("2. Display Result by ExamID and StudentID")
 		fmt.Println("3. Update Result by ResultID")
 		fmt.Println("4. Delete Result by ResultID")
 		fmt.Println("5. Exit")
@@ -31,14 +33,19 @@ func RunResultCLI(db *gorm.DB) {
 		fmt.Scan(&choice)
 
 		switch choice {
-		// case 1:
-		// 	CreateResults(db, resultController)
+		case 1:
+			var examID uint
+			fmt.Print("Enter Examination ID: ")
+			fmt.Scan(&examID)
+			CreateResultByExamID(db, resultController, examID)
 
 		case 2:
-			var studentID uint
+			var examID, studentID uint
+			fmt.Print("Enter Examination ID: ")
+			fmt.Scan(&examID)
 			fmt.Print("Enter Student ID: ")
 			fmt.Scan(&studentID)
-			DisplayResultsByStudentID(db, resultController, studentID)
+			DisplayResultByExamStudent(db, resultController, examID, studentID)
 
 		case 3:
 			var resultID uint
@@ -62,28 +69,28 @@ func RunResultCLI(db *gorm.DB) {
 	}
 }
 
-// func CreateResults(db *gorm.DB, resultController *result_controller.ResultController) {
-// 	err := resultController.CreateResults()
-// 	if err != nil {
-// 		fmt.Println("Failed to create results:", err)
-// 	} else {
-// 		fmt.Println("Results created successfully!")
-// 	}
-// }
+func CreateResultByExamID(db *gorm.DB, resultController *result_controller.ResultController, examID uint) {
+	err := resultController.CreateResultByExamID(examID)
+	if err != nil {
+		fmt.Println("Failed to create results:", err)
+	} else {
+		fmt.Println("Results created successfully!")
+	}
+}
 
-func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.ResultController, studentID uint) {
-	results, err := resultController.GetResultByStudent(studentID)
+func DisplayResultByExamStudent(db *gorm.DB, resultController *result_controller.ResultController, examID uint, studentID uint) {
+	results, err := resultController.GetResultByExamAndStudent(examID, studentID)
 	if err != nil {
 		fmt.Println("Error fetching results", err)
 		return
 	}
 
 	if len(results) == 0 {
-		fmt.Println("No answers found for this question.")
+		fmt.Println("No results found for this student.")
 		return
 	}
 
-	fmt.Printf("\nAll Results")
+	fmt.Printf("\nAll Results:\n")
 	for _, result := range results {
 		fmt.Printf("Result ID: %d | Examination ID: %d | Student ID: %d | Status: %s | Feedback: %s | Score: %d\n",
 			result.ID, result.ExaminationID, result.StudentID, result.Status, result.Feedback, result.Score)
@@ -91,15 +98,20 @@ func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.
 }
 
 func UpdateResult(db *gorm.DB, resultController *result_controller.ResultController, resultID uint) {
-	scoreText := util.PromptString("Enter new score: ")
 	feedbackText := util.PromptString("Enter feedback: ")
+	scoreText := util.PromptString("Enter new score: ")
+	scoreValue, err := strconv.Atoi(scoreText)
+	if err != nil {
+		fmt.Println("Invalid score. Please enter a valid number.")
+		return
+	}
 
 	updatedData := map[string]interface{}{
 		"Feedback": feedbackText,
-		"Score":    scoreText,
+		"Score":    scoreValue,
 	}
 
-	err := resultController.UpdateResult(resultID, updatedData)
+	err = resultController.UpdateResult(resultID, updatedData)
 	if err != nil {
 		fmt.Println("Failed to update result:", err)
 	} else {

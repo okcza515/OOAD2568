@@ -18,32 +18,3 @@ func NewPresentationController(db *gorm.DB) *PresentationController {
 		db:             db,
 	}
 }
-
-func (c *PresentationController) ListAllPresentations() ([]model.Presentation, error) {
-	var presentations []model.Presentation
-	result := c.db.Find(&presentations)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return presentations, nil
-}
-
-func (c *PresentationController) RetrievePresentation(id uint) (*model.Presentation, error) {
-	var Presentation model.Presentation
-	if err := c.db.Where("id = ?", id).First(&Presentation).Error; err != nil {
-		return nil, err
-	}
-	return &Presentation, nil
-}
-
-func (c *PresentationController) InsertPresentation(Presentation *model.Presentation) error {
-	return c.db.Create(Presentation).Error
-}
-
-func (c *PresentationController) UpdatePresentation(id uint, presentation *model.Presentation) error {
-	return c.UpdateByID(presentation)
-}
-
-func (c *PresentationController) DeletePresentation(id uint) error {
-	return c.DeleteByID(id)
-}

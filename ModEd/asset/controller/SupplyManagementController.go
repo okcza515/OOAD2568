@@ -17,6 +17,7 @@ type SupplyManagementInterface interface {
     Insert(payload *model.SupplyManagement) error
     UpdateById(payload *model.SupplyManagement) error
     DeleteByID(id uint) error
+    InsertMany(data []model.SupplyManagement) error
 }
 
 type SupplyManagementController struct {
@@ -94,6 +95,13 @@ func (c *SupplyManagementController) DeleteByID(Id uint) error {
 	return err
 }
 
-func (c* InstrumentManagementController) SeedSupplyManagementDatabase(path string)(){
+//seed data
+func (c *SupplyManagementController) InsertMany(data []model.SupplyManagement) error {
+    if len(data) == 0 {
+		return errors.New("no Supply Management to insert")
+	}
 	
+	err := c.BaseController.InsertMany(data)
+
+	return err
 }

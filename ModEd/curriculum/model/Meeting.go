@@ -2,7 +2,6 @@
 package model
 
 import (
-	commonModel "ModEd/common/model"
 	"ModEd/core"
 	"fmt"
 	"time"
@@ -12,13 +11,13 @@ import (
 
 type Meeting struct {
 	gorm.Model
-	Title       string                   `csv:"title" gorm:"type:varchar(100);not null"`
-	Description string                   `csv:"description" gorm:"type:text"`
-	Date        time.Time                `csv:"date" gorm:"not null"`
-	Location    string                   `csv:"location" gorm:"type:varchar(255)"`
-	StartTime   time.Time                `csv:"start_time" gorm:"not null"`
-	EndTime     time.Time                `csv:"end_time"`
-	Attendees   []commonModel.Instructor `gorm:"many2many:meeting_attendees;constraint:OnDelete:CASCADE"`
+	Title       string            `csv:"title" gorm:"type:varchar(100);not null"`
+	Description string            `csv:"description" gorm:"type:text"`
+	Date        time.Time         `csv:"date" gorm:"not null"`
+	Location    string            `csv:"location" gorm:"type:varchar(255)"`
+	StartTime   time.Time         `csv:"start_time" gorm:"not null"`
+	EndTime     time.Time         `csv:"end_time"`
+	Attendees   []MeetingAttendee `gorm:"foreignKey:MeetingID;constraint:OnDelete:CASCADE"`
 	*core.SerializableRecord
 }
 

@@ -16,7 +16,7 @@ func (r RoomTypeEnum) TypeRoomString() string {
 	case ROOM_LAB_ROOM:
 		return "Laboratory"
 	case ROOM_MEETING_ROOM:
-		return "Office"
+		return "Meeting"
 	default:
 		return string(r)
 	}

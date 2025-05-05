@@ -7,7 +7,8 @@ import (
 	"ModEd/utils/deserializer"
 	"fmt"
 
-	"github.com/cockroachdb/errors"
+	"errors"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -42,7 +43,7 @@ func newMigrationManager() *MigrationManager {
 	migrationMap[core.MODULE_WILPROJECT] = &WILProjectMigrationStrategy{}
 	migrationMap[core.MODULE_QUIZ] = nil
 	migrationMap[core.MODULE_EVAL] = nil
-	migrationMap[core.MODULE_HR] = nil
+	migrationMap[core.MODULE_HR] = &HRMigrationStrategy{}
 	migrationMap[core.MODULE_PROJECT] = nil
 	migrationMap[core.MODULE_RECRUIT] = nil
 
@@ -106,7 +107,7 @@ func (m *MigrationManager) migrateToDB() error {
 
 	err := m.DB.AutoMigrate(modelsToMigrate...)
 	if err != nil {
-		return errors.Wrap(err, "failed to migrate to db")
+		return errors.New("failed to migrate to db" + err.Error())
 	}
 	return nil
 }
@@ -137,10 +138,15 @@ func (m *MigrationManager) LoadSeedData() error {
 			return err
 		}
 
+		// Print fd
+		fmt.Println(fd)
+
 		err = fd.Deserialize(md)
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(md)
 
 		result := m.DB.Create(md)
 		if result.Error != nil {

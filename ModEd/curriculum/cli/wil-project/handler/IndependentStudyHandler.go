@@ -3,10 +3,12 @@ package handler
 
 import (
 	"ModEd/asset/util"
+	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
+	"errors"
 
 	"ModEd/curriculum/model"
 	"fmt"
@@ -36,7 +38,10 @@ func (menu *IndependentStudyMenuStateHandler) Render() {
 	fmt.Println("1.Read independent study list from file")
 	fmt.Println("2.Assign new independent study")
 	fmt.Println("3.Find IS by Id")
-	fmt.Println("back: Exit the module")
+	fmt.Println("4.List all IS")
+	fmt.Println("5.Update IS by Id")
+	fmt.Println("6.Delete Independent Study")
+	fmt.Println("back: Exit Independent Study module")
 }
 
 func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) error {
@@ -54,7 +59,17 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 		}
 	case "3":
 		if err := menu.findISByID(); err != nil {
-			fmt.Print("Assign failed exiting with error [")
+			fmt.Print("Retrive failed exiting with error [")
+			fmt.Print(err)
+			fmt.Println("]")
+		}
+	case "4":
+		menu.listAllIS()
+	case "5":
+		fmt.Println("Not implemented yet")
+	case "6":
+		if err := menu.deleteIS(); err != nil {
+			fmt.Print("Delete failed exiting with error [")
 			fmt.Print(err)
 			fmt.Println("]")
 		}
@@ -71,57 +86,31 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 
 }
 
-func (menu *IndependentStudyMenuStateHandler) wilInformationRenderer(id uint) error {
-	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
-	if err != nil {
-		return err
-	}
+func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(is model.IndependentStudy) {
+	fmt.Println("ID                :\t", is.ID)
 	fmt.Println("Topic             :\t", is.IndependentStudyTopic)
 	fmt.Println("Content           :\t", is.IndependentStudyContent)
-	fmt.Println("Assign to group id:\t", is.WILProject.ID)
+	fmt.Println("Assign to group id:\t", is.WILProjectId)
 	if time := is.TurnInDate; time == nil {
 		fmt.Println("Turn-in date      :\t No turn-in date")
 	} else {
 		fmt.Println("Turn-in date      :\t", is.TurnInDate)
 	}
-	return nil
 }
-
-//func (menu *IndependentStudyMenuStateHandler) readIndependentStudyFromFile() error {
-//	fmt.Println("")
-//	fmt.Println("Read IS list from file")
-//	path := ""
-//	fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
-//	_, _ = fmt.Scanln(&path)
-//	fd, err := deserializer.NewFileDeserializer(path)
-//	if err != nil {
-//		return err
-//	}
-//	isModel := new([]model.IndependentStudy)
-//	if err := fd.Deserialize(isModel); err != nil {
-//		return err
-//	}
-//
-//	if err := menu.wrapper.IndependentStudyController.BaseController.InsertMany(*isModel); err != nil {
-//		return err
-//	}
-//	fmt.Println("\nRead file Success!")
-//	return nil
-//}
 
 func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error {
 	newIndependentStudy := model.IndependentStudy{}
 	fmt.Println("\nAssign new indepndent study topic")
 	var turnInDateTime string = ""
-	newIndependentStudy.WILProject.ID = utils.ExecuteUserInputStep(utils.UintInputStep{
+	newIndependentStudy.WILProject.ID = core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter WIL project group ID you want to assign : ",
 		FieldNameText: "WIL project group ID",
 	}).(uint)
-	newIndependentStudy.IndependentStudyTopic = utils.ExecuteUserInputStep(utils.StringInputStep{
+	newIndependentStudy.IndependentStudyTopic = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter Independent study topic: ",
 		FieldNameText: "Independent study topic",
 	}).(string)
-	newIndependentStudy.IndependentStudyContent = utils.ExecuteUserInputStep(utils.StringInputStep{
+	newIndependentStudy.IndependentStudyContent = core.ExecuteUserInputStep(core.StringInputStep{
 		PromptText:    "Enter Independent study content: ",
 		FieldNameText: "Independent study content",
 	}).(string)
@@ -129,17 +118,17 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 	fmt.Println("Do you want this IS to has turn-in date?")
 	fmt.Println("1. Have turn-in date")
 	fmt.Println("2. No turn-in date")
-	flag := utils.ExecuteUserInputStep(utils.UintInputStep{
+	flag := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter your choice: ",
 		FieldNameText: "your choice",
 	}).(uint)
 
 	if flag == 1 {
-		turnInDate := utils.ExecuteUserInputStep(utils.StringInputStep{
+		turnInDate := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "Enter turn-in date [YYYY-mm-dd]: ",
 			FieldNameText: "turn-in date",
 		}).(string)
-		turnTime := utils.ExecuteUserInputStep(utils.StringInputStep{
+		turnTime := core.ExecuteUserInputStep(core.StringInputStep{
 			PromptText:    "Enter turn-in time [hh:mm:ss]: ",
 			FieldNameText: "turn-in time",
 		}).(string)
@@ -149,17 +138,66 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 		return err
 	}
 	fmt.Println("\nSuccessfully assign WIL!")
+	fmt.Println("\n\t               Summary               ")
+	fmt.Println("\t ************************************")
+	menu.isInformationRenderer(newIndependentStudy)
+
 	return nil
 }
 
 func (menu *IndependentStudyMenuStateHandler) findISByID() error {
-	id := utils.ExecuteUserInputStep(utils.UintInputStep{
+	id := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter IS ID: ",
 		FieldNameText: "IS ID",
 	}).(uint)
 	fmt.Println("")
-	if err := menu.wilInformationRenderer(id); err != nil {
+	fmt.Println("\tRequested Independent Study Record")
+	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
+	if err != nil {
 		return err
 	}
+	menu.isInformationRenderer(is)
+	return nil
+}
+
+func (menu *IndependentStudyMenuStateHandler) listAllIS() error {
+	independentStudies, err := menu.wrapper.IndependentStudyController.ListAllIndependentStudy()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("\n\t List of all Independent Study record")
+	fmt.Println("\t ************************************")
+	for _, indeindependentStudy := range independentStudies {
+		menu.isInformationRenderer(indeindependentStudy)
+		fmt.Println("---------------------------------")
+	}
+	return nil
+}
+
+func (menu *IndependentStudyMenuStateHandler) deleteIS() error {
+	id := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter ID of Independent Study you you want to delete: ",
+		FieldNameText: "IS ID",
+	}).(uint)
+	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
+	if err != nil {
+		return errors.New("Failed to retrieved IS")
+	}
+	fmt.Println("\n\t The independent with the following information will be deleted")
+	fmt.Println("\t **************************************************************")
+	menu.isInformationRenderer(is)
+	var msg string
+	for msg != "yes" && msg != "no" {
+		msg = utils.GetUserInput("Delete this record? [yes/no]:")
+	}
+	if msg == "yes" {
+		if err := menu.wrapper.IndependentStudyController.DeleteIndependentStudiesByID(id); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	fmt.Println("Exiting delete operation cancled...")
 	return nil
 }

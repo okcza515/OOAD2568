@@ -31,6 +31,10 @@ func (c *FacultyController) UpdateBudget(name string, delta int) error {
 	return model.UpdateFacultyBudget(c.DB, name, delta)
 }
 
+func (c *FacultyController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
+	return model.UpdateRecordByField[model.Faculty](c.DB, field, value, updatedData, model.Faculty{})
+}
+
 func (c *FacultyController) Register(faculties []*model.Faculty) error {
 	return model.CommonRegister(c.DB, faculties)
 }

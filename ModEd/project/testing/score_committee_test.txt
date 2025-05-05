@@ -51,7 +51,7 @@ func TestInsertScoreCommittee(t *testing.T) {
 		CommitteeId:  committee.ID,
 		Score:        85.0,
 	}
-	err := controller.InsertCommitteeScore(score)
+	err := controller.Insert(score)
 	assert.NoError(t, err)
 
 	// Verify insertion

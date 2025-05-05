@@ -77,36 +77,19 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			WaitForEnter()
 		case "2":
 			fmt.Println("List All Instrument Requests")
-			ListAllInstrumentRequest(facade)
-			// requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-			// if err != nil {
-			// 	fmt.Println("Failed to list requests:", err)
-			// } else {
-			// 	fmt.Println("Instrument Requests List:")
-			// 	for _, request := range *requests {
-			// 		fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
-			// 	}
-			// }
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if !showAvailableRequests(requests, err) {
+				break
+			}
+
 			WaitForEnter()
 		case "3":
-			fmt.Println("Get Instrument Request by ID or Name")
-			idOrName := util.GetStringInput("Enter Instrument Request ID or Name: ")
-
-			var request *model.InstrumentRequest
-			id, err := parseUint(idOrName)
-			if err == nil {
-				request, err = facade.RequestedItem.GetInstrumentRequestByID(id)
-			} else {
-				request, err = facade.RequestedItem.GetInstrumentRequestByName(idOrName)
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if !showAvailableRequests(requests, err) {
+				break
 			}
 
-			if err != nil {
-				fmt.Println("Failed to get request:", err)
-			} else {
-				fmt.Printf("Instrument Request found: ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
-			}
-			WaitForEnter()
-		case "4":
+			fmt.Println()
 			fmt.Println("Add Instrument to Existing Request")
 
 			requestID := util.GetUintInput("Enter Instrument Request ID: ")
@@ -125,35 +108,21 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				InstrumentRequestID: requestID,
 			}
 
-			err := facade.RequestedItem.AddInstrumentToRequest(requestID, detail)
+			err = facade.RequestedItem.AddInstrumentToRequest(requestID, detail)
 			if err != nil {
 				fmt.Println("Failed to add instrument:", err)
 			} else {
 				fmt.Println("Instrument added to request!")
 			}
 			WaitForEnter()
-		case "5":
-			ListAllInstrumentRequest(facade)
-			// requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-			// if err != nil {
-			// 	fmt.Println("Failed to retrieve requests:", err)
-			// 	WaitForEnter()
-			// 	break
-			// }
-
-			// if len(*requests) == 0 {
-			// 	fmt.Println("No instrument requests available.")
-			// 	WaitForEnter()
-			// 	break
-			// }
-
-			// fmt.Println("Available Instrument Requests:")
-			// for _, request := range *requests {
-			// 	fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
-			// }
+		case "4":
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if !showAvailableRequests(requests, err) {
+				break
+			}
 
 			fmt.Println()
-			fmt.Println("5: View Request with Instrument Details")
+			fmt.Println("View Request with Instrument Details")
 			requestID := util.GetUintInput("Enter Instrument Request ID: ")
 
 			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
@@ -182,28 +151,14 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				}
 			}
 			WaitForEnter()
-		case "6":
-			fmt.Println("Edit Instrument Items in Request")
-			ListAllInstrumentRequest(facade)
-			// requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-			// if err != nil {
-			// 	fmt.Println("Failed to retrieve requests:", err)
-			// 	WaitForEnter()
-			// 	break
-			// }
-
-			// if len(*requests) == 0 {
-			// 	fmt.Println("No requests available.")
-			// 	WaitForEnter()
-			// 	break
-			// }
-
-			// fmt.Println("Available Requests:")
-			// for _, r := range *requests {
-			// 	fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", r.InstrumentRequestID, r.DepartmentID, r.Status)
-			// }
-
-			requestID := util.GetUintInput("\nEnter Instrument Request ID: ")
+		case "5":
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if !showAvailableRequests(requests, err) {
+				break
+			}
+			fmt.Println()
+			fmt.Println("Edit Instrument in Request")
+			requestID := util.GetUintInput("Enter Instrument Request ID: ")
 
 			request, err := facade.RequestedItem.GetInstrumentRequestWithDetails(requestID)
 			if err != nil {
@@ -253,7 +208,6 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			newQty := util.GetStringInput("New Quantity (Enter to keep): ")
 			newPrice := util.GetStringInput("New Estimated Price (Enter to keep): ")
 
-			// Update fields if provided
 			if newLabel != "" {
 				selected.InstrumentLabel = newLabel
 			}
@@ -299,10 +253,9 @@ func printInstrumentRequestOption() {
 	fmt.Println("--RequestItem Function--")
 	fmt.Println("  1:\tCreate Instrument Request")
 	fmt.Println("  2:\tList All Instrument Requests")
-	fmt.Println("  3:\tGet Instrument Request by ID")
-	fmt.Println("  4:\tAdd Instrument to Request")
-	fmt.Println("  5:\tView Request with Instrument Details")
-	fmt.Println("  6:\tEdit Request by ID")
+	fmt.Println("  3:\tAdd Instrument to Existing Request")
+	fmt.Println("  4:\tView Request with Instrument Details")
+	fmt.Println("  5:\tEdit Instrument in Request")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
@@ -325,14 +278,33 @@ func deref(s *string) string {
 	return *s
 }
 
-func ListAllInstrumentRequest(facade *procurement.ProcurementControllerFacade) {
-	requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+// func ListAllInstrumentRequest(facade *procurement.ProcurementControllerFacade) {
+// 	requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+// 	if err != nil {
+// 		fmt.Println("Failed to list requests:", err)
+// 	} else {
+// 		fmt.Println("Instrument Requests List:")
+// 		for _, request := range *requests {
+// 			fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+// 		}
+// 	}
+// }
+
+func showAvailableRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
-		fmt.Println("Failed to list requests:", err)
-	} else {
-		fmt.Println("Instrument Requests List:")
-		for _, request := range *requests {
-			fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
-		}
+		fmt.Println("Failed to retrieve requests:", err)
+		return false
 	}
+
+	if len(*requests) == 0 {
+		fmt.Println("No instrument requests available.")
+		return false
+	}
+
+	fmt.Println("Available Instrument Requests:")
+	for _, request := range *requests {
+		fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+	}
+
+	return true
 }

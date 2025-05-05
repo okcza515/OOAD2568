@@ -2,137 +2,226 @@ package controller
 
 import (
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
 
-type WorkloadReportController struct {
-	Connector *gorm.DB
-}
-
 type WorkloadReportControllerInterface interface {
-	GenerateDailyWorkloadReport(instructorId uint) error
-	GenerateWorkloadReportWithFilter(instructorId uint, startDate, endDate string) error
+	GenerateWorkloadReport(instructorID uint) error
 }
 
-func NewWorkloadReportController(db *gorm.DB) *WorkloadReportController {
-	return &WorkloadReportController{
-		Connector: db,
-	}
+type InstructorPerformanceReport struct {
+	InstructorID       uint
+	TotalClasses       int
+	TotalTeachingHours float64
+	TotalProjects      int
+	TotalMeetings      int
 }
 
-type WorkloadReportFacade struct {
-	ClassController           *ClassController
-	MeetingController         *MeetingController
-	StudentWorkloadController *StudentRequestController
+type InstructorReportFacade struct {
+	db                       *gorm.DB
+	InstructorID             uint
+	ClassController          ClassControllerInterface
+	CourseController         CourseControllerInterface
+	CurriculumController     CurriculumControllerInterface
+	ClassMaterialController  ClassMaterialControllerInterface
+	CoursePlanController     CoursePlanControllerInterface
+	MeetingController        MeetingControllerInterface
+	ProjectController        ProjectControllerInterface
+	StudentRequestController StudentRequestControllerInterface
 }
 
-// GenerateDailyWorkloadReport generates a simple daily workload report.
-func (f *WorkloadReportFacade) GenerateDailyWorkloadReport(instructorId uint) error {
-	fmt.Println("Generating Daily Workload Report...")
-
-	// Get classes
-	classList, err := f.ClassController.GetClasses()
-	if err != nil {
-		return fmt.Errorf("failed to get classes: %w", err)
-	}
-	for _, class := range classList {
-		fmt.Printf("Class ID: %d, Class Name: %s, Schedule: %s\n", class.ClassId, class.Course.Name, class.Schedule)
-	}
-
-	// Get meetings
-	meetingList, err := f.MeetingController.List(nil)
-	if err != nil {
-		return fmt.Errorf("failed to get meetings: %w", err)
-	}
-	for _, meeting := range meetingList {
-		fmt.Printf("Meeting Title: %s, Start: %s, End: %s, Location: %s\n",
-			meeting.Title, meeting.StartTime.Format("15:04"), meeting.EndTime.Format("15:04"), meeting.Location)
-	}
-
-	// Get student workload requests
-	studentWorkloadList, err := f.StudentWorkloadController.ListStudentRequest(instructorId)
-	if err != nil {
-		return fmt.Errorf("failed to get student workload requests: %w", err)
-	}
-	for _, studentRequest := range studentWorkloadList {
-		fmt.Printf("Student Code: %s, Request Type: %s\n", studentRequest.StudentCode, studentRequest.RequestType)
-	}
-
-	return nil
-}
-
-// WorkloadReportBuilder is the builder
 type WorkloadReportBuilder struct {
-	facade                 *WorkloadReportFacade
+	db                       *gorm.DB
+	InstructorID             uint
+	Header                   string
+	ClassController          ClassControllerInterface
+	CourseController         CourseControllerInterface
+	CurriculumController     CurriculumControllerInterface
+	ClassMaterialController  ClassMaterialControllerInterface
+	CoursePlanController     CoursePlanControllerInterface
+	MeetingController        MeetingControllerInterface
+	ProjectController        ProjectControllerInterface
+	StudentRequestController StudentRequestControllerInterface
+
+	startDate *time.Time
+	endDate   *time.Time
+
 	includeClasses         bool
+	includeCourses         bool
+	includeCurriculums     bool
+	includeClassMaterials  bool
+	includeCoursePlans     bool
 	includeMeetings        bool
+	includeProjects        bool
 	includeStudentRequests bool
-	startDate              string
-	endDate                string
 }
 
-// NewWorkloadReportBuilder creates a new builder instance
-func NewWorkloadReportBuilder(facade *WorkloadReportFacade) *WorkloadReportBuilder {
-	return &WorkloadReportBuilder{
-		facade: facade,
+func NewInstructorReportFacade(db *gorm.DB, instructorID uint) *InstructorReportFacade {
+	return &InstructorReportFacade{
+		db:           db,
+		InstructorID: instructorID,
 	}
 }
 
-func (b *WorkloadReportBuilder) IncludeClasses() *WorkloadReportBuilder {
+func NewWorkloadReportBuilder(db *gorm.DB, instructorID uint) *WorkloadReportBuilder {
+	return &WorkloadReportBuilder{
+		db:           db,
+		InstructorID: instructorID,
+	}
+}
+
+func (b *WorkloadReportBuilder) SetHeader(header string) *WorkloadReportBuilder {
+	b.Header = header
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithClasses() *WorkloadReportBuilder {
 	b.includeClasses = true
 	return b
 }
 
-func (b *WorkloadReportBuilder) IncludeMeetings() *WorkloadReportBuilder {
+func (b *WorkloadReportBuilder) WithCourses() *WorkloadReportBuilder {
+	b.includeCourses = true
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithCurriculums() *WorkloadReportBuilder {
+	b.includeCurriculums = true
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithClassMaterials() *WorkloadReportBuilder {
+	b.includeClassMaterials = true
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithCoursePlans() *WorkloadReportBuilder {
+	b.includeCoursePlans = true
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithMeetings() *WorkloadReportBuilder {
 	b.includeMeetings = true
 	return b
 }
 
-func (b *WorkloadReportBuilder) IncludeStudentRequests() *WorkloadReportBuilder {
+func (b *WorkloadReportBuilder) WithProjects() *WorkloadReportBuilder {
+	b.includeProjects = true
+	return b
+}
+
+func (b *WorkloadReportBuilder) WithStudentRequests() *WorkloadReportBuilder {
 	b.includeStudentRequests = true
 	return b
 }
 
-func (b *WorkloadReportBuilder) SetDateRange(start, end string) *WorkloadReportBuilder {
+func (b *WorkloadReportBuilder) SetDateRange(start, end *time.Time) *WorkloadReportBuilder {
 	b.startDate = start
 	b.endDate = end
 	return b
 }
 
-func (b *WorkloadReportBuilder) Generate(instructorId uint) error {
+func (b *WorkloadReportBuilder) Generate() error {
+	if b.Header != "" {
+		fmt.Printf("--------------------%s--------------------\n", b.Header)
+	}
+
 	if b.includeClasses {
-		classList, err := b.facade.ClassController.GetClasses()
+		classController := NewClassController(b.db)
+		classes, err := classController.GetClasses()
 		if err != nil {
+			fmt.Println("Error fetching classes:", err)
 			return err
 		}
-		for _, class := range classList {
-			fmt.Printf("Class ID: %d, Class Name: %s, Schedule: %s\n", class.ClassId, class.Course.Name, class.Schedule)
+
+		for _, class := range classes {
+			fmt.Printf("Class ID: %d, Course ID: %d, Section: %d, Schedule: %s\n",
+				class.ClassId, class.CourseId, class.Section, class.Schedule.Format(time.RFC1123))
 		}
+	}
+	if b.includeCourses {
+		courseController := NewCourseController(b.db)
+		courses, err := courseController.GetCourses()
+		if err != nil {
+			fmt.Println("Error fetching courses:", err)
+		}
+
+		for _, course := range courses {
+			fmt.Printf("Course ID: %d, Name: %s, Description: %s\n",
+				course.CourseId, course.Name, course.Description)
+		}
+	}
+	if b.includeCurriculums {
+		// Generate curriculum report
+	}
+	if b.includeClassMaterials {
+		// Generate class material report
+	}
+	if b.includeCoursePlans {
+		// Generate course plan report
 	}
 
 	if b.includeMeetings {
-		meetingList, err := b.facade.MeetingController.List(nil)
+		meetingController := NewMeetingController(b.db)
+		meetings, err := meetingController.List(nil)
 		if err != nil {
-			return err
+			fmt.Println("Error fetching meetings:", err)
 		}
-		for _, meeting := range meetingList {
-			fmt.Printf("Meeting Title: %s, Start Time: %s, End Time: %s, Location: %s\n",
-				meeting.Title, meeting.StartTime.Format("15:04"), meeting.EndTime.Format("15:04"), meeting.Location)
+
+		for _, meeting := range meetings {
+			fmt.Printf("Meeting ID: %d, Title: %s, Start Time: %s - End Time: %s, Location: %s\n",
+				meeting.GetID(), meeting.GetTitle(), meeting.StartTime.Format(time.RFC1123), meeting.EndTime.Format(time.RFC1123), meeting.GetLocation())
 		}
 	}
 
+	if b.includeProjects {
+		// projectCommitteeController := seniorProjectController.CommitteeController{b.db}
+		// projectCommitteeController.ListCommitteesByInstructor(1)
+	}
 	if b.includeStudentRequests {
-		studentWorkloadList, err := b.facade.StudentWorkloadController.ListStudentRequest(instructorId)
-		if err != nil {
-			return err
-		}
-		for _, studentRequest := range studentWorkloadList {
-			fmt.Printf("Student Code: %s, Request Type: %s\n", studentRequest.StudentCode, studentRequest.RequestType)
-		}
+		// Generate student request report
 	}
-
-	// (Optional) Handle Date Range filtering logic here if needed
 
 	return nil
+}
+
+func (f *InstructorReportFacade) GeneratePerformanceReport(instructorID uint, startDate, endDate *time.Time) (*InstructorPerformanceReport, error) {
+	report := &InstructorPerformanceReport{InstructorID: instructorID}
+	fmt.Println("---------------------Instructor Performance Report--------------------")
+	// 1. Count Classes
+	classController := NewClassController(f.db)
+	classes, err := classController.GetClasses()
+	if err != nil {
+		return nil, fmt.Errorf("fetching classes: %w", err)
+	}
+	report.TotalClasses = len(classes)
+
+	// Sum teaching hours (example assumes Schedule duration or custom hours field)
+	const classDuration = 2.0 // hours
+
+	var totalHours float64
+	for range classes {
+		totalHours += classDuration
+	}
+	report.TotalTeachingHours = totalHours
+
+	// // 2. Count Projects
+	// projectController := NewProjectController(f.db)
+	// projectCount, err := projectController.CountProjectsByInstructor(instructorID, startDate, endDate)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("fetching projects: %w", err)
+	// }
+	// report.TotalProjects = projectCount
+
+	// 3. Count Meetings
+	meetingController := NewMeetingController(f.db)
+	meetings, err := meetingController.List(nil)
+	if err != nil {
+		return nil, fmt.Errorf("fetching meetings: %w", err)
+	}
+	report.TotalMeetings = len(meetings)
+
+	return report, nil
 }

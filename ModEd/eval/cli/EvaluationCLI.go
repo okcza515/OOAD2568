@@ -1,26 +1,105 @@
 //Chanawat Limpanatewin 65070503445
 //MEP-1006
 
-// //1. evaluate in assignment
-// //2. comment in assignment
-// //3. evaluate in quiz
-// //4. diplay score assignment/quiz
-
 package cli
 
 import (
 	"ModEd/eval/controller"
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 )
+
+type EvaluationStrategy interface {
+	Evaluate(studentCode, instructorCode string, id uint, score uint, comment string)
+}
+
+type AssignmentEvaluation struct {
+	Controller *controller.EvaluationController
+}
+
+func (a *AssignmentEvaluation) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
+	a.Controller.EvaluateAssignment(studentCode, instructorCode, id, score, comment)
+}
+
+type QuizEvaluation struct {
+	Controller *controller.EvaluationController
+}
+
+func (q *QuizEvaluation) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
+	q.Controller.EvaluateQuiz(studentCode, instructorCode, id, score, comment)
+}
+
+type EvaluationContext struct {
+	Strategy EvaluationStrategy
+}
+
+func (c *EvaluationContext) SetStrategy(s EvaluationStrategy) {
+	c.Strategy = s
+}
+
+func (c *EvaluationContext) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
+	c.Strategy.Evaluate(studentCode, instructorCode, id, score, comment)
+}
+
+func evaluateGeneral(ec *controller.EvaluationController, evalType string) {
+	var studentCode, instructorCode string
+	var id, score uint
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("StudentID: ")
+	fmt.Scanln(&studentCode)
+	studentCode = strings.TrimSpace(studentCode)
+	if studentCode == "" {
+		fmt.Println("StudentID cannot be blank.")
+		return
+	}
+
+	fmt.Print("InstructorID: ")
+	fmt.Scanln(&instructorCode)
+	instructorCode = strings.TrimSpace(instructorCode)
+	if instructorCode == "" {
+		fmt.Println("InstructorID cannot be blank.")
+		return
+	}
+
+	if evalType == "assignment" {
+		fmt.Print("AssignmentID: ")
+	} else if evalType == "quiz" {
+		fmt.Print("QuizID: ")
+	}
+	fmt.Scanln(&id)
+	if id == 0 {
+		fmt.Printf("%s ID cannot be zero.\n", strings.Title(evalType))
+		return
+	}
+
+	fmt.Print("Score: ")
+	fmt.Scanln(&score)
+
+	fmt.Print("Comment: ")
+	comment, _ := reader.ReadString('\n')
+	comment = strings.TrimSpace(comment)
+
+	ctx := &EvaluationContext{}
+	if evalType == "assignment" {
+		ctx.SetStrategy(&AssignmentEvaluation{Controller: ec})
+	} else if evalType == "quiz" {
+		ctx.SetStrategy(&QuizEvaluation{Controller: ec})
+	}
+	ctx.Evaluate(studentCode, instructorCode, id, score, comment)
+	fmt.Printf("%s evaluated successfully.\n", strings.Title(evalType))
+}
 
 func RunEvaluationCLI(ec *controller.EvaluationController) {
 	for {
 		fmt.Println("\nEvaluation Menu")
 		fmt.Println("1. Evaluate Assignment")
-		fmt.Println("2. Comment on Assignment")
-		fmt.Println("3. Evaluate Quiz")
-		fmt.Println("4. Display Evaluations")
+		fmt.Println("2. Evaluate Quiz")
+		fmt.Println("3. Display Evaluations")
 		fmt.Println("0. Exit")
 
 		var choice string
@@ -29,12 +108,10 @@ func RunEvaluationCLI(ec *controller.EvaluationController) {
 
 		switch choice {
 		case "1":
-			evaluateAssignment(ec)
+			evaluateGeneral(ec, "assignment")
 		case "2":
-			commentAssignment(ec)
+			evaluateGeneral(ec, "quiz")
 		case "3":
-			evaluateQuiz(ec)
-		case "4":
 			displayEvaluations(ec)
 		case "0":
 			return
@@ -44,64 +121,14 @@ func RunEvaluationCLI(ec *controller.EvaluationController) {
 	}
 }
 
-func evaluateAssignment(ec *controller.EvaluationController) {
-	var studentCode, instructorCode string
-	var assignmentID, score uint
-
-	fmt.Print("Student Code: ")
-	fmt.Scanln(&studentCode)
-	fmt.Print("Instructor Code: ")
-	fmt.Scanln(&instructorCode)
-	fmt.Print("Assignment ID: ")
-	fmt.Scanln(&assignmentID)
-	fmt.Print("Score: ")
-	fmt.Scanln(&score)
-
-	ec.EvaluateAssignment(studentCode, instructorCode, assignmentID, score)
-	fmt.Println("Assignment evaluated successfully.")
-}
-
-func commentAssignment(ec *controller.EvaluationController) {
-	var studentCode string
-	var assignmentID uint
-	var comment string
-
-	fmt.Print("Student Code: ")
-	fmt.Scanln(&studentCode)
-	fmt.Print("Assignment ID: ")
-	fmt.Scanln(&assignmentID)
-	fmt.Print("Comment: ")
-	fmt.Scanln(&comment)
-
-	ec.CommentAssignment(studentCode, assignmentID, comment)
-	fmt.Println("Comment added successfully.")
-}
-
-func evaluateQuiz(ec *controller.EvaluationController) {
-	var studentCode, instructorCode string
-	var quizID, score uint
-
-	fmt.Print("Student Code: ")
-	fmt.Scanln(&studentCode)
-	fmt.Print("Instructor Code: ")
-	fmt.Scanln(&instructorCode)
-	fmt.Print("Quiz ID: ")
-	fmt.Scanln(&quizID)
-	fmt.Print("Score: ")
-	fmt.Scanln(&score)
-
-	ec.EvaluateQuiz(studentCode, instructorCode, quizID, score)
-	fmt.Println("Quiz evaluated successfully.")
-}
-
 func displayEvaluations(ec *controller.EvaluationController) {
 	for _, e := range ec.ListEvaluations() {
 		if e.AssignmentID != nil {
-			fmt.Printf("Assignment Evaluation: Student %s Assignment ID %d Score %d Comment %s At %s\n",
+			fmt.Printf("Assignment Evaluation || StudentID: %s | AssignmentID: %d | Score: %d | Comment: %s | Evaluated At: %s\n",
 				e.StudentCode, *e.AssignmentID, e.Score, e.Comment, e.EvaluatedAt.Format(time.RFC1123))
 		}
 		if e.QuizID != nil {
-			fmt.Printf("Quiz Evaluation: Student %s Quiz ID %d Score %d Comment %s At %s\n",
+			fmt.Printf("Quiz Evaluation || StudentID: %s | QuizID: %d | Score: %d | Comment: %s | Evaluated At: %s\n",
 				e.StudentCode, *e.QuizID, e.Score, e.Comment, e.EvaluatedAt.Format(time.RFC1123))
 		}
 	}

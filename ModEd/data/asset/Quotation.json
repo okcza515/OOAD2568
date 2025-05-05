@@ -1,0 +1,72 @@
+[
+    {
+        "QuotationID": 1,
+        "TORID": 1,
+        "SupplierID": 1,
+        "Status": "pending",
+        "TotalOfferedPrice": 10000.00
+    },
+    {
+        "QuotationID": 2,
+        "TORID": 2,
+        "SupplierID": 2,
+        "Status": "pending",
+        "TotalOfferedPrice": 11500.75
+    },
+    {
+        "QuotationID": 3,
+        "TORID": 3,
+        "SupplierID": 3,
+        "Status": "pending",
+        "TotalOfferedPrice": 13001.5
+    },
+    {
+        "QuotationID": 4,
+        "TORID": 4,
+        "SupplierID": 4,
+        "Status": "pending",
+        "TotalOfferedPrice": 14502.25
+    },
+    {
+        "QuotationID": 5,
+        "TORID": 5,
+        "SupplierID": 5,
+        "Status": "pending",
+        "TotalOfferedPrice": 16003.0
+    },
+    {
+        "QuotationID": 6,
+        "TORID": 1,
+        "SupplierID": 6,
+        "Status": "pending",
+        "TotalOfferedPrice": 17503.75
+    },
+    {
+        "QuotationID": 7,
+        "TORID": 2,
+        "SupplierID": 7,
+        "Status": "pending",
+        "TotalOfferedPrice": 19004.5
+    },
+    {
+        "QuotationID": 8,
+        "TORID": 3,
+        "SupplierID": 8,
+        "Status": "pending",
+        "TotalOfferedPrice": 20505.25
+    },
+    {
+        "QuotationID": 9,
+        "TORID": 4,
+        "SupplierID": 9,
+        "Status": "pending",
+        "TotalOfferedPrice": 22006.0
+    },
+    {
+        "QuotationID": 10,
+        "TORID": 5,
+        "SupplierID": 10,
+        "Status": "pending",
+        "TotalOfferedPrice": 23506.75
+    }
+]

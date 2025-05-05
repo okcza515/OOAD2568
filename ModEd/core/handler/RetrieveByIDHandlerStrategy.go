@@ -43,7 +43,7 @@ func (handler RetrieveByIDHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	fmt.Println(record)
+	fmt.Println(record.ToString())
 
 	return nil
 }

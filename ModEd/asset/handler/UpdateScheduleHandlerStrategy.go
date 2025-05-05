@@ -11,13 +11,13 @@ import (
 
 type UpdateScheduleHandler struct {
 	controller interface {
-		RetrieveByID(id uint) (model.PermanentSchedule, error)
+		RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 		UpdateByID(schedule model.PermanentSchedule) error
 	}
 }
 
 func NewUpdateScheduleHandler(controller interface {
-	RetrieveByID(id uint) (model.PermanentSchedule, error)
+	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 	UpdateByID(schedule model.PermanentSchedule) error
 }) *UpdateScheduleHandler {
 	return &UpdateScheduleHandler{

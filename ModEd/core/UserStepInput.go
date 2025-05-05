@@ -1,6 +1,21 @@
-package utils
+package core
 
-import "fmt"
+// Wrote by MEP-1010
+
+import (
+	"ModEd/core/validation"
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func getUserInput(prompt string) string {
+	fmt.Print(prompt)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	return strings.TrimSpace(input)
+}
 
 type UserInputStep interface {
 	Prompt() string
@@ -16,10 +31,10 @@ type UintInputStep struct {
 func (s UintInputStep) Prompt() string    { return s.PromptText }
 func (s UintInputStep) FieldName() string { return s.FieldNameText }
 func (s UintInputStep) Validate(input string) (any, bool) {
-	if !NewValidator().IsStringNotEmpty(input) {
+	if !validation.NewValidator().IsStringNotEmpty(input) {
 		return nil, false
 	}
-	if val, ok := NewValidator().ParseUint(input); ok {
+	if val, ok := validation.NewValidator().ParseUint(input); ok {
 		return val, true
 	}
 	return nil, false
@@ -33,7 +48,7 @@ type StringInputStep struct {
 func (s StringInputStep) Prompt() string    { return s.PromptText }
 func (s StringInputStep) FieldName() string { return s.FieldNameText }
 func (s StringInputStep) Validate(input string) (any, bool) {
-	if NewValidator().IsStringNotEmpty(input) {
+	if validation.NewValidator().IsStringNotEmpty(input) {
 		return input, true
 	}
 	return nil, false
@@ -47,7 +62,7 @@ type EmailInputStep struct {
 func (s EmailInputStep) Prompt() string    { return s.PromptText }
 func (s EmailInputStep) FieldName() string { return s.FieldNameText }
 func (s EmailInputStep) Validate(input string) (any, bool) {
-	if NewValidator().IsEmailValid(input) {
+	if validation.NewValidator().IsEmailValid(input) {
 		return input, true
 	}
 	return nil, false
@@ -55,7 +70,7 @@ func (s EmailInputStep) Validate(input string) (any, bool) {
 
 func ExecuteUserInputStep(step UserInputStep) any {
 	for {
-		temp := GetUserInput(step.Prompt())
+		temp := getUserInput(step.Prompt())
 		if value, ok := step.Validate(temp); ok {
 			return value
 		}

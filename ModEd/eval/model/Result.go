@@ -22,5 +22,5 @@ type Result struct {
 	Student       commonModel.Student `gorm:"foreignKey:StudentID"`
 	Status        StatusResult        
 	Feedback      string              
-	Score         uint                
+	Score         float64                
 }

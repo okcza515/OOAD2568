@@ -2,84 +2,79 @@
 package controller
 
 import (
-	// commonmodel "ModEd/common/model"
+	commonmodel "ModEd/common/model"
 	model "ModEd/eval/model"
 
 	"gorm.io/gorm"
 )
 
 type IResultController interface {
-	// CreateResults() error
-	// GetAllResults() ([]model.Result, error)
+	CreateResults() error
 	GetResultByStudent(studentID uint) ([]model.Result, error)
 	UpdateResult(id uint, updatedData map[string]interface{}) error
 	DeleteResult(id uint) error
 }
 
 type ResultController struct {
-	db               *gorm.DB
-	AnswerController *AnswerController
+	db                 *gorm.DB
+	QuestionController *QuestionController
+	AnswerController   *AnswerController
+	GradingFactory     *GradingStrategyFactory 
 }
 
 func NewResultController(db *gorm.DB) *ResultController {
 	return &ResultController{db: db}
 }
 
-// func (c *ResultController) CreateResults() error {
-// 	var exams []model.Examination
-// 	var students []commonmodel.Student
-//  var count uint
+func (c *ResultController) CreateResultByExamID(examID uint) error {
+	var students []commonmodel.Student
+ 	var count int
 
-// 	if err := c.db.Find(&exams).Error; err != nil {
-// 		return err
-// 	}
+	if err := c.db.Find(&students).Error; err != nil {
+		return err
+	}
 
-// 	if err := c.db.Find(&students).Error; err != nil {
-// 		return err
-// 	}
+	questions, err := c.QuestionController.GetQuestionsByExamID(examID)
+	if err != nil {
+		return err
+	}
 
-// 	for _, exam := range exams {
-// 		questions := GetQuestionByExam(exam.ID)
+	for _, student := range students {
+		newResult := model.Result {
+			ExaminationID: examID,
+			StudentID:     student.ID,
+			Status:        "Pending",
+			Feedback:      "",
+			Score:         0,
+		}
+		count = 0
 
-// 		for _, student := range students {
-// 			newResult := model.Result{
-// 				ExaminationID: exam.ID,
-// 				StudentID:     student.ID,
-// 				Status:        "Pending",
-// 				Feedback:      "",
-// 				Score:         0,
-// 			}
-//          count = 0
+		for _, question := range questions {
+			strategy := c.GradingFactory.GetStrategy(question.Question_type)
 
-// 			for _, question := range questions {
-// 				if question.Question_type == "Multiple_choice" || question.Question_type == "True_false" {
-// 					answer, err := c.AnswerController.GetAnswerByQuestionAndStudent(question.ID, student.ID)
-// 					if err != nil {
-// 						return err
-// 					}
-					
-// 					if answer.Question.Correct_answer == answer.Answer {
-// 						newResult.Score += question.Score
-// 					}
-// 					count++
-// 				}
-// 			}
+			answer, err := c.AnswerController.GetAnswerByQuestionAndStudent(question.ID, student.ID)
+			if err != nil {
+				return err
+			}
 
-// 			if count == len(questions) {
-// 				newResult.Status = "Success"
-// 			}
+			newResult.Score += strategy.Grade(question, *answer)
+			count++
+		}
 
-// 			if err := c.db.Create(&newResult).Error; err != nil {
-// 				return err
-// 			}
-// 		}
-// 	}
-// 	return nil
-// }
+		if count == len(questions) {
+			newResult.Status = "Success"
+		}
 
-func (c *ResultController) GetResultByStudent(studentID uint) ([]model.Result, error) {
+		if err := c.db.Create(&newResult).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *ResultController) GetResultByExamAndStudent(examID uint, studentID uint) ([]model.Result, error) {
 	var results []model.Result
-	if err := c.db.Where("student_id = ?", studentID).Preload("Examination").Preload("Student").Find(&results).Error; err != nil {
+	if err := c.db.Where("examination_id = ? AND student_id = ?", examID, studentID).Preload("Examination").Preload("Student").Find(&results).Error; err != nil {
 		return nil, err
 	}
 	return results, nil
