@@ -47,9 +47,10 @@ func (h *ClassMaterialHandler) Execute() {
 	menu := NewMenuHandler("Class Material Menu", true)
 
 	menu.Add("Insert", CreateClassMaterial{db: h.db})
-	menu.Add("Retrieve", nil)
-	menu.Add("Update", nil)
-	menu.Add("Delete", nil)
+	menu.Add("Retrieve", RetrieveClassMaterial{db: h.db})
+	menu.Add("Update", UpdateClassMaterial{db: h.db})
+	menu.Add("Delete", DeleteClassMaterial{db: h.db})
+	menu.Add("List All", ListClassMaterials{db: h.db})
 
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
@@ -61,10 +62,23 @@ type ClassMaterialHandler struct {
 }
 
 func NewClassMaterialHandler(db *gorm.DB) *ClassMaterialHandler {
-	return &ClassMaterialHandler{}
+	return &ClassMaterialHandler{db: db}
 }
 
 type CreateClassMaterial struct {
+	db *gorm.DB
+}
+type RetrieveClassMaterial struct {
+	db *gorm.DB
+}
+type UpdateClassMaterial struct {
+	db *gorm.DB
+}
+type DeleteClassMaterial struct {
+	db *gorm.
+	DB
+}
+type ListClassMaterials struct {
 	db *gorm.DB
 }
 
@@ -72,12 +86,6 @@ func (c CreateClassMaterial) Execute() {
 	ClassMaterialController := controller.NewClassMaterialController(c.db)
 	mockClassMaterial := &model.ClassMaterial{
 		ClassId: 1,
-		Class: model.Class{
-			ClassId:  1,
-			CourseId: 1,
-			Section:  1,
-			Schedule: time.Now(),
-		},
 		FileName: "example.txt",
 		FilePath: "/path/to/example.txt",
 	}
@@ -87,6 +95,66 @@ func (c CreateClassMaterial) Execute() {
 	}
 
 	fmt.Println("ClassMaterial created successfully!")
+}
+func (r RetrieveClassMaterial) Execute() {
+	ClassMaterialController := controller.NewClassMaterialController(r.db)
+
+	classMaterial, err := ClassMaterialController.RetrieveByID(1)
+	if err != nil {
+		fmt.Println("Error retrieving ClassMaterial:", err)
+		return
+	}
+
+	fmt.Println("Retrieved ClassMaterial:")
+	fmt.Printf("ID: %d\n", classMaterial.ID)
+	fmt.Printf("ClassID: %d\n", classMaterial.ClassId)
+	fmt.Printf("FileName: %s\n", classMaterial.FileName)
+	fmt.Printf("FilePath: %s\n", classMaterial.FilePath)
+}
+func (u UpdateClassMaterial) Execute() {
+	ClassMaterialController := controller.NewClassMaterialController(u.db)
+
+	mockClassMaterial := &model.ClassMaterial{
+		ClassId: 1,
+		FileName: "bla_example.txt",
+		FilePath: "/path/to/bla_example.txt",
+	}
+	if err := ClassMaterialController.UpdateByID(mockClassMaterial); err != nil {
+		fmt.Println("Error updating ClassMaterial:", err)
+		return
+	}
+
+	fmt.Println("ClassMaterial updated successfully!")
+}
+func (d DeleteClassMaterial) Execute() {
+	ClassMaterialController := controller.NewClassMaterialController(d.db)
+
+	if err := ClassMaterialController.DeleteByID(2); err != nil {
+		fmt.Println("Error deleting ClassMaterial:", err)
+		return
+	}
+
+	fmt.Println("ClassMaterial deleted successfully!")
+}
+func (l ListClassMaterials) Execute() {
+	ClassMaterialController := controller.NewClassMaterialController(l.db)
+
+	classMaterials, err := ClassMaterialController.List(nil)
+	if err != nil {
+		fmt.Println("Error listing ClassMaterials:", err)
+		return
+	}
+
+	if len(classMaterials) == 0 {
+		fmt.Println("No ClassMaterials found.")
+		return
+	}
+
+	fmt.Println("List of All Class Materials:")
+	for _, material := range classMaterials {
+		fmt.Printf("ID: %d, Class ID: %d, File Name: %s, File Path: %s\n",
+			material.ID, material.ClassId, material.FileName, material.FilePath)
+	}
 }
 
 type CoursePlanHandler struct {
@@ -100,7 +168,7 @@ func NewCoursePlanHandler(db *gorm.DB) CoursePlanHandler {
 func (c CoursePlanHandler) Execute() {
 	coursePlanMenu := NewMenuHandler("Course Plan Menu", true)
 	coursePlanMenu.Add("Create Course Plan", CreateCoursePlan{db: c.db})
-	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db}) // Add ListAllCoursePlans option
+	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db})
 	coursePlanMenu.SetBackHandler(Back{})
 	coursePlanMenu.SetDefaultHandler(UnknownCommand{})
 	coursePlanMenu.Execute()
