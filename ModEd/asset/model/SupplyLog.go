@@ -13,7 +13,7 @@ type SupplyLog struct {
 	StaffUserID uint                `gorm:"not null"`
 	Action      SupplyLogActionEnum `gorm:"not null"`
 	SupplyID    uint                `gorm:"not null"`
-	Description *string             `gorm:"not null"`
+	Description string              `gorm:"not null"`
 	Quantity    uint                `gorm:"not null"`
 	Supply      Supply              `gorm:"foreignKey:SupplyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

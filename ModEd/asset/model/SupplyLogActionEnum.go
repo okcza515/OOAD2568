@@ -1,10 +1,12 @@
 package model
 
-import "errors"
+import (
+	"errors"
+)
 
 // MEP-1012 Asset
 
-type SupplyLogActionEnum int
+type SupplyLogActionEnum string
 
 var enumSupplyMap = map[string]SupplyLogActionEnum{
 	"AddNew":           SUP_ADDNEW,
@@ -15,11 +17,11 @@ var enumSupplyMap = map[string]SupplyLogActionEnum{
 }
 
 const (
-	SUP_ADDNEW SupplyLogActionEnum = iota
-	SUP_UPDATEINFO
-	SUP_RESTOCK
-	SUP_DEPLETE
-	SUP_DELETEFROMSYSTEM
+	SUP_ADDNEW           SupplyLogActionEnum = "AddNew"
+	SUP_UPDATEINFO       SupplyLogActionEnum = "UpdateInfo"
+	SUP_RESTOCK          SupplyLogActionEnum = "Restock"
+	SUP_DEPLETE          SupplyLogActionEnum = "Deplete"
+	SUP_DELETEFROMSYSTEM SupplyLogActionEnum = "DeleteFromSystem"
 )
 
 var SupplyLogActionLabel = map[SupplyLogActionEnum]string{
@@ -37,7 +39,7 @@ func (status SupplyLogActionEnum) String() string {
 func ToSupplyActionEnum(str string) (SupplyLogActionEnum, error) {
 	action, ok := enumSupplyMap[str]
 	if !ok {
-		return -1, errors.New("err: cannot map string into enum")
+		return "", errors.New("err: cannot map string into enum")
 	}
 
 	return action, nil
