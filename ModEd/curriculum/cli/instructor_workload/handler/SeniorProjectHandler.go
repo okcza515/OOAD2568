@@ -1,82 +1,92 @@
+// MEP-1008
 package handler
 
 import (
-	"ModEd/core/cli"
-	"ModEd/curriculum/controller"
+	instructorWorkloadController "ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	projectModel "ModEd/project/model"
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
+	"gorm.io/gorm"
 )
 
-type SeniorProjectWorkloadMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.InstructorWorkloadModuleWrapper
-
-	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler
+type SeniorProjectWorkloadHandler struct {
+	db *gorm.DB
 }
 
-func NewSeniorProjectModuleStateHandler(
-	manager *cli.CLIMenuStateManager,
-	wrapper *controller.InstructorWorkloadModuleWrapper,
-	instructorWorkloadModuleMenuStateHandler *InstructorWorkloadModuleMenuStateHandler,
-) *SeniorProjectWorkloadMenuStateHandler {
-	return &SeniorProjectWorkloadMenuStateHandler{
-		manager:                                  manager,
-		wrapper:                                  wrapper,
-		instructorWorkloadModuleMenuStateHandler: instructorWorkloadModuleMenuStateHandler,
+func NewSeniorProjectWorkload(db *gorm.DB) SeniorProjectWorkloadHandler {
+	return SeniorProjectWorkloadHandler{db: db}
+}
+
+func (s SeniorProjectWorkloadHandler) Execute() {
+	seniorProjectMenu := NewMenuHandler("Senior Project Workload Menu", true)
+	seniorProjectMenu.Add("View Advising Project", ViewAdvisingProject{db: s.db})
+	seniorProjectMenu.Add("View Committee Project", nil)
+	seniorProjectMenu.Add("Evaluate Project", EvaluateProject{db: s.db})
+	seniorProjectMenu.SetBackHandler(Back{})
+	seniorProjectMenu.SetDefaultHandler(UnknownCommand{})
+	seniorProjectMenu.Execute()
+}
+
+type ViewAdvisingProject struct {
+	db *gorm.DB
+}
+
+func (v ViewAdvisingProject) Execute() {
+	// controller := projectController.NewAdvisorController(v.db)
+	// controller.ListAdvisorsByInstructor(1)
+}
+
+type ViewCommitteeProject struct {
+	db *gorm.DB
+}
+
+func (v ViewCommitteeProject) Execute() {
+	// controller := projectController.NewCommitteeController(v.db)
+	// controller.ListCommitteesByInstructor(1)
+}
+
+type EvaluateProject struct {
+	db *gorm.DB
+}
+
+func (e EvaluateProject) Execute() {
+	controller := instructorWorkloadController.NewProjectController(e.db)
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Println("\nEnter evaluation type (Assignment, Proposal, Report, Presentation):")
+	fmt.Print("Enter: ")
+
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+
+	if !model.IsValidAssignmentType(input) {
+		fmt.Println("Invalid type. Defaulting to 'Assignment'.")
+		input = string(model.ASSIGNMENT)
 	}
-}
 
-func (menu *SeniorProjectWorkloadMenuStateHandler) Render() {
-	fmt.Println("\nAcademic Workload Menu:")
-	fmt.Println("1. Get All Projects By Advisor ID")
-	fmt.Println("2. Get All Projects By Committee ID")
-	fmt.Println("3. Evaluate Project as Advisor")
-	fmt.Println("4. Evaluate Project as Committee")
-	fmt.Println("Type 'exit' to quit")
-}
-
-func (menu *SeniorProjectWorkloadMenuStateHandler) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		projects, err := menu.wrapper.SeniorProjectController.GetProjectByAdvisorID(1)
-		if err != nil {
-			fmt.Println("Error getting projects by advisor ID:", err)
-		} else {
-			fmt.Println(projects)
-		}
-	case "2":
-		projects, err := menu.wrapper.SeniorProjectController.GetProjectByCommitteeID(1)
-		if err != nil {
-			fmt.Println("Error getting projects by committee ID:", err)
-		} else {
-			fmt.Println(projects)
-		}
-	case "3":
-		mockEvaluation := &model.ProjectEvaluation{
-			GroupId:        1,
-			AssignmentId:   1,
-			AssignmentType: "presentation",
-			Score:          0,
-			Comment:        "Improved English skills",
-		}
-
-		mockCriteria := []projectModel.AssessmentCriteria{
-			{CriteriaName: "Good presentation"},
-			{CriteriaName: "Answered all questions"},
-			{CriteriaName: "Good teamwork"},
-		}
-		menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, mockEvaluation.AssignmentType, mockCriteria)
-		mockEvaluation.AssignmentType = "report"
-		menu.wrapper.SeniorProjectController.CreateEvaluation(mockEvaluation, mockEvaluation.AssignmentType, mockCriteria)
-		fmt.Println("Evaluation created successfully")
-	case "4":
-		fmt.Println("Evaluate Project as Committee Not implemented yet...")
-	case "exit":
-		fmt.Println("Exiting...")
-		return nil
-	default:
-		fmt.Println("Invalid option")
+	taskType := model.ProjectEvaluationTypeEnum(input)
+	mockEvaluation := &model.ProjectEvaluation{
+		GroupId:        1,
+		AssignmentId:   1,
+		AssignmentType: string(taskType),
+		Score:          0.0,
+		Comment:        "",
 	}
-	return nil
+	mockCriteria := []projectModel.AssessmentCriteria{
+		{
+			CriteriaName: "Criteria A",
+		},
+		{
+			CriteriaName: "Criteria B",
+		},
+		{
+			CriteriaName: "Criteria C",
+		},
+	}
+	controller.CreateEvaluation(mockEvaluation, string(taskType), mockCriteria)
 }

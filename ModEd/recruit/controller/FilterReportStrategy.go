@@ -2,15 +2,14 @@ package controller
 
 import "ModEd/recruit/model"
 
-type FilterStrategy interface {
-	Filter(interviews []model.Interview) ([]model.Interview, error)
+type FilterStrategy[T any] interface {
+	Filter(data []T) ([]T, error)
 }
-
-type FilterByInstructorID struct {
+type InterviewFilterByInstructorID struct {
 	InstructorID uint
 }
 
-func (f *FilterByInstructorID) Filter(interviews []model.Interview) ([]model.Interview, error) {
+func (f *InterviewFilterByInstructorID) Filter(interviews []model.Interview) ([]model.Interview, error) {
 	var filtered []model.Interview
 	for _, interview := range interviews {
 		if interview.InstructorID == f.InstructorID {
@@ -20,11 +19,11 @@ func (f *FilterByInstructorID) Filter(interviews []model.Interview) ([]model.Int
 	return filtered, nil
 }
 
-type FilterByStatus struct {
+type InterviewFilterByStatus struct {
 	Status string
 }
 
-func (f *FilterByStatus) Filter(interviews []model.Interview) ([]model.Interview, error) {
+func (f *InterviewFilterByStatus) Filter(interviews []model.Interview) ([]model.Interview, error) {
 	if f.Status == "all" {
 		return interviews, nil
 	}
@@ -33,6 +32,20 @@ func (f *FilterByStatus) Filter(interviews []model.Interview) ([]model.Interview
 	for _, interview := range interviews {
 		if string(interview.InterviewStatus) == f.Status {
 			filtered = append(filtered, interview)
+		}
+	}
+	return filtered, nil
+}
+
+type ApplicationReportFilterByID struct {
+	ApplicationReportID uint
+}
+
+func (f *ApplicationReportFilterByID) Filter(data []model.ApplicationReport) ([]model.ApplicationReport, error) {
+	var filtered []model.ApplicationReport
+	for _, report := range data {
+		if report.ApplicationReportID == f.ApplicationReportID {
+			filtered = append(filtered, report)
 		}
 	}
 	return filtered, nil

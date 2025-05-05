@@ -20,9 +20,9 @@ type InstrumentManagementMenuState struct{
 func (menu *InstrumentManagementMenuState) Render() {
 	fmt.Println("========== Instrument Management ==========")
 	fmt.Println("Please select your action")
-	fmt.Println("1. See all Instrument Management")
+	fmt.Println("1. See all Instrument Managements")
 	fmt.Println("2. Get the Instrument Management by its ID")
-	fmt.Println("3. Get the Instrument Management by the RoomID")
+	fmt.Println("3. Get the Instrument Managements by the RoomID")
 	fmt.Println("4. Create new Instrument Management")
 	fmt.Println("5. Update the Instrument Management")
 	fmt.Println("6. Delete the Instrument Management")
@@ -76,14 +76,14 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 	listHandler := handler.NewListHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.InstrumentManagement](controllerInstance)
-	updateHandler := handler.NewUpdateHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
 
   	//Custom Handlers
+	updateHandler := spaceManagementHandler.NewUpdateInstrumentManagementStrategy(controllerInstance)
   	getByRoomIDhandler := spaceManagementHandler.NewGetInstrumentManagementByRoomIdStrategy(controllerInstance)
   	insertHandler := spaceManagementHandler.NewInsertInstrumentManagementStrategy(controllerInstance)
 
-  	handlerContext.AddHandler("1", "Get all InstrumentManagement", listHandler)
+  	handlerContext.AddHandler("1", "Get all Instrument Managements", listHandler)
 	handlerContext.AddHandler("2", "Get Instrument Management by ID", getHandler)
 	handlerContext.AddHandler("3", "Get Instrument Management by RoomID", getByRoomIDhandler)
 	handlerContext.AddHandler("4", "Create an Instrument Management", insertHandler)

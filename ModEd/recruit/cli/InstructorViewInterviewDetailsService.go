@@ -28,9 +28,9 @@ func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(
 	interviewCtrl *controller.InterviewController,
 ) ([]model.Interview, error) {
 
-	filters := []controller.FilterStrategy{
-		&controller.FilterByInstructorID{InstructorID: instructorID},
-		&controller.FilterByStatus{Status: status},
+	filters := []controller.FilterStrategy[model.Interview]{
+		&controller.InterviewFilterByInstructorID{InstructorID: instructorID},
+		&controller.InterviewFilterByStatus{Status: status},
 	}
 
 	report := controller.InterviewReport{

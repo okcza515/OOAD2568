@@ -3,7 +3,6 @@ package handler
 import (
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
-	"errors"
 	"fmt"
 )
 
@@ -50,8 +49,7 @@ func (handler *WILModuleMenuStateHandler) HandleUserInput(input string) error {
 		handler.menuManger.SetState(handler.WILProjectMenuStateHandler)
 	case "4":
 		handler.menuManger.SetState(handler.IndependentStudyMenuStateHandler)
-	case "back":
-		return errors.New("exited")
+		//return errors.New("exited")
 	default:
 		fmt.Println("invalid input")
 	}

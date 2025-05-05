@@ -23,7 +23,7 @@ func NewInsertInstrumentManagementStrategy(
     }
 }
 
-func (handler InsertInstrumentManagementStrategy) Execute() error {
+func (handler InsertInstrumentManagementStrategy) Execute() error { //Don't need ID because it is auto-gen by db
     fmt.Println("=== Create New Instrument Management ===")
     
     fmt.Print("Enter Room ID: ")
@@ -36,16 +36,16 @@ func (handler InsertInstrumentManagementStrategy) Execute() error {
     fmt.Print("Enter Instrument Label: ")
     label := util.GetCommandInput()
     
-    instrument := &model.InstrumentManagement{
+    instrumentManagement := &model.InstrumentManagement{
         RoomID: roomID,
         InstrumentLabel: label,
     }
 
-    if err := handler.controller.Insert(instrument); err != nil {
-        return fmt.Errorf("failed to create instrument: %v", err)
+    if err := handler.controller.Insert(instrumentManagement); err != nil {
+        return fmt.Errorf("failed to create instrument management: %v", err)
     }
 
-    fmt.Println("\nInstrument created successfully!")
+    fmt.Println("\nInstrument Management is created successfully!")
     util.PressEnterToContinue()
     return nil
 }

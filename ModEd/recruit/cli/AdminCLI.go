@@ -2,12 +2,83 @@
 package cli
 
 import (
+	"ModEd/core/cli"
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"fmt"
 	"time"
 )
+
+var ErrExitAdminMenu = fmt.Errorf("exit admin menu")
+
+type AdminMenuState struct {
+	manager                            *cli.CLIMenuStateManager
+	username                           string
+	applicantController                *controller.ApplicantController
+	adminShowApplicationReportsService AdminShowApplicationReportsService
+	adminScheduleInterviewService      AdminScheduleInterviewService
+	adminDeleteInterviewService        AdminInterviewService
+	reportMenu                         cli.MenuState
+	scheduleMenu                       cli.MenuState
+	deleteMenu                         cli.MenuState
+}
+
+func NewAdminMenuState(
+	manager *cli.CLIMenuStateManager,
+	username string,
+	applicantController *controller.ApplicantController,
+	reportService AdminShowApplicationReportsService,
+	scheduleInterviewService AdminScheduleInterviewService,
+	deleteInterviewService AdminInterviewService,
+) *AdminMenuState {
+	menu := &AdminMenuState{
+		manager:                            manager,
+		username:                           username,
+		applicantController:                applicantController,
+		adminShowApplicationReportsService: reportService,
+		adminScheduleInterviewService:      scheduleInterviewService,
+		adminDeleteInterviewService:        deleteInterviewService,
+	}
+	menu.reportMenu = NewAdminShowApplicationReportMenuState(manager, reportService, menu)
+	menu.scheduleMenu = NewAdminScheduleInterviewMenuState(manager, scheduleInterviewService, menu)
+	menu.deleteMenu = NewAdminDeleteInterviewMenuState(manager, deleteInterviewService, menu)
+
+	return menu
+}
+
+func (a *AdminMenuState) Render() {
+	util.ClearScreen()
+	fmt.Println("\n\033[1;35m╔════════════════════════════════╗")
+	fmt.Printf("║ Welcome, Admin: %-16s ║\n", a.username)
+	fmt.Println("╚════════════════════════════════╝\033[0m")
+
+	fmt.Println("\n\033[1;36m[1]\033[0m Manage Applicants")
+	fmt.Println("\033[1;36m[2]\033[0m View Application Reports")
+	fmt.Println("\033[1;36m[3]\033[0m Schedule Interview")
+	fmt.Println("\033[1;36m[4]\033[0m Delete Interview")
+	fmt.Println("\033[1;36m[5]\033[0m Back")
+	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
+}
+
+func (a *AdminMenuState) HandleUserInput(input string) error {
+	switch input {
+	case "1":
+		ManageApplicants(a.applicantController)
+		//util.WaitForEnter()
+	case "2":
+		a.manager.SetState(a.reportMenu)
+	case "3":
+		a.manager.SetState(a.scheduleMenu)
+	case "4":
+		a.manager.SetState(a.deleteMenu)
+	case "5":
+		return ErrExitAdminMenu
+	default:
+		fmt.Println("Invalid option. Try again.")
+	}
+	return nil
+}
 
 func AdminCLI(dep AdminDependencies) {
 	username, err := AdminLogin(dep.LoginCtrl)
@@ -17,39 +88,29 @@ func AdminCLI(dep AdminDependencies) {
 		return
 	}
 
-	util.ClearScreen()
-	fmt.Println("Login successful. Welcome,", username)
+	manager := cli.NewCLIMenuManager()
+	menu := NewAdminMenuState(
+		manager,
+		username,
+		dep.ApplicantController,
+		dep.AdminShowApplicationReportsService,
+		dep.AdminScheduleInterviewService,
+		dep.AdminInterviewService,
+	)
+	manager.SetState(menu)
+
 	for {
-		fmt.Println("==== Admin Menu ====")
-		fmt.Println("1. Manage Applicants")
-		fmt.Println("2. View Application Reports")
-		fmt.Println("3. Schedule Interview")
-		fmt.Println("4. Delete Interview")
-		fmt.Println("5. Back")
-		fmt.Print("Select an option: ")
+		manager.Render()
+		var input string
+		fmt.Scanln(&input)
+		manager.UserInput = input
 
-		var choice int
-		fmt.Scanln(&choice)
-
-		switch choice {
-		case 1:
-			ManageApplicants(dep.ApplicantController)
-		case 2:
-			// ShowApplicationReports(dep.ApplicationReportCtrl)
-			AdminShowApplicationReportsCLI(dep.AdminShowApplicationReportsService)
-			util.WaitForEnter()
-		case 3:
-			AdminScheduleInterviewCLI(dep.AdminScheduleInterviewService)
-		case 4:
-			AdminDeleteInterviewCLI(dep.AdminInterviewService)
-			util.WaitForEnter()
-		case 5:
-			return 
-		default:
-			fmt.Println("Invalid option. Try again.")
-			time.Sleep(1 * time.Second)
+		err := manager.HandleUserInput()
+		if err == ErrExitAdminMenu {
+			break
+		} else if err != nil {
+			fmt.Println("Error:", err)
 		}
-		util.ClearScreen()
 	}
 }
 

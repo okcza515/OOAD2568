@@ -19,7 +19,7 @@ func NewCompanyController(connector *gorm.DB) *CompanyController {
 
 func (cc *CompanyController) GetCompanyByName(name string) (*model.Company, error) {
     var company model.Company
-    if err := cc.Connector.Where("name = ?", name).First(&company).Error; err != nil {
+    if err := cc.Connector.Where("company_name = ?", name).First(&company).Error; err != nil {
         return nil, fmt.Errorf("company with name '%s' not found: %w", name, err)
     }
     return &company, nil

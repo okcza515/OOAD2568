@@ -12,7 +12,7 @@ type LeaveInstructorHRController struct {
 	db *gorm.DB
 }
 
-func CreateLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
+func NewLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
 	db.AutoMigrate(&model.RequestLeaveInstructor{})
 	return &LeaveInstructorHRController{db: db}
 }
@@ -55,7 +55,7 @@ func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID,
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 
-		leaveController := CreateLeaveInstructorHRController(tx)
+		leaveController := NewLeaveInstructorHRController(tx)
 
 		factory, err := model.GetFactory("instructor")
 		if err != nil {

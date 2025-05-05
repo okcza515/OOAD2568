@@ -68,24 +68,30 @@ func main() {
 
 	// Register commands
 	invoker.RegisterCommand("delete", &commands.DeleteStudentCommand{})
-	invoker.RegisterCommand("migrate", &commands.MigrateStudentsCommand{})
-	invoker.RegisterCommand("export", &commands.ExportStudentsCommand{})
+	invoker.RegisterCommand("migrate", &commands.MigrateCommand{})
 	invoker.RegisterCommand("list-student", &commands.ListStudentCommand{})
 	invoker.RegisterCommand("add-student", &commands.AddStudentCommand{})
 	invoker.RegisterCommand("import-student", &commands.ImportStudentCommand{})
+	invoker.RegisterCommand("export-student", &commands.ExportStudentsCommand{})
+	invoker.RegisterCommand("pull-student", &commands.PullStudentCommand{})
 	invoker.RegisterCommand("update-student-info", &commands.UpdateStudentInfoCommand{})
 	invoker.RegisterCommand("request-student-leave", &commands.RequestStudentLeaveCommand{})
 	invoker.RegisterCommand("request-student-resign", &commands.RequestStudentResignCommand{})
 	invoker.RegisterCommand("review-student-leave", &commands.ReviewStudentLeaveCommand{})
-	invoker.RegisterCommand("review-student-resign", &commands.ReviewStudentResignCommand{}) // Corrected name
+	invoker.RegisterCommand("review-student-resign", &commands.ReviewStudentResignCommand{})
 	invoker.RegisterCommand("list-instructor", &commands.ListInstructorCommand{})
 	invoker.RegisterCommand("add-instructor", &commands.AddInstructorCommand{})
 	invoker.RegisterCommand("import-instructor", &commands.ImportInstructorCommand{})
+	invoker.RegisterCommand("export-instructor", &commands.ExportInstructorCommand{})
+	invoker.RegisterCommand("pull-instructor", &commands.PullInstructorCommand{})
 	invoker.RegisterCommand("update-instructor-info", &commands.UpdateInstructorInfoCommand{})
 	invoker.RegisterCommand("request-instructor-leave", &commands.RequestInstructorLeaveCommand{})
 	invoker.RegisterCommand("request-instructor-resign", &commands.RequestInstructorResignCommand{})
+	invoker.RegisterCommand("request-instructor-raise", &commands.RequestInstructorRaiseCommand{})
 	invoker.RegisterCommand("review-instructor-leave", &commands.ReviewInstructorLeaveCommand{})
-	invoker.RegisterCommand("review-instructor-resign", &commands.ReviewInstructorResignCommand{}) // Corrected name
+	invoker.RegisterCommand("review-instructor-resign", &commands.ReviewInstructorResignCommand{})
+	invoker.RegisterCommand("review-instructor-raise", &commands.ReviewInstructorRaiseCommand{})
+
 
 	var commandName string
 	var commandArgs []string

@@ -39,39 +39,26 @@ func (c *InstrumentLogController) GetObserverID() string {
 }
 
 func (c *InstrumentLogController) HandleEvent(eventType string, dataContext model.BorrowInstrument) {
-	switch model.InstrumentLogActionEnum(eventType) {
-	case model.INS_LOG_ADDNEW:
-		log := model.InstrumentLog{
-			InstrumentID: dataContext.Instrument.ID,
-			Action:       model.INS_LOG_ADDNEW,
-		}
+	actionEnum, err := model.ToInstrumentActionEnum(eventType)
+	if err != nil {
+		panic(err)
+	}
 
-		err := c.Insert(log)
-		if err != nil {
-			panic(err)
-		}
-	case model.INS_LOG_UPDATE:
-		panic("not implemented")
-	case model.INS_LOG_BORROW:
-		panic("not implemented")
-	case model.INS_LOG_RETURN:
-		panic("not implemented")
-	case model.INS_LOG_MOVE:
-		panic("not implemented")
-	case model.INS_LOG_BROKEN:
-		panic("not implemented")
-	case model.INS_LOG_REPAIR:
-		panic("not implemented")
-	case model.INS_LOG_LOST:
-		panic("not implemented")
-	case model.INS_LOG_FOUND:
-		panic("not implemented")
-	case model.INS_LOG_SALVAGING:
-		panic("not implemented")
-	case model.INS_LOG_SALVAGE:
-		panic("not implemented")
-	case model.INS_LOG_DONATE:
-		panic("not implemented")
+	var refBorrowID *uint = nil
+	if dataContext.ID != 0 {
+		refBorrowID = &dataContext.ID
+	}
+
+	log := model.InstrumentLog{
+		// TODO: add user
+		InstrumentID: dataContext.Instrument.ID,
+		RefBorrowID:  refBorrowID,
+		Action:       actionEnum,
+	}
+
+	err = c.Insert(log)
+	if err != nil {
+		panic(err)
 	}
 }
 

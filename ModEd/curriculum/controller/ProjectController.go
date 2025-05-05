@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProjectControllerService interface {
+type ProjectControllerInterface interface {
 	UpdateProject(data *model.ProjectEvaluation) error
 	GetProject(id uint, preloads ...string) (*model.ProjectEvaluation, error)
 	DeleteProject(id uint) error
@@ -26,7 +26,7 @@ type ProjectController struct {
 	core *core.BaseController[*model.ProjectEvaluation]
 }
 
-func CreateProjectController(db *gorm.DB) ProjectControllerService {
+func NewProjectController(db *gorm.DB) *ProjectController {
 	return &ProjectController{
 		db:   db,
 		core: core.NewBaseController[*model.ProjectEvaluation](db),

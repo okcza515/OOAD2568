@@ -4,10 +4,8 @@ package cli
 import (
 	"ModEd/core/cli"
 	"ModEd/recruit/util"
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
 )
 
 var ErrExitUserMenu = errors.New("exit user menu")
@@ -66,8 +64,8 @@ func (menu *UserMenuState) HandleUserInput(input string) error {
 		fmt.Println("Invalid option.")
 	}
 
-	fmt.Println("\nPress Enter to continue...")
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	// fmt.Println("\nPress Enter to continue...")
+	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 	return nil
 }
 

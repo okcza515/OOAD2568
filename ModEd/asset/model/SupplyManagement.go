@@ -3,6 +3,7 @@ package model
 
 import (
 	"ModEd/core"
+	"fmt"
 )
 
 type SupplyManagement struct {
@@ -13,4 +14,13 @@ type SupplyManagement struct {
 	Supply            Supply `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"supply"`
 	SupplyLabel       string `gorm:"type:text;not null" json:"supply_label" csv:"supply_label"`
 	Quantity          int    `gorm:"not null" json:"quantity" csv:"quantity"`
+}
+
+func (im SupplyManagement) ToString() string {
+    return fmt.Sprintf("ID: %d | Label: %s | Room ID: %d | Supply ID: %d | Quantity: %d",
+        im.ID,
+        im.SupplyLabel,
+        im.RoomID,
+        im.SupplyID,
+        im.Quantity)
 }

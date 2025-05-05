@@ -29,7 +29,7 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 
 			err := facade.Procurement.CreateProcurement(newProcurement)
 			if err != nil {
-				fmt.Println("Failed to Procurement:", err)
+				fmt.Println("Failed to create Procurement:", err)
 				WaitForEnter()
 				break
 			}
@@ -66,23 +66,23 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 		case "4":
 			fmt.Println("Update Procurement Status")
 			ListAllProcurements(facade)
-		
+
 			id := util.GetUintInput("Enter procurement ID: ")
-		
+
 			if _, err := facade.Procurement.GetProcurementByID(id); err != nil {
 				fmt.Printf("Failed to retrieve procurement with ID %d: %v\n", id, err)
 				WaitForEnter()
 				break
 			}
-		
+
 			fmt.Println("Choose new status:")
 			fmt.Println("  1: Approve")
 			fmt.Println("  2: Reject")
 			statusChoice := util.GetCommandInput()
-		
+
 			now := time.Now()
 			var updateErr error
-		
+
 			switch statusChoice {
 			case "1":
 				updateErr = facade.Procurement.Update(id, map[string]any{
@@ -98,14 +98,13 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 				fmt.Println("Invalid status choice.")
 				WaitForEnter()
 			}
-		
+
 			if updateErr != nil {
 				fmt.Printf("Failed to update status: %v\n", updateErr)
 			} else {
 				fmt.Println("Status updated successfully.")
 			}
 			WaitForEnter()
-			
 		case "5":
 			fmt.Println("Delete Procurement")
 			ListAllProcurements(facade)

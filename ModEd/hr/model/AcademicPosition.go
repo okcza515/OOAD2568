@@ -5,10 +5,10 @@ import "fmt"
 type AcademicPosition int
 
 const (
-	ASSISTANT_PROF AcademicPosition = iota
+	NONE AcademicPosition = iota
+	ASSISTANT_PROF
 	ASSOCIATE_PROF
 	PROFESSOR
-	NONE
 )
 
 func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
@@ -19,6 +19,8 @@ func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
 		return ASSOCIATE_PROF, nil
 	case "professor", "PROFESSOR":
 		return PROFESSOR, nil
+	case "none", "NONE":
+		return NONE, nil
 	default:
 		return NONE, fmt.Errorf("invalid academic position: %s", posStr)
 	}

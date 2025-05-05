@@ -28,11 +28,11 @@ func (ctx *EvaluationContext) Evaluate(evaluation *ProjectEvaluation, criteria [
 
 func GetEvaluationStrategy(strategyType string) EvaluationStrategy {
 	switch strategyType {
-	case "report":
+	case "Report":
 		return &ReportEvaluationStrategy{}
-	case "presentation":
+	case "Presentation":
 		return &PresentationEvaluationStrategy{}
-	case "assignment":
+	case "Assignment":
 		return &AssignmentEvaluationStrategy{}
 	default:
 		return nil

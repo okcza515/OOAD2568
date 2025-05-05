@@ -28,13 +28,11 @@ func main() {
 	}
 	parentDir := filepath.Dir(curDir)
 
-	// Default file paths for various resources
 	defaultDBPath := filepath.Join(parentDir, "data", "ModEd.bin")
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
 	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
 	defaultInterviewCreteriaPath := filepath.Join(parentDir, "recruit", "data", "InterviewCriteria.csv")
 
-	// Parse command-line flags
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
 	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
@@ -42,10 +40,8 @@ func main() {
 	flag.StringVar(&interviewCreteriaPath, "criteria", defaultInterviewCreteriaPath, "")
 	flag.Parse()
 
-	// Initialize the database
 	db.InitDB(database)
 
-	// Create controllers
 	applicationReportCtrl := controller.NewApplicationReportController(db.DB)
 	applicantController := controller.NewApplicantController(db.DB)
 	interviewController := controller.NewInterviewController(db.DB)
@@ -85,7 +81,8 @@ func main() {
 		return
 	}
 
-	loginController := controller.LoginController{Strategy: controller.NewLoginStrategy(role, db.DB)}
+	factory := &controller.DefaultLoginStrategyFactory{DB: db.DB}
+	loginController := controller.LoginController{Strategy: factory.CreateStrategy(role)}
 
 	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
 	adminDeps := cli.AdminDependencies{
@@ -121,15 +118,15 @@ func main() {
 
 			switch roleChoice {
 			case 1:
-				loginController.SetStrategy(controller.NewLoginStrategy("user", db.DB))
+				loginController.SetStrategy(factory.CreateStrategy("user"))
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
-				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
+				loginController.SetStrategy(factory.CreateStrategy("admin"))
 				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 				cli.AdminCLI(adminDeps)
 			case 3:
-				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, interviewController, applicationReportCtrl)
+				loginController.SetStrategy(factory.CreateStrategy("instructor"))
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, db.DB)
 
 			case 4:
 				fmt.Println("Exiting...")

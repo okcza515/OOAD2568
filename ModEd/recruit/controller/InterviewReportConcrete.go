@@ -10,7 +10,7 @@ type InterviewDataProvider interface {
 }
 
 type InterviewReport struct {
-	Filters           []FilterStrategy
+	Filters           []FilterStrategy[model.Interview]
 	InterviewProvider InterviewDataProvider
 }
 

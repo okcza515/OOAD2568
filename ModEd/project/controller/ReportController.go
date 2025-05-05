@@ -39,12 +39,22 @@ func (c *ReportController) ListAllReports() ([]model.Report, error) {
 	return reports, nil
 }
 
-func (c *ReportController) DeleteReport(id uint) error {
-	return c.DeleteByID(id)
-}
+func (c *ReportController) UpdateReport(reportID uint, newDueDate string) error {
+	var report model.Report
+	if err := c.db.First(&report, reportID).Error; err != nil {
+		return fmt.Errorf("error retrieving report: %w", err)
+	}
+	dueDate, err := time.Parse("2006-01-02", newDueDate)
+	if err != nil {
+		return fmt.Errorf("invalid due date format: %w", err)
+	}
 
-func (c *ReportController) RetrieveReport(id uint) (*model.Report, error) {
-	return c.RetrieveByID(id)
+	report.DueDate = dueDate
+	if err := c.db.Save(&report).Error; err != nil {
+		return fmt.Errorf("error updating report: %w", err)
+	}
+
+	return nil
 }
 
 func (c *ReportController) InsertReport(report model.Report) error {
@@ -57,10 +67,6 @@ func (c *ReportController) InsertReport(report model.Report) error {
 	}
 	reportCopy := report
 	return c.Insert(&reportCopy)
-}
-
-func (c *ReportController) UpdateReport(report *model.Report) error {
-	return c.UpdateByID(report)
 }
 
 func (c *ReportController) GetFormattedReportList() ([]string, error) {

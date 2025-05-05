@@ -6,13 +6,16 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
-	"strconv"
+
+	// "strconv"
 	"time"
 )
 
 type InternshipApplicationHandler struct {
 	manager *cli.CLIMenuStateManager
 	wrapper *controller.InternshipModuleWrapper
+
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternshipApplicationHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternshipApplicationHandler {
@@ -42,20 +45,20 @@ func (handler *InternshipApplicationHandler) handleCreateInternshipApplication()
 		return fmt.Errorf("failed to find company: %w", err)
 	}
 
-	advisorCodeStr := utils.GetUserInput("Enter Advisor Code: ")
-	advisorCode, err := strconv.Atoi(advisorCodeStr)
-	if err != nil || advisorCode <= 0 {
-		fmt.Println("Invalid Advisor Code. Please enter a positive integer.")
-		return fmt.Errorf("invalid input: advisor code must be a positive integer")
-	}
+	// advisorCodeStr := utils.GetUserInput("Enter Advisor Code: ")
+	// advisorCode, err := strconv.Atoi(advisorCodeStr)
+	// if err != nil || advisorCode <= 0 {
+	// 	fmt.Println("Invalid Advisor Code. Please enter a positive integer.")
+	// 	return fmt.Errorf("invalid input: advisor code must be a positive integer")
+	// }
 
 	application := &model.InternshipApplication{
 		TurninDate:            time.Now(),
 		ApprovalAdvisorStatus: model.WAIT,
 		ApprovalCompanyStatus: model.WAIT,
-		AdvisorCode:           uint(advisorCode),
-		CompanyId:             company.ID,
-		StudentCode:           studentCode,
+		// AdvisorCode:           uint(advisorCode),
+		CompanyId:   company.ID,
+		StudentCode: studentCode,
 	}
 
 	err = handler.wrapper.InternshipApplication.RegisterInternshipApplications([]*model.InternshipApplication{application})
@@ -117,7 +120,7 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 	case "4":
 		return handler.DeleteApplication()
 	case "back":
-		fmt.Println("Returning to the previous menu...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")
@@ -128,7 +131,7 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 func (handler *InternshipApplicationHandler) Render() {
 	fmt.Println("\n==== Internship Application Menu ====")
 	fmt.Println("1. Create Internship Application")
-	fmt.Println("2. List Internship Applications")
+	fmt.Println("2. List All Internship Applications")
 	fmt.Println("3. Get Application Status")
 	fmt.Println("4. Delete Internship Application")
 	fmt.Println("Type 'back' to return to the previous menu")
