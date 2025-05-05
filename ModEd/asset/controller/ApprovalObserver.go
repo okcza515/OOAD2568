@@ -2,6 +2,7 @@
 package controller
 
 type ApprovalObserver interface {
-	OnApproved(id uint) error
-	OnRejected(id uint) error
+	OnApproved(id uint, approverID uint) error
+	OnRejected(id uint, approverID uint) error
 }
+

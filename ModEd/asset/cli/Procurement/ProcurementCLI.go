@@ -23,9 +23,9 @@ func main() {
 		case "1":
 			handler.InstrumentRequestHandler(facade)
 		case "2":
-			handler.ApprovalHandler(facade)
-		case "3":
 			handler.ProcurementHandler(facade)
+		case "3":			
+			handler.ApprovalHandler(facade)
 		case "4":
 			handler.TORHandler(facade)
 		case "5":

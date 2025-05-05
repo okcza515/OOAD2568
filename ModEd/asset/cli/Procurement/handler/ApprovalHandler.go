@@ -42,24 +42,13 @@ func printApprovalList(observer controller.ApprovalObserver) {
 		}
 		fmt.Println("Available Budget Approvals:")
 		for _, a := range approvals {
-			fmt.Printf("  ID: %d | Status: %s\n", a.InstrumentRequestID, a.Status)
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
+				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
 		}
-		// case *controller.ProcurementApprovalController:
-		// 	approvals, err := o.ListAllApprovals()
-		// 	if err != nil {
-		// 		fmt.Println("Failed to fetch procurement approvals:", err)
-		// 		return
-		// 	}
-		// 	if len(approvals) == 0 {
-		// 		fmt.Println("No procurement approvals found.")
-		// 		return
-		// 	}
-		// 	fmt.Println("Available Procurement Approvals:")
-		// 	for _, a := range approvals {
-		// 		fmt.Printf("  ID: %d | Status: %s\n", a.ProcurementID, a.Status)
-		// 	}
-		// default:
-		// 	fmt.Println("Unknown approval type.")
 	}
 }
 
@@ -76,16 +65,27 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 		cmd := util.GetCommandInput()
 
 		switch cmd {
+		
 		case "1":
 			id := util.GetUintInput("Enter ID to Approve: ")
-			observer.OnApproved(id)
-			fmt.Println("Approved successfully.")
-			WaitForEnter()
+			approverID := util.GetUintInput("Enter Your Instructor ID (Approver): ")
+			err := observer.OnApproved(id, approverID)
+			if err != nil {
+				fmt.Println("Failed to approve:", err)
+			} else {
+				fmt.Println("Approved successfully.")
+			}
+			WaitForEnter()		
 		case "2":
 			id := util.GetUintInput("Enter ID to Reject: ")
-			observer.OnRejected(id)
-			fmt.Println("Rejected successfully.")
-			WaitForEnter()
+			approverID := util.GetUintInput("Enter Approver ID: ")
+			err := observer.OnRejected(id, approverID)
+			if err != nil {
+				fmt.Println("Rejection failed:", err)
+			} else {
+				fmt.Println("Rejected successfully.")
+			}
+			WaitForEnter()		
 		case "back":
 			return
 		default:

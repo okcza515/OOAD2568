@@ -64,12 +64,14 @@ func (c *BudgetApprovalController) DeleteBudgetRequest(id uint) error {
 	return c.db.Model(&model.BudgetApproval{}).Where("budget_approval_id = ?", id).Update("deleted_at", time.Now()).Error
 }
 
-func (c *BudgetApprovalController) OnApproved(id uint) error {
+func (c *BudgetApprovalController) OnApproved(id uint, approverID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
-
 		if err := tx.Model(&model.BudgetApproval{}).
 			Where("budget_approval_id = ?", id).
-			Update("status", model.BudgetStatusApproved).Error; err != nil {
+			Updates(map[string]interface{}{
+				"status":      model.BudgetStatusApproved,
+				"approver_id": approverID,
+			}).Error; err != nil {
 			return err
 		}
 
@@ -88,11 +90,14 @@ func (c *BudgetApprovalController) OnApproved(id uint) error {
 	})
 }
 
-func (c *BudgetApprovalController) OnRejected(id uint) error {
+func (c *BudgetApprovalController) OnRejected(id uint, approverID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.BudgetApproval{}).
 			Where("budget_approval_id = ?", id).
-			Update("status", model.BudgetStatusRejected).Error; err != nil {
+			Updates(map[string]interface{}{
+				"status":      model.BudgetStatusRejected,
+				"approver_id": approverID,
+			}).Error; err != nil {
 			return err
 		}
 
