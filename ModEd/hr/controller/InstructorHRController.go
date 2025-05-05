@@ -1,10 +1,12 @@
 package controller
 
 import (
+	commonModel "ModEd/common/model"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -38,12 +40,60 @@ func (c *InstructorHRController) insert(info *model.InstructorInfo) error {
 
 func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 	return c.db.Model(&model.InstructorInfo{}).
-		Where("id = ?", info.ID).
+		Where("instructor_code = ?", info.InstructorCode).
 		Updates(info).Error
 }
 
 func (c *InstructorHRController) delete(id string) error {
 	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+}
+
+func (c *InstructorHRController) AddInstructor(
+	instructorCode string, firstName string, lastName string, email string, startDate string, department string,
+	gender string, citizenID string, phoneNumber string, salary int, academicPos string, departmentPos string,
+) error {
+	tm := &util.TransactionManager{DB: c.db}
+	err := tm.Execute(func(tx *gorm.DB) error {
+		startDateParsed, err := time.Parse("02-01-2006", startDate)
+		if err != nil {
+			return fmt.Errorf("failed to parse start date: %w", err)
+		}
+
+		academicPosition, err := model.ParseAcademicPosition(academicPos)
+		if err != nil {
+			return fmt.Errorf("failed to parse academic position: %w", err)
+		}
+
+		departmentPosition, err := model.ParseDepartmentPosition(departmentPos)
+		if err != nil {
+			return fmt.Errorf("failed to parse department position: %w", err)
+		}
+
+		commonInstructor := &commonModel.Instructor{
+			InstructorCode: instructorCode,
+			FirstName:      firstName,
+			LastName:       lastName,
+			Email:          email,
+			StartDate:      &startDateParsed,
+			Department:     &department,
+		}
+
+		err = commonModel.ManualAddInstructor(tx, commonInstructor)
+		if err != nil {
+			return fmt.Errorf("failed to add instructor: %w", err)
+		}
+
+		// Migrate here !!
+
+		hrInstructor := model.NewInstructorInfo(instructorCode, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
+		instructorController := CreateInstructorHRController(tx)
+		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
+			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
+		}
+
+		return nil
+	})
+	return err
 }
 
 func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, error) {
@@ -54,7 +104,7 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 	return instructors, nil
 }
 
-func (c *InstructorHRController) UpdateInstructorInfo( instructorID, field, value string) error {
+func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorInfo, err := c.getById(instructorID)
