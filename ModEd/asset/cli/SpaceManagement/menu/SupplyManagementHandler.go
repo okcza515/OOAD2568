@@ -26,6 +26,7 @@ func (menu *SupplyManagementMenuState) Render(){
 	fmt.Println("4. Create new Supply Management")
 	fmt.Println("5. Update the Supply Management")
 	fmt.Println("6. Delete the Supply Management")
+	fmt.Println("7. Seed Supply Managements data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("========================================")
 }
@@ -77,6 +78,7 @@ func NewSupplyMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMana
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.SupplyManagement](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.SupplyManagement](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
+	insertManyhandler := handler.NewInsertHandlerStrategy[model.SupplyManagement](controllerInstance)
 
   	//Custom Handlers
 	updateHandler := spaceManagementHandler.NewUpdateSupplyManagementStrategy(controllerInstance)
@@ -89,6 +91,7 @@ func NewSupplyMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMana
 	handlerContext.AddHandler("4", "Create an Supply Management", insertHandler)
 	handlerContext.AddHandler("5", "Update an Supply Management", updateHandler)
 	handlerContext.AddHandler("6", "Delete an Supply Management", deleteHandler)
+	handlerContext.AddHandler("7", "Seed Supply Managements data", insertManyhandler)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 

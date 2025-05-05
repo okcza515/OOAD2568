@@ -17,6 +17,7 @@ type InstrumentManagementInterface interface {
     Insert(payload *model.InstrumentManagement) error
     UpdateById(payload *model.InstrumentManagement) error
     DeleteByID(id uint) error
+	InsertMany(data []model.InstrumentManagement) error
 }
 
 type InstrumentManagementController struct {
@@ -84,5 +85,16 @@ func (c *InstrumentManagementController) DeleteByID(Id uint) error {
 		return errors.New("no Id provide")
 	 }
 	err := c.BaseController.DeleteByID(Id)
+	return err
+}
+
+//seed data
+func (c *InstrumentManagementController) InsertMany(data []model.InstrumentManagement) error {
+    if len(data) == 0 {
+		return errors.New("no Instrument Management to insert")
+	}
+
+	err := c.BaseController.InsertMany(data)
+
 	return err
 }
