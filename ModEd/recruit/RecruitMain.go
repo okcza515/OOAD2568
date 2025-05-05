@@ -81,7 +81,8 @@ func main() {
 		return
 	}
 
-	loginController := controller.LoginController{Strategy: controller.NewLoginStrategy(role, db.DB)}
+	factory := &controller.DefaultLoginStrategyFactory{DB: db.DB}
+	loginController := controller.LoginController{Strategy: factory.CreateStrategy(role)}
 
 	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
 	adminDeps := cli.AdminDependencies{
@@ -117,14 +118,14 @@ func main() {
 
 			switch roleChoice {
 			case 1:
-				loginController.SetStrategy(controller.NewLoginStrategy("user", db.DB))
+				loginController.SetStrategy(factory.CreateStrategy("user"))
 				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
 			case 2:
-				loginController.SetStrategy(controller.NewLoginStrategy("admin", db.DB))
+				loginController.SetStrategy(factory.CreateStrategy("admin"))
 				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 				cli.AdminCLI(adminDeps)
 			case 3:
-				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
+				loginController.SetStrategy(factory.CreateStrategy("instructor"))
 				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, db.DB)
 
 			case 4:
