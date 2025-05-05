@@ -1,8 +1,10 @@
 # ModED MEP-1004 : HR Module
 
-## Structure
+## Changelogs 06/05/2025
 
-- ### CLI
+### Structure
+
+- #### CLI
 
   - Refactor Command CLI to be able to support dynamically adding command at runtime.
 
@@ -70,7 +72,7 @@
       }
     ```
 
-- ### Controller
+- #### Controller
 
   - Redo all controller method
   - Add Generic Review Helper with Strategy Pattern
@@ -144,7 +146,7 @@
     }
     ```
 
-- ### Model
+- #### Model
 
   - Combine all request into single abstract factory
     - Centralize creation of different types of requests (resignation, leave, raise) in a single factory interface.
@@ -207,7 +209,7 @@
 
     - When new types of requests are added that share common fields, they can embed the base struct, keeping instantiation logic and field consistent.
 
-- ### Util
+- #### Util
 
   - Chain of Responsibility
     - Chaining multiple different validation rules (Required, Length and Regex).
@@ -248,3 +250,9 @@
     - API become easier to use. Developers work on one field at a time and chain the rules directly.
     - It is simpler to add or remove validations for individual fields without interfering with other validations.
     - Combine frequent uses validator for example: `IsStudentID()`, `IsEmail()`, `IsDate()`.
+
+### Issues
+
+- Who can implement function inside core module?
+- What is the criteria for the function to be inside core module?
+- Should there be a documentation for every core module implementation?
