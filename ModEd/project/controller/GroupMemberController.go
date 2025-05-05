@@ -3,44 +3,50 @@ package controller
 import (
 	"ModEd/core"
 	"ModEd/project/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type GroupMemberController struct {
 	*core.BaseController[*model.GroupMember]
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewGroupMemberController(db *gorm.DB) *GroupMemberController {
 	return &GroupMemberController{
-		db:             db,
 		BaseController: core.NewBaseController[*model.GroupMember](db),
+		DB:             db,
 	}
 }
 
-func (c *GroupMemberController) ListAllGroupMembers() ([]model.GroupMember, error) {
-	var groupMembers []model.GroupMember
-	err := c.db.Find(&groupMembers).Error
-	return groupMembers, err
+func (c *GroupMemberController) ListAllGroupMembers() ([]*model.GroupMember, error) {
+	groupMembers, err := c.List(map[string]interface{}{})
+	if err != nil {
+		return nil, err
+	}
+	return groupMembers, nil
 }
 
 func (c *GroupMemberController) RetrieveGroupMember(id uint) (*model.GroupMember, error) {
-	var groupMember model.GroupMember
-	if err := c.db.Where("id = ?", id).First(&groupMember).Error; err != nil {
-		return nil, err
+	return c.RetrieveByID(id)
+}
+
+func (c *GroupMemberController) RetrieveGroupMembersBySeniorProjectId(projectId uint) ([]*model.GroupMember, error) {
+	return c.List(map[string]interface{}{"senior_project_id": projectId})
+}
+
+func (c *GroupMemberController) InsertGroupMember(member *model.GroupMember) error {
+	if member.SeniorProjectId == 0 {
+		return fmt.Errorf("senior project ID is required")
 	}
-	return &groupMember, nil
+	return c.Insert(member)
 }
 
-func (c *GroupMemberController) InsertGroupMember(GroupMember *model.GroupMember) error {
-	return c.db.Create(GroupMember).Error
-}
-
-func (c *GroupMemberController) UpdateGroupMember(GroupMember *model.GroupMember) error {
-	return c.db.Save(GroupMember).Error
+func (c *GroupMemberController) UpdateGroupMember(member *model.GroupMember) error {
+	return c.UpdateByID(member)
 }
 
 func (c *GroupMemberController) DeleteGroupMember(id uint) error {
-	return c.db.Where("id = ?", id).Delete(&model.GroupMember{}).Error
+	return c.DeleteByID(id)
 }
