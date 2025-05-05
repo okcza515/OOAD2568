@@ -114,7 +114,7 @@ func SelectQuotation(db *gorm.DB) {
 		return
 	}
 
-	selectedID := util.GetUintInput("Enter Quotation ID to APPROVE: ")
+	selectedID := util.GetUintInput("Enter Quotation ID to Approve: ")
 
 	err = db.Transaction(func(tx *gorm.DB) error {
 		for _, q := range quotations {

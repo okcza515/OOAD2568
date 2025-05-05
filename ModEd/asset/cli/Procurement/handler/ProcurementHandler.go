@@ -41,7 +41,8 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			ListAllProcurements(facade)
 			WaitForEnter()
 		case "3":
-			fmt.Println("View Procurement by ID")
+			fmt.Println("View Procurement Detail by ID")
+			ListAllProcurements(facade)
 			id := util.GetUintInput("Enter procurement ID: ")
 			procurement, err := facade.Procurement.GetProcurementByID(id)
 			if err != nil {
@@ -63,7 +64,7 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("Status: %s\n", procurement.Status)
 			fmt.Printf("ApprovalTime: %s\n", approvalTime)
 			WaitForEnter()
-		case "4":
+		case "4": //NOT USE, DELETE LATER
 			fmt.Println("Update Procurement Status")
 			ListAllProcurements(facade)
 
@@ -130,7 +131,7 @@ func printProcurementOptions() {
 	fmt.Println("--Procurement Functions--")
 	fmt.Println("  1:\tCreate Procurement")
 	fmt.Println("  2:\tList All Procurements")
-	fmt.Println("  3:\tView Procurement by ID")
+	fmt.Println("  3:\tView Procurement Detail by ID")
 	fmt.Println("  4:\tUpdate Procurement Status")
 	fmt.Println("  5:\tDelete Procurement")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
