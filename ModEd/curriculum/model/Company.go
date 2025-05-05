@@ -1,12 +1,10 @@
-//MEP-1009 Student Internship
+// MEP-1009 Student Internship
 package model
 
-import (
-	"gorm.io/gorm"
-)
+import "ModEd/core"
 
 type Company struct {
-	gorm.Model
+	core.BaseModel
 	CompanyName     string `gorm:"type:varchar(255)"`
 	MentorFirstName string `gorm:"type:varchar(255)"`
 	MentorLastName  string `gorm:"type:varchar(255)"`
