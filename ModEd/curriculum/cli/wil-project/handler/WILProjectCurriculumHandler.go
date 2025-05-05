@@ -38,7 +38,6 @@ func (menu *WILProjectCurriculumMenuStateHandler) Render() {
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) error {
-
 	switch input {
 	case "1":
 		err := menu.createWILCourse()
@@ -73,9 +72,18 @@ func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) 
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) createWILCourse() error {
-	courseName := utils.GetUserInput("Enter course name:")
-	description := utils.GetUserInput("Enter course description:")
-	semester := utils.GetUserInput("Enter semester:")
+	courseName := utils.ExecuteUserInputStep(utils.StringInputStep{
+		PromptText:    "Enter course name:",
+		FieldNameText: "Course Name",
+	}).(string)
+	description := utils.ExecuteUserInputStep(utils.StringInputStep{
+		PromptText:    "Enter course description:",
+		FieldNameText: "Course Description",
+	}).(string)
+	semester := utils.ExecuteUserInputStep(utils.StringInputStep{
+		PromptText:    "Enter semester:",
+		FieldNameText: "Semester",
+	}).(string)
 
 	course := &model.Course{
 		Name:         courseName,
@@ -93,8 +101,14 @@ func (menu *WILProjectCurriculumMenuStateHandler) createWILCourse() error {
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) createWILClass() error {
-	courseId := utils.GetUserInputUint("Enter course Id:")
-	section := utils.GetUserInputUint("Enter section:")
+	courseId := utils.ExecuteUserInputStep(utils.UintInputStep{
+		PromptText:    "Enter course Id:",
+		FieldNameText: "Course Id",
+	}).(uint)
+	section := utils.ExecuteUserInputStep(utils.UintInputStep{
+		PromptText:    "Enter section:",
+		FieldNameText: "Section",
+	}).(uint)
 
 	class := &model.Class{
 		CourseId: courseId,
