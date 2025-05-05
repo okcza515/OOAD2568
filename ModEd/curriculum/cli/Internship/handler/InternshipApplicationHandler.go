@@ -6,7 +6,7 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
-	"strconv"
+	// "strconv"
 	"time"
 )
 
@@ -42,18 +42,18 @@ func (handler *InternshipApplicationHandler) handleCreateInternshipApplication()
 		return fmt.Errorf("failed to find company: %w", err)
 	}
 
-	advisorCodeStr := utils.GetUserInput("Enter Advisor Code: ")
-	advisorCode, err := strconv.Atoi(advisorCodeStr)
-	if err != nil || advisorCode <= 0 {
-		fmt.Println("Invalid Advisor Code. Please enter a positive integer.")
-		return fmt.Errorf("invalid input: advisor code must be a positive integer")
-	}
+	// advisorCodeStr := utils.GetUserInput("Enter Advisor Code: ")
+	// advisorCode, err := strconv.Atoi(advisorCodeStr)
+	// if err != nil || advisorCode <= 0 {
+	// 	fmt.Println("Invalid Advisor Code. Please enter a positive integer.")
+	// 	return fmt.Errorf("invalid input: advisor code must be a positive integer")
+	// }
 
 	application := &model.InternshipApplication{
 		TurninDate:            time.Now(),
 		ApprovalAdvisorStatus: model.WAIT,
 		ApprovalCompanyStatus: model.WAIT,
-		AdvisorCode:           uint(advisorCode),
+		// AdvisorCode:           uint(advisorCode),
 		CompanyId:             company.ID,
 		StudentCode:           studentCode,
 	}
@@ -128,7 +128,7 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 func (handler *InternshipApplicationHandler) Render() {
 	fmt.Println("\n==== Internship Application Menu ====")
 	fmt.Println("1. Create Internship Application")
-	fmt.Println("2. List Internship Applications")
+	fmt.Println("2. List All Internship Applications")
 	fmt.Println("3. Get Application Status")
 	fmt.Println("4. Delete Internship Application")
 	fmt.Println("Type 'back' to return to the previous menu")

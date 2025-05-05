@@ -54,7 +54,6 @@ func (repo InternshipApplicationController) GetAllInternshipApplications() ([]*m
 	applications := []*model.InternshipApplication{}
 	result := repo.Connector.Preload("InternshipReport").
 		Preload("SupervisorReview").
-		Preload("InternshipSchedule").
 		Find(&applications)
 	return applications, result.Error
 }
@@ -63,7 +62,6 @@ func (repo InternshipApplicationController) GetInternshipApplicationByID(id stri
 	application := &model.InternshipApplication{}
 	result := repo.Connector.Preload("InternshipReport").
 		Preload("SupervisorReview").
-		Preload("InternshipSchedule").
 		First(application, id)
 	return application, result.Error
 }

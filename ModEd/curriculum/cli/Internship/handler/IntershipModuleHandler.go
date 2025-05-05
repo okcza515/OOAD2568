@@ -42,6 +42,7 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 	case "1":
 		handler.wrapper.GenericImport.ImportCompanies("")
 		handler.wrapper.GenericImport.ImportInternStudents("")
+		return nil
 	case "2":
 		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
 		return nil
