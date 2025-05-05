@@ -5,7 +5,7 @@ import (
 	commonModel "ModEd/common/model"
 	controller "ModEd/curriculum/controller"
 	model "ModEd/curriculum/model"
-
+	utils "ModEd/curriculum/utils"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -74,6 +74,26 @@ var mockMeeting = &model.Meeting{
 	Attendees:   nil,
 }
 
+var mockInstructor = &commonModel.Instructor{
+	InstructorCode: "INS001",
+	FirstName:      "John",
+	LastName:       "Doe",
+	Email:          "johndoe@gmail.com",
+	StartDate:      nil,
+	Department:     nil,
+}
+
+var mockStudent = &commonModel.Student{
+	StudentCode: "STU001",
+	FirstName:   "Jane",
+	LastName:    "Smith",
+	Email:       "",
+	StartDate:   time.Time{},
+	Program:     commonModel.REGULAR,
+	Department:  "Computer Engineering",
+	Status:      nil,
+}
+
 func (c CreateMeeting) Execute() {
 	meetingController := controller.NewMeetingController(c.db)
 	meetingFactory := model.RegularMeetingFactory{}
@@ -107,30 +127,14 @@ func (c CreateOnlineMeeting) Execute() {
 }
 
 func (c AddAttendee) Execute() {
-	mockMeetingId := uint(1)
+	id := utils.GetUserInputUint("Enter MeetingID: ")
 	meetingController := controller.NewMeetingController(c.db)
 	mockAttendees := []model.AttendeeAdapter{
-		model.InstructorAdapter{Instructor: commonModel.Instructor{
-			InstructorCode: "INS001",
-			FirstName:      "John",
-			LastName:       "Doe",
-			Email:          "johndoe@gmail.com",
-			StartDate:      nil,
-			Department:     nil,
-		}},
-		model.StudentAdapter{Student: commonModel.Student{
-			StudentCode: "STU001",
-			FirstName:   "Jane",
-			LastName:    "Smith",
-			Email:       "",
-			StartDate:   time.Time{},
-			Program:     commonModel.REGULAR,
-			Department:  "Computer Engineering",
-			Status:      nil,
-		}},
+		model.InstructorAdapter{Instructor: *mockInstructor},
+		model.StudentAdapter{Student: *mockStudent},
 	}
 	for _, attendee := range mockAttendees {
-		err := meetingController.AddAttendee(mockMeetingId, attendee)
+		err := meetingController.AddAttendee(id, attendee)
 		if err != nil {
 			println("Error adding attendee:", err)
 		} else {
@@ -140,10 +144,8 @@ func (c AddAttendee) Execute() {
 }
 
 func (c RetrieveMeetingById) Execute() {
+	id := utils.GetUserInputUint("Enter MeetingID: ")
 	meetingController := controller.NewMeetingController(c.db)
-	var id uint
-	fmt.Print("Enter MeetingID: ")
-	fmt.Scanln(&id)
 	meeting, err := meetingController.RetrieveByID(id)
 	if err != nil {
 		println("Error retrieving meeting:", err)
@@ -153,10 +155,8 @@ func (c RetrieveMeetingById) Execute() {
 }
 
 func (c UpdateMeetingById) Execute() {
+	id := utils.GetUserInputUint("Enter MeetingID: ")
 	meetingController := controller.NewMeetingController(c.db)
-	var id uint
-	fmt.Print("Enter MeetingID to update: ")
-	fmt.Scanln(&id)
 	mockMeeting.ID = id
 	mockMeeting.Title = "Daily Meeting"
 	mockMeeting.Location = "Room 102"
@@ -169,10 +169,8 @@ func (c UpdateMeetingById) Execute() {
 }
 
 func (c DeleteMeetingById) Execute() {
+	id := utils.GetUserInputUint("Enter MeetingID: ")
 	meetingController := controller.NewMeetingController(c.db)
-	var id uint
-	fmt.Print("Enter MeetingID to delete: ")
-	fmt.Scanln(&id)
 	err := meetingController.DeleteByID(id)
 	if err != nil {
 		println("Error deleting meeting:", err)
