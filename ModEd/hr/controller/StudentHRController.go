@@ -91,7 +91,7 @@ func (c *StudentHRController) AddStudent(
 		return fmt.Errorf("failed to parse status: %w", err)
 	}
 
-	instructorController := CreateInstructorHRController(c.db)
+	instructorController := NewInstructorHRController(c.db)
 	if _, err := instructorController.getById(advisorCode); err != nil {
 		return fmt.Errorf("failed to retrieve instructor with code %s: %w", advisorCode, err)
 	}

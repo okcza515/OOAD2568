@@ -9,6 +9,6 @@ import (
 type ImportInstructorCommand struct{}
 
 func (cmd *ImportInstructorCommand) Execute(args []string, tx *gorm.DB) error {
-	controller := controller.CreateInstructorHRController(tx)
+	controller := controller.NewInstructorHRController(tx)
 	return handleImport(args, "import-instructor", controller.ImportInstructors, tx)
 }

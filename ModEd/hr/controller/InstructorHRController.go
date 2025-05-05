@@ -15,7 +15,7 @@ type InstructorHRController struct {
 	db *gorm.DB
 }
 
-func CreateInstructorHRController(db *gorm.DB) *InstructorHRController {
+func NewInstructorHRController(db *gorm.DB) *InstructorHRController {
 	db.AutoMigrate(&model.InstructorInfo{})
 	return &InstructorHRController{db: db}
 }
@@ -86,7 +86,7 @@ func (c *InstructorHRController) AddInstructor(
 		// Migrate here !!
 
 		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
-		instructorController := CreateInstructorHRController(tx)
+		instructorController := NewInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
 		}
