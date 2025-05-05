@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClassMaterialInterface interface {
+type ClassMaterialControllerInterface interface {
 	Insert(data model.ClassMaterial) error
 	RetrieveByID(id uint, preloads ...string) (*model.ClassMaterial, error)
 	DeleteByID(id uint) error

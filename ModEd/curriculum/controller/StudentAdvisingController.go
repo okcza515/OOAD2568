@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type StudentWorkloadService interface {
+type StudentRequestControllerInterface interface {
 	Insert(data model.StudentAdvisor) error
 	UpdateByID(data model.StudentAdvisor) error
 	DeleteByID(id uint) error
@@ -26,7 +26,7 @@ type StudentRequestController struct {
 	db *gorm.DB
 }
 
-func CreateStudentWorkloadController(db *gorm.DB) StudentWorkloadService {
+func CreateStudentWorkloadController(db *gorm.DB) StudentRequestControllerInterface {
 	return &StudentRequestController{
 		BaseController: core.NewBaseController[*model.StudentAdvisor](db),
 		db:             db,
