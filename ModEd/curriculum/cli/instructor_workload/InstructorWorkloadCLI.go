@@ -34,7 +34,7 @@ func RunInstructorWorkloadModuleCLI(
 	menu.Add("Adminstrative", handler.NewAdminstrativeWorkloadHandler(db))
 	menu.Add("Senior Project", handler.NewSeniorProjectWorkload(db))
 	menu.Add("Student Advisor", handler.StudentAdvisorWokrload{})
-	menu.Add("Workload Report", handler.NewWorkloadReportHandler(db))
+	// menu.Add("Workload Report", handler.NewWorkloadReportHandler(db))
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
 	menu.Execute()
