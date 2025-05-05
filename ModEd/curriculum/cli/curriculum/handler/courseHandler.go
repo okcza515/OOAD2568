@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	defaultCourseDataPath = "../../data/curriculum/course.json"
+	defaultCourseDataPath = "../data/curriculum/course.json"
 )
 
 type courseHandler struct {

@@ -13,7 +13,6 @@ import (
 )
 
 type RoomControllerInterface interface {
-	SeedRoomsDatabase(path string) ([]*model.Room, error)
 	ListAll() ([]string, error)
 	List(condition map[string]interface{}, preloads ...string) ([]model.Room, error)
 	RetrieveByID(id uint, preloads ...string) (model.Room, error)
@@ -22,11 +21,15 @@ type RoomControllerInterface interface {
 	DeleteByID(id uint) error
 	DeleteAll() error
 	InsertMany(data []model.Room) error
+
+	// addObserver(observer SpaceManagementObserverInterface[model.Room])
+	// removeObserver(observer SpaceManagementObserverInterface[model.Room])
 }
 
 type RoomController struct {
 	db *gorm.DB
 	*core.BaseController[model.Room]
+	// observers map[string]SpaceManagementObserverInterface[model.Room]
 }
 
 func NewRoomController() *RoomController {
@@ -34,8 +37,17 @@ func NewRoomController() *RoomController {
 	return &RoomController{
 		db:             db,
 		BaseController: core.NewBaseController[model.Room](db),
+		// observers:      make(map[string]SpaceManagementObserverInterface[model.Room]),
 	}
 }
+
+// func (c *RoomController) addObserver(observer SpaceManagementObserverInterface[model.Room]) {
+// 	c.observers[observer.GetObserverID()] = observer
+// }
+
+// func (c *RoomController) removeObserver(observer SpaceManagementObserverInterface[model.Room]) {
+// 	delete(c.observers, observer.GetObserverID())
+// }
 
 func (c *RoomController) SeedRoomsDatabase(path string) (rooms []*model.Room, err error) {
 	deserializer, err := deserializer.NewFileDeserializer(path)

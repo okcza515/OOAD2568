@@ -6,7 +6,6 @@ import (
 	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
-	"ModEd/utils/deserializer"
 	"errors"
 )
 
@@ -23,7 +22,7 @@ var assetInstance *AssetControllerManager
 
 func GetAssetInstance() *AssetControllerManager {
 	if assetInstance == nil {
-		instance, err := NewAssetControllerFacade()
+		instance, err := newAssetControllerManager()
 		if err != nil {
 			panic(err)
 		}
@@ -34,7 +33,7 @@ func GetAssetInstance() *AssetControllerManager {
 	return assetInstance
 }
 
-func NewAssetControllerFacade() (*AssetControllerManager, error) {
+func newAssetControllerManager() (*AssetControllerManager, error) {
 	manager := &AssetControllerManager{}
 
 	db := migration.GetInstance().DB
@@ -53,36 +52,6 @@ func NewAssetControllerFacade() (*AssetControllerManager, error) {
 	manager.Instrument.addObserver(manager.InstrumentLog)
 
 	return manager, nil
-}
-
-func (manager *AssetControllerManager) LoadSeedData() error {
-	seedData := map[string]interface{}{
-		//"BorrowInstrumentList": &[]model.BorrowInstrument{},
-		"Category":       &[]model.Category{},
-		"InstrumentList": &[]model.Instrument{},
-		//"InstrumentLog":  &[]model.InstrumentLog{},
-		"SupplyList": &[]model.Supply{},
-		"SupplyLog":  &[]model.SupplyLog{},
-	}
-
-	for filename, m := range seedData {
-		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".csv")
-		if err != nil {
-			return err
-		}
-
-		err = fd.Deserialize(m)
-		if err != nil {
-			return err
-		}
-
-		result := migration.GetInstance().DB.Create(m)
-		if result.Error != nil {
-			return result.Error
-		}
-	}
-
-	return nil
 }
 
 func (manager *AssetControllerManager) ResetDB() error {
@@ -105,7 +74,14 @@ func (manager *AssetControllerManager) ResetAndLoadDB() error {
 		return err
 	}
 
-	err = manager.LoadSeedData()
+	err = migration.GetInstance().
+		AddSeedData("data/asset/Category.csv", &[]model.Category{}).
+		//AddSeedData("data/asset/BorrowInstrument.csv", &[]model.BorrowInstrument{}).
+		AddSeedData("data/asset/InstrumentList.csv", &[]model.Instrument{}).
+		//AddSeedData("data/asset/InstrumentLog.csv", &[]model.InstrumentLog{}).
+		AddSeedData("data/asset/SupplyList.csv", &[]model.Supply{}).
+		AddSeedData("data/asset/SupplyLog.csv", &[]model.SupplyLog{}).
+		LoadSeedData()
 	if err != nil {
 		return err
 	}

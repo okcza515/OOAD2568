@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type MeetingControllerService interface {
+type MeetingControllerInterface interface {
 	List(condition map[string]interface{}) ([]*model.Meeting, error)
 
 	RetrieveByID(id uint) (*model.Meeting, error)
@@ -26,7 +26,7 @@ type MeetingController struct {
 	Connector *gorm.DB
 }
 
-func CreateMeetingController(db *gorm.DB) *MeetingController {
+func NewMeetingController(db *gorm.DB) *MeetingController {
 	return &MeetingController{
 		BaseController: core.NewBaseController[*model.Meeting](db),
 		Connector:      db,

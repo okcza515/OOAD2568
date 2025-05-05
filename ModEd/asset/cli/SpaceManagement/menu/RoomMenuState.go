@@ -27,23 +27,25 @@ func (menu *RoomMenuState) Render() {
 	fmt.Println("4. Update a Room")
 	fmt.Println("5. Delete a Room")
 	fmt.Println("6. Delete all Rooms")
+	// fmt.Println("7. Seed Rooms Data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("===========================")
 }
-
 func (menu *RoomMenuState) HandleUserInput(input string) error {
 	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println("Error handling user input", err)
 	}
 	if input == "back" {
+
 		util.PressEnterToContinue()
+
 	}
 	return err
 }
 
 func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManagementMenu *SpaceManagementState) *RoomMenuState {
-
+	// Check if db is nil
 	if db == nil {
 		fmt.Println("Error: Database connection is nil")
 		return &RoomMenuState{
@@ -52,8 +54,9 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 		}
 	}
 
-	controllerManager := controller.GetSpaceManagementInstance(db)
-	if controllerManager == nil {
+	// Get controller instance and check if it's nil
+	controllerFacade := controller.GetSpaceManagementInstance(db)
+	if controllerFacade == nil {
 		fmt.Println("Error: Space Management Controller Facade is nil")
 		return &RoomMenuState{
 			manager:        manager,
@@ -61,7 +64,8 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 		}
 	}
 
-	controllerInstance := controllerManager.Room
+	// Access Room controller safely
+	controllerInstance := controllerFacade.Room
 	if controllerInstance == nil {
 		fmt.Println("Error: Room controller is nil")
 		return &RoomMenuState{
@@ -72,13 +76,15 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 
 	handlerContext := handler.NewHandlerContext()
 
-	//Standard Handlers
+	//Handler is not working yet!
+	// insertHandler := handler.NewInsertHandlerStrategy[model.Room](controllerInstance)
 	listHandler := handler.NewListHandlerStrategy[model.Room](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Room](controllerInstance)
+	// updateHandler := handler.NewUpdateHandlerStrategy[model.Room](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.Room](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
 
-	//Custom Handlers
+	//DIY
 	insertHandler := spaceManagementHandler.NewAddRoomHandlerStrategy(controllerInstance)
 	updateHandler := spaceManagementHandler.NewUpdateRoomHandlerStrategy(controllerInstance)
 	deleteAllHandler := spaceManagementHandler.NewDeleteAllRoomStrategy(controllerInstance)
@@ -89,6 +95,7 @@ func NewRoomMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceManage
 	handlerContext.AddHandler("4", "Update a Room", updateHandler)
 	handlerContext.AddHandler("5", "Delete a Room", deleteHandler)
 	handlerContext.AddHandler("6", "Delete all Rooms", deleteAllHandler)
+	// handlerContext.AddHandler("7", "Seed Rooms Data", nil)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 	return &RoomMenuState{

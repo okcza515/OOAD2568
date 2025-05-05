@@ -36,7 +36,7 @@ func main() {
 
 		util.ClearScreen()
 
-		err := manager.HandleUserInput()
+		err = manager.HandleUserInput()
 		if err != nil {
 			panic(err)
 		}

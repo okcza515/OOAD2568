@@ -9,7 +9,6 @@ type InstructorWorkloadMigrationStrategy struct {
 
 func (s *InstructorWorkloadMigrationStrategy) GetModels() []interface{} {
 	return []interface{}{
-		&model.ClassLecture{},
 		&model.StudentAdvisor{},
 		&model.StudentRequest{},
 		&model.Meeting{},

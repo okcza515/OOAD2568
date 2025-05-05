@@ -1,5 +1,7 @@
 package cli
 
+import "errors"
+
 // Wrote by MEP-1012
 
 type CLIMenuStateManager struct {
@@ -38,6 +40,13 @@ func (manager *CLIMenuStateManager) GetState(menu string) MenuState {
 	return manager.unitedStates[menu]
 }
 
-func (manager *CLIMenuStateManager) GoToMenu(menu string) {
-	manager.currentMenuState = manager.unitedStates[menu]
+func (manager *CLIMenuStateManager) GoToMenu(menu string) error {
+	ms, ok := manager.unitedStates[menu]
+
+	if !ok {
+		return errors.New("err: menu state '" + menu + "' is not registered")
+	}
+
+	manager.currentMenuState = ms
+	return nil
 }
