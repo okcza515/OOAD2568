@@ -1,0 +1,6 @@
+"id","created_at","updated_at","deleted_at","course_id","week","date","instructor_id","topic","description"
+1,"2025-05-05 18:07:22.9427742+07:00","2025-05-05 18:07:22.9427742+07:00",,1,2,"2025-05-12 18:07:22.9416553+07:00",101,Introduction to Computer Architecture,"Overview of course structure, grading policies, and introduction to basic computer architecture concepts."
+3,"2025-05-05 20:37:54.114415+07:00","2025-05-05 20:37:54.114415+07:00",,1,2,"2025-05-12 20:37:54.1133255+07:00",103,Concurrency,"Exploration of process scheduling, context switching, and concurrency"
+4,"2025-05-06 01:40:10.9316074+07:00","2025-05-06 01:40:10.9316074+07:00",,1,2,"2025-05-13 01:40:10.9316074+07:00",101,Stacks and Queues,Implementation and applications of stacks and queues
+5,"2025-05-05 18:07:22.9427742+07:00","2025-05-05 18:07:22.9427742+07:00",,1,1,"2025-05-12 18:07:22.9416553+07:00",102,Computer Architecture,"Overview of course structure, grading policies, and introduction"
+6,"2025-05-05 18:07:22.9427742+07:00","2025-05-05 18:07:22.9427742+07:00",,1,1,"2025-05-12 18:07:22.9416553+07:00",102,Binary Number System and Logic Gates,"Understanding binary numbers, conversions, and fundamental"
