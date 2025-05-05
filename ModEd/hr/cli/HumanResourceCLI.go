@@ -87,8 +87,11 @@ func main() {
 	invoker.RegisterCommand("update-instructor-info", &commands.UpdateInstructorInfoCommand{})
 	invoker.RegisterCommand("request-instructor-leave", &commands.RequestInstructorLeaveCommand{})
 	invoker.RegisterCommand("request-instructor-resign", &commands.RequestInstructorResignCommand{})
+	invoker.RegisterCommand("request-instructor-raise", &commands.RequestInstructorRaiseCommand{})
 	invoker.RegisterCommand("review-instructor-leave", &commands.ReviewInstructorLeaveCommand{})
 	invoker.RegisterCommand("review-instructor-resign", &commands.ReviewInstructorResignCommand{})
+	invoker.RegisterCommand("review-instructor-raise", &commands.ReviewInstructorRaiseCommand{})
+
 
 	var commandName string
 	var commandArgs []string

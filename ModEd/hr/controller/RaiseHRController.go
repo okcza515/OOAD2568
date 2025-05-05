@@ -12,7 +12,13 @@ type RaiseHRController struct {
 	db *gorm.DB
 }
 
+
 func NewRaiseHRController(db *gorm.DB) *RaiseHRController {
+	db.AutoMigrate(&model.RequestRaiseInstructor{})
+	return &RaiseHRController{db: db}
+}
+
+func CreateRaiseInstructorHRController(db *gorm.DB) *RaiseHRController {
 	db.AutoMigrate(&model.RequestRaiseInstructor{})
 	return &RaiseHRController{db: db}
 }
@@ -35,6 +41,14 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaiseInstructor, error) {
 	var requests []model.RequestRaiseInstructor
 	err := c.db.Find(&requests).Error
 	return requests, err
+}
+func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.RequestRaiseInstructor, error) {
+	var requests []model.RequestRaiseInstructor
+	err := c.db.Where("instructor_id = ?", instructorID).Find(&requests).Error
+	if err != nil {
+		return nil, err
+	}
+	return requests, nil
 }
 
 func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
@@ -64,3 +78,23 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 		return nil
 	})
 }
+
+func (c *RaiseHRController) ReviewInstructorRaiseRequest(
+    tx *gorm.DB,
+    requestID, action, reason string,
+) error {
+    return ReviewRequest(
+        requestID,
+        action,
+        reason,
+        // fetch
+        func(id uint) (Reviewable, error) {
+            return c.getByID(id)
+        },
+        // save
+        func(r Reviewable) error {
+            return tx.Save(r).Error
+        },
+    )
+}
+
