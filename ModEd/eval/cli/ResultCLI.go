@@ -23,8 +23,8 @@ func RunResultCLI(db *gorm.DB) {
 
 	for {
 		fmt.Println("\nResult CLI")
-		fmt.Println("1. Create Result")
-		fmt.Println("2. Display All Results by StudentID")
+		fmt.Println("1. Create Result by ExamID")
+		fmt.Println("2. Display Result by ExamID and StudentID")
 		fmt.Println("3. Update Result by ResultID")
 		fmt.Println("4. Delete Result by ResultID")
 		fmt.Println("5. Exit")
@@ -34,13 +34,18 @@ func RunResultCLI(db *gorm.DB) {
 
 		switch choice {
 		case 1:
-			CreateResults(db, resultController)
+			var examID uint
+			fmt.Print("Enter Examination ID: ")
+			fmt.Scan(&examID)
+			CreateResultByExamID(db, resultController, examID)
 
 		case 2:
-			var studentID uint
+			var examID, studentID uint
+			fmt.Print("Enter Examination ID: ")
+			fmt.Scan(&examID)
 			fmt.Print("Enter Student ID: ")
 			fmt.Scan(&studentID)
-			DisplayResultsByStudentID(db, resultController, studentID)
+			DisplayResultByExamStudent(db, resultController, examID, studentID)
 
 		case 3:
 			var resultID uint
@@ -64,8 +69,8 @@ func RunResultCLI(db *gorm.DB) {
 	}
 }
 
-func CreateResults(db *gorm.DB, resultController *result_controller.ResultController) {
-	err := resultController.CreateResults()
+func CreateResultByExamID(db *gorm.DB, resultController *result_controller.ResultController, examID uint) {
+	err := resultController.CreateResultByExamID(examID)
 	if err != nil {
 		fmt.Println("Failed to create results:", err)
 	} else {
@@ -73,8 +78,8 @@ func CreateResults(db *gorm.DB, resultController *result_controller.ResultContro
 	}
 }
 
-func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.ResultController, studentID uint) {
-	results, err := resultController.GetResultByStudent(studentID)
+func DisplayResultByExamStudent(db *gorm.DB, resultController *result_controller.ResultController, examID uint, studentID uint) {
+	results, err := resultController.GetResultByExamAndStudent(examID, studentID)
 	if err != nil {
 		fmt.Println("Error fetching results", err)
 		return
