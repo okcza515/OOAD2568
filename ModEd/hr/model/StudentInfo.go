@@ -11,10 +11,10 @@ type StudentInfo struct {
 	CitizenID   string `csv:"CitizenID" json:"CitizenID"`
 	PhoneNumber string `csv:"PhoneNumber" json:"PhoneNumber"`
 	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode"`
-    Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`	// Department  model.Department `csv:"Department" json:"Department"`
+    Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`	
 }
 
-func NewStudentInfo(StudentCode string, Gender string, CitizenID string, PhoneNumber string, advisorCode string) *StudentInfo {
+func NewStudentInfo(Stu model.Student, Gender string, CitizenID string, PhoneNumber string, advisorCode string) *StudentInfo {
 	return &StudentInfo{
 		Student:     Stu,
 		Gender:      Gender,
