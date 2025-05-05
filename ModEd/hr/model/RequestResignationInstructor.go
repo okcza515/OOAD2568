@@ -1,24 +1,21 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
+import "fmt"
 
 type RequestResignationInstructor struct {
-	gorm.Model
-	InstructorCode string `gorm:"not null"`        // อ้างถึง Instructor.InstructorID
-	Reason         string `gorm:"type:text"`       // optional เหตุผลลาออก
-	Status         string `gorm:"default:Pending"` // Pending / Approved / Rejected
+	BaseStandardRequest
+	InstructorCode string `gorm:"not null"`
 }
 
-func (r RequestResignationInstructor) GetID() string {
-	return r.InstructorCode
-}
-
-func (r RequestResignationInstructor) GetReason() string {
-	return r.Reason
-}
-
-func (r RequestResignationInstructor) GetStatus() string {
-	return r.Status
+func (r *RequestResignationInstructor) ApplyStatus(action, reason string) error {
+	switch action {
+	case "approve":
+		r.Status = action
+	case "reject":
+		r.Status = action
+		r.Reason = reason
+	default:
+		return fmt.Errorf("invalid action: %q", action)
+	}
+	return nil
 }

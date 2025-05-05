@@ -2,6 +2,7 @@
 package cli
 
 import (
+	"ModEd/core/cli"
 	"ModEd/recruit/model"
 	"ModEd/recruit/util"
 	"bufio"
@@ -10,34 +11,52 @@ import (
 	"strconv"
 )
 
-func ShowApplicantReportCLI(
-	ApplicantReportService ApplicantReportService,
-	InterviewService InterviewService,
-) {
+type ApplicantReportMenuState struct {
+	manager          *cli.CLIMenuStateManager
+	reportService    ApplicantReportService
+	interviewService InterviewService
+	parent           cli.MenuState
+}
+
+func NewApplicantReportMenuState(
+	manager *cli.CLIMenuStateManager,
+	reportService ApplicantReportService,
+	interviewService InterviewService,
+	parent cli.MenuState,
+) *ApplicantReportMenuState {
+	return &ApplicantReportMenuState{
+		manager:          manager,
+		reportService:    reportService,
+		interviewService: interviewService,
+		parent:           parent,
+	}
+}
+
+func (menu *ApplicantReportMenuState) Render() {
 	util.ClearScreen()
-	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Enter Applicantion Report ID to view the report: ")
+}
 
-	fmt.Print("Enter Applicant ID to view the report: ")
-	scanner.Scan()
-	applicantIDStr := scanner.Text()
-
-	applicantID, err := strconv.ParseUint(applicantIDStr, 10, 32)
+func (menu *ApplicantReportMenuState) HandleUserInput(input string) error {
+	applicantID, err := strconv.ParseUint(input, 10, 32)
 	if err != nil {
 		fmt.Println("Invalid applicant ID:", err)
-		return
+	} else {
+		report, err := menu.reportService.GetFullApplicationReportByApplicationID(uint(applicantID))
+		if err != nil {
+			fmt.Println("Error fetching application report:", err)
+		} else {
+			displayApplicantReport(report)
+			if report != nil && report.ApplicationStatuses == model.InterviewStage {
+				ReportInterviewDetails(menu.interviewService, uint(applicantID))
+			}
+		}
 	}
 
-	report, err := ApplicantReportService.GetFullApplicationReportByApplicantID(uint(applicantID))
-	if err != nil {
-		fmt.Println("Error fetching application report:", err)
-		return
-	}
-
-	displayApplicantReport(report)
-
-	if report != nil && report.ApplicationStatuses == model.InterviewStage {
-		ReportInterviewDetails(InterviewService, uint(applicantID))
-	}
+	fmt.Println("\nPress Enter to return...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	menu.manager.SetState(menu.parent)
+	return nil
 }
 
 func displayApplicantReport(report *model.ApplicationReport) {
@@ -80,8 +99,8 @@ func ReportInterviewDetails(interviewService InterviewService, applicantID uint)
 	}
 
 	scoreText := "N/A"
-	if interview.InterviewScore != nil {
-		scoreText = fmt.Sprintf("%.2f", *interview.InterviewScore)
+	if interview.TotalScore != 0 {
+		scoreText = fmt.Sprintf("%.2f", *&interview.TotalScore)
 	}
 
 	fmt.Println("\n==== Interview Details ====")

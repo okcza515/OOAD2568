@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClassMaterialService interface {
+type ClassMaterialInterface interface {
 	//AddClassMaterial(material *model.ClassMaterial) error
 	Insert(data model.ClassMaterial) error
 	//GetClassMaterialsByClassId(classId uint) ([]model.ClassMaterial, error)
@@ -25,7 +25,7 @@ type ClassMaterialController struct {
 	Connector *gorm.DB
 }
 
-func CreateClassMaterialController(db *gorm.DB) *ClassMaterialController {
+func NewClassMaterialController(db *gorm.DB) *ClassMaterialController {
 	return &ClassMaterialController{
 		BaseController: core.NewBaseController[*model.ClassMaterial](db),
 		Connector:      db,

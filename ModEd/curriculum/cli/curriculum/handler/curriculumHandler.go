@@ -2,69 +2,38 @@
 package handler
 
 import (
+	"ModEd/common/model"
 	controller "ModEd/curriculum/controller"
 	"ModEd/curriculum/utils"
 	"fmt"
+	"strconv"
 )
 
 const (
-	defaultCurriculumDataPath = "../../data/curriculum/curriculum.json"
+	defaultCurriculumDataPath = "../data/curriculum/curriculum.json"
 )
 
-func RunCurriculumCLIHandler(curriculumController controller.CurriculumControllerInterface) {
-	for {
-		printCurriculumMenu()
-		choice := utils.GetUserChoice()
+type curriculumHandler struct {
+	curriculumController controller.CurriculumControllerInterface
+}
 
-		switch choice {
-		case "1":
-			dataPath := utils.GetInputDataPath("curriculum", defaultCurriculumDataPath)
-			_, err := curriculumController.CreateSeedCurriculum(dataPath)
-			if err != nil {
-				fmt.Println("Error creating seed curriculum:", err)
-			}
-			return
-		case "2":
-			err := listCurriculums(curriculumController)
-			if err != nil {
-				fmt.Println("Error listing curriculums:", err)
-			}
-		case "3":
-			err := getCurriculumById(curriculumController)
-			if err != nil {
-				fmt.Println("Error getting curriculum:", err)
-			}
-		case "4":
-			err := updateCurriculumById(curriculumController)
-			if err != nil {
-				fmt.Println("Error updating curriculum:", err)
-			}
-		case "5":
-			err := deleteCurriculumById(curriculumController)
-			if err != nil {
-				fmt.Println("Error deleting curriculum:", err)
-			}
-		case "0":
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option")
-		}
+func newCurriculumHandler(curriculumController controller.CurriculumControllerInterface) *curriculumHandler {
+	return &curriculumHandler{
+		curriculumController: curriculumController,
 	}
 }
 
-func printCurriculumMenu() {
-	fmt.Println("\nCurriculum Menu:")
-	fmt.Println("1. Create Seed Curriculum")
-	fmt.Println("2. List all Curriculums")
-	fmt.Println("3. Get Curriculum by Id")
-	fmt.Println("4. Update Curriculum by Id")
-	fmt.Println("5. Delete Curriculum by Id")
-	fmt.Println("0. Exit")
+func (h *curriculumHandler) createSeedCurriculum() (err error) {
+	dataPath := utils.GetInputDataPath("curriculum", defaultCurriculumDataPath)
+	_, err = h.curriculumController.CreateSeedCurriculum(dataPath)
+	if err != nil {
+		fmt.Println("Error creating seed curriculum:", err)
+		return err
+	}
+	return nil
 }
-
-func listCurriculums(curriculumController controller.CurriculumControllerInterface) (err error) {
-	curriculums, err := curriculumController.GetCurriculums()
+func (h *curriculumHandler) listCurriculums() (err error) {
+	curriculums, err := h.curriculumController.GetCurriculums()
 	if err != nil {
 		fmt.Println("Error getting curriculums:", err)
 		return err
@@ -76,9 +45,9 @@ func listCurriculums(curriculumController controller.CurriculumControllerInterfa
 	return nil
 }
 
-func getCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
+func (h *curriculumHandler) getCurriculumById() (err error) {
 	curriculumId := utils.GetUserInputUint("Enter the curriculum ID: ")
-	curriculum, err := curriculumController.GetCurriculum(curriculumId)
+	curriculum, err := h.curriculumController.GetCurriculum(curriculumId)
 	if err != nil {
 		fmt.Println("Error getting curriculum:", err)
 		return err
@@ -87,21 +56,77 @@ func getCurriculumById(curriculumController controller.CurriculumControllerInter
 	return nil
 }
 
-func updateCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
-	//TODO: Implement update functionality
+func (h *curriculumHandler) updateCurriculumById() (err error) {
 	curriculumId := utils.GetUserInputUint("Enter the curriculum ID: ")
-	curriculum, err := curriculumController.GetCurriculum(curriculumId)
+	curriculum, err := h.curriculumController.GetCurriculum(curriculumId)
 	if err != nil {
 		fmt.Println("Error getting curriculum:", err)
 		return err
 	}
+
+	fmt.Println("\nCurrent curriculum information:")
 	curriculum.Print()
-	// Update fields
+
+	fmt.Println("\nEnter new values (leave blank to keep current value):")
+	newName := utils.GetUserInput(fmt.Sprintf("Name [%s]: ", curriculum.Name))
+	if newName != "" {
+		curriculum.Name = newName
+	}
+
+	newStartYear := utils.GetUserInput(fmt.Sprintf("Start Year [%d]: ", curriculum.StartYear))
+	if newStartYear != "" {
+		startYear, err := strconv.Atoi(newStartYear)
+		if err == nil {
+			curriculum.StartYear = startYear
+		} else {
+			fmt.Println("Invalid start year format, keeping current value")
+		}
+	}
+
+	newEndYear := utils.GetUserInput(fmt.Sprintf("End Year [%d]: ", curriculum.EndYear))
+	if newEndYear != "" {
+		endYear, err := strconv.Atoi(newEndYear)
+		if err == nil {
+			curriculum.EndYear = endYear
+		} else {
+			fmt.Println("Invalid end year format, keeping current value")
+		}
+	}
+
+	fmt.Println("Program Type Choice:")
+	for key, value := range model.ProgramTypeLabel {
+		fmt.Printf("%d. %s\n", key, value)
+	}
+	newProgramType := utils.GetUserInput(fmt.Sprintf("Program Type [%s]: ", curriculum.ProgramType))
+	if newProgramType != "" {
+		programType, err := strconv.Atoi(newProgramType)
+		if err == nil {
+			curriculum.ProgramType = model.ProgramType(programType)
+		} else {
+			fmt.Println("Invalid program type format, keeping current value")
+		}
+	}
+
+	confirm := utils.GetUserInput("Are you sure you want to update this curriculum? (y/n): ")
+	if confirm != "y" {
+		fmt.Println("Update cancelled.")
+		return nil
+	}
+
+	updatedCurriculum, err := h.curriculumController.UpdateCurriculum(curriculum)
+	if err != nil {
+		fmt.Println("Error updating curriculum:", err)
+		return err
+	}
+
+	fmt.Println("Curriculum updated successfully:")
+	updatedCurriculum.Print()
 
 	return nil
 }
-func deleteCurriculumById(curriculumController controller.CurriculumControllerInterface) (err error) {
-	curriculums, err := curriculumController.GetCurriculums()
+
+func (h *curriculumHandler) deleteCurriculumById() (err error) {
+	curriculums, err := h.curriculumController.GetCurriculums()
 	if err != nil {
 		fmt.Println("Error getting curriculums:", err)
 		return err
@@ -119,7 +144,7 @@ func deleteCurriculumById(curriculumController controller.CurriculumControllerIn
 		return nil
 	}
 
-	_, err = curriculumController.DeleteCurriculum(curriculumId)
+	_, err = h.curriculumController.DeleteCurriculum(curriculumId)
 	if err != nil {
 		fmt.Println("Error deleting curriculum:", err)
 		return err

@@ -50,6 +50,14 @@ func (c *Class) Validate() error {
 
 // Testing functions
 func (c *Class) Print() {
-	fmt.Printf("Class Id: %d, Course Id: %d, Section: %d, Schedule: %s\n",
-		c.ClassId, c.CourseId, c.Section, c.Schedule)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("CLASS DETAILS %-58s\n", "")
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
+	fmt.Printf("ID:          %-60d\n", c.ClassId)
+	fmt.Printf("Course Id:   %-60d\n", c.CourseId)
+	fmt.Printf("Section:     %-60d\n", c.Section)
+	fmt.Printf("Schedule:    %-60s\n", c.Schedule)
+	fmt.Printf("Created At:  %-60s\n", c.CreatedAt)
+	fmt.Printf("Updated At:  %-60s\n", c.UpdatedAt)
+	fmt.Println("───────────────────────────────────────────────────────────────────────────")
 }

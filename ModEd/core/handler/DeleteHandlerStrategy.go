@@ -22,18 +22,18 @@ func NewDeleteHandlerStrategy[T core.RecordInterface](controller interface {
 	return &DeleteHandlerStrategy[T]{controller: controller}
 }
 
-func (cs DeleteHandlerStrategy[T]) Execute() error {
+func (handler DeleteHandlerStrategy[T]) Execute() error {
 
-	records, err := cs.controller.List(nil)
+	records, err := handler.controller.List(nil)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(fmt.Sprintf("Total %v record(s)", len(records)))
+	fmt.Printf("Total %v record(s)\n", len(records))
 	fmt.Println()
 
 	for _, record := range records {
-		fmt.Println(record.ToString())
+		fmt.Println(record)
 	}
 
 	fmt.Print("Enter ID to delete: ")
@@ -45,7 +45,7 @@ func (cs DeleteHandlerStrategy[T]) Execute() error {
 		fmt.Println("Invalid ID format. Please enter a valid number.")
 		return nil
 	}
-	err = cs.controller.DeleteByID(uint(idNum))
+	err = handler.controller.DeleteByID(uint(idNum))
 	if err != nil {
 		fmt.Println("Error deleting record:", err)
 		return nil

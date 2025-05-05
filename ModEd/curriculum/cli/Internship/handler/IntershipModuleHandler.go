@@ -1,34 +1,37 @@
-// MEP-1009 Student Internship
 package handler
 
 import (
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
-	model "ModEd/curriculum/model"
+	"ModEd/curriculum/model"
+	"ModEd/curriculum/utils"
 	"fmt"
-	"time"
 )
 
 type InternShipModuleMenuStateHandler struct {
 	menuManager *cli.CLIMenuStateManager
 	wrapper     *controller.InternshipModuleWrapper
+
+	InternshipApplicationMenuStateHandler *InternshipApplicationHandler
+	InternshipEvaluationMenuStateHandler  *InternshipEvaluationHandler
 }
 
 func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternShipModuleMenuStateHandler {
-	InternshipModuleHandler := &InternShipModuleMenuStateHandler{
+	InternshipModule := &InternShipModuleMenuStateHandler{
 		menuManager: manager,
 		wrapper:     wrapper,
 	}
+	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
+	InternshipModule.InternshipEvaluationMenuStateHandler = NewInternshipEvaluationHandler(manager, wrapper)
 
-	return InternshipModuleHandler
+	return InternshipModule
 }
 
 func (handler *InternShipModuleMenuStateHandler) Render() {
 	fmt.Println("\n==== Internship Application System ====")
-	fmt.Println("1. Create Internship Application")
-	fmt.Println("2. Evaluation Student Performance")
-	fmt.Println("3. Evaluation Student Report")
-	fmt.Println("4. Update Approval Status")
+	fmt.Println("1. Application Management")
+	fmt.Println("2. Evaluate Student Performance")
+	fmt.Println("3. Update Approval Status")
 	fmt.Println("Type 'exit' to quit")
 	fmt.Print("Enter your choice: ")
 }
@@ -36,27 +39,49 @@ func (handler *InternShipModuleMenuStateHandler) Render() {
 func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		// Create a emporary internship application
-		application := &model.InternshipApplication{
-			TurninDate:            time.Now(),
-			ApprovalAdvisorStatus: model.WAIT,
-			ApprovalCompanyStatus: model.WAIT,
-			AdvisorCode:           0,
-			InternshipReportId:    0,
-			SupervisorReviewId:    0,
-			CompanyId:             0,
-			StudentCode:           "65070501070",
-		}
-		handler.wrapper.InternshipApplication.RegisterInternshipApplications([]*model.InternshipApplication{application})
+		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
+		return nil
 	case "2":
-		handler.wrapper.Report.UpdateReportScore("65070501070", 0)
+		handler.menuManager.SetState(handler.InternshipEvaluationMenuStateHandler)
+		return nil
 	case "3":
-		handler.wrapper.Review.UpdateReviewScore("65070501070", 0, 0)
-	case "4":
-		handler.wrapper.Approved.UpdateApprovalStatuses("65070501070", model.APPROVED, model.APPROVED)
+		err := handler.handleUpdateApprovalStatus()
+		if err != nil {
+			fmt.Println("Error updating approval status:", err)
+		}
+		return err
+	case "exit":
+		fmt.Println("Exiting...")
+		return nil
 	default:
 		fmt.Println("Invalid input")
+		return nil
+	}
+}
+
+func (handler *InternShipModuleMenuStateHandler) handleUpdateApprovalStatus() error {
+	studentCode := utils.GetUserInput("Enter Student Code: ")
+	if studentCode == "" {
+		return fmt.Errorf("error: student code cannot be empty")
 	}
 
+	advisorStatusStr := utils.GetUserInput("Enter Advisor Approval Status (APPROVED/REJECT): ")
+	if advisorStatusStr != string(model.APPROVED) && advisorStatusStr != string(model.REJECT) {
+		return fmt.Errorf("error: invalid advisor approval status, must be 'APPROVED' or 'REJECT'")
+	}
+	advisorStatus := model.ApprovedStatus(advisorStatusStr)
+
+	companyStatusStr := utils.GetUserInput("Enter Company Approval Status (APPROVED/REJECT): ")
+	if companyStatusStr != string(model.APPROVED) && companyStatusStr != string(model.REJECT) {
+		return fmt.Errorf("error: invalid company approval status, must be 'APPROVED' or 'REJECT'")
+	}
+	companyStatus := model.ApprovedStatus(companyStatusStr)
+
+	err := handler.wrapper.Approved.UpdateApprovalStatuses(studentCode, advisorStatus, companyStatus)
+	if err != nil {
+		return fmt.Errorf("error updating approval statuses: %w", err)
+	}
+
+	fmt.Println("Approval statuses updated successfully!")
 	return nil
 }

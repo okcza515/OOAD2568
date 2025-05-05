@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/gocarina/gocsv"
 	"gorm.io/gorm"
@@ -18,9 +19,9 @@ type StudentHRController struct {
 	db *gorm.DB
 }
 
-// CreateStudentHRController creates a new instance of StudentHRController
+// NewStudentHRController creates a new instance of StudentHRController
 // and automigrates the StudentInfo model.
-func createStudentHRController(db *gorm.DB) *StudentHRController {
+func NewStudentHRController(db *gorm.DB) *StudentHRController {
 	db.AutoMigrate(&model.StudentInfo{})
 	return &StudentHRController{db: db}
 }
@@ -58,71 +59,83 @@ func (c *StudentHRController) delete(sid string) error {
 	return c.db.Where("student_code = ?", sid).Delete(&model.StudentInfo{}).Error
 }
 
-// UpdateStatus updates the status of a student by SID.
-func (c *StudentHRController) updateStatus(sid string, status commonModel.StudentStatus) error {
-	// First retrieve the student record
-	var studentInfo model.StudentInfo
-	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
-		return err
-	}
-
-	// Update the status field
-	studentInfo.Status = &status
-
-	// Save the updated record
-	return c.db.Save(&studentInfo).Error
-}
-
-func GetAllStudents(tx *gorm.DB) ([]*model.StudentInfo, error) {
-	controller := createStudentHRController(tx)
-	studentInfos, err := controller.getAll()
+func (c *StudentHRController) GetAllStudents() ([]*model.StudentInfo, error) {
+	studentInfos, err := c.getAll()
 	if err != nil {
 		return nil, fmt.Errorf("error fetching students: %v", err)
 	}
 	return studentInfos, nil
 }
 
-func AddStudent(db *gorm.DB,
-	studentCode string, firstName string, lastName string, gender string, citizenID string, phone string, email string,
+func (c *StudentHRController) AddStudent(
+	studentCode string, firstName string, lastName string, email string, startDate string, birthdate string, program string, department string, status string,
+	gender string, citizenID string, phoneNumber string,
 ) error {
-	tm := &util.TransactionManager{DB: db}
+	startDateParsed, err := time.Parse("02-01-2006", startDate)
+	if err != nil {
+		return fmt.Errorf("failed to parse start date: %w", err)
+	}
 
-	err := tm.Execute(func(tx *gorm.DB) error {
-		// 1) common record
-		// common := &commonModel.Student{
-		// 	StudentCode: studentCode,
-		// 	FirstName:   firstName,
-		// 	LastName:    lastName,
-		// 	Email:       email,
-		// }
-		// if err := commonController.CreateStudentController(tx).Create(common); err != nil {
-		// 	return fmt.Errorf("common.Create failed: %w", err)
-		// }
+	birthDateParsed, err := time.Parse("02-01-2006", birthdate)
+	if err != nil {
+		return fmt.Errorf("failed to parse birth date: %w", err)
+	}
+
+	programParsed, err := util.ProgramTypeFromString(program)
+	if err != nil {
+		return fmt.Errorf("failed to parse program: %w", err)
+	}
+
+	statusParse, err := util.StatusFromString(status)
+	if err != nil {
+		return fmt.Errorf("failed to parse status: %w", err)
+	}
+
+	tm := &util.TransactionManager{DB: c.db}
+
+	err = tm.Execute(func(tx *gorm.DB) error {
+		common := &commonModel.Student{
+			StudentCode: studentCode,
+			FirstName:   firstName,
+			LastName:    lastName,
+			Email:       email,
+			StartDate:   startDateParsed,
+			BirthDate:   birthDateParsed,
+			Program:     programParsed,
+			Department:  department,
+			Status:      &statusParse,
+		}
+
+		if err := commonModel.ManualAddStudent(tx, common); err != nil {
+			return fmt.Errorf("Insert failed in common model: %w", err)
+		}
 
 		if migrateErr := MigrateStudentsToHR(tx); migrateErr != nil {
 			return fmt.Errorf("MigrateStudentsToHR failed: %w", migrateErr)
 		}
 
-		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phone)
+		hrInfo := model.NewStudentInfo(studentCode, gender, citizenID, phoneNumber)
 
-		if insertErr := createStudentHRController(tx).insert(hrInfo); insertErr != nil {
-			return fmt.Errorf("failed to insert HR student info: %w", insertErr)
+		studentController := NewStudentHRController(tx)
+		if updateErr := studentController.update(hrInfo); updateErr != nil {
+			return fmt.Errorf("failed to update HR student info: %w", updateErr)
 		}
 		return nil
 	})
 	return err
 }
 
-func DeleteStudent(db *gorm.DB, studentID string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *StudentHRController) DeleteStudent(studentID string) error {
+	tm := &util.TransactionManager{DB: c.db}
 
 	err := tm.Execute(func(tx *gorm.DB) error {
-		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.DeleteByCode(studentID); err != nil {
+		commonStudentController := commonController.CreateStudentController(tx)
+		if err := commonStudentController.DeleteByCode(studentID); err != nil {
 			return fmt.Errorf("failed to delete student from common data: %w", err)
 		}
 
-		if err := createStudentHRController(tx).delete(studentID); err != nil {
+		studentController := NewStudentHRController(tx)
+		if err := studentController.delete(studentID); err != nil {
 			return fmt.Errorf("failed to delete student HR info: %w", err)
 		}
 
@@ -131,26 +144,33 @@ func DeleteStudent(db *gorm.DB, studentID string) error {
 	return err
 }
 
-func UpdateStudentInfo(db *gorm.DB, studentID, firstName, lastName, gender, citizenID, phoneNumber, email string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *StudentHRController) UpdateStudentInfo(
+	studentCode string, firstName string, lastName string, email string,
+	gender string, citizenID string, phoneNumber string,
+) error {
+	tm := &util.TransactionManager{DB: c.db}
 	err := tm.Execute(func(tx *gorm.DB) error {
 		// Retrieve the existing HR info using StudentHRController.
-		controller := createStudentHRController(tx)
-		studentInfo, err := controller.getById(studentID)
+		studentController := NewStudentHRController(tx)
+		studentInfo, err := studentController.getById(studentCode)
 		if err != nil {
-			return fmt.Errorf("error retrieving student with ID %s: %v", studentID, err)
+			return fmt.Errorf("error retrieving student with ID %s: %v", studentCode, err)
 		}
 
 		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
 
 		// 1) Update common student data.
 		studentData := map[string]any{
-			"FirstName": updatedStudent.FirstName,
-			"LastName":  updatedStudent.LastName,
-			"Email":     updatedStudent.Email,
+			"FirstName":  updatedStudent.FirstName,
+			"LastName":   updatedStudent.LastName,
+			"Email":      updatedStudent.Email,
+			"Program":    updatedStudent.Program,
+			"Department": updatedStudent.Department,
+			"Status":     updatedStudent.Status,
 		}
-		studentController := commonController.CreateStudentController(tx)
-		if err := studentController.Update(studentID, studentData); err != nil {
+
+		commonStudentController := commonController.CreateStudentController(tx)
+		if err := commonStudentController.Update(studentCode, studentData); err != nil {
 			return fmt.Errorf("failed to update common student data: %v", err)
 		}
 
@@ -160,7 +180,8 @@ func UpdateStudentInfo(db *gorm.DB, studentID, firstName, lastName, gender, citi
 		}
 
 		// 3) Update HR-specific student info using the controller directly.
-		if err := controller.update(updatedStudent); err != nil {
+		studentHRData := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
+		if err := studentController.update(studentHRData); err != nil {
 			return fmt.Errorf("failed to update student HR info: %v", err)
 		}
 		return nil
@@ -168,8 +189,8 @@ func UpdateStudentInfo(db *gorm.DB, studentID, firstName, lastName, gender, citi
 	return err
 }
 
-func ImportStudents(db *gorm.DB, filepath string) error {
-	tm := &util.TransactionManager{DB: db}
+func (c *StudentHRController) ImportStudents(filepath string) error {
+	tm := &util.TransactionManager{DB: c.db}
 
 	err := tm.Execute(func(tx *gorm.DB) error {
 		hrMapper, err := core.CreateMapper[model.StudentInfo](filepath)
@@ -190,9 +211,9 @@ func ImportStudents(db *gorm.DB, filepath string) error {
 			}
 		}
 
-		controller := createStudentHRController(tx)
+		studentController := NewStudentHRController(tx)
 		for studentCode, hrRec := range hrRecordsMap {
-			studentInfo, err := controller.getById(studentCode)
+			studentInfo, err := studentController.getById(studentCode)
 			if err != nil {
 				return fmt.Errorf("error retrieving student with ID %s: %w", studentCode, err)
 			}
@@ -207,7 +228,7 @@ func ImportStudents(db *gorm.DB, filepath string) error {
 				studentInfo.Email,
 			)
 
-			if err := controller.update(importStudent); err != nil {
+			if err := studentController.update(importStudent); err != nil {
 				return fmt.Errorf("failed to update student %s: %w", importStudent.StudentCode, err)
 			}
 		}
@@ -216,7 +237,7 @@ func ImportStudents(db *gorm.DB, filepath string) error {
 	return err
 }
 
-func ExportStudents(tx *gorm.DB, filePath string, format string) error {
+func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, format string) error {
 	fileInfo, err := os.Stat(filePath)
 	if err == nil && fileInfo.IsDir() {
 		switch format {
@@ -230,8 +251,7 @@ func ExportStudents(tx *gorm.DB, filePath string, format string) error {
 	}
 
 	// Fetch all student records
-	controller := createStudentHRController(tx)
-	studentInfos, err := controller.getAll()
+	studentInfos, err := c.getAll()
 	if err != nil {
 		return fmt.Errorf("error fetching students: %v", err)
 	}

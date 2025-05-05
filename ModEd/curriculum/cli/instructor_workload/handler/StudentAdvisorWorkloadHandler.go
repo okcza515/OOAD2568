@@ -10,7 +10,7 @@ import (
 	commonModel "ModEd/common/model"
 )
 
-func RunStudentAdvisorWorkloadHandler(controller controller.StudentWorkloadService) {
+func RunStudentAdvisorWorkloadHandler(controller controller.StudentWorkloadInterface) {
 	for {
 		DisplayStudentAdvisorWorkloadModuleMenu()
 		choice := utils.GetUserChoice()

@@ -14,8 +14,6 @@ import (
 type SupplyMenuState struct {
 	manager *cli.CLIMenuStateManager
 
-	assetMainMenu *AssetMenuState
-
 	insertHandlerStrategy *handler.InsertHandlerStrategy[model.Supply]
 	listHandlerStrategy   *handler.ListHandlerStrategy[model.Supply]
 	deleteHandlerStrategy *handler.DeleteHandlerStrategy[model.Supply]
@@ -23,13 +21,12 @@ type SupplyMenuState struct {
 }
 
 func NewSupplyMenuState(
-	manager *cli.CLIMenuStateManager, assetMainMenu *AssetMenuState,
+	manager *cli.CLIMenuStateManager,
 ) *SupplyMenuState {
 	controllerInstance := controller.GetAssetInstance().Supply
 
 	return &SupplyMenuState{
 		manager:               manager,
-		assetMainMenu:         assetMainMenu,
 		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerInstance),
 		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerInstance),
 		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerInstance),
@@ -55,35 +52,38 @@ func (menu *SupplyMenuState) Render() {
 }
 
 func (menu *SupplyMenuState) HandleUserInput(input string) error {
-	context := &handler.HandlerContext{}
+	//context := &handler.HandlerContext{}
 
 	switch input {
 	case "1":
 		fmt.Println("Add New Supply")
-		context.SetStrategy(menu.insertHandlerStrategy)
+		//context.SetStrategy(menu.insertHandlerStrategy)
 	case "2":
 		fmt.Println("List all Supply")
-		context.SetStrategy(menu.listHandlerStrategy)
+		//context.SetStrategy(menu.listHandlerStrategy)
 	case "3":
 		fmt.Println("Get detail of an Supply")
 	case "4":
 		fmt.Println("Update an Supply")
-		context.SetStrategy(menu.updateHandlerStrategy)
+		//context.SetStrategy(menu.updateHandlerStrategy)
 	case "5":
 		fmt.Println("Delete an Supply")
-		context.SetStrategy(menu.deleteHandlerStrategy)
+		//context.SetStrategy(menu.deleteHandlerStrategy)
 	case "back":
-		menu.manager.SetState(menu.assetMainMenu)
+		err := menu.manager.GoToMenu(string(MENU_ASSET))
+		if err != nil {
+			return err
+		}
 		return nil
 	default:
-		context.SetStrategy(handler.DoNothingHandlerStrategy{})
+		//context.SetStrategy(handler.DoNothingHandlerStrategy{})
 		fmt.Println("Invalid Command")
 	}
 
-	err := context.Execute()
-	if err != nil {
-		fmt.Println(err)
-	}
+	//err := context.HandleInput()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	util.PressEnterToContinue()
 

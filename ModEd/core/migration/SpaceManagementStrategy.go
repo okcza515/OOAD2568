@@ -12,6 +12,7 @@ func (s *SpaceManagementMigrationStrategy) GetModels() []interface{} {
 		&model.InstrumentManagement{},
 		&model.SupplyManagement{},
 		&model.Booking{},
+		&model.TimeTable{},
 		&model.PermanentSchedule{},
 		&model.Room{},
 	}

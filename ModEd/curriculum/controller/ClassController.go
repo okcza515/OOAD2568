@@ -41,7 +41,7 @@ func (c *ClassController) CreateClass(class *model.Class) (classId uint, err err
 }
 
 func (c *ClassController) GetClass(classId uint, preload ...string) (class *model.Class, err error) {
-	class, err = c.core.RetrieveByID(classId, preload...)
+	class, err = c.core.RetrieveByCondition(map[string]interface{}{"class_id": classId}, preload...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *ClassController) GetClasses(preload ...string) (classes []*model.Class,
 }
 
 func (c *ClassController) UpdateClass(updatedClass *model.Class) (class *model.Class, err error) {
-	class, err = c.core.RetrieveByID(updatedClass.ClassId)
+	class, err = c.core.RetrieveByCondition(map[string]interface{}{"class_id": updatedClass.ClassId})
 	if err != nil {
 		return nil, err
 	}
@@ -66,19 +66,19 @@ func (c *ClassController) UpdateClass(updatedClass *model.Class) (class *model.C
 	class.Schedule = updatedClass.Schedule
 	class.Section = updatedClass.Section
 
-	if err := c.core.UpdateByID(class); err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"class_id": updatedClass.ClassId}, class); err != nil {
 		return nil, err
 	}
 	return class, nil
 }
 
 func (c *ClassController) DeleteClass(classId uint) (class *model.Class, err error) {
-	class, err = c.core.RetrieveByID(classId)
+	class, err = c.core.RetrieveByCondition(map[string]interface{}{"class_id": classId})
 	if err != nil {
 		return nil, err
 	}
 
-	if err := c.core.DeleteByID(classId); err != nil {
+	if err := c.core.DeleteByCondition(map[string]interface{}{"class_id": classId}); err != nil {
 		return nil, err
 	}
 	return class, nil

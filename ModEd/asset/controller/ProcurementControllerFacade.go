@@ -15,8 +15,9 @@ type ProcurementControllerFacade struct {
 	RequestedItem               InstrumentRequestController
 	SupplierSelectionController SupplierSelectionController
 	BudgetApproval              BudgetApprovalController
-	BudgetAllocation            BudgetAllocationController
-	ProcurementApproval         ProcurementApprovalController
+	Procurement                 ProcurementController
+	// BudgetAllocation            BudgetAllocationController
+	//ProcurementApproval ProcurementApprovalController
 }
 
 func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
@@ -33,8 +34,8 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	facade.RequestedItem = InstrumentRequestController{db: db}
 	facade.SupplierSelectionController = SupplierSelectionController{db: db}
 	facade.BudgetApproval = BudgetApprovalController{db: db}
-	facade.BudgetAllocation = BudgetAllocationController{db: db}
-	facade.ProcurementApproval = ProcurementApprovalController{db: db}
+	facade.Procurement = ProcurementController{db: db}
+	// facade.BudgetAllocation = BudgetAllocationController{db: db}
 
 	// fmt.Println("I'm In Facade yippie!")
 	err = facade.migration.migrateToDB()

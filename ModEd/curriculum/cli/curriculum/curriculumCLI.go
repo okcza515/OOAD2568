@@ -3,45 +3,46 @@ package curriculum
 
 import (
 	"ModEd/curriculum/cli/curriculum/handler"
-	curriculumController "ModEd/curriculum/controller"
-	"ModEd/curriculum/utils"
+	"ModEd/curriculum/controller"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
-func RunCurriculumModuleCLI(
-	db *gorm.DB,
-	courseController curriculumController.CourseControllerInterface,
-	classController curriculumController.ClassControllerInterface,
-	curriculumController curriculumController.CurriculumControllerInterface,
-) {
+type CurriculumCLIParams struct {
+	CurriculumController controller.CurriculumControllerInterface
+	CourseController     controller.CourseControllerInterface
+	ClassController      controller.ClassControllerInterface
+}
 
-	input := ""
-	for input != "exit" {
-		displayOptions()
-		choice := utils.GetUserChoice()
-		fmt.Println("choice: ", choice)
-		switch choice {
-		case "1":
-			handler.RunCurriculumCLIHandler(curriculumController)
-		case "2":
-			handler.RunCourseCLIHandler(courseController)
-		case "3":
-			handler.RunClassCLIHandler(classController)
-		case "0":
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid option. Please try again.")
-		}
+func RunCurriculumModuleCLI(params *CurriculumCLIParams) {
+	handlerParams := &handler.CurriculumCLIParams{
+		CurriculumController: params.CurriculumController,
+		CourseController:     params.CourseController,
+		ClassController:      params.ClassController,
+	}
+
+	mainState := handler.NewMainMenuState(handlerParams)
+
+	stateManager := handler.NewMenuStateManager(mainState)
+
+	// Run menu state manager
+	err := stateManager.Run()
+	if err != nil {
+		fmt.Println("Error:", err)
 	}
 }
 
-func displayOptions() {
+func printCurriculumMenu() {
 	fmt.Println("\nCurriculum Module Menu:")
 	fmt.Println("1. Curriculum")
 	fmt.Println("2. Course")
 	fmt.Println("3. Class")
 	fmt.Println("0. Exit")
+}
+
+func newCurriculumCLI(params *CurriculumCLIParams) *CurriculumCLIParams {
+	return &CurriculumCLIParams{
+		CurriculumController: params.CurriculumController,
+		CourseController:     params.CourseController,
+		ClassController:      params.ClassController,
+	}
 }

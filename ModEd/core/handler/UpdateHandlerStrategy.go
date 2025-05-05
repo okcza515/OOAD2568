@@ -14,7 +14,7 @@ func NewUpdateHandlerStrategy[T core.RecordInterface](controller interface{ Upda
 	return &UpdateHandlerStrategy[T]{controller: controller}
 }
 
-func (cs UpdateHandlerStrategy[T]) Execute() error {
+func (handler UpdateHandlerStrategy[T]) Execute() error {
 	path := ""
 	fmt.Println("Please enter the path of the records (csv or json): ")
 	_, err := fmt.Scanln(&path)
@@ -33,7 +33,7 @@ func (cs UpdateHandlerStrategy[T]) Execute() error {
 		return err
 	}
 
-	err = cs.controller.UpdateByID(recordModel[0])
+	err = handler.controller.UpdateByID(recordModel[0])
 	if err != nil {
 		return err
 	}

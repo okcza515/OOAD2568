@@ -2,17 +2,20 @@
 package model
 
 import (
+	master "ModEd/common/model"
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type Procurement struct {
-	gorm.Model
 	ProcurementID         uint              `gorm:"primaryKey"`
-	QuotationID           uint              `gorm:"index"`
-	InstrumentRequestID   uint              `gorm:"index"`
+	TORID                 uint              `gorm:"index"`
+	ApproverID            *uint             `gorm:"index"`
+	Approver              master.Instructor `gorm:"foreignKey:ApproverID"`
 	ProcurementApprovalID uint              `gorm:"foreignKey:ProcurementApprovalID"`
 	Status                ProcurementStatus `gorm:"type:varchar(50);default:'pending'"`
 	DeletedAt             gorm.DeletedAt    `gorm:"index"`
-	Quotation             Quotation         `gorm:"foreignKey:QuotationID"`
-	InstrumentRequest     InstrumentRequest `gorm:"foreignKey:InstrumentRequestID"`
+	ApprovalTime          *time.Time
+	TOR                   TOR
 }

@@ -14,7 +14,7 @@ type ApprovedController struct {
 	Connector *gorm.DB
 }
 
-func CreateApprovedController(connector *gorm.DB) *ApprovedController {
+func NewApprovedController(connector *gorm.DB) *ApprovedController {
 	return &ApprovedController{
 		Connector:      connector,
 		BaseController: core.NewBaseController[model.InternshipApplication](connector),

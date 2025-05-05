@@ -24,12 +24,12 @@ func TestCreateCurriculum(t *testing.T) {
 	curriculumController := controller.NewCurriculumController(db)
 
 	newCurriculum := model.Curriculum{
-		CurriculumId:   1001,
-		Name:           "Computer Science",
-		StartYear:      2023,
-		EndYear:        2027,
-		DepartmentName: "CS Dept",
-		ProgramType:    commonModel.INTERNATIONAL,
+		CurriculumId: 1001,
+		Name:         "Computer Science",
+		StartYear:    2023,
+		EndYear:      2027,
+		DepartmentId: 1,
+		ProgramType:  commonModel.INTERNATIONAL,
 	}
 
 	curriculumId, err := curriculumController.CreateCurriculum(&newCurriculum)
@@ -58,12 +58,12 @@ func TestGetCurriculum(t *testing.T) {
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
-		CurriculumId:   2001,
-		Name:           "Software Engineering",
-		StartYear:      2022,
-		EndYear:        2026,
-		DepartmentName: "SE Dept",
-		ProgramType:    commonModel.INTERNATIONAL,
+		CurriculumId: 2001,
+		Name:         "Software Engineering",
+		StartYear:    2022,
+		EndYear:      2026,
+		DepartmentId: 1,
+		ProgramType:  commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(&curriculum)
@@ -92,12 +92,12 @@ func TestGetCurriculums(t *testing.T) {
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
-		CurriculumId:   3001,
-		Name:           "Data Science",
-		StartYear:      2021,
-		EndYear:        2025,
-		DepartmentName: "DS Dept",
-		ProgramType:    commonModel.INTERNATIONAL,
+		CurriculumId: 3001,
+		Name:         "Data Science",
+		StartYear:    2021,
+		EndYear:      2025,
+		DepartmentId: 1,
+		ProgramType:  commonModel.INTERNATIONAL,
 	}
 
 	_, err = curriculumController.CreateCurriculum(&curriculum)
@@ -126,12 +126,12 @@ func TestUpdateCurriculum(t *testing.T) {
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
-		CurriculumId:   4001,
-		Name:           "Cybersecurity",
-		StartYear:      2024,
-		EndYear:        2028,
-		DepartmentName: "Cyber Dept",
-		ProgramType:    commonModel.INTERNATIONAL,
+		CurriculumId: 4001,
+		Name:         "Cybersecurity",
+		StartYear:    2024,
+		EndYear:      2028,
+		DepartmentId: 1,
+		ProgramType:  commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(&curriculum)
@@ -166,12 +166,12 @@ func TestDeleteCurriculum(t *testing.T) {
 	curriculumController := controller.NewCurriculumController(db)
 
 	curriculum := model.Curriculum{
-		CurriculumId:   5001,
-		Name:           "AI and Robotics",
-		StartYear:      2023,
-		EndYear:        2027,
-		DepartmentName: "AI Dept",
-		ProgramType:    commonModel.INTERNATIONAL,
+		CurriculumId: 5001,
+		Name:         "AI and Robotics",
+		StartYear:    2023,
+		EndYear:      2027,
+		DepartmentId: 1,
+		ProgramType:  commonModel.INTERNATIONAL,
 	}
 
 	id, err := curriculumController.CreateCurriculum(&curriculum)

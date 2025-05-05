@@ -2,53 +2,66 @@
 package main
 
 import (
-	handler "ModEd/asset/cli/spacemanagement/handler"
-	controller "ModEd/asset/controller"
-	util "ModEd/asset/util"
+	"ModEd/asset/cli/spacemanagement/menu"
+	"ModEd/asset/controller"
+	"ModEd/asset/util"
+	"ModEd/core"
+	"ModEd/core/cli"
+	"ModEd/core/migration"
+	"flag"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 func main() {
-	facade, err := controller.NewSpaceManagementControllerFacade()
+	db, err := initialSpaceManagementCLI()
 	if err != nil {
-		panic("err: initialize controllers failed")
+		panic(err)
 	}
 
-	input := ""
-	for input != "exit" {
-		util.ClearScreen()
-		util.PrintSpaceManagementBanner()
-		printOption()
-		input = util.GetCommandInput()
+	manager := cli.NewCLIMenuManager()
+	spaceManagementMenu := menu.NewSpaceManagementState(db, manager)
 
-		switch input {
-		case "1":
-			handler.InstrumentManagementHandler(facade)
-		case "2":
-			handler.SupplyManagementHandler(facade)
-		case "3":
-			handler.BookingHandler(facade)
-		case "4":
-			handler.PermanentBookingHandler(facade)
-		case "5":
-			handler.RoomHandler(facade)
+	manager.SetState(spaceManagementMenu)
+
+	for {
+		manager.Render()
+
+		manager.UserInput = util.GetCommandInput()
+		if manager.UserInput == "exit" {
+			break
 		}
-	}
-	if input == "exit" {
-		util.PrintByeBye()
+		err := manager.HandleUserInput()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
-func printOption() {
-	fmt.Println("\n===============================")
-	fmt.Println()
-	fmt.Println("Welcome to ModEd Space Management Service CLI!")
-	fmt.Println("Here is the list of page you can use, choose wisely!")
-	fmt.Println("  1:\tInstrument Management Page")
-	fmt.Println("  2:\tSupply Management Page")
-	fmt.Println("  3:\tBooking Page")
-	fmt.Println("  4:\tPermanent Schedule Page")
-	fmt.Println("  5:\tRoom Page")
-	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
-	fmt.Println()
+func initialSpaceManagementCLI() (db *gorm.DB, err error) {
+	util.ClearScreen()
+	optionFlag := flag.String("option", "", "seed")
+	flag.Parse()
+	db, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	if *optionFlag != "" {
+		instance := controller.GetSpaceManagementInstance(db)
+		switch *optionFlag {
+		case "reset":
+			fmt.Println("Resetting database...")
+			err = instance.ResetDB()
+		case "seed":
+			fmt.Println("Seeding database...")
+			err = instance.LoadSeedData()
+		default:
+			fmt.Println("Invalid option, please use 'reset' or 'seed'")
+		}
+	}
+
+	return db, err
 }

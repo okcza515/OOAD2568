@@ -40,7 +40,7 @@ func (c *CourseController) CreateCourse(course *model.Course) (courseId uint, er
 }
 
 func (c *CourseController) GetCourse(courseId uint, preload ...string) (course *model.Course, err error) {
-	course, err = c.core.RetrieveByID(courseId, preload...)
+	course, err = c.core.RetrieveByCondition(map[string]interface{}{"course_id": courseId}, preload...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *CourseController) GetCourses(preload ...string) (courses []*model.Cours
 }
 
 func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (course *model.Course, err error) {
-	course, err = c.core.RetrieveByID(updatedCourse.CourseId)
+	course, err = c.core.RetrieveByCondition(map[string]interface{}{"course_id": updatedCourse.CourseId})
 	if err != nil {
 		return nil, err
 	}
@@ -70,19 +70,19 @@ func (c *CourseController) UpdateCourse(updatedCourse *model.Course) (course *mo
 	// course.Prerequisite = updatedCourse.Prerequisite
 	// course.ClassList = updatedCourse.ClassList
 
-	if err := c.core.UpdateByID(course); err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"course_id": updatedCourse.CourseId}, course); err != nil {
 		return nil, err
 	}
 	return course, nil
 }
 
 func (c *CourseController) DeleteCourse(courseId uint) (course *model.Course, err error) {
-	course, err = c.core.RetrieveByID(courseId)
+	course, err = c.core.RetrieveByCondition(map[string]interface{}{"course_id": courseId})
 	if err != nil {
 		return nil, err
 	}
 
-	if err := c.core.DeleteByID(courseId); err != nil {
+	if err := c.core.DeleteByCondition(map[string]interface{}{"course_id": courseId}); err != nil {
 		return nil, err
 	}
 	return course, nil

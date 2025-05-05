@@ -2,231 +2,131 @@
   {
     "time_table_id": 1,
     "time_table": {
-      "start_date": "2025-05-01T08:00:00Z",
-      "end_date": "2025-05-01T10:00:00Z",
-      "room": {
-        "room_name": "Physics Lab A1",
-        "room_type": "Lab Room",
-        "description": "Physics laboratory for first-year students",
-        "floor": 2,
-        "building": "Science Building",
-        "location": "East Wing, Room 201",
-        "capacity": 30,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T08:00:00Z",
+      "end_date": "2025-05-10T10:00:00Z",
+      "room_id": 1,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 1,
+    "user_id": 101,
     "user_role": "Student",
-    "event_name": "Physics Lab Session"
+    "event_name": "Physics Lecture"
   },
   {
     "time_table_id": 2,
     "time_table": {
-      "start_date": "2025-05-02T10:00:00Z",
-      "end_date": "2025-05-02T12:00:00Z",
-      "room": {
-        "room_name": "Advanced Mathematics Room",
-        "room_type": "Lecture Room",
-        "description": "Lecture room for advanced calculus classes",
-        "floor": 3,
-        "building": "Math Building",
-        "location": "North Wing, Room 305",
-        "capacity": 50,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T10:00:00Z",
+      "end_date": "2025-05-10T12:00:00Z",
+      "room_id": 2,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 2,
-    "user_role": "Advisor",
-    "event_name": "Advanced Calculus Lecture"
+    "user_id": 102,
+    "user_role": "Student",
+    "event_name": "Calculus Class"
   },
   {
     "time_table_id": 3,
     "time_table": {
-      "start_date": "2025-05-03T09:00:00Z",
-      "end_date": "2025-05-03T11:00:00Z",
-      "room": {
-        "room_name": "Chemistry Research Lab",
-        "room_type": "Lab Room",
-        "description": "Research lab for chemistry majors",
-        "floor": 1,
-        "building": "Chemistry Building",
-        "location": "South Wing, Room 110",
-        "capacity": 20,
-        "is_room_out_of_service": true,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": false
+      "start_date": "2025-05-10T12:00:00Z",
+      "end_date": "2025-05-10T14:00:00Z",
+      "room_id": 3,
+      "is_available": false,
+      "booking_type": null
     },
-    "user_id": 3,
-    "user_role": "Student",
-    "event_name": "Chemistry Research Lab"
+    "user_id": null,
+    "user_role": null,
+    "event_name": null
   },
   {
     "time_table_id": 4,
     "time_table": {
-      "start_date": "2025-05-04T14:00:00Z",
-      "end_date": "2025-05-04T16:00:00Z",
-      "room": {
-        "room_name": "General Meeting Room 1",
-        "room_type": "Meeting Room",
-        "description": "Small meeting room for departmental meetings",
-        "floor": 4,
-        "building": "Administration Building",
-        "location": "West Wing, Room 410",
-        "capacity": 12,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T14:00:00Z",
+      "end_date": "2025-05-10T16:00:00Z",
+      "room_id": 4,
+      "is_available": true,
+      "booking_type": "permanent"
     },
-    "user_id": 4,
-    "user_role": "Admin",
-    "event_name": "Departmental Meeting"
+    "user_id": 103,
+    "user_role": "Advisor",
+    "event_name": "Meeting with Students"
   },
   {
     "time_table_id": 5,
     "time_table": {
-      "start_date": "2025-05-05T08:00:00Z",
-      "end_date": "2025-05-05T10:00:00Z",
-      "room": {
-        "room_name": "Computer Science Lecture Hall",
-        "room_type": "Lecture Room",
-        "description": "Large lecture hall with projectors and sound systems",
-        "floor": 1,
-        "building": "Technology Center",
-        "location": "Main Hall, Room 101",
-        "capacity": 120,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T16:00:00Z",
+      "end_date": "2025-05-10T18:00:00Z",
+      "room_id": 5,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 5,
-    "user_role": "Student",
-    "event_name": "Computer Science Lecture"
+    "user_id": 104,
+    "user_role": "Advisor",
+    "event_name": "Computer Science Seminar"
   },
   {
     "time_table_id": 6,
     "time_table": {
-      "start_date": "2025-05-06T10:00:00Z",
-      "end_date": "2025-05-06T12:00:00Z",
-      "room": {
-        "room_name": "Software Engineering Lab",
-        "room_type": "Lab Room",
-        "description": "Lab equipped with high-end computers",
-        "floor": 2,
-        "building": "Technology Center",
-        "location": "East Wing, Room 215",
-        "capacity": 40,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T18:00:00Z",
+      "end_date": "2025-05-10T20:00:00Z",
+      "room_id": 6,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 6,
-    "user_role": "Advisor",
-    "event_name": "Software Engineering Lab Session"
+    "user_id": 105,
+    "user_role": "Student",
+    "event_name": "SE Group Practice"
   },
   {
     "time_table_id": 7,
     "time_table": {
-      "start_date": "2025-05-07T13:00:00Z",
-      "end_date": "2025-05-07T15:00:00Z",
-      "room": {
-        "room_name": "Project Discussion Room",
-        "room_type": "Meeting Room",
-        "description": "Room for team project discussions and presentations",
-        "floor": 5,
-        "building": "Innovation Hub",
-        "location": "Top Floor, Room 501",
-        "capacity": 20,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T20:00:00Z",
+      "end_date": "2025-05-10T22:00:00Z",
+      "room_id": 7,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 7,
+    "user_id": 106,
     "user_role": "Student",
     "event_name": "Project Discussion"
   },
   {
     "time_table_id": 8,
     "time_table": {
-      "start_date": "2025-05-08T08:00:00Z",
-      "end_date": "2025-05-08T10:00:00Z",
-      "room": {
-        "room_name": "Business Strategies Lecture Room",
-        "room_type": "Lecture Room",
-        "description": "Lecture room for MBA courses",
-        "floor": 3,
-        "building": "Business School",
-        "location": "West Wing, Room 330",
-        "capacity": 60,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-10T22:00:00Z",
+      "end_date": "2025-05-10T23:59:00Z",
+      "room_id": 8,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 8,
+    "user_id": 107,
     "user_role": "Advisor",
-    "event_name": "MBA Course Lecture"
+    "event_name": "MBA Business Strategy"
   },
   {
     "time_table_id": 9,
     "time_table": {
-      "start_date": "2025-05-09T15:00:00Z",
-      "end_date": "2025-05-09T17:00:00Z",
-      "room": {
-        "room_name": "Electronics Lab",
-        "room_type": "Lab Room",
-        "description": "Electronics and circuit design lab",
-        "floor": 1,
-        "building": "Engineering Building",
-        "location": "Ground Floor, Room 102",
-        "capacity": 25,
-        "is_room_out_of_service": true,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": false
+      "start_date": "2025-05-10T23:59:00Z",
+      "end_date": "2025-05-11T00:00:00Z",
+      "room_id": 9,
+      "is_available": false,
+      "booking_type": null
     },
-    "user_id": 9,
-    "user_role": "Student",
-    "event_name": "Electronics Lab Session"
+    "user_id": null,
+    "user_role": null,
+    "event_name": null
   },
   {
     "time_table_id": 10,
     "time_table": {
-      "start_date": "2025-05-10T11:00:00Z",
-      "end_date": "2025-05-10T13:00:00Z",
-      "room": {
-        "room_name": "Board Meeting Room",
-        "room_type": "Meeting Room",
-        "description": "Executive level board meeting room",
-        "floor": 7,
-        "building": "Corporate Center",
-        "location": "Penthouse, Room 701",
-        "capacity": 15,
-        "is_room_out_of_service": false,
-        "instruments": [],
-        "supplies": []
-      },
-      "is_available": true
+      "start_date": "2025-05-11T00:00:00Z",
+      "end_date": "2025-05-11T01:00:00Z",
+      "room_id": 10,
+      "is_available": true,
+      "booking_type": "temporary"
     },
-    "user_id": 10,
+    "user_id": 108,
     "user_role": "Admin",
-    "event_name": "Board Meeting"
+    "event_name": "Executive Board Meeting"
   }
 ]

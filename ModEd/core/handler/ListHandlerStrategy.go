@@ -24,13 +24,16 @@ func NewListHandlerStrategy[T core.RecordInterface](
 	return &ListHandlerStrategy[T]{controller: controller, preloads: preloads}
 }
 
-func (cs ListHandlerStrategy[T]) Execute() error {
-	records, err := cs.controller.List(nil, cs.preloads...)
+func (handler ListHandlerStrategy[T]) Execute() error {
+	records, err := handler.controller.List(nil, handler.preloads...)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(fmt.Sprintf("Total %v record(s)", len(records)))
+	if len(records) == 0 {
+		fmt.Println("No records found.")
+		return nil
+	}
+	fmt.Printf("Total %v record(s)\n", len(records))
 	fmt.Println()
 
 	for _, record := range records {

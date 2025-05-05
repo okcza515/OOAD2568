@@ -55,14 +55,48 @@ func (c *BudgetApprovalController) DeleteBudgetRequest(id uint) error {
 }
 
 func (c *BudgetApprovalController) OnApproved(id uint) error {
-	return c.db.Model(&model.BudgetApproval{}).
-		Where("budget_approval_id = ?", id).
-		Update("status", model.BudgetStatusApproved).Error
+	return c.db.Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Model(&model.BudgetApproval{}).
+			Where("budget_approval_id = ?", id).
+			Update("status", model.BudgetStatusApproved).Error; err != nil {
+			return err
+		}
+
+		var approval model.BudgetApproval
+		if err := tx.First(&approval, id).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&model.InstrumentRequest{}).
+			Where("instrument_request_id = ?", approval.InstrumentRequestID).
+			Update("status", model.InstrumentRequestStatusApproved).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (c *BudgetApprovalController) OnRejected(id uint) error {
-	return c.db.Model(&model.BudgetApproval{}).
-		Where("budget_approval_id = ?", id).
-		Update("status", model.BudgetStatusRejected).Error
-}
+	return c.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&model.BudgetApproval{}).
+			Where("budget_approval_id = ?", id).
+			Update("status", model.BudgetStatusRejected).Error; err != nil {
+			return err
+		}
 
+		var approval model.BudgetApproval
+		if err := tx.First(&approval, id).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(&model.InstrumentRequest{}).
+			Where("instrument_request_id = ?", approval.InstrumentRequestID).
+			Update("status", model.InstrumentRequestStatusRejected).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}

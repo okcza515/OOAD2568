@@ -30,8 +30,8 @@ func NewCLIFactory(db *gorm.DB) *CLIFactory {
 
 func (f *CLIFactory) CreateCLI(cliType string) CLI {
 	switch cliType {
-	case "assignment":
-		return NewAssignmentCLI(controller.NewAssignmentController(f.db))
+	//case "assignment":
+	//return NewAssignmentCLI(controller.NewAssignmentController(f.db))
 	case "evaluation":
 		return NewEvaluationCLI(f.db)
 	case "progress":

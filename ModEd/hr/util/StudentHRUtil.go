@@ -32,6 +32,28 @@ func StatusFromString(status string) (commonModel.StudentStatus, error) {
 	}
 }
 
+func ProgramTypeToString(program commonModel.ProgramType) string {
+	switch program {
+	case commonModel.REGULAR:
+		return "Regular"
+	case commonModel.INTERNATIONAL:
+		return "International"
+	default:
+		return "Unknown"
+	}
+}
+
+func ProgramTypeFromString(program string) (commonModel.ProgramType, error) {
+	switch program {
+	case "Regular":
+		return commonModel.REGULAR, nil
+	case "International":
+		return commonModel.INTERNATIONAL, nil
+	default:
+		return commonModel.REGULAR, fmt.Errorf("invalid program type: %s (must be Regular or International)", program)
+	}
+}
+
 func IfNotEmpty(newValue, fallback string) string {
 	if newValue != "" {
 		return newValue

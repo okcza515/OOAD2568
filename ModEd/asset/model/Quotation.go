@@ -7,10 +7,10 @@ import (
 
 type Quotation struct {
 	QuotationID uint            `gorm:"primaryKey"`
-	Status      QuotationStatus `gorm:"type:varchar(50);default:'draft'"`
-	DeletedAt   gorm.DeletedAt  `gorm:"index"`
 	TORID       uint            `gorm:"index"`
+	TOR         TOR             `gorm:"foreignKey:TORID"`
 	SupplierID  uint            `gorm:"index"`
-	TOR         TOR
+	Status      QuotationStatus `gorm:"type:varchar(50);default:'pending'"`
+	DeletedAt   gorm.DeletedAt  `gorm:"index"`
 	Supplier    Supplier
 }

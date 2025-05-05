@@ -98,7 +98,9 @@ func main() {
 			return
 	
 		case TEST:
-			fmt.Println("This function has been disabled.")
+			//fmt.Println("This function has been disabled.")
+			instructorController := controller.CreateInstructorController(db)
+			instructorController.ManualAddInstructor()
 	
 		default:
 			fmt.Println("Invalid choice. Please select a valid option.")

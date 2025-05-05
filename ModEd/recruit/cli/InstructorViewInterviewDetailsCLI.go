@@ -2,24 +2,15 @@
 package cli
 
 import (
-	"fmt"
+	"ModEd/recruit/controller"
 )
 
-func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint) {
-	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID)
+func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint, filter string, interviewController *controller.InterviewController) {
+	report := controller.InterviewReport{}
+	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID, filter, interviewController)
 	if err != nil {
-		fmt.Println("Error retrieving interviews:", err)
+		println("Error fetching interview details:", err.Error())
 		return
 	}
-
-	fmt.Println("\n==== Interview Schedule ====")
-	for _, interview := range interviews {
-		fmt.Printf("ID: %d | Applicant ID: %d | Date: %s | Score: ",
-			interview.ID, interview.ApplicantID, interview.ScheduledAppointment)
-		if interview.InterviewScore != nil {
-			fmt.Println(*interview.InterviewScore)
-		} else {
-			fmt.Println("Not Assigned")
-		}
-	}
+	report.DisplayReport(interviews)
 }

@@ -43,7 +43,7 @@ func (c *CurriculumController) CreateCurriculum(curriculum *model.Curriculum) (c
 
 // Read one
 func (c *CurriculumController) GetCurriculum(curriculumId uint, preload ...string) (curriculum *model.Curriculum, err error) {
-	curriculum, err = c.core.RetrieveByID(curriculumId, preload...)
+	curriculum, err = c.core.RetrieveByCondition(map[string]interface{}{"curriculum_id": curriculumId}, preload...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *CurriculumController) GetCurriculums(preload ...string) (curriculums []
 
 // Update
 func (c *CurriculumController) UpdateCurriculum(updatedCurriculum *model.Curriculum) (curriculum *model.Curriculum, err error) {
-	curriculum, err = c.core.RetrieveByID(updatedCurriculum.CurriculumId)
+	curriculum, err = c.core.RetrieveByCondition(map[string]interface{}{"curriculum_id": updatedCurriculum.CurriculumId})
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +71,10 @@ func (c *CurriculumController) UpdateCurriculum(updatedCurriculum *model.Curricu
 	curriculum.Name = updatedCurriculum.Name
 	curriculum.StartYear = updatedCurriculum.StartYear
 	curriculum.EndYear = updatedCurriculum.EndYear
-	curriculum.DepartmentName = updatedCurriculum.DepartmentName
+	curriculum.DepartmentId = updatedCurriculum.DepartmentId
 	curriculum.ProgramType = updatedCurriculum.ProgramType
 
-	if err := c.core.UpdateByID(curriculum); err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"curriculum_id": updatedCurriculum.CurriculumId}, curriculum); err != nil {
 		return nil, err
 	}
 	return curriculum, nil
@@ -82,12 +82,12 @@ func (c *CurriculumController) UpdateCurriculum(updatedCurriculum *model.Curricu
 
 // Delete
 func (c *CurriculumController) DeleteCurriculum(curriculumId uint) (curriculum *model.Curriculum, err error) {
-	curriculum, err = c.core.RetrieveByID(curriculumId)
+	curriculum, err = c.core.RetrieveByCondition(map[string]interface{}{"curriculum_id": curriculumId})
 	if err != nil {
 		return nil, err
 	}
 
-	if err := c.core.DeleteByID(curriculumId); err != nil {
+	if err := c.core.DeleteByCondition(map[string]interface{}{"curriculum_id": curriculumId}); err != nil {
 		return nil, err
 	}
 	return curriculum, nil

@@ -13,14 +13,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func importInstructor(args []string, tx *gorm.DB) error {
+type ImportInstructorCommand struct{}
+
+func (cmd *ImportInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("import", flag.ExitOnError)
 	filePath := fs.String("path", "", "Path to CSV or JSON for HR instructor info (only instructorid and HR fields).")
 	fs.Parse(args)
 
-	err := util.NewValidationChain(fs).
-		Required("path").
-		Validate()
+	validator := util.NewValidationChain(fs)
+	validator.Field("path").Required()
+	err := validator.Validate()
 	if err != nil {
 		fs.Usage()
 		return fmt.Errorf("validation error: %v", err)
@@ -39,7 +41,8 @@ func importInstructor(args []string, tx *gorm.DB) error {
 
 	tm := &util.TransactionManager{DB: tx}
 	return tm.Execute(func(tx *gorm.DB) error {
-		if err := controller.ImportInstructors(tx, instructors); err != nil {
+		instructorController := controller.CreateInstructorHRController(tx)
+		if err := instructorController.ImportInstructors(instructors); err != nil {
 			return err
 		}
 		fmt.Println("Instructors imported successfully!")

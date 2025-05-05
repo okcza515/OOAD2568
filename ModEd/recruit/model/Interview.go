@@ -3,22 +3,25 @@ package model
 
 import (
 	"ModEd/common/model"
+	"encoding/json"
 	"time"
 )
 
 type Interview struct {
-	ID                   uint       		`gorm:"primaryKey"`
-	InstructorID         uint       		`gorm:"not null"` // Foreign key referencing Instructor
-	Instructor  		 *model.Instructor  `gorm:"foreignKey:InstructorID;references:InstructorCode"`     
-	ApplicantID          uint       		`gorm:"not null"` // Foreign key referencing Applicant
-	Applicant            Applicant  		`gorm:"foreignKey:ApplicantID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	InterviewID          uint              `gorm:"primaryKey"`
+	InstructorID         uint              `gorm:"not null"` // Foreign key referencing Instructor
+	Instructor           *model.Instructor `gorm:"foreignKey:InstructorID;references:InstructorCode"`
+	ApplicationReportID  uint              `gorm:"not null"` // Foreign key referencing ApplicationReport
+	ApplicationReport    ApplicationReport `gorm:"foreignKey:ApplicationReportID;references:ApplicationReportID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ScheduledAppointment time.Time
-	InterviewScore       *float64          	`gorm:"default:null"` // Nullable score
-	InterviewStatus      ApplicationStatus 	`gorm:"type:varchar(20)"`
+	CriteriaScores       string
+	TotalScore           float64
+	EvaluatedAt          time.Time
+	InterviewStatus      ApplicationStatus `gorm:"type:varchar(20)"`
 }
 
 func (i *Interview) GetID() uint {
-	return i.ID
+	return i.InterviewID
 }
 func (i *Interview) FromCSV(csvData string) error {
 	return nil
@@ -37,4 +40,22 @@ func (i *Interview) Validate() error {
 }
 func (i *Interview) ToString() string {
 	return ""
+}
+
+func (i *Interview) SetCriteriaScores(scores map[string]float64) error {
+	jsonData, err := json.Marshal(scores)
+	if err != nil {
+		return err
+	}
+	i.CriteriaScores = string(jsonData)
+	return nil
+}
+
+func (i *Interview) GetCriteriaScores() (map[string]float64, error) {
+	var scores map[string]float64
+	err := json.Unmarshal([]byte(i.CriteriaScores), &scores)
+	if err != nil {
+		return nil, err
+	}
+	return scores, nil
 }

@@ -92,8 +92,8 @@ func LoadJsonData(pairs map[string]interface{}) error {
 func (handler *InstructorWorkloadModuleMenuStateHandler) HandleUserInput(input string) error {
 	facadeWorkload := &controller.WorkloadReportFacade{
 		ClassController:           controller.NewClassController(migration.GetInstance().DB),
-		MeetingController:         controller.CreateMeetingController(migration.GetInstance().DB),
-		StudentWorkloadController: controller.CreateStudentWorkloadController(migration.GetInstance().DB),
+		MeetingController:         controller.NewMeetingController(migration.GetInstance().DB),
+		StudentWorkloadController: controller.NewStudentWorkloadController(migration.GetInstance().DB),
 	}
 	switch input {
 	case "1":

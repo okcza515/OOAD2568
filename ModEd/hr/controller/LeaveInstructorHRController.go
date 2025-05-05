@@ -7,11 +7,12 @@ import (
 
 	"gorm.io/gorm"
 )
+
 type LeaveInstructorHRController struct {
 	db *gorm.DB
 }
 
-func createLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
+func CreateLeaveInstructorHRController(db *gorm.DB) *LeaveInstructorHRController {
 	db.AutoMigrate(&model.RequestLeaveInstructor{})
 	return &LeaveInstructorHRController{db: db}
 }
@@ -50,24 +51,48 @@ func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]
 	return requests, nil
 }
 
-func SubmitInstructorLeaveRequest(db *gorm.DB,instructorID, leaveType, reason, leaveDateStr string) error {
-
-	tm := &util.TransactionManager{DB:db}
-
+func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID, leaveType, reason, leaveDateStr string) error {
+	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorController := createLeaveInstructorHRController(tx)
-		factory := &model.RequestLeaveFactory{}
 
-		req, err := factory.Create("instructor", instructorID, leaveType, reason, leaveDateStr)
+		leaveController := CreateLeaveInstructorHRController(tx)
+
+		factory, err := model.GetFactory("instructor")
 		if err != nil {
-			return fmt.Errorf("failed to build leave request: %v", err)
+			return fmt.Errorf("failed to get instructor factory: %v", err)
 		}
 
-		if err := instructorController.insert(req.(*model.RequestLeaveInstructor)); err != nil {
-			return fmt.Errorf("failed to submit leave request: %v", err)
+		reqInterface, err := factory.CreateLeave(instructorID, leaveType, reason, leaveDateStr)
+		if err != nil {
+			return fmt.Errorf("failed to create leave request using factory: %v", err)
 		}
+
+		req, ok := reqInterface.(*model.RequestLeaveInstructor)
+		if !ok {
+			return fmt.Errorf("factory returned unexpected type for instructor leave request")
+		}
+
+		if err := leaveController.insert(req); err != nil {
+			return fmt.Errorf("failed to submit leave request within transaction: %v", err)
+		}
+
 		return nil
 	})
 }
 
-	
+func (c *LeaveInstructorHRController) ReviewInstructorLeaveRequest(
+	tx *gorm.DB,
+	requestID, action, reason string,
+) error {
+	return ReviewRequest(
+		requestID,
+		action,
+		reason,
+		func(id uint) (Reviewable, error) {
+			return c.getByID(id)
+		},
+		func(r Reviewable) error {
+			return tx.Save(r).Error
+		},
+	)
+}

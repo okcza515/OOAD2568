@@ -3,17 +3,13 @@ package menu
 // MEP-1012 Asset
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"fmt"
 )
 
 type AssetMenuState struct {
 	manager *cli.CLIMenuStateManager
-
-	// Add more menu here
-	instrumentMenu    *InstrumentMenuState
-	supplyMenu        *SupplyMenuState
-	instrumentLogMenu *InstrumentLogMenuState
 }
 
 func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
@@ -22,45 +18,37 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	}
 
 	// Add more menu here
-	assetMenu.instrumentMenu = NewInstrumentMenuState(manager, assetMenu)
-	assetMenu.supplyMenu = NewSupplyMenuState(manager, assetMenu)
-	assetMenu.instrumentLogMenu = NewInstrumentLogMenuState(manager, assetMenu)
+	manager.AddMenu(string(MENU_ASSET), assetMenu)
+	manager.AddMenu(string(MENU_INSTRUMENT), NewInstrumentMenuState(manager))
+	manager.AddMenu(string(MENU_SUPPLY), NewSupplyMenuState(manager))
+	manager.AddMenu(string(MENU_INSTRUMENT_LOG), NewInstrumentLogMenuState(manager))
 
 	return assetMenu
 }
 
 func (menu *AssetMenuState) Render() {
 	fmt.Println()
-	fmt.Println(":/asset/instrument")
+	fmt.Println(":/asset")
 	fmt.Println()
 	fmt.Println("Welcome to ModEd Asset Service CLI!")
 	fmt.Println("Here is the list of page you can use, choose wisely!")
+	fmt.Println()
 	fmt.Println("  1:\tCategory Page")
 	fmt.Println("  2:\tInstrument Page")
 	fmt.Println("  3:\tSupply Page")
 	fmt.Println("  4:\tBorrow Page")
 	fmt.Println("  5:\tInstrument Log Page")
 	fmt.Println("  6:\tSupply Log Page")
+	//  fmt.Println("  7:\tDetail Report")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
 
 func (menu *AssetMenuState) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		fmt.Println("Not implemented yet...")
-	case "2":
-		menu.manager.SetState(menu.instrumentMenu)
-	case "3":
-		menu.manager.SetState(menu.supplyMenu)
-	case "4":
-		fmt.Println("Not implemented yet...")
-	case "5":
-		menu.manager.SetState(menu.instrumentLogMenu)
-	case "6":
-		fmt.Println("Not implemented yet...")
-	default:
-		fmt.Println("invalid input")
+	err := menu.manager.GoToMenu(input)
+	if err != nil {
+		fmt.Println("err: Invalid input, menu '" + input + "' doesn't exist")
+		util.PressEnterToContinue()
 	}
 
 	return nil

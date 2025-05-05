@@ -6,6 +6,7 @@ type ApplicationStatus string
 const (
 	Pending        ApplicationStatus = "Pending"
 	InterviewStage ApplicationStatus = "Interview"
+	Evaluated      ApplicationStatus = "Evaluated"
 	Accepted       ApplicationStatus = "Accepted"
 	Rejected       ApplicationStatus = "Rejected"
 )

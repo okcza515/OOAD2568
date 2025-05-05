@@ -15,7 +15,7 @@ type AdminController struct {
 	DB   *gorm.DB
 }
 
-func CreateAdminController(db *gorm.DB) *AdminController {
+func NewAdminController(db *gorm.DB) *AdminController {
 	return &AdminController{
 		Base: core.NewBaseController[*model.Admin](db),
 		DB:   db,
