@@ -33,12 +33,14 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			WaitForEnter()
 		case "2":
-			fmt.Println("List by TOR ID")
-			ListQuotationsByTORID(facade.GetDB())
+			fmt.Println("Show Quotations by TOR ID")
+			ListAllTORs(facade)
+			ShowQuotationsByTORID(facade.GetDB())
 			WaitForEnter()
 		case "3":
 			fmt.Println("Quotation Selection")
-
+			ListAllTORs(facade)
+			SelectQuotation(facade.GetDB())
 			WaitForEnter()
 		}
 
@@ -53,7 +55,7 @@ func printQuotationSupplierOptions() {
 	fmt.Println()
 	fmt.Println("--Quotation Functions--")
 	fmt.Println("  1:\tImport Quotations")
-	fmt.Println("  2:\tList by TOR ID")
+	fmt.Println("  2:\tShow Quotations by TOR ID")
 	fmt.Println("  3:\tQuotation Selection")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit")
 	fmt.Println()
@@ -83,25 +85,58 @@ func ImportQuotationsFromJSON(db *gorm.DB, filename string) error {
 	return nil
 }
 
-func ListQuotationsByTORID(db *gorm.DB) {
+func ShowQuotationsByTORID(db *gorm.DB) (uint, []model.Quotation, error) {
 	torID := util.GetUintInput("Enter TOR ID: ")
 
 	var quotations []model.Quotation
-	err := db.Where("tor_id = ?", torID).Find(&quotations).Error
-	if err != nil {
+	if err := db.Where("tor_id = ?", torID).Find(&quotations).Error; err != nil {
 		fmt.Println("Failed to retrieve quotations:", err)
-		return
+		return 0, nil, err
 	}
 
 	if len(quotations) == 0 {
-		fmt.Println("No quotations found for the specified TOR ID.")
-		return
+		fmt.Println("No quotations found for this TOR ID.")
+		return 0, nil, nil
 	}
 
 	fmt.Printf("Quotations for TOR ID %d:\n", torID)
 	for _, q := range quotations {
-		fmt.Printf("  QuotationID: %d | SupplierID: %d | Status: %s | Total Offered Price: %.2f\n",
+		fmt.Printf("  QuotationID: %d | SupplierID: %d | Status: %s | Total Price: %.2f\n",
 			q.QuotationID, q.SupplierID, q.Status, q.TotalOfferedPrice)
 	}
 
+	return torID, quotations, nil
+}
+
+func SelectQuotation(db *gorm.DB) {
+	torID, quotations, err := ShowQuotationsByTORID(db)
+	if err != nil || len(quotations) == 0 {
+		return
+	}
+
+	selectedID := util.GetUintInput("Enter Quotation ID to APPROVE: ")
+
+	err = db.Transaction(func(tx *gorm.DB) error {
+		for _, q := range quotations {
+			newStatus := "rejected"
+			if q.QuotationID == selectedID {
+				newStatus = "approved"
+			}
+			if err := tx.Model(&model.Quotation{}).
+				Where("quotation_id = ?", q.QuotationID).
+				Update("status", newStatus).Error; err != nil {
+				return err
+			}
+		}
+
+		return tx.Model(&model.TOR{}).
+			Where("tor_id = ?", torID).
+			Update("status", "selected").Error
+	})
+
+	if err != nil {
+		fmt.Println("Failed to select quotation:", err)
+	} else {
+		fmt.Println("Quotation selected and TOR updated successfully.")
+	}
 }
