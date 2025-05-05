@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	defaultDBPath = "../w../data/ModEd.bin"
+	defaultDBPath = "../../data/ModEd.bin"
 )
 
 type Command interface {
