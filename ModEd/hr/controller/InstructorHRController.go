@@ -111,7 +111,9 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorInfo, err := c.getById(instructorID)
+		instructorController := NewInstructorHRController(tx)
+		
+		instructorInfo, err := instructorController.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
@@ -130,9 +132,10 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 			return fmt.Errorf("unknown field for instructor update: %s", field)
 		}
 
-		if err := c.update(instructorInfo); err != nil {
-			return fmt.Errorf("error updating instructor: %v", err)
-		}
+
+		if err := instructorController.update(instructorInfo); err != nil {
+            return fmt.Errorf("error updating instructor: %v", err)
+        }
 		fmt.Println("Instructor updated successfully!")
 		return nil
 	})

@@ -19,21 +19,17 @@ type StudentHRController struct {
 	db *gorm.DB
 }
 
-// NewStudentHRController creates a new instance of StudentHRController
-// and automigrates the StudentInfo model.
 func NewStudentHRController(db *gorm.DB) *StudentHRController {
 	db.AutoMigrate(&model.StudentInfo{})
 	return &StudentHRController{db: db}
 }
 
-// GetAll returns all StudentInfo records.
 func (c *StudentHRController) getAll() ([]*model.StudentInfo, error) {
 	var infos []*model.StudentInfo
 	err := c.db.Find(&infos).Error
 	return infos, err
 }
 
-// GetById retrieves a student's HR information by SID.
 func (c *StudentHRController) getById(sid string) (*model.StudentInfo, error) {
 	var studentInfo model.StudentInfo
 	if err := c.db.Where("student_code = ?", sid).First(&studentInfo).Error; err != nil {
@@ -42,19 +38,16 @@ func (c *StudentHRController) getById(sid string) (*model.StudentInfo, error) {
 	return &studentInfo, nil
 }
 
-// Insert inserts a new StudentInfo record.
 func (c *StudentHRController) insert(info *model.StudentInfo) error {
 	return c.db.Create(info).Error
 }
 
-// Update updates an existing StudentInfo record.
 func (c *StudentHRController) update(info *model.StudentInfo) error {
 	return c.db.Model(&model.StudentInfo{}).
 		Where("student_code = ?", info.StudentCode).
 		Updates(info).Error
 }
 
-// Delete deletes a student's HR information by SID.
 func (c *StudentHRController) delete(sid string) error {
 	return c.db.Where("student_code = ?", sid).Delete(&model.StudentInfo{}).Error
 }
@@ -155,7 +148,6 @@ func (c *StudentHRController) UpdateStudentInfo(
 ) error {
 	tm := &util.TransactionManager{DB: c.db}
 	err := tm.Execute(func(tx *gorm.DB) error {
-		// Retrieve the existing HR info using StudentHRController.
 		studentController := NewStudentHRController(tx)
 		studentInfo, err := studentController.getById(studentCode)
 		if err != nil {
@@ -164,7 +156,6 @@ func (c *StudentHRController) UpdateStudentInfo(
 
 		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
 
-		// 1) Update common student data.
 		studentData := map[string]any{
 			"FirstName":  updatedStudent.FirstName,
 			"LastName":   updatedStudent.LastName,
@@ -179,12 +170,10 @@ func (c *StudentHRController) UpdateStudentInfo(
 			return fmt.Errorf("failed to update common student data: %v", err)
 		}
 
-		// 2) Migrate students to HR.
 		if err := studentController.MigrateStudentRecords(); err != nil {
 			return fmt.Errorf("failed to migrate student to HR module: %v", err)
 		}
 
-		// 3) Update HR-specific student info using the controller directly.
 		studentHRData := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
 		if err := studentController.update(studentHRData); err != nil {
 			return fmt.Errorf("failed to update student HR info: %v", err)
@@ -255,16 +244,14 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 		}
 	}
 
-	// Fetch all student records
-	studentInfos, err := c.getAll()
+	exportController := NewStudentHRController(tx)
+	studentInfos, err := exportController.getAll()
 	if err != nil {
 		return fmt.Errorf("error fetching students: %v", err)
 	}
 
-	// Handle export based on the format
 	switch format {
 	case "csv":
-		// Use gocsv for CSV serialization
 		file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("error opening file: %v", err)
@@ -275,7 +262,6 @@ func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, forma
 			return fmt.Errorf("error exporting to CSV: %v", err)
 		}
 	case "json":
-		// Use encoding/json for JSON serialization
 		file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("error opening file: %v", err)
