@@ -12,6 +12,7 @@ func (s *InstructorWorkloadMigrationStrategy) GetModels() []interface{} {
 		&model.StudentAdvisor{},
 		&model.StudentRequest{},
 		&model.Meeting{},
+		&model.MeetingAttendee{},
 		&model.OnlineMeeting{},
 		&model.ExternalMeeting{},
 		&model.ProjectEvaluation{},
