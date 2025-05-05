@@ -154,22 +154,30 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 }
 
 func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, firstName string, lastName string, email string,
-	gender string, citizenID string, phoneNumber string, academicPosition model.AcademicPosition, departmentPosition model.DepartmentPosition) error {
+	gender string, citizenID string, phoneNumber string, academicPosition string, departmentPosition string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorController := NewInstructorHRController(tx)
+
+		academicPos, err := model.ParseAcademicPosition(academicPosition)
+		if err != nil {
+			return fmt.Errorf("failed to parse academic position: %w", err)
+		}
+
+		departmentPos, err := model.ParseDepartmentPosition(departmentPosition)
+		if err != nil {
+			return fmt.Errorf("failed to parse department position: %w", err)
+		}
 
 		instructorInfo, err := instructorController.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
 
-		updatedIntrsuctor := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPosition, departmentPosition)
-
 		instructorData := map[string]any{
-			"FirstName": updatedIntrsuctor.FirstName,
-			"LastName":  updatedIntrsuctor.LastName,
-			"Email":     updatedIntrsuctor.Email,
+			"FirstName": firstName,
+			"LastName":  lastName,
+			"Email":     email,
 		}
 
 		commonInstructorController := commonController.CreateInstructorController(tx)
@@ -181,7 +189,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, first
 			return fmt.Errorf("failed to migrate instructor to HR module: %v", err)
 		}
 
-		instructorHRData := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPosition, departmentPosition)
+		instructorHRData := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPos, departmentPos)
 		if err := instructorController.update(instructorHRData); err != nil {
 			return fmt.Errorf("failed to update instructor HR info: %v", err)
 		}

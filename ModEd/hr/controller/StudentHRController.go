@@ -151,15 +151,10 @@ func (c *StudentHRController) UpdateStudentInfo(
 			return fmt.Errorf("error retrieving student with ID %s: %v", studentCode, err)
 		}
 
-		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
-
 		studentData := map[string]any{
-			"FirstName":  updatedStudent.FirstName,
-			"LastName":   updatedStudent.LastName,
-			"Email":      updatedStudent.Email,
-			"Program":    updatedStudent.Program,
-			"Department": updatedStudent.Department,
-			"Status":     updatedStudent.Status,
+			"FirstName":  firstName,
+			"LastName":   lastName,
+			"Email":      email,
 		}
 
 		commonStudentController := commonController.CreateStudentController(tx)
