@@ -1,12 +1,12 @@
 package controller
 
 import (
+	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -153,7 +153,8 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 	return instructors, nil
 }
 
-func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value string) error {
+func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, firstName string, lastName string, email string,
+	gender string, citizenID string, phoneNumber string, academicPosition model.AcademicPosition, departmentPosition model.DepartmentPosition) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
 		instructorController := NewInstructorHRController(tx)
@@ -163,23 +164,28 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
 
-		switch strings.ToLower(field) {
-		case "position", "academicposition", "academic_position":
-			parsedPos, err := model.ParseAcademicPosition(value)
-			if err != nil {
-				return fmt.Errorf("invalid academic position: %v", err)
-			}
-			instructorInfo.AcademicPosition = parsedPos
-		case "department":
-			// Uncomment and adjust if InstructorInfo has a Department field.
-			// instructorInfo.Department = value
-		default:
-			return fmt.Errorf("unknown field for instructor update: %s", field)
+		updatedIntrsuctor := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPosition, departmentPosition)
+
+		instructorData := map[string]any{
+			"FirstName": updatedIntrsuctor.FirstName,
+			"LastName":  updatedIntrsuctor.LastName,
+			"Email":     updatedIntrsuctor.Email,
 		}
 
-		if err := instructorController.update(instructorInfo); err != nil {
-			return fmt.Errorf("error updating instructor: %v", err)
+		commonInstructorController := commonController.CreateInstructorController(tx)
+		if err := commonInstructorController.Update(instructorID, instructorData); err != nil {
+			return fmt.Errorf("failed to update common instructor data: %v", err)
 		}
+
+		if err := instructorController.MigrateInstructorRecords(); err != nil {
+			return fmt.Errorf("failed to migrate instructor to HR module: %v", err)
+		}
+
+		instructorHRData := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPosition, departmentPosition)
+		if err := instructorController.update(instructorHRData); err != nil {
+			return fmt.Errorf("failed to update instructor HR info: %v", err)
+		}
+
 		fmt.Println("Instructor updated successfully!")
 		return nil
 	})
