@@ -130,7 +130,7 @@ func submitAdvisorScore(
 			Score:                    scoreVal,
 		}
 
-		if err := scoreCtrl.InsertAdvisorScore(&score); err != nil {
+		if err := scoreCtrl.Insert(&score); err != nil {
 			io.Println(fmt.Sprintf("Failed to submit score: %v", err))
 		} else {
 			io.Println("Advisor score submitted successfully!")
@@ -182,7 +182,7 @@ func submitCommitteeScore(
 			Score:                    scoreVal,
 		}
 
-		if err := scoreCtrl.InsertCommitteeScore(&score); err != nil {
+		if err := scoreCtrl.Insert(&score); err != nil {
 			io.Println(fmt.Sprintf("Failed to submit score: %v", err))
 		} else {
 			io.Println("Committee score submitted successfully!")

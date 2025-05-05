@@ -52,7 +52,7 @@ func TestInsertScoreAdvisor(t *testing.T) {
 		AdvisorId:    advisor.ID,
 		Score:        85.0,
 	}
-	err := controller.InsertAdvisorScore(score)
+	err := controller.Insert(score)
 	assert.NoError(t, err)
 
 	// Verify insertion

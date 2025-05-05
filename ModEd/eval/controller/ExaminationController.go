@@ -39,6 +39,14 @@ func (c *ExaminationController) GetAll() ([]model.Examination, error) {
 	return exam, nil
 }
 
+func (c *ExaminationController) GetExamByID(id uint) (*model.Examination, error) {
+	var exam model.Examination
+	if err := c.db.Where("id = ?", id).First(&exam).Error; err != nil {
+		return nil, err
+	}
+	return &exam, nil
+}
+
 func (c *ExaminationController) Update(id uint, exam *model.Examination) error {
 
 	if err := c.db.Model(&exam).Where("id = ?", id).Updates(exam).Error; err != nil {
