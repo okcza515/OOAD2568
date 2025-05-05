@@ -1,20 +1,15 @@
-// MEP-1007
 package controller
 
 import (
 	"ModEd/eval/model"
-	"errors"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type IAnswerController interface {
-	SubmitAnswer(questionID, studentID uint, answerText string) error
-	GetAnswersByQuestion(questionID uint) ([]model.Answer, error)
-	// GetAnswersByStudent(studentID uint) ([]model.Answer, error)
-	GetAnswerByQuestionAndStudent(questionID uint, studentID uint) (*model.Answer, error)
-	UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error
-	DeleteAnswerByID(answerID uint) error
+	SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error)
 }
 
 type AnswerController struct {
@@ -25,60 +20,74 @@ func NewAnswerController(db *gorm.DB) *AnswerController {
 	return &AnswerController{db: db}
 }
 
-func (c *AnswerController) SubmitAnswer(questionID, studentID uint, answerText string) error {
-	var existingAnswer model.Answer
+func (ac *AnswerController) NewAnswerFactory(questionType string, answerData interface{}) (model.AnswerFactory, error) {
+	switch questionType {
+	case "multiple_choice":
+		choices, ok := answerData.([]string)
+		if !ok {
+			return nil, fmt.Errorf("invalid data for multiple choice question")
+		}
+		return model.MCAnswerFactory{Choices: choices}, nil
 
-	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).First(&existingAnswer).Error; err == nil {
-		return errors.New("answer already submitted")
+	case "short_answer":
+		answer, ok := answerData.(string)
+		if !ok {
+			return nil, fmt.Errorf("invalid data for short answer question")
+		}
+		return model.ShortAnswerFactory{AnswerText: answer}, nil
+
+	case "true_false":
+		answer, ok := answerData.(bool)
+		if !ok {
+			return nil, fmt.Errorf("invalid data for true/false question")
+		}
+		return model.TrueFalseFactory{Answer: answer}, nil
+
+	case "subjective":
+		answer, ok := answerData.(string)
+		if !ok {
+			return nil, fmt.Errorf("invalid data for subjective question")
+		}
+		return model.SubjectiveAnswerFactory{Content: answer}, nil
+
+	default:
+		return nil, fmt.Errorf("unknown question type: %s", questionType)
 	}
-
-	newAnswer := model.Answer{
-		QuestionID: questionID,
-		StudentID:  studentID,
-		Answer:     answerText,
-	}
-
-	if err := c.db.Create(&newAnswer).Error; err != nil {
-		return err
-	}
-
-	return nil
 }
 
-func (c *AnswerController) GetAnswersByQuestion(questionID uint) ([]model.Answer, error) {
-	var answers []model.Answer
-	if err := c.db.Where("question_id = ?", questionID).Preload("Question").Preload("Student").Find(&answers).Error; err != nil {
-		return nil, err
-	}
-	return answers, nil
-}
+func (ac *AnswerController) SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error) {
+	var results []model.AnswerProductInterface
 
-func (c *AnswerController) GetAnswerByQuestionAndStudent(questionID uint, studentID uint) (*model.Answer, error) {
-	var answer model.Answer
-	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).
-		Preload("Question").
-		Preload("Student").
-		First(&answer).Error; err != nil {
-		return nil, err
-	}
-	return &answer, nil
-}
-
-func (c *AnswerController) UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error {
-	var existingAnswer model.Answer
-	if err := c.db.Where("id = ?", answerID).First(&existingAnswer).Error; err != nil {
-		return errors.New("answer not found")
+	if len(questionIDs) != len(factories) {
+		return nil, fmt.Errorf("number of question IDs doesn't match the number of answer factories")
 	}
 
-	if err := c.db.Model(&existingAnswer).Updates(updatedData).Error; err != nil {
-		return err
-	}
-	return nil
-}
+	// var submission model.Answer
+	// if err := ac.db.Where("student_id = ? AND exam_id = ?", studentID, examID).First(&submission).Error; err == nil {
+	// 	if submission.IsLocked {
+	// 		return nil, fmt.Errorf("this exam has already been submitted by this student")
+	// 	}
+	// }
 
-func (c *AnswerController) DeleteAnswerByID(answerID uint) error {
-	if err := c.db.Delete(&model.Answer{}, answerID).Error; err != nil {
-		return err
+	submissionTime := time.Now()
+
+	for i, factory := range factories {
+		answer := factory.NewAnswer(questionIDs[i], studentID)
+		results = append(results, answer)
 	}
-	return nil
+
+	isLocked := true
+
+	submission := model.Answer{
+		StudentID:   studentID,
+		ExamID:      examID,
+		SubmittedAt: submissionTime,
+		IsLocked:    isLocked,
+	}
+
+	if err := ac.db.Create(&submission).Error; err != nil {
+		return nil, fmt.Errorf("failed to save submission: %v", err)
+	}
+
+	return results, nil
 }
