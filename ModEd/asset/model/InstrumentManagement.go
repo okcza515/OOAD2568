@@ -3,6 +3,7 @@ package model
 
 import (
 	"ModEd/core"
+	"fmt"
 )
 
 type InstrumentManagement struct {
@@ -14,4 +15,13 @@ type InstrumentManagement struct {
 	InstrumentSerialID uint             `gorm:"type:integer;not null;index" json:"instrument_id" csv:"instrument_id"`
 	Instrument         Instrument       `gorm:"foreignKey:ID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"instrument"`
 	InstrumentLabel    string           `gorm:"type:text;not null" json:"instrument_label" csv:"instrument_label"`
+}
+
+func (im InstrumentManagement) ToString() string {
+    return fmt.Sprintf("ID: %d | Label: %s | Room ID: %d | Instrument ID: %d | Borrow ID: %d",
+        im.ID,
+        im.InstrumentLabel,
+        im.RoomID,
+        im.InstrumentSerialID,
+        im.BorrowUserID)
 }

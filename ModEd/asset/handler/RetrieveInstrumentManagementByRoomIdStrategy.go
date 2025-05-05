@@ -22,32 +22,29 @@ func NewGetInstrumentManagementByRoomIdStrategy(
 }
 
 func (handler RetrieveInstrumentManagementByRoomIdStrategy) Execute() error {
-    fmt.Println("Enter Room ID to search instruments:")
+    fmt.Println("Enter Room ID to search instrument managements:")
     input := util.GetCommandInput()
 
-    // Convert input to uint
     var roomID uint
     _, err := fmt.Sscan(input, &roomID)
     if err != nil {
         return fmt.Errorf("invalid room ID: %v", err)
     }
 
-    // Get instruments by room ID
-    instruments, err := handler.controller.RetrieveByRoomId(roomID)
+    instrumentManagements, err := handler.controller.RetrieveByRoomId(roomID)
     if err != nil {
-        return fmt.Errorf("failed to retrieve instruments: %v", err)
+        return fmt.Errorf("failed to retrieve instrument managements: %v", err)
     }
 
-    // Display results
-    fmt.Printf("\n=== Instruments in Room %d ===\n", roomID)
-    if len(*instruments) == 0 {
-        fmt.Println("No instruments found in this room")
+    fmt.Printf("\n=== Instrument managements in Room %d ===\n", roomID)
+    if len(*instrumentManagements) == 0 {
+        fmt.Println("No instrument managements found in this room")
     } else {
-        for _, instrument := range *instruments {
+        for _, instrumentManagement := range *instrumentManagements {
             fmt.Printf("ID: %d | Label: %s | Room ID: %d\n",
-                instrument.GetID(),
-                instrument.InstrumentLabel,
-                instrument.RoomID)
+                instrumentManagement.GetID(),
+                instrumentManagement.InstrumentLabel,
+                instrumentManagement.RoomID)
         }
     }
 

@@ -7,7 +7,6 @@ import (
 	"ModEd/core"
 	"ModEd/core/migration"
 	"errors"
-
 	"gorm.io/gorm"
 )
 
@@ -16,7 +15,7 @@ type InstrumentManagementInterface interface {
     RetrieveByID(id uint, preloads ...string) (model.InstrumentManagement, error)
     RetrieveByRoomId(roomID uint) (*[]model.InstrumentManagement, error)
     Insert(payload *model.InstrumentManagement) error
-    UpdateByID(data model.InstrumentManagement) error
+    UpdateById(payload *model.InstrumentManagement) error
     DeleteByID(id uint) error
 }
 
@@ -69,11 +68,14 @@ func (c *InstrumentManagementController) Insert(payload *model.InstrumentManagem
 	return err
 }
 
-func (c *InstrumentManagementController) UpdateByID(data model.InstrumentManagement) error {
-    if data.GetID() == 0 {
+func (c *InstrumentManagementController) UpdateById(payload *model.InstrumentManagement) error {
+    if payload == nil {
+        return errors.New("payload cannot be nil")
+    }
+    if payload.GetID() == 0 {
         return errors.New("invalid ID: ID cannot be zero")
     }
-    err := c.BaseController.UpdateByID(data)
+    err := c.BaseController.UpdateByID(*payload)
     return err
 }
 

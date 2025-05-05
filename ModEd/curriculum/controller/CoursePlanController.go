@@ -34,8 +34,11 @@ func NewCoursePlanController(db *gorm.DB) *CoursePlanController {
 	}
 }
 
-func (src *CoursePlanController) CreateCoursePlan(CoursePlan model.CoursePlan) error {
-	return src.Connector.Create(&CoursePlan).Error
+func (src *CoursePlanController) CreateCoursePlan(coursePlan *model.CoursePlan) (uint, error) {
+	if err := src.BaseController.Insert(coursePlan); err != nil {
+		return 0, err
+	}
+	return coursePlan.ID, nil
 }
 
 // func (src *CoursePlanController) UpdateCoursePlan(course_id uint, body *model.CoursePlan) error {

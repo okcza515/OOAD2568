@@ -19,6 +19,8 @@ func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
 		return ASSOCIATE_PROF, nil
 	case "professor", "PROFESSOR":
 		return PROFESSOR, nil
+	case "none", "NONE":
+		return NONE, nil
 	default:
 		return NONE, fmt.Errorf("invalid academic position: %s", posStr)
 	}
