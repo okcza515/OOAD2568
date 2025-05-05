@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	defaultDBPath = "../data/curriculum.db"
+	defaultDBPath = "../data/ModEd.bin"
 )
 
 type Command interface {
