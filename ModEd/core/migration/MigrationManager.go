@@ -7,7 +7,8 @@ import (
 	"ModEd/utils/deserializer"
 	"fmt"
 
-	"github.com/cockroachdb/errors"
+	"errors"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -106,7 +107,7 @@ func (m *MigrationManager) migrateToDB() error {
 
 	err := m.DB.AutoMigrate(modelsToMigrate...)
 	if err != nil {
-		return errors.Wrap(err, "failed to migrate to db")
+		return errors.New("failed to migrate to db" + err.Error())
 	}
 	return nil
 }
