@@ -1,46 +1,74 @@
 package cli
 
 import (
+	"ModEd/core/cli"
 	recruitUtil "ModEd/recruit/util"
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 )
 
-func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateApplicantService, ApplicantReportService ApplicantReportService, instructorID uint) {
+type InstructorEvaluateApplicantMenuState struct {
+	manager         *cli.CLIMenuStateManager
+	instructorID    uint
+	evaluateService InstructorEvaluateApplicantService
+	reportService   ApplicantReportService
+	previousState   cli.MenuState
+}
 
-	scanner := bufio.NewScanner(os.Stdin)
+func NewInstructorEvaluateApplicantMenuState(
+	manager *cli.CLIMenuStateManager,
+	instructorID uint,
+	evaluateService InstructorEvaluateApplicantService,
+	reportService ApplicantReportService,
+	previousState cli.MenuState,
+) *InstructorEvaluateApplicantMenuState {
+	return &InstructorEvaluateApplicantMenuState{
+		manager:         manager,
+		instructorID:    instructorID,
+		evaluateService: evaluateService,
+		reportService:   reportService,
+		previousState:   previousState,
+	}
+}
+
+func (m *InstructorEvaluateApplicantMenuState) Render() {
+	recruitUtil.ClearScreen()
 	fmt.Print("Enter Application Report ID: ")
-	scanner.Scan()
-	reportID := scanner.Text()
-	convReportID, err := strconv.ParseUint(reportID, 10, 32)
+}
+
+func (m *InstructorEvaluateApplicantMenuState) HandleUserInput(input string) error {
+	convReportID, err := strconv.ParseUint(input, 10, 32)
 	if err != nil {
 		fmt.Println("Invalid Application Report ID. Please enter a valid number.")
-		return
+		recruitUtil.WaitForEnter()
+		m.manager.SetState(m.previousState)
+		return nil
 	}
 	applicationReportID := uint(convReportID)
 
-	hasPermission, err := instructorEvaluateApplicantService.HasPermissionToEvaluate(instructorID, applicationReportID)
+	hasPermission, err := m.evaluateService.HasPermissionToEvaluate(m.instructorID, applicationReportID)
 	if err != nil {
 		fmt.Println("Error checking permission:", err)
 		recruitUtil.WaitForEnter()
-		return
+		m.manager.SetState(m.previousState)
+		return nil
 	}
 	if !hasPermission {
 		fmt.Println("You do not have permission to evaluate this application.")
 		recruitUtil.WaitForEnter()
-		return
+		m.manager.SetState(m.previousState)
+		return nil
 	}
 
-	report, err := ApplicantReportService.GetFullApplicationReportByApplicationID(applicationReportID)
+	report, err := m.reportService.GetFullApplicationReportByApplicationID(applicationReportID)
 	if err != nil {
 		fmt.Println("Failed to fetch application report:", err)
 		recruitUtil.WaitForEnter()
-		return
+		m.manager.SetState(m.previousState)
+		return nil
 	}
 
-	err = instructorEvaluateApplicantService.EvaluateApplicant(applicationReportID, report.ApplicationRound.RoundName, report.Faculty.Name, report.Department.Name)
+	err = m.evaluateService.EvaluateApplicant(applicationReportID, report.ApplicationRound.RoundName, report.Faculty.Name, report.Department.Name)
 	if err != nil {
 		fmt.Println("Error updating interview score:", err)
 	} else {
@@ -48,4 +76,6 @@ func EvaluateApplicant(instructorEvaluateApplicantService InstructorEvaluateAppl
 	}
 
 	recruitUtil.WaitForEnter()
+	m.manager.SetState(m.previousState)
+	return nil
 }

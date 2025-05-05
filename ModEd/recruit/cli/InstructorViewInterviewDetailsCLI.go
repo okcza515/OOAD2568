@@ -2,15 +2,57 @@
 package cli
 
 import (
+	"ModEd/core/cli"
 	"ModEd/recruit/controller"
+	"ModEd/recruit/util"
+	"fmt"
 )
 
-func ViewInterviewDetails(instructorViewInterviewDetailsService InstructorViewInterviewDetailsService, instructorID uint, filter string, interviewController *controller.InterviewController) {
-	report := controller.InterviewReport{}
-	interviews, err := instructorViewInterviewDetailsService.ViewInterviewDetails(instructorID, filter, interviewController)
+type InstructorViewInterviewDetailsMenuState struct {
+	manager      *cli.CLIMenuStateManager
+	instructorID uint
+	filter       string
+	service      InstructorViewInterviewDetailsService
+	previous     cli.MenuState
+	controller   *controller.InterviewController
+}
+
+func NewInstructorViewInterviewDetailsMenuState(
+	manager *cli.CLIMenuStateManager,
+	instructorID uint,
+	filter string,
+	service InstructorViewInterviewDetailsService,
+	previous cli.MenuState,
+	controller *controller.InterviewController,
+) *InstructorViewInterviewDetailsMenuState {
+	return &InstructorViewInterviewDetailsMenuState{
+		manager:      manager,
+		instructorID: instructorID,
+		filter:       filter,
+		service:      service,
+		previous:     previous,
+		controller:   controller,
+	}
+}
+
+func (m *InstructorViewInterviewDetailsMenuState) Render() {
+	util.ClearScreen()
+
+	interviews, err := m.service.ViewInterviewDetails(m.instructorID, m.filter, m.controller)
 	if err != nil {
-		println("Error fetching interview details:", err.Error())
+		fmt.Println("Error fetching interview details:", err)
+		util.WaitForEnter()
+		m.manager.SetState(m.previous)
 		return
 	}
+
+	report := controller.InterviewReport{}
 	report.DisplayReport(interviews)
+
+	fmt.Println("\nPress Enter to go back...")
+}
+
+func (m *InstructorViewInterviewDetailsMenuState) HandleUserInput(_ string) error {
+	m.manager.SetState(m.previous)
+	return nil
 }

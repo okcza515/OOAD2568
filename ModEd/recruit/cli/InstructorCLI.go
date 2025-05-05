@@ -3,85 +3,130 @@ package cli
 
 import (
 	"ModEd/common/model"
+	"ModEd/core/cli"
 	"ModEd/recruit/controller"
 	"ModEd/recruit/util"
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
-	"time"
+
+	"gorm.io/gorm"
 )
 
-func InstructorCLI(
-	instructorViewInterviewDetailsService InstructorViewInterviewDetailsService,
-	instructorEvaluateApplicantService InstructorEvaluateApplicantService, applicantReportService ApplicantReportService, loginCtrl *controller.LoginController, interviewController *controller.InterviewController, applicationReportCtrl *controller.ApplicationReportController) {
+var ErrExitInstructorMenu = fmt.Errorf("exit instructor menu")
 
+type InstructorMenuState struct {
+	manager                  *cli.CLIMenuStateManager
+	instructorID             uint
+	viewInterviewService     InstructorViewInterviewDetailsService
+	evaluateApplicantService InstructorEvaluateApplicantService
+	applicantReportService   ApplicantReportService
+	viewInterviewMenu        cli.MenuState
+	evaluateApplicantMenu    cli.MenuState
+	interviewController      *controller.InterviewController
+}
+
+func NewInstructorMenuState(
+	manager *cli.CLIMenuStateManager,
+	instructorID uint,
+	viewInterviewService InstructorViewInterviewDetailsService,
+	evaluateApplicantService InstructorEvaluateApplicantService,
+	applicantReportService ApplicantReportService,
+	interviewController *controller.InterviewController,
+) *InstructorMenuState {
+	return &InstructorMenuState{
+		manager:                  manager,
+		instructorID:             instructorID,
+		viewInterviewService:     viewInterviewService,
+		evaluateApplicantService: evaluateApplicantService,
+		applicantReportService:   applicantReportService,
+		interviewController:      interviewController,
+	}
+}
+
+func (m *InstructorMenuState) Render() {
+	util.ClearScreen()
+	fmt.Println("\n\033[1;35m╔══════════════════════════════════════╗")
+	fmt.Println("║           Instructor Menu            ║")
+	fmt.Println("╚══════════════════════════════════════╝\033[0m")
+
+	fmt.Println("\n\033[1;36m[1]\033[0m  View All Interview Details")
+	fmt.Println("\033[1;36m[2]\033[0m  View Pending Interviews")
+	fmt.Println("\033[1;36m[3]\033[0m  View Evaluated Interviews")
+	fmt.Println("\033[1;36m[4]\033[0m  Evaluate an Applicant")
+	fmt.Println("\033[1;36m[5]\033[0m  Back")
+	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
+}
+
+func (m *InstructorMenuState) HandleUserInput(input string) error {
+	switch input {
+	case "1":
+		menu := NewInstructorViewInterviewDetailsMenuState(
+			m.manager, m.instructorID, "all", m.viewInterviewService, m, m.interviewController)
+		m.manager.SetState(menu)
+	case "2":
+		menu := NewInstructorViewInterviewDetailsMenuState(
+			m.manager, m.instructorID, "Pending", m.viewInterviewService, m, m.interviewController)
+		m.manager.SetState(menu)
+	case "3":
+		menu := NewInstructorViewInterviewDetailsMenuState(
+			m.manager, m.instructorID, "Evaluated", m.viewInterviewService, m, m.interviewController)
+		m.manager.SetState(menu)
+	case "4":
+		menu := NewInstructorEvaluateApplicantMenuState(
+			m.manager, m.instructorID, m.evaluateApplicantService, m.applicantReportService, m)
+		m.manager.SetState(menu)
+	case "5":
+		return ErrExitInstructorMenu
+	default:
+		fmt.Println("Invalid option. Try again.")
+	}
+	return nil
+}
+
+func InstructorCLI(
+	viewInterviewService InstructorViewInterviewDetailsService,
+	evaluateApplicantService InstructorEvaluateApplicantService,
+	applicantReportService ApplicantReportService,
+	loginCtrl *controller.LoginController,
+	db *gorm.DB,
+) {
 	instructorID, err := promptInstructorCredentials()
 	if err != nil {
 		fmt.Println(err)
-		time.Sleep(3 * time.Second)
 		return
 	}
 
 	instructorIDUint64, err := strconv.ParseUint(instructorID, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid ID format")
+		return
+	}
 	instructorIDUint := uint(instructorIDUint64)
 
-	req := controller.LoginRequest{
-		ID: instructorID,
-	}
-
+	req := controller.LoginRequest{ID: instructorID}
 	var instructor model.Instructor
 	isValid, err := loginCtrl.ExecuteLogin(req, &instructor)
-	if err != nil {
-		fmt.Println("An error occurred while checking credentials:", err)
-		time.Sleep(3 * time.Second)
-		return
-	}
-	if !isValid {
-		fmt.Println("Invalid credentials. Access denied.")
-		time.Sleep(3 * time.Second)
+	if err != nil || !isValid {
+		fmt.Println("Login failed:", err)
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
+	manager := cli.NewCLIMenuManager()
+	interviewCtrl := controller.NewInterviewController(db)
+	menu := NewInstructorMenuState(manager, instructorIDUint, viewInterviewService, evaluateApplicantService, applicantReportService, interviewCtrl)
+	manager.SetState(menu)
 
 	for {
-		util.ClearScreen()
-		fmt.Println("\n\033[1;35m╔══════════════════════════════════════╗")
-		fmt.Println("║           Instructor Menu            ║")
-		fmt.Println("╚══════════════════════════════════════╝\033[0m")
+		manager.Render()
+		var input string
+		fmt.Scanln(&input)
+		manager.UserInput = input
 
-		fmt.Println("\n\033[1;36m[1]\033[0m  View All Interview Details")
-		fmt.Println("\033[1;36m[2]\033[0m  View Pending Interviews")
-		fmt.Println("\033[1;36m[3]\033[0m  View Evaluated Interviews")
-		fmt.Println("\033[1;36m[4]\033[0m  Evaluate an Applicant")
-		fmt.Println("\033[1;36m[5]\033[0m  Exit")
-		fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
-		var choice int
-		scanner.Scan()
-		_, err := fmt.Sscan(scanner.Text(), &choice)
-		if err != nil {
-			fmt.Println("Invalid input, please try again.")
-			continue
-		}
-
-		switch choice {
-		case 1:
-			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "all", interviewController)
-			util.WaitForEnter()
-		case 2:
-			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Pending", interviewController)
-			util.WaitForEnter()
-		case 3:
-			ViewInterviewDetails(instructorViewInterviewDetailsService, instructorIDUint, "Evaluated", interviewController)
-			util.WaitForEnter()
-		case 4:
-			EvaluateApplicant(instructorEvaluateApplicantService, applicantReportService, instructorIDUint)
-		case 5:
-			fmt.Println("Exiting...")
+		err := manager.HandleUserInput()
+		if err == ErrExitInstructorMenu {
 			return
-		default:
-			fmt.Println("Invalid option. Try again.")
+		} else if err != nil {
+			fmt.Println("Error:", err)
 		}
 	}
 }

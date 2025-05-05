@@ -28,13 +28,11 @@ func main() {
 	}
 	parentDir := filepath.Dir(curDir)
 
-	// Default file paths for various resources
 	defaultDBPath := filepath.Join(parentDir, "data", "ModEd.bin")
 	defaultRoundsPath := filepath.Join(parentDir, "recruit", "data", "application_rounds.csv")
 	defaultAdminPath := filepath.Join(parentDir, "recruit", "data", "AdminMockup.csv")
 	defaultInterviewCreteriaPath := filepath.Join(parentDir, "recruit", "data", "InterviewCriteria.csv")
 
-	// Parse command-line flags
 	flag.StringVar(&database, "database", defaultDBPath, "")
 	flag.StringVar(&roundsCSVPath, "rounds", defaultRoundsPath, "")
 	flag.StringVar(&adminCSVPath, "admin", defaultAdminPath, "")
@@ -42,10 +40,8 @@ func main() {
 	flag.StringVar(&interviewCreteriaPath, "criteria", defaultInterviewCreteriaPath, "")
 	flag.Parse()
 
-	// Initialize the database
 	db.InitDB(database)
 
-	// Create controllers
 	applicationReportCtrl := controller.NewApplicationReportController(db.DB)
 	applicantController := controller.NewApplicantController(db.DB)
 	interviewController := controller.NewInterviewController(db.DB)
@@ -129,7 +125,7 @@ func main() {
 				cli.AdminCLI(adminDeps)
 			case 3:
 				loginController.SetStrategy(controller.NewLoginStrategy("instructor", db.DB))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, interviewController, applicationReportCtrl)
+				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, db.DB)
 
 			case 4:
 				fmt.Println("Exiting...")
