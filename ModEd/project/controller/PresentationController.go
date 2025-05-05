@@ -40,10 +40,10 @@ func (c *PresentationController) InsertPresentation(Presentation *model.Presenta
 	return c.db.Create(Presentation).Error
 }
 
-func (c *PresentationController) UpdatePresentation(Presentation *model.Presentation) error {
-	return c.db.Save(Presentation).Error
+func (c *PresentationController) UpdatePresentation(id uint, presentation *model.Presentation) error {
+	return c.UpdateByID(presentation)
 }
 
 func (c *PresentationController) DeletePresentation(id uint) error {
-	return c.db.Where("id = ?", id).Delete(&model.Presentation{}).Error
+	return c.DeleteByID(id)
 }

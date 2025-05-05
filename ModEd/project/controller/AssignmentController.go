@@ -3,6 +3,7 @@ package controller
 import (
 	"ModEd/core"
 	"ModEd/project/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -19,39 +20,46 @@ func NewAssignmentController(db *gorm.DB) *AssignmentController {
 	}
 }
 
-func (c *AssignmentController) ListAllAssignments() ([]model.Assignment, error) {
-	var assignments []model.Assignment
-	result := c.db.Find(&assignments)
-	if result.Error != nil {
-		return nil, result.Error
+func (c *AssignmentController) ListAllAssignments() ([]*model.Assignment, error) {
+	assignments, err := c.List(map[string]interface{}{})
+	if err != nil {
+		return nil, err
 	}
 	return assignments, nil
 }
 
-func (c *AssignmentController) RetrieveAssignment(seniorProjectId uint) (*model.Assignment, error) {
-	var assignment model.Assignment
-	if err := c.db.First(&assignment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
-		return nil, err
-	}
-	return &assignment, nil
+func (c *AssignmentController) RetrieveAssignment(id uint) (*model.Assignment, error) {
+	return c.RetrieveByID(id)
 }
 
-func (c *AssignmentController) RetrieveAssignmentBySeniorProjectId(seniorProjectId uint) (*model.Assignment, error) {
-	var assignment model.Assignment
-	if err := c.db.First(&assignment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
+func (c *AssignmentController) RetrieveAssignmentsBySeniorProjectId(seniorProjectId uint) ([]*model.Assignment, error) {
+	assignments, err := c.List(map[string]interface{}{"senior_project_id": seniorProjectId})
+	if err != nil {
 		return nil, err
 	}
-	return &assignment, nil
+	return assignments, nil
 }
 
-func (c *AssignmentController) InsertAssignment(assignment *model.Assignment) error {
-	return c.db.Create(assignment).Error
+func (c *AssignmentController) InsertAssignment(seniorProjectId uint) (*model.Assignment, error) {
+	existing, err := c.List(map[string]interface{}{"senior_project_id": seniorProjectId})
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing assignments: %w", err)
+	}
+	if len(existing) > 0 {
+		return nil, fmt.Errorf("assignment already exists for project %d", seniorProjectId)
+	}
+
+	assignment := model.Assignment{
+		SeniorProjectId: seniorProjectId,
+	}
+
+	return &assignment, c.Insert(&assignment)
 }
 
 func (c *AssignmentController) UpdateAssignment(assignment *model.Assignment) error {
-	return c.db.Save(assignment).Error
+	return c.UpdateByID(assignment)
 }
 
 func (c *AssignmentController) DeleteAssignment(id uint) error {
-	return c.db.Where("id = ?", id).Delete(&model.Assignment{}).Error
+	return c.DeleteByID(id)
 }
