@@ -36,7 +36,9 @@ func (menu *IndependentStudyMenuStateHandler) Render() {
 	fmt.Println("1.Read independent study list from file")
 	fmt.Println("2.Assign new independent study")
 	fmt.Println("3.Find IS by Id")
-	fmt.Println("back: Exit the module")
+	fmt.Println("4.Update IS by Id")
+	fmt.Println("5.Delete Independent Study")
+	fmt.Println("back: Exit Independent Study module")
 }
 
 func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) error {
@@ -54,7 +56,16 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 		}
 	case "3":
 		if err := menu.findISByID(); err != nil {
-			fmt.Print("Assign failed exiting with error [")
+			fmt.Print("Retrive failed exiting with error [")
+			fmt.Print(err)
+			fmt.Println("]")
+		}
+	case "4":
+		fmt.Println("Not ready")
+
+	case "5":
+		if err := menu.deleteIS(); err != nil {
+			fmt.Print("Delete failed exiting with error [")
 			fmt.Print(err)
 			fmt.Println("]")
 		}
@@ -71,14 +82,14 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 
 }
 
-func (menu *IndependentStudyMenuStateHandler) wilInformationRenderer(id uint) error {
+func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(id uint) error {
 	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
 	if err != nil {
 		return err
 	}
 	fmt.Println("Topic             :\t", is.IndependentStudyTopic)
 	fmt.Println("Content           :\t", is.IndependentStudyContent)
-	fmt.Println("Assign to group id:\t", is.WILProject.ID)
+	fmt.Println("Assign to group id:\t", is.WILProjectId)
 	if time := is.TurnInDate; time == nil {
 		fmt.Println("Turn-in date      :\t No turn-in date")
 	} else {
@@ -86,28 +97,6 @@ func (menu *IndependentStudyMenuStateHandler) wilInformationRenderer(id uint) er
 	}
 	return nil
 }
-
-//func (menu *IndependentStudyMenuStateHandler) readIndependentStudyFromFile() error {
-//	fmt.Println("")
-//	fmt.Println("Read IS list from file")
-//	path := ""
-//	fmt.Println("Please enter the path of the independent study(s) file (csv or json): ")
-//	_, _ = fmt.Scanln(&path)
-//	fd, err := deserializer.NewFileDeserializer(path)
-//	if err != nil {
-//		return err
-//	}
-//	isModel := new([]model.IndependentStudy)
-//	if err := fd.Deserialize(isModel); err != nil {
-//		return err
-//	}
-//
-//	if err := menu.wrapper.IndependentStudyController.BaseController.InsertMany(*isModel); err != nil {
-//		return err
-//	}
-//	fmt.Println("\nRead file Success!")
-//	return nil
-//}
 
 func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error {
 	newIndependentStudy := model.IndependentStudy{}
@@ -158,7 +147,19 @@ func (menu *IndependentStudyMenuStateHandler) findISByID() error {
 		FieldNameText: "IS ID",
 	}).(uint)
 	fmt.Println("")
-	if err := menu.wilInformationRenderer(id); err != nil {
+	fmt.Println("\tRequested Independent Study Record")
+	if err := menu.isInformationRenderer(id); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (menu *IndependentStudyMenuStateHandler) deleteIS() error {
+	id := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter ID of Independent Study you you want to delete: ",
+		FieldNameText: "IS ID",
+	}).(uint)
+	if err := menu.wrapper.IndependentStudyController.BaseController.DeleteByID(id); err != nil {
 		return err
 	}
 	return nil

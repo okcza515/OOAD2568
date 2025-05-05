@@ -5,10 +5,10 @@ import "fmt"
 type AcademicPosition int
 
 const (
-	ASSISTANT_PROF AcademicPosition = iota
+	NONE AcademicPosition = iota
+	ASSISTANT_PROF
 	ASSOCIATE_PROF
 	PROFESSOR
-	NONE
 )
 
 func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
