@@ -15,7 +15,7 @@ type WorkloadReportControllerInterface interface {
 	GenerateWorkloadReportWithFilter(instructorId uint, startDate, endDate string) error
 }
 
-func CreateWorkloadReportController(db *gorm.DB) *WorkloadReportController {
+func NewWorkloadReportController(db *gorm.DB) *WorkloadReportController {
 	return &WorkloadReportController{
 		Connector: db,
 	}

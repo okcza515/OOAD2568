@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type CoursePlanService interface {
+type CoursePlanInterface interface {
 	CreateCoursePlan(CoursePlan model.CoursePlan) error
 	UpdateByID(data model.CoursePlan) error
 	// UpdateCoursePlan(course_id uint, body *model.CoursePlan) error
@@ -27,7 +27,7 @@ type CoursePlanController struct {
 	Connector *gorm.DB
 }
 
-func CreateCoursePlanController(db *gorm.DB) *CoursePlanController {
+func NewCoursePlanController(db *gorm.DB) *CoursePlanController {
 	return &CoursePlanController{
 		BaseController: core.NewBaseController[*model.CoursePlan](db),
 		Connector:      db,
