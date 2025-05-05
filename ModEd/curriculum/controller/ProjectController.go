@@ -26,7 +26,7 @@ type ProjectController struct {
 	core *core.BaseController[*model.ProjectEvaluation]
 }
 
-func CreateProjectController(db *gorm.DB) ProjectControllerService {
+func CreateProjectController(db *gorm.DB) *ProjectController {
 	return &ProjectController{
 		db:   db,
 		core: core.NewBaseController[*model.ProjectEvaluation](db),
