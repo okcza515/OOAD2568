@@ -173,43 +173,46 @@
     - Seperate repeated fields to deadicated structs
 
     ```go
-    // BaseStandardRequest holds fields common to Resignation and Raise requests
-    type BaseStandardRequest struct {
+      type BaseStandardRequest struct {
         gorm.Model
         Reason string `gorm:"type:text"`
         Status string `gorm:"default:Pending"`
-    }
+      }
 
-    // BaseLeaveRequest holds fields common to Leave requests
-    type BaseLeaveRequest struct {
+      func (b *BaseStandardRequest) ApplyStatus(action, reason string) error {
+        switch action {
+        case "approve":
+          b.Status = action
+        case "reject":
+          b.Status = action
+          b.Reason = reason
+        default:
+          return fmt.Errorf("invalid action: %q", action)
+        }
+        return nil
+      }
+
+      // BaseLeaveRequest holds fields common to Leave requests
+      type BaseLeaveRequest struct {
         gorm.Model
         Status    string `gorm:"default:Pending"`
         LeaveType string
         Reason    string `gorm:"type:text"`
         LeaveDate time.Time
-    }
-    ```
+      }
 
-    - Embed `BaseStandardRequest` into concrete request models
-
-    ```go
-    type RequestResignationInstructor struct {
-        BaseStandardRequest
-        InstructorCode string `gorm:"not null"`
-    }
-
-    func (r *RequestResignationInstructor) ApplyStatus(action, reason string) error {
+      func (b *BaseLeaveRequest) ApplyStatus(action, reason string) error {
         switch action {
         case "approve":
-            r.Status = action
+          b.Status = action
         case "reject":
-            r.Status = action
-            r.Reason = reason
+          b.Status = action
+          b.Reason = reason
         default:
-            return fmt.Errorf("invalid action: %q", action)
+          return fmt.Errorf("invalid action: %q", action)
         }
         return nil
-    }
+      }
     ```
 
     - When new types of requests are added that share common fields, they can embed the base struct, keeping instantiation logic and field consistent.

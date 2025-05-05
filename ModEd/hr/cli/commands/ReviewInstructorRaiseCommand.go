@@ -21,4 +21,3 @@ func (cmd *ReviewInstructorRaiseCommand) Execute(args []string, tx *gorm.DB) err
 		"instructor raise",
 	)
 }				
-// handleReviewCommand is a helper function to handle the review of requests.
