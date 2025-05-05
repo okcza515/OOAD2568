@@ -28,9 +28,45 @@ func ApprovalHandler(facade *controller.ProcurementControllerFacade) {
 	}
 }
 
+func printApprovalList(observer controller.ApprovalObserver) {
+	switch o := observer.(type) {
+	case *controller.BudgetApprovalController:
+		approvals, err := o.ListAllApprovals()
+		if err != nil {
+			fmt.Println("Failed to fetch budget approvals:", err)
+			return
+		}
+		if len(approvals) == 0 {
+			fmt.Println("No budget approvals found.")
+			return
+		}
+		fmt.Println("Available Budget Approvals:")
+		for _, a := range approvals {
+			fmt.Printf("  ID: %d | Status: %s\n", a.InstrumentRequestID, a.Status)
+		}
+		// case *controller.ProcurementApprovalController:
+		// 	approvals, err := o.ListAllApprovals()
+		// 	if err != nil {
+		// 		fmt.Println("Failed to fetch procurement approvals:", err)
+		// 		return
+		// 	}
+		// 	if len(approvals) == 0 {
+		// 		fmt.Println("No procurement approvals found.")
+		// 		return
+		// 	}
+		// 	fmt.Println("Available Procurement Approvals:")
+		// 	for _, a := range approvals {
+		// 		fmt.Printf("  ID: %d | Status: %s\n", a.ProcurementID, a.Status)
+		// 	}
+		// default:
+		// 	fmt.Println("Unknown approval type.")
+	}
+}
+
 func printApprovalOption(observer controller.ApprovalObserver) {
 	for {
 		util.ClearScreen()
+		printApprovalList(observer)
 		fmt.Println(":/Approval Menu")
 		fmt.Println("  1:\tApprove by ID")
 		fmt.Println("  2:\tReject by ID")

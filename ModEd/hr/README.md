@@ -6,6 +6,7 @@
 
 - #### CLI
 
+  - All command that has been implemented is working.
   - Refactor Command CLI to be able to support dynamically adding command at runtime.
 
     ```go
@@ -80,8 +81,10 @@
   - Redo all controller method
   - Add Generic Review Helper with Strategy Pattern
 
-    - `fetcher` and `saver` act as strategies.
-    - `ReviewRequest` don't need to know specific implementation details. The caller provides the concrete strategies (`fetcher` and `saver` function).
+    - `fetcher` and `saver` represent families of algorithms (different ways to fetch or save data).
+    - Each specific fetch or save logic is encapsulated within a function (`fetcher` or `saver` type).
+    - The `ReviewRequest` function can work with any concrete `fetcher` or `saver` function that matches the required signature. The caller provides the specific strategy (the concrete function) to use.
+    - `ReviewRequest` don't need to know specific implementation details. It also decoupled from the implementation details of how data is fetch or saved. It only depends on function signatures (the strategy interface).
     - `Reviewable` interface defines a contract `ApplyStatus` that any request type must fufill to be processbed by `ReviewRequest`.
     - The `ReviewRequest` function defining the algorithm and accepting strategies:
 

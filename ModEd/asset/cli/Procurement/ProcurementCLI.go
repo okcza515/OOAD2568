@@ -23,13 +23,13 @@ func main() {
 		case "1":
 			handler.InstrumentRequestHandler(facade)
 		case "2":
-			handler.ProcurementHandler(facade)
-		case "3":
 			handler.ApprovalHandler(facade)
+		case "3":
+			handler.ProcurementHandler(facade)
 		case "4":
 			handler.TORHandler(facade)
 		case "5":
-			fmt.Println("Not implemented yet...")
+			handler.QuotationSupplierHandler(facade)
 		case "6":
 			fmt.Println("Not implemented yet...")
 		}
@@ -55,8 +55,8 @@ func printOption() {
 	fmt.Println("Here is the list of page you can use, choose wisely!")
 	fmt.Println("  1:\tRequest Instrument Page")
 	fmt.Println("  2:\tProcurement Page")
-	fmt.Println("  3:\tApproval Page")
-	fmt.Println("  4:\tTOR Page")
+	fmt.Println("  3\tApproval Page")
+	fmt.Println("  4:\tNot implemented yet... Page")
 	fmt.Println("  5:\tNot implemented yet... Page")
 	fmt.Println("  6:\tNot implemented yet... Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")

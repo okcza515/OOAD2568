@@ -10,15 +10,13 @@ type BaseScoreController[T any] struct {
     Connector *gorm.DB
 }
 
-func (bc *BaseScoreController[T]) UpdateScore(studentID string, scoreFields map[string]interface{}, getApplication func(*gorm.DB, string) (uint, error)) error {
-    applicationID, err := getApplication(bc.Connector, studentID)
-    if err != nil {
-        return fmt.Errorf("failed to find application for student_code '%s': %w", studentID, err)
+func (bsc *BaseScoreController[T]) UpdateScoreByID(id uint, fields map[string]interface{}) error {
+    result := bsc.Connector.Model(new(T)).Where("id = ?", id).Updates(fields)
+    if result.Error != nil {
+        return fmt.Errorf("failed to update entity with ID %d: %w", id, result.Error)
     }
-
-		if err := bc.Connector.Model(new(T)).Where("id = ?", applicationID).Updates(scoreFields).Error; err != nil {
-        return fmt.Errorf("failed to update scores for record id '%d': %w", applicationID, err)
+    if result.RowsAffected == 0 {
+        return fmt.Errorf("no entity found with ID %d", id)
     }
-
     return nil
 }
