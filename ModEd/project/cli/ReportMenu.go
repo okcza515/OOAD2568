@@ -13,7 +13,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 		Title: "Reports Management",
 		Children: []*utils.MenuItem{
 			{
-				Title: "View Reports",
+				Title: "View All Reports",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Viewing Report...")
 
@@ -73,6 +73,103 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 						io.Println(fmt.Sprintf("Error adding new report: %v", err))
 					} else {
 						io.Println("Report added successfully!")
+					}
+				},
+			},
+			{
+				Title: "View Report by ID",
+				Action: func(io *utils.MenuIO) {
+					io.Println("Viewing Report by ID...")
+					io.Print("Enter Report ID: ")
+
+					input, err := io.ReadInput()
+					if err != nil {
+						io.Println(fmt.Sprintf("Error reading input: %v", err))
+						return
+					}
+
+					reportID, err := strconv.ParseUint(input, 10, 32)
+					if err != nil {
+						io.Println(fmt.Sprintf("Invalid Report ID: %v", err))
+						return
+					}
+
+					report, err := reportController.RetrieveByID(uint(reportID))
+					if err != nil {
+						io.Println(fmt.Sprintf("Error retrieving report: %v", err))
+						return
+					}
+					io.Println(report.ToString())
+				},
+			},
+			{
+				Title: "Delete Report",
+				Action: func(io *utils.MenuIO) {
+					io.Println("Deleting Report...")
+					io.Print("Enter Report ID to delete: ")
+
+					input, err := io.ReadInput()
+					if err != nil {
+						io.Println(fmt.Sprintf("Error reading input: %v", err))
+						return
+					}
+
+					reportID, err := strconv.ParseUint(input, 10, 32)
+					if err != nil {
+						io.Println(fmt.Sprintf("Invalid Report ID: %v", err))
+						return
+					}
+
+					err = reportController.DeleteByID(uint(reportID))
+					if err != nil {
+						io.Println(fmt.Sprintf("Error deleting report: %v", err))
+					} else {
+						io.Println("Report deleted successfully!")
+					}
+				},
+			},
+			{
+				Title: "Update Report",
+				Action: func(io *utils.MenuIO) {
+					io.Println("Updating Report...")
+					io.Print("Enter Report ID to update: ")
+
+					input, err := io.ReadInput()
+					if err != nil {
+						io.Println(fmt.Sprintf("Error reading input: %v", err))
+						return
+					}
+
+					reportID, err := strconv.ParseUint(input, 10, 32)
+					if err != nil {
+						io.Println(fmt.Sprintf("Invalid Report ID: %v", err))
+						return
+					}
+
+					report, err := reportController.RetrieveByID(uint(reportID))
+					if err != nil {
+						io.Println(fmt.Sprintf("Error retrieving report: %v", err))
+						return
+					}
+
+					io.Print("Enter new Due Date (YYYY-MM-DD): ")
+					dueDateInput, err := io.ReadInput()
+					if err != nil {
+						io.Println(fmt.Sprintf("Error reading input: %v", err))
+						return
+					}
+					dueDate, err := time.Parse("2006-01-02", dueDateInput)
+					if err != nil {
+						io.Println(fmt.Sprintf("Invalid Due Date format: %v", err))
+						return
+					}
+
+					report.DueDate = dueDate
+					err = reportController.UpdateByID(report)
+					if err != nil {
+						io.Println(fmt.Sprintf("Error updating report: %v", err))
+					} else {
+						io.Println("Report updated successfully!")
 					}
 				},
 			},

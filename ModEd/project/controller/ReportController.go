@@ -39,14 +39,6 @@ func (c *ReportController) ListAllReports() ([]model.Report, error) {
 	return reports, nil
 }
 
-func (c *ReportController) DeleteReport(id uint) error {
-	return c.DeleteByID(id)
-}
-
-func (c *ReportController) RetrieveReport(id uint) (*model.Report, error) {
-	return c.RetrieveByID(id)
-}
-
 func (c *ReportController) InsertReport(report model.Report) error {
 	if !report.ReportType.IsValid() {
 		return fmt.Errorf("invalid report type: %s", report.ReportType)
@@ -57,10 +49,6 @@ func (c *ReportController) InsertReport(report model.Report) error {
 	}
 	reportCopy := report
 	return c.Insert(&reportCopy)
-}
-
-func (c *ReportController) UpdateReport(report *model.Report) error {
-	return c.UpdateByID(report)
 }
 
 func (c *ReportController) GetFormattedReportList() ([]string, error) {
