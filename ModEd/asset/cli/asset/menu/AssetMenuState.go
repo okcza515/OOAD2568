@@ -23,6 +23,7 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	manager.AddMenu(string(MENU_SUPPLY), NewSupplyMenuState(manager))
 	manager.AddMenu(string(MENU_CATEGORY), NewCategoryMenuState(manager))
 	manager.AddMenu(string(MENU_INSTRUMENT_LOG), NewInstrumentLogMenuState(manager))
+	manager.AddMenu(string(MENU_SUPPLY_LOG), NewSupplyLogMenuState(manager))
 
 	return assetMenu
 }

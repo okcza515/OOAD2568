@@ -107,6 +107,12 @@ func (h *curriculumHandler) updateCurriculumById() (err error) {
 		}
 	}
 
+	// Validate updated curriculum
+	if err := curriculum.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
 	confirm := utils.GetUserInput("Are you sure you want to update this curriculum? (y/n): ")
 	if confirm != "y" {
 		fmt.Println("Update cancelled.")

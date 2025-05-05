@@ -29,7 +29,7 @@ func main() {
 		case "4":
 			handler.TORHandler(facade)
 		case "5":
-			handler.QuotationSupplierHandler(facade)
+			handler.QuotationHandler(facade)
 		case "6":
 			fmt.Println("Not implemented yet...")
 		}
@@ -57,7 +57,7 @@ func printOption() {
 	fmt.Println("  2:\tProcurement Page")
 	fmt.Println("  3\tApproval Page")
 	fmt.Println("  4:\tTOR Page")
-	fmt.Println("  5:\tQuotation and Supplier Page")
+	fmt.Println("  5:\tQuotation Page")
 	fmt.Println("  6:\tNot implemented yet... Page")
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()

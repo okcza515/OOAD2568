@@ -7,6 +7,8 @@ import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
+	"ModEd/curriculum/utils"
+	"errors"
 
 	"ModEd/curriculum/model"
 	"fmt"
@@ -36,8 +38,9 @@ func (menu *IndependentStudyMenuStateHandler) Render() {
 	fmt.Println("1.Read independent study list from file")
 	fmt.Println("2.Assign new independent study")
 	fmt.Println("3.Find IS by Id")
-	fmt.Println("4.Update IS by Id")
-	fmt.Println("5.Delete Independent Study")
+	fmt.Println("4.List all IS")
+	fmt.Println("5.Update IS by Id")
+	fmt.Println("6.Delete Independent Study")
 	fmt.Println("back: Exit Independent Study module")
 }
 
@@ -61,9 +64,10 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 			fmt.Println("]")
 		}
 	case "4":
-		fmt.Println("Not ready")
-
+		menu.listAllIS()
 	case "5":
+		fmt.Println("Not implemented yet")
+	case "6":
 		if err := menu.deleteIS(); err != nil {
 			fmt.Print("Delete failed exiting with error [")
 			fmt.Print(err)
@@ -82,11 +86,8 @@ func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) erro
 
 }
 
-func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(id uint) error {
-	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
-	if err != nil {
-		return err
-	}
+func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(is model.IndependentStudy) {
+	fmt.Println("ID                :\t", is.ID)
 	fmt.Println("Topic             :\t", is.IndependentStudyTopic)
 	fmt.Println("Content           :\t", is.IndependentStudyContent)
 	fmt.Println("Assign to group id:\t", is.WILProjectId)
@@ -95,7 +96,6 @@ func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(id uint) err
 	} else {
 		fmt.Println("Turn-in date      :\t", is.TurnInDate)
 	}
-	return nil
 }
 
 func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error {
@@ -138,6 +138,10 @@ func (menu *IndependentStudyMenuStateHandler) assignNewIndependentStudy() error 
 		return err
 	}
 	fmt.Println("\nSuccessfully assign WIL!")
+	fmt.Println("\n\t               Summary               ")
+	fmt.Println("\t ************************************")
+	menu.isInformationRenderer(newIndependentStudy)
+
 	return nil
 }
 
@@ -148,8 +152,25 @@ func (menu *IndependentStudyMenuStateHandler) findISByID() error {
 	}).(uint)
 	fmt.Println("")
 	fmt.Println("\tRequested Independent Study Record")
-	if err := menu.isInformationRenderer(id); err != nil {
+	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
+	if err != nil {
 		return err
+	}
+	menu.isInformationRenderer(is)
+	return nil
+}
+
+func (menu *IndependentStudyMenuStateHandler) listAllIS() error {
+	independentStudies, err := menu.wrapper.IndependentStudyController.ListAllIndependentStudy()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("\n\t List of all Independent Study record")
+	fmt.Println("\t ************************************")
+	for _, indeindependentStudy := range independentStudies {
+		menu.isInformationRenderer(indeindependentStudy)
+		fmt.Println("---------------------------------")
 	}
 	return nil
 }
@@ -159,8 +180,24 @@ func (menu *IndependentStudyMenuStateHandler) deleteIS() error {
 		PromptText:    "Enter ID of Independent Study you you want to delete: ",
 		FieldNameText: "IS ID",
 	}).(uint)
-	if err := menu.wrapper.IndependentStudyController.BaseController.DeleteByID(id); err != nil {
-		return err
+	is, err := menu.wrapper.IndependentStudyController.BaseController.RetrieveByID(id)
+	if err != nil {
+		return errors.New("Failed to retrieved IS")
 	}
+	fmt.Println("\n\t The independent with the following information will be deleted")
+	fmt.Println("\t **************************************************************")
+	menu.isInformationRenderer(is)
+	var msg string
+	for msg != "yes" && msg != "no" {
+		msg = utils.GetUserInput("Delete this record? [yes/no]:")
+	}
+	if msg == "yes" {
+		if err := menu.wrapper.IndependentStudyController.DeleteIndependentStudiesByID(id); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	fmt.Println("Exiting delete operation cancled...")
 	return nil
 }

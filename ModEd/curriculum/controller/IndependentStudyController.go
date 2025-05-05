@@ -48,3 +48,24 @@ func (controller IndependentStudyController) CreateIndependentStudy(independentS
 	}
 	return nil
 }
+
+func (controller IndependentStudyController) ListAllIndependentStudy() ([]model.IndependentStudy, error) {
+	var independentStudies []model.IndependentStudy
+	result := controller.Connector.
+		Preload("WILProject").
+		Find(&independentStudies)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return independentStudies, nil
+}
+
+func (controller IndependentStudyController) DeleteIndependentStudiesByID(id uint) error {
+	/*
+		for implement more complex business logic
+	*/
+	if err := controller.BaseController.DeleteByID(id); err != nil {
+		return err
+	}
+	return nil
+}

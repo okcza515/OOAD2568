@@ -114,6 +114,12 @@ func (h *classHandler) updateClassById() (err error) {
 		}
 	}
 
+	// Validate the updated class
+	if err := class.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
 	confirm := utils.GetUserInput("Are you sure you want to update this class? (y/n): ")
 	if confirm != "y" {
 		fmt.Println("Update cancelled.")

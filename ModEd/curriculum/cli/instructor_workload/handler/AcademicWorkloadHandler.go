@@ -1,8 +1,10 @@
+// MEP-1008
 package handler
 
 import (
 	controller "ModEd/curriculum/controller"
 	model "ModEd/curriculum/model"
+	utils "ModEd/curriculum/utils"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -76,7 +78,7 @@ type UpdateClassMaterial struct {
 }
 type DeleteClassMaterial struct {
 	db *gorm.
-	DB
+		DB
 }
 type ListClassMaterials struct {
 	db *gorm.DB
@@ -85,7 +87,7 @@ type ListClassMaterials struct {
 func (c CreateClassMaterial) Execute() {
 	ClassMaterialController := controller.NewClassMaterialController(c.db)
 	mockClassMaterial := &model.ClassMaterial{
-		ClassId: 1,
+		ClassId:  1,
 		FileName: "example.txt",
 		FilePath: "/path/to/example.txt",
 	}
@@ -97,9 +99,7 @@ func (c CreateClassMaterial) Execute() {
 	fmt.Println("ClassMaterial created successfully!")
 }
 func (r RetrieveClassMaterial) Execute() {
-	var id uint
-	fmt.Print("Enter ID to retrieve: ")
-	fmt.Scanln(&id)
+	id := utils.GetUserInputUint("Enter ID to retrieve: ")
 	ClassMaterialController := controller.NewClassMaterialController(r.db)
 	classMaterial, err := ClassMaterialController.RetrieveByID(id)
 	if err != nil {
@@ -114,12 +114,10 @@ func (r RetrieveClassMaterial) Execute() {
 	fmt.Printf("FilePath: %s\n", classMaterial.FilePath)
 }
 func (u UpdateClassMaterial) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Update: ")
 	ClassMaterialController := controller.NewClassMaterialController(u.db)
-	var id uint
-	fmt.Print("Enter ID to Update: ")
-	fmt.Scanln(&id)
 	mockClassMaterial := &model.ClassMaterial{
-		ClassId: id,
+		ClassId:  id,
 		FileName: "bla_example.txt",
 		FilePath: "/path/to/bla_example.txt",
 	}
@@ -131,11 +129,8 @@ func (u UpdateClassMaterial) Execute() {
 	fmt.Println("ClassMaterial updated successfully!")
 }
 func (d DeleteClassMaterial) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Delete: ")
 	ClassMaterialController := controller.NewClassMaterialController(d.db)
-	var id uint
-	fmt.Print("Enter ID to Delete: ")
-	fmt.Scanln(&id)
-
 	if err := ClassMaterialController.DeleteByID(id); err != nil {
 		fmt.Println("Error deleting ClassMaterial:", err)
 		return
@@ -179,7 +174,7 @@ func (c CoursePlanHandler) Execute() {
 	coursePlanMenu.Add("Update Course Plan", UpdateCoursePlan{db: c.db})
 	coursePlanMenu.Add("Delete Course Plan", DeleteCoursePlan{db: c.db})
 	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db})
-	coursePlanMenu.Add("List Upcoming Course Plans", ListAllCoursePlans{db: c.db}) 
+	coursePlanMenu.Add("List Upcoming Course Plans", ListAllCoursePlans{db: c.db})
 	coursePlanMenu.SetBackHandler(Back{})
 	coursePlanMenu.SetDefaultHandler(UnknownCommand{})
 	coursePlanMenu.Execute()
@@ -227,11 +222,9 @@ func (c CreateCoursePlan) Execute() {
 	fmt.Println("Course Plan created successfully with ID:", id)
 }
 
-func (r RetrieveCoursePlan) Execute() {	
+func (r RetrieveCoursePlan) Execute() {
+	id := utils.GetUserInputUint("Enter ID to retrieve: ")
 	coursePlanController := controller.NewCoursePlanController(r.db)
-	var id uint
-	fmt.Print("Enter ID to retrieve: ")
-	fmt.Scanln(&id)
 
 	coursePlan, err := coursePlanController.RetrieveByID(id)
 	if err != nil {
@@ -250,10 +243,8 @@ func (r RetrieveCoursePlan) Execute() {
 }
 
 func (u UpdateCoursePlan) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Update: ")
 	coursePlanController := controller.NewCoursePlanController(u.db)
-	var id uint
-	fmt.Print("Enter ID to Update: ")
-	fmt.Scanln(&id)
 	mockCoursePlan := &model.CoursePlan{
 		CourseId:     id,
 		Week:         2,
@@ -271,10 +262,8 @@ func (u UpdateCoursePlan) Execute() {
 	fmt.Println("Course Plan updated successfully!")
 }
 func (d DeleteCoursePlan) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Delete: ")
 	coursePlanController := controller.NewCoursePlanController(d.db)
-	var id uint
-	fmt.Print("Enter ID to Delete: ")
-	fmt.Scanln(&id)
 
 	if err := coursePlanController.DeleteByID(id); err != nil {
 		fmt.Println("Error deleting course plan:", err)

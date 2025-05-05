@@ -1,76 +1,49 @@
 package controller
 
 import (
-	model "ModEd/eval/model"
-	// "errors"
-	// "github.com/cockroachdb/errors"
-	"gorm.io/gorm"
+	"ModEd/eval/model"
+	"ModEd/eval/service"
 )
 
 type IExaminationController interface {
 	CreateExam(exam *model.Examination) error
+	PublishExam(id uint) error
+	CloseExam(id uint) error
 	GetAll() ([]model.Examination, error)
 	Update(id uint, exam *model.Examination) error
 	Delete(id uint) error
 }
 
 type ExaminationController struct {
-	db *gorm.DB
+	service *service.ExaminationService
 }
 
-func NewExaminationController(db *gorm.DB) *ExaminationController {
+func NewExaminationController(svc *service.ExaminationService) *ExaminationController {
 	return &ExaminationController{
-		db: db,
+		service: svc,
 	}
 }
 
 func (c *ExaminationController) CreateExam(exam *model.Examination) error {
-	if err := c.db.Create(exam).Error; err != nil {
-		return err
-	}
-	return nil
+	return c.service.CreateExam(exam)
+}
+
+func (c *ExaminationController) PublishExam(id uint) error {
+	return c.service.PublishExam(id)
+}
+
+func (c *ExaminationController) CloseExam(id uint) error {
+	return c.service.CloseExam(id)
 }
 
 func (c *ExaminationController) GetAll() ([]model.Examination, error) {
-	var exam []model.Examination
-	if err := c.db.Find(&exam).Error; err != nil {
-		return nil, err
-	}
-	return exam, nil
-}
-
-func (c *ExaminationController) GetExamByID(id uint) (*model.Examination, error) {
-	var exam model.Examination
-	if err := c.db.Where("id = ?", id).First(&exam).Error; err != nil {
-		return nil, err
-	}
-	return &exam, nil
+	return c.service.GetAllExams()
 }
 
 func (c *ExaminationController) Update(id uint, exam *model.Examination) error {
-
-	if err := c.db.Model(&exam).Where("id = ?", id).Updates(exam).Error; err != nil {
-		return err
-	}
-	return nil
+	return c.service.UpdateExam(id, exam)
 }
 
 func (c *ExaminationController) Delete(id uint) error {
-    if err := c.db.Where("id = ?", id).Delete(&model.Examination{}).Error; err != nil {
-        return err
-    }
-    return nil
+	return c.service.DeleteExam(id)
 }
-
-
-// func (c *ExaminationController) GetQuestionController() *QuestionController {
-// 	return c.questionCtrl
-// }
-
-// func (c *ExaminationController) CreateQuestion(q *model.Question) error {
-// 	return c.questionCtrl.CreateQuestion(q)
-// }
-
-// func (c *ExaminationController) UpdateQuestion(id uint, updatedQuestion *model.Question) error {
-// 	return c.questionCtrl.UpdateQuestion(id, updatedQuestion)
-// }
