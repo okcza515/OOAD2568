@@ -44,7 +44,7 @@ func (menu *SpaceManagementState) Render() {
 func (menu *SpaceManagementState) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		fmt.Println("Instrument Management")
+		menu.manager.GoToMenu("Instrument Management")
 	case "2":
 		fmt.Println("Not implemented yet...")
 	case "3":
