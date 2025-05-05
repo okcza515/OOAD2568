@@ -13,7 +13,6 @@ import (
 )
 
 type RoomControllerInterface interface {
-	SeedRoomsDatabase(path string) ([]*model.Room, error)
 	ListAll() ([]string, error)
 	List(condition map[string]interface{}, preloads ...string) ([]model.Room, error)
 	RetrieveByID(id uint, preloads ...string) (model.Room, error)

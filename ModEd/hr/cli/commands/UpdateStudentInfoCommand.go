@@ -16,13 +16,13 @@ type UpdateStudentInfoCommand struct{}
 
 func (cmd *UpdateStudentInfoCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("update-student-info", flag.ExitOnError)
-	studentID := fs.String("id", "", "Student ID to update")
-	firstName := fs.String("fname", "", "New first name")
-	lastName := fs.String("lname", "", "New last name")
-	gender := fs.String("gender", "", "New gender")
-	citizenID := fs.String("citizenID", "", "New citizen ID")
-	phoneNumber := fs.String("phone", "", "New phone number")
-	email := fs.String("email", "", "New email")
+	studentID := fs.String("id", "", "Student ID")
+	firstName := fs.String("fname", "", "First Name")
+	lastName := fs.String("lname", "", "Last Name")
+	email := fs.String("email", "", "Email")
+	gender := fs.String("gender", "", "Gender")
+	citizenID := fs.String("citizenID", "", "Citizen ID")
+	phoneNumber := fs.String("phone", "", "Phone Number")
 	fs.Parse(args)
 
 	validator := util.NewValidationChain(fs)
@@ -33,7 +33,15 @@ func (cmd *UpdateStudentInfoCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 	studentController := controller.NewStudentHRController(tx)
-	if err := studentController.UpdateStudentInfo(*studentID, *firstName, *lastName, *gender, *citizenID, *phoneNumber, *email); err != nil {
+	if err := studentController.UpdateStudentInfo(
+		*studentID,
+		*firstName,
+		*lastName,
+		*email,
+		*gender,
+		*citizenID,
+		*phoneNumber,
+	); err != nil {
 		return fmt.Errorf("failed to update student info: %v", err)
 	}
 

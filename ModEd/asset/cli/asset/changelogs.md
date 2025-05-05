@@ -100,3 +100,16 @@ MEP-1012 Asset
 <img src="https://static.wikia.nocookie.net/minecraft_gamepedia/images/3/39/Observer_JE4_BE3.png" alt="My Image" width="200" height="200">
 
 ---
+
+# ✨ Asset Update 6 May
+MEP-1012 Asset
+
+### Done
+
+1. Refactor `Switch-Case hell` into a cooler hashmap in the following features:
+   1. `HandlerStrategy`
+   2. `MenuState`
+2. Add `SeedDataLoader` feature into `MigrationManager` using `Builder` DP.
+3. While keeping the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
+
+### Actual New Feature
