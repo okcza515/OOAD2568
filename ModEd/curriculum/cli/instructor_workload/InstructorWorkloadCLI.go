@@ -50,11 +50,11 @@ type LoadSeedData struct {
 func (l LoadSeedData) Execute() {
 	fmt.Println("Loading seed data...")
 	SeedCsvData := map[string]interface{}{
-		"Meeting": &[]model.Meeting{},
-		// "OnlineMeeting":   &[]model.OnlineMeeting{},
-		// "ExternalMeeting": &[]model.ExternalMeeting{},
-		// "ClassMaterial":   &[]model.ClassMaterial{},
-		// "CoursePlan":      &[]model.CoursePlan{},
+		"Meeting":         &[]model.Meeting{},
+		"OnlineMeeting":   &[]model.OnlineMeeting{},
+		"ExternalMeeting": &[]model.ExternalMeeting{},
+		"ClassMaterial":   &[]model.ClassMaterial{},
+		"CoursePlan":      &[]model.CoursePlan{},
 	}
 	for filename, model := range SeedCsvData {
 		fileDeserializer, err := deserializer.NewFileDeserializer("../../data/instructor-workload/" + filename + ".csv")
