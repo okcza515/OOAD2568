@@ -86,3 +86,9 @@ func (m *MenuHandler) Execute() {
 		}
 	}
 }
+
+type DummyCommand struct{}
+
+func (d DummyCommand) Execute() {
+	fmt.Println("Empty handler, please implement")
+}

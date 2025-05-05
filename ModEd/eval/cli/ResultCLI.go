@@ -3,6 +3,8 @@ package cli
 import (
 	result_controller "ModEd/eval/controller"
 	"ModEd/eval/util"
+	"strconv"
+
 	// "bufio"
 	// "os"
 	// "strings"
@@ -31,8 +33,8 @@ func RunResultCLI(db *gorm.DB) {
 		fmt.Scan(&choice)
 
 		switch choice {
-		// case 1:
-		// 	CreateResults(db, resultController)
+		case 1:
+			CreateResults(db, resultController)
 
 		case 2:
 			var studentID uint
@@ -62,14 +64,14 @@ func RunResultCLI(db *gorm.DB) {
 	}
 }
 
-// func CreateResults(db *gorm.DB, resultController *result_controller.ResultController) {
-// 	err := resultController.CreateResults()
-// 	if err != nil {
-// 		fmt.Println("Failed to create results:", err)
-// 	} else {
-// 		fmt.Println("Results created successfully!")
-// 	}
-// }
+func CreateResults(db *gorm.DB, resultController *result_controller.ResultController) {
+	err := resultController.CreateResults()
+	if err != nil {
+		fmt.Println("Failed to create results:", err)
+	} else {
+		fmt.Println("Results created successfully!")
+	}
+}
 
 func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.ResultController, studentID uint) {
 	results, err := resultController.GetResultByStudent(studentID)
@@ -79,11 +81,11 @@ func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.
 	}
 
 	if len(results) == 0 {
-		fmt.Println("No answers found for this question.")
+		fmt.Println("No results found for this student.")
 		return
 	}
 
-	fmt.Printf("\nAll Results")
+	fmt.Printf("\nAll Results:\n")
 	for _, result := range results {
 		fmt.Printf("Result ID: %d | Examination ID: %d | Student ID: %d | Status: %s | Feedback: %s | Score: %d\n",
 			result.ID, result.ExaminationID, result.StudentID, result.Status, result.Feedback, result.Score)
@@ -91,15 +93,20 @@ func DisplayResultsByStudentID(db *gorm.DB, resultController *result_controller.
 }
 
 func UpdateResult(db *gorm.DB, resultController *result_controller.ResultController, resultID uint) {
-	scoreText := util.PromptString("Enter new score: ")
 	feedbackText := util.PromptString("Enter feedback: ")
+	scoreText := util.PromptString("Enter new score: ")
+	scoreValue, err := strconv.Atoi(scoreText)
+	if err != nil {
+		fmt.Println("Invalid score. Please enter a valid number.")
+		return
+	}
 
 	updatedData := map[string]interface{}{
 		"Feedback": feedbackText,
-		"Score":    scoreText,
+		"Score":    scoreValue,
 	}
 
-	err := resultController.UpdateResult(resultID, updatedData)
+	err = resultController.UpdateResult(resultID, updatedData)
 	if err != nil {
 		fmt.Println("Failed to update result:", err)
 	} else {

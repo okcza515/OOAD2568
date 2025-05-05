@@ -8,16 +8,16 @@ import (
 
 // ReviewInstructorLeaveCommand processes the review for an instructor leave request.
 // Usage: go run hr/cli/HumanResourceCLI.go review-instructor-leave -id=<requestID> -action=approve|reject [-reason="if reject"]
-type ReviewInstructorLeaveCommand struct{}
+type ReviewInstructorRaiseCommand struct{}
 
-func (cmd *ReviewInstructorLeaveCommand) Execute(args []string, tx *gorm.DB) error {
-	controller := controller.NewLeaveInstructorHRController(tx)
+func (cmd *ReviewInstructorRaiseCommand) Execute(args []string, tx *gorm.DB) error {
+	controller := controller.CreateRaiseInstructorHRController(tx)
 	return handleReviewCommand(
 		args,
 		tx,
-		"review-instructor-leave",
-		"Instructor leave request ID",
-		controller.ReviewInstructorLeaveRequest,
-		"instructor leave",
+		"review-instructor-raise",
+		"Instructor raise request ID",
+		controller.ReviewInstructorRaiseRequest,
+		"instructor raise",
 	)
-}
+}				

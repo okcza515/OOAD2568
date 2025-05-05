@@ -46,8 +46,7 @@ func (cmd *AddInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	// TODO: Implement Add Instructor logic
-	instructorController := controller.CreateInstructorHRController(tx)
+	instructorController := controller.NewInstructorHRController(tx)
 	err = instructorController.AddInstructor(
 		*instructorCode,
 		*firstName,

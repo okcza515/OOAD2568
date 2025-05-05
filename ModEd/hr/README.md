@@ -1,8 +1,10 @@
 # ModED MEP-1004 : HR Module
 
-## Structure
+## Changelogs 06/05/2025
 
-- ### CLI
+### Structure
+
+- #### CLI
 
   - Refactor Command CLI to be able to support dynamically adding command at runtime.
 
@@ -69,8 +71,11 @@
         return nil
       }
     ```
+  - Reducing Duplicate Import/Export Code
+    - All of the code for different types of import/export commands is the same, differing only in the controller logic and file type.
+    - Controller logic is passed in as a callback, keeping import/export commands flexible and decoupled.
 
-- ### Controller
+- #### Controller
 
   - Redo all controller method
   - Add Generic Review Helper with Strategy Pattern
@@ -143,8 +148,10 @@
             )
     }
     ```
+  - Refactor `ImportInstructors` Method
+    - Improved the `ImportInstructors` method in the `InstructorHRController` to enhance readability, maintainability, and reduce duplication.
 
-- ### Model
+- #### Model
 
   - Combine all request into single abstract factory
     - Centralize creation of different types of requests (resignation, leave, raise) in a single factory interface.
@@ -166,48 +173,51 @@
     - Seperate repeated fields to deadicated structs
 
     ```go
-    // BaseStandardRequest holds fields common to Resignation and Raise requests
-    type BaseStandardRequest struct {
+      type BaseStandardRequest struct {
         gorm.Model
         Reason string `gorm:"type:text"`
         Status string `gorm:"default:Pending"`
-    }
+      }
 
-    // BaseLeaveRequest holds fields common to Leave requests
-    type BaseLeaveRequest struct {
+      func (b *BaseStandardRequest) ApplyStatus(action, reason string) error {
+        switch action {
+        case "approve":
+          b.Status = action
+        case "reject":
+          b.Status = action
+          b.Reason = reason
+        default:
+          return fmt.Errorf("invalid action: %q", action)
+        }
+        return nil
+      }
+
+      // BaseLeaveRequest holds fields common to Leave requests
+      type BaseLeaveRequest struct {
         gorm.Model
         Status    string `gorm:"default:Pending"`
         LeaveType string
         Reason    string `gorm:"type:text"`
         LeaveDate time.Time
-    }
-    ```
+      }
 
-    - Embed `BaseStandardRequest` into concrete request models
-
-    ```go
-    type RequestResignationInstructor struct {
-        BaseStandardRequest
-        InstructorCode string `gorm:"not null"`
-    }
-
-    func (r *RequestResignationInstructor) ApplyStatus(action, reason string) error {
+      func (b *BaseLeaveRequest) ApplyStatus(action, reason string) error {
         switch action {
         case "approve":
-            r.Status = action
+          b.Status = action
         case "reject":
-            r.Status = action
-            r.Reason = reason
+          b.Status = action
+          b.Reason = reason
         default:
-            return fmt.Errorf("invalid action: %q", action)
+          return fmt.Errorf("invalid action: %q", action)
         }
         return nil
-    }
+      }
     ```
 
     - When new types of requests are added that share common fields, they can embed the base struct, keeping instantiation logic and field consistent.
 
-- ### Util
+- #### Util
 
   - Chain of Responsibility
     - Chaining multiple different validation rules (Required, Length and Regex).
@@ -248,3 +258,9 @@
     - API become easier to use. Developers work on one field at a time and chain the rules directly.
     - It is simpler to add or remove validations for individual fields without interfering with other validations.
     - Combine frequent uses validator for example: `IsStudentID()`, `IsEmail()`, `IsDate()`.
+
+### Issues
+
+- Who can implement function inside core module?
+- What is the criteria for the function to be inside core module?
+- Should there be a documentation for every core module implementation?

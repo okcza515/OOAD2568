@@ -12,7 +12,7 @@ type ResignationStudentHRController struct {
 	db *gorm.DB
 }
 
-func CreateResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
+func NewResignationStudentHRController(db *gorm.DB) *ResignationStudentHRController {
 	db.AutoMigrate(&model.RequestResignationStudent{})
 	return &ResignationStudentHRController{db: db}
 }
@@ -45,7 +45,7 @@ func (c *ResignationStudentHRController) update(req *model.RequestResignationStu
 func (c *ResignationStudentHRController) SubmitResignationStudent(studentID string, reason string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		studentController := CreateResignationStudentHRController(tx)
+		studentController := NewResignationStudentHRController(tx)
 
 		factory, err := model.GetFactory("student")
 		if err != nil {
@@ -74,17 +74,17 @@ func (c *ResignationStudentHRController) ReviewStudentResignRequest(
 	tx *gorm.DB,
 	requestID, action, reason string,
 ) error {
-		return ReviewRequest(
-			requestID,
-			action,
-			reason,
-			// fetch
-			func(id uint) (Reviewable, error) {
-				return c.getByID(id)
-			},
-			// save
-			func(r Reviewable) error {
-				return tx.Save(r).Error
-			},
-		)
+	return ReviewRequest(
+		requestID,
+		action,
+		reason,
+		// fetch
+		func(id uint) (Reviewable, error) {
+			return c.getByID(id)
+		},
+		// save
+		func(r Reviewable) error {
+			return tx.Save(r).Error
+		},
+	)
 }

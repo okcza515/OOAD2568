@@ -2,6 +2,7 @@ package controller
 
 import (
 	commonModel "ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -15,7 +16,7 @@ type InstructorHRController struct {
 	db *gorm.DB
 }
 
-func CreateInstructorHRController(db *gorm.DB) *InstructorHRController {
+func NewInstructorHRController(db *gorm.DB) *InstructorHRController {
 	db.AutoMigrate(&model.InstructorInfo{})
 	return &InstructorHRController{db: db}
 }
@@ -28,7 +29,7 @@ func (c *InstructorHRController) getAll() ([]*model.InstructorInfo, error) {
 
 func (c *InstructorHRController) getById(id string) (*model.InstructorInfo, error) {
 	var instructorInfo model.InstructorInfo
-	if err := c.db.Where("instructor_id = ?", id).First(&instructorInfo).Error; err != nil {
+	if err := c.db.Where("instructor_code = ?", id).First(&instructorInfo).Error; err != nil {
 		return nil, err
 	}
 	return &instructorInfo, nil
@@ -45,7 +46,7 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 }
 
 func (c *InstructorHRController) delete(id string) error {
-	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+	return c.db.Where("instructor_code = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
 func (c *InstructorHRController) AddInstructor(
@@ -85,12 +86,58 @@ func (c *InstructorHRController) AddInstructor(
 
 		// Migrate here !!
 
-		hrInstructor := model.NewInstructorInfo(instructorCode, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
-		instructorController := CreateInstructorHRController(tx)
+		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
+		instructorController := NewInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
 		}
 
+		return nil
+	})
+	return err
+}
+
+func (c *InstructorHRController) ImportInstructors(filePath string) error {
+	tm := &util.TransactionManager{DB: c.db}
+	err := tm.Execute(func(tx *gorm.DB) error {
+		hrMapper, err := core.CreateMapper[model.InstructorInfo](filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create mapper: %w", err)
+		}
+		hrRecords := hrMapper.Deserialize()
+		hrRecordsMap := make(map[string]model.InstructorInfo)
+		for _, record := range hrRecords {
+			if _, exists := hrRecordsMap[record.InstructorCode]; exists {
+				return fmt.Errorf("duplicate instructor code found: %s", record.InstructorCode)
+			}
+			if record != nil {
+				hrRecordsMap[record.InstructorCode] = *record
+			} else {
+				continue
+			}
+		}
+
+		instructorController := NewInstructorHRController(tx)
+		for instructorCode, record := range hrRecordsMap {
+			instructorInfo, err := instructorController.getById(instructorCode)
+			if err != nil {
+				return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorCode, err)
+			}
+
+			importInstructor := model.NewUpdatedInstructorInfo(
+				instructorInfo,
+				instructorInfo.FirstName,
+				instructorInfo.LastName,
+				instructorInfo.Email,
+				record.Gender,
+				record.CitizenID,
+				record.PhoneNumber,
+			)
+			if err := instructorController.update(importInstructor); err != nil {
+				return fmt.Errorf("error updating instructor with ID %s: %v", instructorCode, err)
+			}
+
+		}
 		return nil
 	})
 	return err
@@ -107,7 +154,9 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorInfo, err := c.getById(instructorID)
+		instructorController := NewInstructorHRController(tx)
+
+		instructorInfo, err := instructorController.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
@@ -126,7 +175,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 			return fmt.Errorf("unknown field for instructor update: %s", field)
 		}
 
-		if err := c.update(instructorInfo); err != nil {
+		if err := instructorController.update(instructorInfo); err != nil {
 			return fmt.Errorf("error updating instructor: %v", err)
 		}
 		fmt.Println("Instructor updated successfully!")
@@ -134,15 +183,39 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value
 	})
 }
 
-func (c *InstructorHRController) ImportInstructors(instructors []*model.InstructorInfo) error {
-	for _, instructor := range instructors {
-		if instructor.ID == 0 || instructor.FirstName == "" {
-			return fmt.Errorf("invalid instructor data: %+v", instructor)
+func (c *InstructorHRController) MigrateInstructorRecords() error {
+	tm := &util.TransactionManager{DB: c.db}
+	return tm.Execute(func(tx *gorm.DB) error {
+		var commonInstructors []commonModel.Instructor
+		if err := tx.Find(&commonInstructors).Error; err != nil {
+			return fmt.Errorf("failed to retrieve common instructors: %w", err)
 		}
 
-		if err := c.insert(instructor); err != nil {
-			return fmt.Errorf("failed to insert instructor %d: %v", instructor.ID, err)
+		for _, ci := range commonInstructors {
+			commonInstructor := &commonModel.Instructor{
+				InstructorCode: ci.InstructorCode,
+				FirstName:      ci.FirstName,
+				LastName:       ci.LastName,
+				Email:          ci.Email,
+				StartDate:      ci.StartDate,
+				Department:     ci.Department,
+			}
+			instructorInfo := model.NewInstructorInfo(
+				*commonInstructor,
+				"",
+				"",
+				"",
+				0,
+				model.AcademicPosition(0),
+				model.DepartmentPosition(0),
+			)
+
+			if err := tx.Where("instructor_code = ?", ci.InstructorCode).
+				FirstOrCreate(&instructorInfo).Error; err != nil {
+				return fmt.Errorf("failed to migrate instructor %s: %w", ci.InstructorCode, err)
+			}
 		}
-	}
-	return nil
+
+		return nil
+	})
 }
