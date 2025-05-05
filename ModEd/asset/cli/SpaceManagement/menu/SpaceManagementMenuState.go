@@ -23,7 +23,7 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 	manager.AddMenu("Supply Management", NewSupplyMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("room", NewRoomMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("booking", NewBookingMenuState(db, manager, spaceManagementMenu))
-	// manager.AddMenu("Schedule", NewPermanentScheduleState(db, manager, spaceManagementMenu))
+	manager.AddMenu("Schedule", NewPermanentScheduleState(db, manager, spaceManagementMenu))
 
 	return spaceManagementMenu
 }
