@@ -45,7 +45,7 @@ func main() {
 								return
 							}
 
-							if err := seniorProjectController.InsertSeniorProject(model.SeniorProject{
+							if err := seniorProjectController.Insert(&model.SeniorProject{
 								GroupName: groupNameStr,
 							}); err != nil {
 								io.Println(err.Error())
