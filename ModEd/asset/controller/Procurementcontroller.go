@@ -69,14 +69,21 @@ func (c *ProcurementController) Delete(id uint) error {
 	return c.db.Delete(&model.Procurement{}, id).Error
 }
 
-func (c *ProcurementController) OnApproved(id uint) error {
+func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 	return c.db.Model(&model.Procurement{}).
 		Where("procurement_id = ?", id).
-		Update("status", model.ProcurementStatusApproved).Error
+		Updates(map[string]interface{}{
+			"status":      model.ProcurementStatusApproved,
+			"approver_id": approverID,
+		}).Error
 }
 
-func (c *ProcurementController) OnRejected(id uint) error {
+func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
 	return c.db.Model(&model.Procurement{}).
 		Where("procurement_id = ?", id).
-		Update("status", model.ProcurementStatusRejected).Error
+		Updates(map[string]interface{}{
+			"status":      model.ProcurementStatusRejected,
+			"approver_id": approverID,
+		}).Error
 }
+
