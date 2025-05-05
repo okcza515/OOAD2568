@@ -5,10 +5,10 @@ import "fmt"
 type DepartmentPosition int
 
 const (
-	HEAD DepartmentPosition = iota
+	NONE_POSITION DepartmentPosition = iota
+	HEAD
 	DEPUTY
 	SECRETARY
-	NONE_POSITION
 )
 
 func ParseDepartmentPosition(posStr string) (DepartmentPosition, error) {
