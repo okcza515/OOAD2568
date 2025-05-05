@@ -82,7 +82,7 @@ func (InstructorFactory) CreateResignation(id, reason string) (interface{}, erro
 
 func (InstructorFactory) CreateRaise(id, reason string, targetSalary int) (interface{}, error) {
 	// Initialize embedded BaseStandardRequest and specific fields
-	return &RequestRaise{
+	return &RequestRaiseInstructor{
 		BaseStandardRequest: BaseStandardRequest{
 			Reason: reason,
 			Status: "Pending",
