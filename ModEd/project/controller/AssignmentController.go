@@ -56,6 +56,7 @@ func (c *AssignmentController) InsertAssignment(seniorProjectId uint, name, desc
 	assignment := model.Assignment{
 		Name:            name,
 		SeniorProjectId: seniorProjectId,
+		Description:     description,
 		DueDate:         dueDate,
 	}
 
