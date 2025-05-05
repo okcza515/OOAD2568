@@ -87,6 +87,8 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			fmt.Printf("TOR with ID %d deleted successfully.\n", id)
 			WaitForEnter()
+		case "5":
+			QuotationHandler(facade)
 		}
 
 		util.ClearScreen()
@@ -104,6 +106,7 @@ func printTOROptions() {
 	fmt.Println("  2:\tList All TORs")
 	fmt.Println("  3:\tView TOR by ID")
 	fmt.Println("  4:\tDelete TOR")
+	fmt.Println("  5:\tQuotation Page")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit")
 	fmt.Println()
 }

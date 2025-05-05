@@ -34,7 +34,7 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 			WaitForEnter()
 		case "2":
 			fmt.Println("List by TOR ID")
-
+			ListQuotationsByTORID(facade.GetDB())
 			WaitForEnter()
 		case "3":
 			fmt.Println("Quotation Selection")
@@ -73,7 +73,6 @@ func ImportQuotationsFromJSON(db *gorm.DB, filename string) error {
 	}
 
 	for _, q := range quotations {
-		// Avoid inserting associations if not needed (just flat data)
 		err := db.Omit("TOR", "Supplier", "Details").Create(&q).Error
 		if err != nil {
 			return fmt.Errorf("failed to insert quotation ID %d: %v", q.QuotationID, err)
@@ -82,4 +81,27 @@ func ImportQuotationsFromJSON(db *gorm.DB, filename string) error {
 
 	fmt.Println("Quotations imported successfully.")
 	return nil
+}
+
+func ListQuotationsByTORID(db *gorm.DB) {
+	torID := util.GetUintInput("Enter TOR ID: ")
+
+	var quotations []model.Quotation
+	err := db.Where("tor_id = ?", torID).Find(&quotations).Error
+	if err != nil {
+		fmt.Println("Failed to retrieve quotations:", err)
+		return
+	}
+
+	if len(quotations) == 0 {
+		fmt.Println("No quotations found for the specified TOR ID.")
+		return
+	}
+
+	fmt.Printf("Quotations for TOR ID %d:\n", torID)
+	for _, q := range quotations {
+		fmt.Printf("  QuotationID: %d | SupplierID: %d | Status: %s | Total Offered Price: %.2f\n",
+			q.QuotationID, q.SupplierID, q.Status, q.TotalOfferedPrice)
+	}
+
 }
