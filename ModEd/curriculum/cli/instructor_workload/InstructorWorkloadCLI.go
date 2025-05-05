@@ -30,7 +30,7 @@ func RunInstructorWorkloadModuleCLI(
 	curriculumController controller.CurriculumControllerInterface,
 ) {
 	menu := handler.NewMenuHandler("Instructor Workload Menu", true)
-	menu.Add("Academic", handler.AcademicWorkload{})
+	menu.Add("Academic", handler.NewAcademicWorkloadHandler(db))
 	menu.Add("Adminstrative", handler.NewAdminstrativeWorkloadHandler(db))
 	menu.Add("Senior Project", handler.SeniorProjectWorkload{})
 	menu.Add("Student Advisor", handler.StudentAdvisorWokrload{})
