@@ -32,20 +32,16 @@ func NewWILProjectCurriculumMenuStateHandler(
 
 func (menu *WILProjectCurriculumMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
-	menu.handler.AddHandler("1", "Create WIL Course", menu.createWILCourse)
-	menu.handler.AddHandler("2", "Create WIL Class", menu.createWILClass)
-	menu.handler.AddHandler("3", "List all of WIL Course", menu.listWILCourse)
-	menu.handler.AddHandler("4", "List all of WIL Class", menu.listWILClass)
-	menu.handler.AddBackHandler(func() error {
+	menu.handler.AddHandler("1", "Create WIL Course", utils.FuncStrategy{Action: menu.createWILCourse})
+	menu.handler.AddHandler("2", "Create WIL Class", utils.FuncStrategy{Action: menu.createWILClass})
+	menu.handler.AddHandler("3", "List all of WIL Course", utils.FuncStrategy{Action: menu.listWILCourse})
+	menu.handler.AddHandler("4", "List all of WIL Class", utils.FuncStrategy{Action: menu.listWILClass})
+	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
-	})
+	}})
 
-	if err := menu.handler.ShowMenu(); err != nil {
-		fmt.Println("error! cannot render menu")
-		return
-	}
-
+	menu.handler.ShowMenu()
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) error {

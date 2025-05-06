@@ -36,23 +36,20 @@ func NewWILProjectApplicationMenuStateHandler(
 
 func (menu *WILProjectApplicationMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
-	menu.handler.AddHandler("1", "Create WIL Project Application", menu.createWILProjectApplication)
-	menu.handler.AddHandler("2", "Edit WIL Project Application", menu.editWILProjectApplication)
-	menu.handler.AddHandler("3", "Search WIL Project Application", menu.searchWILProjectApplication)
-	menu.handler.AddHandler("4", "List all WIL Project Application", menu.listAllWILProjectApplication)
-	menu.handler.AddHandler("5", "Load WIL Project Application From file", func() error {
+	menu.handler.AddHandler("1", "Create WIL Project Application", utils.FuncStrategy{Action: menu.createWILProjectApplication})
+	menu.handler.AddHandler("2", "Edit WIL Project Application", utils.FuncStrategy{Action: menu.editWILProjectApplication})
+	menu.handler.AddHandler("3", "Search WIL Project Application", utils.FuncStrategy{Action: menu.searchWILProjectApplication})
+	menu.handler.AddHandler("4", "List all WIL Project Application", utils.FuncStrategy{Action: menu.listAllWILProjectApplication})
+	menu.handler.AddHandler("5", "Load WIL Project Application From file", utils.FuncStrategy{Action: func() error {
 		err := menu.insertHandlerStrategy.Execute()
 		return err
-	})
-	menu.handler.AddBackHandler(func() error {
+	}})
+	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
-	})
+	}})
 
-	if err := menu.handler.ShowMenu(); err != nil {
-		fmt.Println("error! cannot render menu")
-		return
-	}
+	menu.handler.ShowMenu()
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string) error {
@@ -148,6 +145,10 @@ func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication(
 	applications, err := menu.getAllWILProjectApplication()
 	if err != nil {
 		return errors.New("error! cannot retrieve WIL Project application data")
+	}
+
+	if len(applications) == 0 {
+		fmt.Println("no records")
 	}
 
 	for _, application := range applications {

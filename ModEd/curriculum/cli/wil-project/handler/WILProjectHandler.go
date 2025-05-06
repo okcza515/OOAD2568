@@ -33,21 +33,18 @@ func NewWILProjectMenuStateHandler(
 
 func (menu *WILProjectMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Menu:")
-	menu.handler.AddHandler("1", "Create WIL Project", menu.createCreateWILProject)
-	menu.handler.AddHandler("2", "Edit WIL Project", menu.editWILProject)
+	menu.handler.AddHandler("1", "Create WIL Project", utils.FuncStrategy{Action: menu.createCreateWILProject})
+	menu.handler.AddHandler("2", "Edit WIL Project", utils.FuncStrategy{Action: menu.editWILProject})
 	menu.handler.AddHandler("3", "Search WIL Project", nil)
-	menu.handler.AddHandler("4", "List all WIL Project", menu.listAllWILProject)
-	menu.handler.AddHandler("5", "Get WIL Project Detail By ID", menu.getWILProjectDetailByID)
-	menu.handler.AddHandler("6", "Delete WIL Project By ID", menu.deleteWILProjectByID)
-	menu.handler.AddBackHandler(func() error {
+	menu.handler.AddHandler("4", "List all WIL Project", utils.FuncStrategy{Action: menu.listAllWILProject})
+	menu.handler.AddHandler("5", "Get WIL Project Detail By ID", utils.FuncStrategy{Action: menu.getWILProjectDetailByID})
+	menu.handler.AddHandler("6", "Delete WIL Project By ID", utils.FuncStrategy{Action: menu.deleteWILProjectByID})
+	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
 		menu.manager.SetState(menu.wilModuleMenuStateHandler)
 		return nil
-	})
+	}})
 
-	if err := menu.handler.ShowMenu(); err != nil {
-		fmt.Println("error! cannot render menu")
-		return
-	}
+	menu.handler.ShowMenu()
 }
 
 func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {

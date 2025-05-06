@@ -5,9 +5,23 @@ import (
 	"sort"
 )
 
+//Wrote by MEP-1010
+
+type MenuStrategy interface {
+	Execute() error
+}
+
+type FuncStrategy struct {
+	Action func() error
+}
+
+func (f FuncStrategy) Execute() error {
+	return f.Action()
+}
+
 type MenuItem struct {
-	Label   string
-	Handler func() error
+	Label    string
+	Strategy MenuStrategy
 }
 
 type GeneralHandlerContext struct {
@@ -21,52 +35,27 @@ func NewGeneralHandlerContext() *GeneralHandlerContext {
 	}
 }
 
-func (c *GeneralHandlerContext) HandleInput(menuNumber string) error {
-	menuItem, ok := c.menu[menuNumber]
-	if !ok {
-		fmt.Println("Invalid Command Input")
-		return nil
-	}
-
-	if menuItem.Handler == nil {
-		fmt.Println("err : input handler not implemented")
-		return nil
-	}
-
-	return menuItem.Handler()
-}
-
 func (c *GeneralHandlerContext) SetMenuTitle(title string) {
 	c.title = title
 }
 
-func (c *GeneralHandlerContext) AddHandler(menuNumber string, label string, handler func() error) {
-	_, ok := c.menu[menuNumber]
-	if ok {
+func (c *GeneralHandlerContext) AddHandler(menuNumber string, label string, strategy MenuStrategy) {
+	_, exists := c.menu[menuNumber]
+	if exists {
 		return
 	}
 
 	c.menu[menuNumber] = MenuItem{
-		Label:   label,
-		Handler: handler,
+		Label:    label,
+		Strategy: strategy,
 	}
-	return
 }
 
-func (c *GeneralHandlerContext) AddBackHandler(handler func() error) {
-	_, ok := c.menu["back"]
-	if ok {
-		return
-	}
-
-	c.menu["back"] = MenuItem{
-		Label:   "exit to previous page",
-		Handler: handler,
-	}
-	return
+func (c *GeneralHandlerContext) AddBackHandler(strategy MenuStrategy) {
+	c.AddHandler("back", "exit to previous page", strategy)
 }
 
-func (c *GeneralHandlerContext) ShowMenu() error {
+func (c *GeneralHandlerContext) ShowMenu() {
 	fmt.Println(c.title)
 	keys := make([]string, 0, len(c.menu))
 	for key := range c.menu {
@@ -78,5 +67,19 @@ func (c *GeneralHandlerContext) ShowMenu() error {
 		menu := c.menu[key]
 		fmt.Printf("%s: %s\n", key, menu.Label)
 	}
-	return nil
+}
+
+func (c *GeneralHandlerContext) HandleInput(menuNumber string) error {
+	menuItem, exists := c.menu[menuNumber]
+	if !exists {
+		fmt.Println("Invalid Command Input")
+		return nil
+	}
+
+	if menuItem.Strategy == nil || menuItem.Strategy.Execute == nil {
+		fmt.Println("err : input handler not implemented")
+		return nil
+	}
+
+	return menuItem.Strategy.Execute()
 }
