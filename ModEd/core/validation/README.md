@@ -1,6 +1,76 @@
 # Core Validation
 
-## How to use
+## Field Validator
+
+### Supported Validator
+
+These are currently implementation of supported validator. The explanation for each function is within the function name.
+
+- `IsNumberValid`
+- `ParseNumber`
+- `IsUintValid`
+- `ParseUint`
+- `IsStringNotEmpty`
+- `IsEmailValid`
+- `IsPhoneNumberValid`
+- `IsDateTimeValid`
+- `IsStudentID`
+- `IsValueAllowed`
+
+### Example
+
+```go
+package main
+
+import (
+    "fmt"
+    "ModEd/core/validation" // Assuming this is the correct import path
+)
+
+func main() {
+    // Get an instance of the validator
+    validator := validation.NewValidator()
+
+    // Example 1: Validate an email
+    email1 := "test@example.com"
+    isValidEmail1 := validator.IsEmailValid(email1)
+    fmt.Printf("Is '%s' a valid email? %t\n", email1, isValidEmail1) 
+    // Output: Is 'test@example.com' a valid email? true
+
+    email2 := "invalid-email"
+    isValidEmail2 := validator.IsEmailValid(email2)
+    fmt.Printf("Is '%s' a valid email? %t\n", email2, isValidEmail2) 
+    // Output: Is 'invalid-email' a valid email? false
+
+    // Example 2: Validate if a value is allowed from a list
+    allowedGenders := []string{"Male", "Female", "Other"}
+    gender1 := "Male"
+    isGenderAllowed1 := validator.IsValueAllowed(gender1, allowedGenders)
+    fmt.Printf("Is gender '%s' allowed? %t\n", gender1, isGenderAllowed1) 
+    // Output: Is gender 'Male' allowed? true
+
+    gender2 := "Unknown"
+    isGenderAllowed2 := validator.IsValueAllowed(gender2, allowedGenders)
+    fmt.Printf("Is gender '%s' allowed? %t\n", gender2, isGenderAllowed2) 
+    // Output: Is gender 'Unknown' allowed? false
+
+    // Example 3: Validate a student ID
+    studentID1 := "12345678901"
+    isValidStudentID1 := validator.IsStudentID(studentID1)
+    fmt.Printf("Is student ID '%s' valid? %t\n", studentID1, isValidStudentID1) 
+    // Output: Is student ID '12345678901' valid? true
+
+    studentID2 := "12345"
+    isValidStudentID2 := validator.IsStudentID(studentID2)
+    fmt.Printf("Is student ID '%s' valid? %t\n", studentID2, isValidStudentID2) 
+    // Output: Is student ID '12345' valid? false
+}
+```
+
+
+## Model Validator
+
+### How to use
 
 1. **Define your struct** with `gorm` and/or `validation` tags. The values for these tags should correspond to the `ModelValidatorEnum` constants (e.g., "email", "not null", "studentId").
     * `gorm:"not null"` can be used for basic non-empty checks.
@@ -17,7 +87,7 @@
         ```
 3. **Check the returned `error`**. If it's `nil`, the model is valid according to the defined tags. Otherwise, the error will describe the first validation failure encountered.
 
-## Example
+### Example
 - Inside model:
     ```go
     package main
