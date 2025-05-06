@@ -13,8 +13,8 @@ import (
 )
 
 type InstrumentManagementMenuState struct{
-	manager			*cli.CLIMenuStateManager //changing the state(handler)
-	handlerContext	*handler.HandlerContext //selecting the func(strategy)
+	manager			*cli.CLIMenuStateManager //changing the state(handler), encapsulate menu transition
+	handlerContext	*handler.HandlerContext //selecting the func(strategy), hold command handlers
 }
 
 func (menu *InstrumentManagementMenuState) Render() {
@@ -73,6 +73,7 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 
   handlerContext := handler.NewHandlerContext()
 
+  	//handler strategy select each handler function
   	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.InstrumentManagement](controllerInstance)

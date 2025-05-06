@@ -18,7 +18,8 @@ func NewSpaceManagementState(db *gorm.DB, manager *cli.CLIMenuStateManager) *Spa
 		manager: manager,
 	}
 
-	//Add more menu here
+	//facade
+	//Add more menu here (state)
 	manager.AddMenu("Instrument Management", NewInstrumentMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("Supply Management", NewSupplyMenuState(db, manager, spaceManagementMenu))
 	manager.AddMenu("room", NewRoomMenuState(db, manager, spaceManagementMenu))

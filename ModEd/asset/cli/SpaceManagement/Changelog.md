@@ -11,24 +11,24 @@
 
 ## Design Patterns
 
-### Strategy
+### Facade
 
-- Used in handler classes to encapsulate behavior without modifying client code.
-- Ensures consistency with the core service structure.
+- `SpaceManagementControllerManager` acts as a facade, providing a simplified interface to complex subsystems.
+
+### Singleton
+
+- `SpaceManagementControllerManager` is implemented as a singleton using `GetSpaceManagementInstance()` to ensure a single shared instance.
 
 ### State
 
 - Implemented in the CLI menu system to manage transitions between various menu states.
 - `CLIMenuStateManager` handles state transitions cleanly and modularly.
 
-### Singleton
+### Strategy
 
-- `SpaceManagementControllerManager` is implemented as a singleton using `GetSpaceManagementInstance()` to ensure a single shared instance.
+- Used in handler classes to encapsulate behavior without modifying client code.
+- Ensures consistency with the core service structure.
 
-### Command
+<!-- ### Command
 
-- `ToString()` methods are used to standardize and encapsulate UI output logic, following the Command pattern principles.
-
-### Facade
-
-- `SpaceManagementControllerManager` acts as a facade, providing a simplified interface to complex subsystems.
+- `ToString()` methods are used to standardize and encapsulate UI output logic, following the Command pattern principles. -->
