@@ -68,6 +68,10 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			ListAllProcurements(facade)
 			WaitForEnter()
 		case "3":
+			fmt.Println("List All TORs")
+			ListAllTORs(facade)
+			WaitForEnter()
+		case "4":
 			fmt.Println("View Procurement Detail by ID")
 			ListAllProcurements(facade)
 			id := util.GetUintInput("Enter procurement ID: ")
@@ -91,49 +95,32 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("Status: %s\n", procurement.Status)
 			fmt.Printf("ApprovalTime: %s\n", approvalTime)
 			WaitForEnter()
-		case "4": //NOT USE, DELETE LATER
-			fmt.Println("Update Procurement Status")
-			ListAllProcurements(facade)
-
-			id := util.GetUintInput("Enter procurement ID: ")
-
-			if _, err := facade.Procurement.GetProcurementByID(id); err != nil {
-				fmt.Printf("Failed to retrieve procurement with ID %d: %v\n", id, err)
+		case "5":
+			fmt.Println("View TOR Detail by ID")
+			ListAllTORs(facade)
+			id := util.GetUintInput("Enter TOR ID: ")
+			tor, err := facade.TOR.GetTORByID(id)
+			if err != nil {
+				fmt.Printf("Failed to retrieve TOR with ID %d: %v\n", id, err)
 				WaitForEnter()
 				break
 			}
-
-			fmt.Println("Choose new status:")
-			fmt.Println("  1: Approve")
-			fmt.Println("  2: Reject")
-			statusChoice := util.GetCommandInput()
-
-			now := time.Now()
-			var updateErr error
-
-			switch statusChoice {
-			case "1":
-				updateErr = facade.Procurement.Update(id, map[string]any{
-					"status":        model.ProcurementStatusApproved,
-					"approval_time": &now,
-				})
-			case "2":
-				updateErr = facade.Procurement.Update(id, map[string]any{
-					"status":        model.ProcurementStatusRejected,
-					"approval_time": &now,
-				})
-			default:
-				fmt.Println("Invalid status choice.")
-				WaitForEnter()
+		
+			createdAt := "-"
+			if !tor.CreatedAt.IsZero() {
+				createdAt = tor.CreatedAt.Format("2006-01-02 15:04:05")
 			}
-
-			if updateErr != nil {
-				fmt.Printf("Failed to update status: %v\n", updateErr)
-			} else {
-				fmt.Println("Status updated successfully.")
-			}
+		
+			fmt.Printf("TOR ID: %d\n", tor.TORID)
+			fmt.Printf("Instrument Request ID: %d\n", tor.InstrumentRequestID)
+			fmt.Printf("Scope: %s\n", tor.Scope)
+			fmt.Printf("Deliverables: %s\n", tor.Deliverables)
+			fmt.Printf("Status: %s\n", tor.Status)
+			fmt.Printf("Committee: %s\n", tor.Committee)
+			fmt.Printf("Created At: %s\n", createdAt)
+		
 			WaitForEnter()
-		case "5":
+		case "6":
 			fmt.Println("Delete Procurement")
 			ListAllProcurements(facade)
 			id := util.GetUintInput("Enter procurement ID to delete: ")
@@ -144,10 +131,19 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			fmt.Printf("Procurement with ID %d deleted successfully.\n", id)
 			WaitForEnter()
-		case "6":
-			TORHandler(facade)
-			util.ClearScreen()
+		case "7":
+			fmt.Println("Delete TOR")
+			ListAllTORs(facade)
+			id := util.GetUintInput("Enter TOR ID to delete: ")
+			err := facade.TOR.DeleteTOR(id)
+			if err != nil {
+				fmt.Printf("Failed to delete TOR with ID %d: %v\n", id, err)
+				return
+			}
+			fmt.Printf("TOR with ID %d deleted successfully.\n", id)
 			WaitForEnter()
+		case "8":
+			QuotationHandler(facade)
 		}
 	}
 
@@ -160,10 +156,12 @@ func printProcurementOptions() {
 	fmt.Println("--Procurement Functions--")
 	fmt.Println("  1:\tCreate TOR and Procurement")
 	fmt.Println("  2:\tList All Procurements")
-	fmt.Println("  3:\tView Procurement Detail by ID")
-	fmt.Println("  4:\tUpdate Procurement Status")
-	fmt.Println("  5:\tDelete Procurement")
-	fmt.Println("  6:\tTOR Page")
+	fmt.Println("  3:\tList All TORs")
+	fmt.Println("  4:\tView Procurement Detail by ID")
+	fmt.Println("  5:\tView TOR Detail by ID")
+	fmt.Println("  6:\tDelete Procurement")
+	fmt.Println("  7:\tDelete TOR")
+	fmt.Println("  8:\tQuotation Page")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
@@ -188,4 +186,51 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | ApprovalTime: %s\n", procurement.ProcurementID, approverID, procurement.Status, approvalTime)
 		}
 	}
+}
+
+func showApprovedRequests(requests *[]model.InstrumentRequest, err error) bool {
+	if err != nil {
+		fmt.Println("Failed to retrieve requests:", err)
+		return false
+	}
+
+	approved := []model.InstrumentRequest{}
+	for _, request := range *requests {
+		if request.Status == "approved" {
+			approved = append(approved, request)
+		}
+	}
+
+	if len(approved) == 0 {
+		fmt.Println("No approved instrument requests available.")
+		return false
+	}
+
+	fmt.Println("Approved Instrument Requests:")
+	for _, request := range approved {
+		fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
+	}
+
+	return true
+}
+
+func ListAllTORs(facade *procurement.ProcurementControllerFacade) {
+	tors, err := facade.TOR.GetAllTORs()
+	if err != nil {
+		fmt.Println("Failed to retrieve TORs:", err)
+		return
+	}
+
+	if len(tors) == 0 {
+		fmt.Println("No TOR records found.")
+		return
+	}
+
+	fmt.Println("TOR List:")
+	for _, tor := range tors {
+		createdAt := tor.CreatedAt.Format("2006-01-02 15:04:05")
+		fmt.Printf("  TOR ID: %d | Instrument Request ID: %d | Status: %s | Created At: %s\n",
+			tor.TORID, tor.InstrumentRequestID, tor.Status, createdAt)
+	}
+
 }
