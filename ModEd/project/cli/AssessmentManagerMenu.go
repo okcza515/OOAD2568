@@ -142,7 +142,7 @@ func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaControl
 		}
 
 		io.Println("\nAvailable Assessment Criteria:")
-		allCriteria, err := criteriaCtrl.ListAllAssessmentCriterias()
+		allCriteria, err := criteriaCtrl.List(map[string]interface{}{})
 		if err != nil {
 			io.Println(fmt.Sprintf("Error listing all criteria: %v", err))
 			return
@@ -200,25 +200,15 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 		io.Println("Updating Assessment Criteria...")
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
 
-		input, err := io.ReadInput()
+		seniorProjectID, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if input == "-1" {
 			return
 		}
 
-		seniorProjectID, err := strconv.ParseUint(input, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid senior project ID: %v", err))
-			return
-		}
-
-		assessment, err := assessmentCtrl.RetrieveByID(uint(seniorProjectID))
+		assessment, err := assessmentCtrl.RetrieveByID(seniorProjectID)
 		if err != nil {
 			if assessment == nil {
-				assessment, err = assessmentCtrl.InsertAssessment(uint(seniorProjectID))
+				assessment, err = assessmentCtrl.InsertAssessment(seniorProjectID)
 				if err != nil {
 					log.Printf("Error inserting assessment: %v", err)
 					return
@@ -229,7 +219,7 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 			}
 		}
 
-		mappers, err := linkCtrl.ListProjectAssessmentCriteriaLinks(uint(seniorProjectID))
+		mappers, err := linkCtrl.ListProjectAssessmentCriteriaLinks(seniorProjectID)
 		if err != nil {
 			log.Printf("Error listing assessment criteria: %v", err)
 			return
@@ -250,22 +240,12 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 		}
 
 		io.Print("Enter Criteria ID to update (-1 to cancel): ")
-		input, err = io.ReadInput()
+		criteriaId, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if input == "-1" {
 			return
 		}
 
-		criteriaId, err := strconv.ParseUint(input, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid criteria ID: %v", err))
-			return
-		}
-
-		assessmentCriteriaLink, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, uint(criteriaId))
+		assessmentCriteriaLink, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, criteriaId)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error retrieving assessmentCriteriaLink: %v", err))
 			return
@@ -276,29 +256,19 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 		}
 
 		io.Print("Enter new Criteria ID (-1 to cancel): ")
-		input, err = io.ReadInput()
+		newCriteriaID, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if input == "-1" {
-			return
-		}
-
-		newCriteriaID, err := strconv.ParseUint(input, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid new criteria ID: %v", err))
 			return
 		}
 
 		for _, mapper := range mappers {
-			if mapper.AssessmentCriteriaId == uint(newCriteriaID) {
+			if mapper.AssessmentCriteriaId == newCriteriaID {
 				io.Println("This criteria is already linked to the assessment.")
 				return
 			}
 		}
 
-		assessmentCriteriaLink.AssessmentCriteriaId = uint(newCriteriaID)
+		assessmentCriteriaLink.AssessmentCriteriaId = newCriteriaID
 		err = linkCtrl.UpdateByID(assessmentCriteriaLink)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error updating assessmentCriteriaLink: %v", err))
@@ -312,29 +282,19 @@ func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtr
 	return func(io *utils.MenuIO) {
 		io.Println("Deleting Criteria Link from Assessment...")
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
-		input, err := io.ReadInput()
+		seniorProjectID, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if input == "-1" {
 			return
 		}
 
-		seniorProjectID, err := strconv.ParseUint(input, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid project ID: %v", err))
-			return
-		}
-
-		assessment, err := assessmentCtrl.RetrieveByID(uint(seniorProjectID))
+		assessment, err := assessmentCtrl.RetrieveByID(seniorProjectID)
 		if err != nil || assessment == nil {
 			io.Println("Assessment not found.")
 			return
 		}
 
 		io.Println("Current Linked Criteria:")
-		mappers, err := linkCtrl.ListProjectAssessmentCriteriaLinks(uint(seniorProjectID))
+		mappers, err := linkCtrl.ListProjectAssessmentCriteriaLinks(seniorProjectID)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error retrieving criteria links: %v", err))
 			return
@@ -358,22 +318,12 @@ func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtr
 		}
 
 		io.Print("Enter Criteria ID to unlink (-1 to cancel): ")
-		input, err = io.ReadInput()
+		criteriaId, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if input == "-1" {
 			return
 		}
 
-		criteriaId, err := strconv.ParseUint(input, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid criteria ID: %v", err))
-			return
-		}
-
-		err = linkCtrl.DeleteAssessmentCriteriaLink(uint(assessment.ID), uint(criteriaId))
+		err = linkCtrl.DeleteAssessmentCriteriaLink(assessment.ID, criteriaId)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error unlinking criteria: %v", err))
 		} else {

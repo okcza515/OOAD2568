@@ -4,13 +4,10 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 	"strings"
 )
 
-func BuildAdvisorMenu(
-	advisorController *controller.AdvisorController,
-) *utils.MenuItem {
+func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.MenuItem {
 	return &utils.MenuItem{
 		Title: "Advisor Manager",
 		Children: []*utils.MenuItem{
@@ -20,33 +17,21 @@ func BuildAdvisorMenu(
 					io.Println("Assigning Advisor to Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
-					projectIdStr, err := io.ReadInput()
-					if err != nil || projectIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					projectId, err := strconv.Atoi(projectIdStr)
+					projectId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID format.")
 						return
 					}
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")
-					instructorIdStr, err := io.ReadInput()
-					if err != nil || instructorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					instructorId, err := strconv.Atoi(instructorIdStr)
+					instructorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Instructor ID format.")
 						return
 					}
 
 					io.Print("Is this a primary advisor? (yes/no): ")
 					isPrimaryStr, err := io.ReadInput()
 					if err != nil {
-						io.Println("Cancelled.")
+
 						return
 					}
 					isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
@@ -65,21 +50,14 @@ func BuildAdvisorMenu(
 					io.Println("Updating Advisor Role...")
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
-					advisorIdStr, err := io.ReadInput()
-					if err != nil || advisorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					advisorId, err := strconv.Atoi(advisorIdStr)
+					advisorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Advisor ID format.")
 						return
 					}
 
 					io.Print("Set as primary advisor? (yes/no): ")
 					isPrimaryStr, err := io.ReadInput()
 					if err != nil {
-						io.Println("Cancelled.")
 						return
 					}
 					isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
@@ -98,18 +76,12 @@ func BuildAdvisorMenu(
 					io.Println("Removing Advisor...")
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
-					advisorIdStr, err := io.ReadInput()
-					if err != nil || advisorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					advisorId, err := strconv.Atoi(advisorIdStr)
+					advisorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Advisor ID format.")
 						return
 					}
 
-					err = advisorController.RemoveAdvisor(uint(advisorId))
+					err = advisorController.DeleteByID(advisorId)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error removing advisor: %v", err))
 					} else {
@@ -123,18 +95,14 @@ func BuildAdvisorMenu(
 					io.Println("Listing Advisors by Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
-					projectIdStr, err := io.ReadInput()
-					if err != nil || projectIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					projectId, err := strconv.Atoi(projectIdStr)
+					projectId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID format.")
 						return
 					}
 
-					advisors, err := advisorController.ListAdvisorsByProject(projectId)
+					advisors, err := advisorController.List(map[string]interface{}{
+						"seniorProjectId": projectId,
+					})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error listing advisors: %v", err))
 						return
@@ -161,18 +129,14 @@ func BuildAdvisorMenu(
 					io.Println("Listing Projects by Instructor...")
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")
-					instructorIdStr, err := io.ReadInput()
-					if err != nil || instructorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					instructorId, err := strconv.Atoi(instructorIdStr)
+					instructorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Instructor ID format.")
 						return
 					}
 
-					advisors, err := advisorController.ListAdvisorsByInstructor(instructorId)
+					advisors, err := advisorController.List(map[string]interface{}{
+						"instructorId": instructorId,
+					})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error listing projects: %v", err))
 						return

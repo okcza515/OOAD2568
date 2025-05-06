@@ -54,6 +54,18 @@ func main() {
 						},
 					},
 					{
+						Title: "List Senior Projects",
+						Action: func(io *utils.MenuIO) {
+							records, err := seniorProjectController.List(map[string]interface{}{})
+							if err != nil {
+								io.Println(err.Error())
+								return
+							}
+
+							io.PrintTableFromSlice(records, []string{"ID", "GroupName", "CreatedAt"})
+						},
+					},
+					{
 						Title: "Assign Groups, Advisors, and Committees",
 						Children: []*utils.MenuItem{
 							BuildAdvisorMenu(advisorController),

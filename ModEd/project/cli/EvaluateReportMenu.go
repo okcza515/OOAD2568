@@ -5,7 +5,6 @@ import (
 	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func BuildEvaluateReportMenu(
@@ -21,47 +20,33 @@ func BuildEvaluateReportMenu(
 					io.Println("Evaluating Report for Advisor...")
 
 					io.Print("Enter Report ID (-1 to cancel): ")
-					reportIdStr, err := io.ReadInput()
-					if err != nil || reportIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					reportId, err := strconv.Atoi(reportIdStr)
+					reportId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Report ID.")
+						io.Println("Cancelled.")
 						return
 					}
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
-					advisorIdStr, err := io.ReadInput()
-					if err != nil || advisorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					advisorId, err := strconv.Atoi(advisorIdStr)
+					advisorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Advisor ID.")
 						return
 					}
 
 					io.Print("Enter Score (0.0 - 100.0): ")
-					scoreStr, err := io.ReadInput()
+					score, err := io.ReadInputFloat()
 					if err != nil {
-						io.Println("Cancelled.")
 						return
 					}
-					score, err := strconv.ParseFloat(scoreStr, 64)
-					if err != nil || score < 0 || score > 100 {
+					if score < 0 || score > 100 {
 						io.Println("Invalid Score. Must be between 0.0 and 100.0.")
 						return
 					}
 
-					newScore := &model.ScoreReportAdvisor{
-						ReportId:  uint(reportId),
-						AdvisorId: uint(advisorId),
+					if err := scoreReportAdvisorController.Insert(&model.ScoreReportAdvisor{
+						ReportId:  reportId,
+						AdvisorId: advisorId,
 						Score:     score,
-					}
-					if err := scoreReportAdvisorController.Insert(newScore); err != nil {
+					}); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
 					} else {
 						io.Println("Advisor score submitted successfully!")
@@ -74,72 +59,52 @@ func BuildEvaluateReportMenu(
 					io.Println("Evaluating Report for Committee...")
 
 					io.Print("Enter Report ID (-1 to cancel): ")
-					reportIdStr, err := io.ReadInput()
-					if err != nil || reportIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					reportId, err := strconv.Atoi(reportIdStr)
+					reportId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Report ID.")
 						return
 					}
 
 					io.Print("Enter Committee ID (-1 to cancel): ")
-					committeeIdStr, err := io.ReadInput()
-					if err != nil || committeeIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					committeeId, err := strconv.Atoi(committeeIdStr)
+					committeeId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Committee ID.")
 						return
 					}
 
 					io.Print("Enter Score (0.0 - 100.0): ")
-					scoreStr, err := io.ReadInput()
+					score, err := io.ReadInputFloat()
 					if err != nil {
-						io.Println("Cancelled.")
 						return
 					}
-					score, err := strconv.ParseFloat(scoreStr, 64)
-					if err != nil || score < 0 || score > 100 {
+					if score < 0 || score > 100 {
 						io.Println("Invalid Score. Must be between 0.0 and 100.0.")
 						return
 					}
 
-					newScore := &model.ScoreReportCommittee{
+					if err := scoreReportCommitteeController.Insert(&model.ScoreReportCommittee{
 						ReportId:    uint(reportId),
 						CommitteeId: uint(committeeId),
 						Score:       score,
-					}
-					if err := scoreReportCommitteeController.Insert(newScore); err != nil {
+					}); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 					} else {
 						io.Println("Committee score submitted successfully!")
 					}
 				},
-				},
+			},
 			{
 				Title: "Check Score",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Checking Scores for Report...")
 
 					io.Print("Enter Report ID (-1 to cancel): ")
-					reportIdStr, err := io.ReadInput()
-					if err != nil || reportIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					reportId, err := strconv.Atoi(reportIdStr)
+					reportId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Report ID.")
 						return
 					}
 
-					// Fetch advisor scores
-					advisorScores, err := scoreReportAdvisorController.ListAdvisorScoresByCondition("report_id", reportId)
+					advisorScores, err := scoreReportAdvisorController.List(map[string]interface{}{
+						"report_id": reportId,
+					})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error fetching advisor scores: %v", err))
 					} else if len(advisorScores) == 0 {
@@ -151,8 +116,7 @@ func BuildEvaluateReportMenu(
 						}
 					}
 
-					// Fetch committee scores
-					committeeScores, err := scoreReportCommitteeController.ListCommitteeScoresByCondition("report_id", reportId)
+					committeeScores, err := scoreReportCommitteeController.List(map[string]interface{}{"report_id": reportId})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error fetching committee scores: %v", err))
 					} else if len(committeeScores) == 0 {

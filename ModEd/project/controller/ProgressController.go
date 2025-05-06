@@ -20,20 +20,6 @@ func NewProgressController(db *gorm.DB) *ProgressController {
 	}
 }
 
-func (c *ProgressController) ListAllProgress() ([]model.Progress, error) {
-	progressPtrs, err := c.List(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	progresses := make([]model.Progress, len(progressPtrs))
-	for i, pPtr := range progressPtrs {
-		progresses[i] = *pPtr
-	}
-
-	return progresses, nil
-}
-
 func (c *ProgressController) AddNewProgress(assignmentID uint, name string) error {
 	progress := model.Progress{
 		AssignmentId: assignmentID,
@@ -55,7 +41,7 @@ func (c *ProgressController) UpdateProgressName(progressID uint, newName string)
 }
 
 func (c *ProgressController) GetFormattedProgressList() ([]string, error) {
-	progressList, err := c.ListAllProgress()
+	progressList, err := c.List(map[string]interface{}{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve progress list: %w", err)
 	}

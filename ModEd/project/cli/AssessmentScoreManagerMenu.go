@@ -5,7 +5,6 @@ import (
 	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func BuildAssessmentScoreManagerMenu(
@@ -57,8 +56,7 @@ func viewProjectScores(
 ) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Print("Enter Senior Project ID to view scores: ")
-		input, _ := io.ReadInput()
-		projectId, _ := strconv.Atoi(input)
+		projectId, _ := io.ReadInputID()
 
 		_, err := assessmentCtrl.RetrieveAssessmentBySeniorProjectId(uint(projectId))
 		if err != nil {
@@ -93,44 +91,38 @@ func submitAdvisorScore(
 ) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Print("Enter Senior Project ID: ")
-		projectIDStr, _ := io.ReadInput()
-		projectId, _ := strconv.Atoi(projectIDStr)
+		projectId, _ := io.ReadInputID()
 
-		assessment, err := assessmentCtrl.RetrieveAssessmentBySeniorProjectId(uint(projectId))
+		assessment, err := assessmentCtrl.RetrieveAssessmentBySeniorProjectId(projectId)
 		if err != nil {
 			io.Println("Project not found")
 			return
 		}
 
 		io.Print("Enter Criteria ID to score: ")
-		criteriaIDStr, _ := io.ReadInput()
-		criteriaID, _ := strconv.Atoi(criteriaIDStr)
+		criteriaID, _ := io.ReadInputID()
 
-		link, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, uint(criteriaID))
+		link, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, criteriaID)
 		if err != nil {
 			io.Println("Criteria not found for this project")
 			return
 		}
 
 		io.Print("Enter Advisor ID: ")
-		advisorIDStr, _ := io.ReadInput()
-		advisorID, _ := strconv.ParseUint(advisorIDStr, 10, 64)
+		advisorID, _ := io.ReadInputID()
 
 		io.Print("Enter score (0.0 - 100.0): ")
-		scoreStr, _ := io.ReadInput()
-		scoreVal, err := strconv.ParseFloat(scoreStr, 64)
+		scoreVal, err := io.ReadInputFloat()
 		if err != nil {
 			io.Println("Invalid score.")
 			return
 		}
 
-		score := model.ScoreAssessmentAdvisor{
+		if err := scoreCtrl.Insert(&model.ScoreAssessmentAdvisor{
 			AssessmentCriteriaLinkId: link.ID,
-			AdvisorId:                uint(advisorID),
+			AdvisorId:                advisorID,
 			Score:                    scoreVal,
-		}
-
-		if err := scoreCtrl.Insert(&score); err != nil {
+		}); err != nil {
 			io.Println(fmt.Sprintf("Failed to submit score: %v", err))
 		} else {
 			io.Println("Advisor score submitted successfully!")
@@ -145,40 +137,32 @@ func submitCommitteeScore(
 ) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Print("Enter Senior Project ID: ")
-		projectIDStr, _ := io.ReadInput()
-		projectId, _ := strconv.Atoi(projectIDStr)
+		projectId, _ := io.ReadInputID()
 
-		assessment, err := assessmentCtrl.RetrieveAssessmentBySeniorProjectId(uint(projectId))
+		assessment, err := assessmentCtrl.RetrieveAssessmentBySeniorProjectId(projectId)
 		if err != nil {
 			io.Println("Project not found")
 			return
 		}
 
 		io.Print("Enter Criteria ID to score: ")
-		criteriaIDStr, _ := io.ReadInput()
-		criteriaID, _ := strconv.Atoi(criteriaIDStr)
+		criteriaID, _ := io.ReadInputID()
 
-		link, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, uint(criteriaID))
+		link, err := linkCtrl.RetrieveAssessmentCriteriaLink(assessment.ID, criteriaID)
 		if err != nil {
 			io.Println("Criteria not found for this project")
 			return
 		}
 
 		io.Print("Enter Committee Member ID: ")
-		committeeIDStr, _ := io.ReadInput()
-		committeeID, _ := strconv.ParseUint(committeeIDStr, 10, 64)
+		committeeID, _ := io.ReadInputID()
 
 		io.Print("Enter score (0.0 - 100.0): ")
-		scoreStr, _ := io.ReadInput()
-		scoreVal, err := strconv.ParseFloat(scoreStr, 64)
-		if err != nil {
-			io.Println("Invalid score.")
-			return
-		}
+		scoreVal, _ := io.ReadInputFloat()
 
 		score := model.ScoreAssessmentCommittee{
 			AssessmentCriteriaLinkId: link.ID,
-			CommitteeId:              uint(committeeID),
+			CommitteeId:              committeeID,
 			Score:                    scoreVal,
 		}
 
@@ -207,10 +191,7 @@ func displayAdvisorScore(io *utils.MenuIO, scoreCtrl *controller.ScoreAdvisorCon
 }
 
 func displayCommitteeScores(io *utils.MenuIO, scoreCtrl *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee], linkId uint) {
-	committeeScores, err := scoreCtrl.ListCommitteeScoresByCondition(
-		"assessment_criteria_link_id = ?",
-		linkId,
-	)
+	committeeScores, err := scoreCtrl.List(map[string]interface{}{"assessment_criteria_link_id": linkId})
 	if err != nil {
 		io.Println("  Committee Scores: -")
 		return
