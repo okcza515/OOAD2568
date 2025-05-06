@@ -26,15 +26,3 @@ type Examination struct {
 	End_date   			time.Time 						`gorm:"not null" csv:"end_date" json:"end_date"`
 	Create_at   		time.Time 						`gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
 }
-
-type ExaminationCriteria struct {
-	TotalScore int        `json:"total_score"` 
-	Sections   []Section  `json:"sections"`
-}
-
-type Section struct {
-	SectionNo     			   uint   `json:"section_no"`      
-	Description   			   string `json:"description"`     
-	NumQuestions  			   int    `json:"num_questions"`   
-	TotalSectionScore          int    `json:"total_section_score"`           
-}
