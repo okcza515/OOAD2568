@@ -191,3 +191,4 @@ func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, submission)
 }
+
