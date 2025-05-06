@@ -60,6 +60,7 @@ func (menu *CategoryMenuState) Render() {
 }
 
 func (menu *CategoryMenuState) HandleUserInput(input string) error {
+	fmt.Println(menu.handlerContext)
 	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println(err)
