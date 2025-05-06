@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
@@ -15,10 +14,10 @@ import (
 )
 
 type WILProjectMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.WILModuleWrapper
-
+	manager                   *cli.CLIMenuStateManager
+	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
+	handler                   *utils.GeneralHandlerContext
 }
 
 func NewWILProjectMenuStateHandler(
@@ -28,53 +27,34 @@ func NewWILProjectMenuStateHandler(
 		manager:                   manager,
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
+		handler:                   utils.NewGeneralHandlerContext(),
 	}
 }
 
 func (menu *WILProjectMenuStateHandler) Render() {
-	fmt.Println("\nWIL Project Menu:")
-	fmt.Println("1. Create WIL Project")
-	fmt.Println("2. Edit WIL Project")
-	fmt.Println("3. Search WIL Project")
-	fmt.Println("4. List all WIL Project")
-	fmt.Println("5. Get WIL Project Detail By ID")
-	fmt.Println("6. Delete WIL Project By ID")
-	fmt.Println("back: Exit the module")
+	menu.handler.SetMenuTitle("\nWIL Project Menu:")
+	menu.handler.AddHandler("1", "Create WIL Project", menu.createCreateWILProject)
+	menu.handler.AddHandler("2", "Edit WIL Project", menu.editWILProject)
+	menu.handler.AddHandler("3", "Search WIL Project", nil)
+	menu.handler.AddHandler("4", "List all WIL Project", menu.listAllWILProject)
+	menu.handler.AddHandler("5", "Get WIL Project Detail By ID", menu.getWILProjectDetailByID)
+	menu.handler.AddHandler("6", "Delete WIL Project By ID", menu.deleteWILProjectByID)
+	menu.handler.AddBackHandler(func() error {
+		menu.manager.SetState(menu.wilModuleMenuStateHandler)
+		return nil
+	})
+
+	if err := menu.handler.ShowMenu(); err != nil {
+		fmt.Println("error! cannot render menu")
+		return
+	}
 }
 
 func (menu *WILProjectMenuStateHandler) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		if err := menu.createCreateWILProject(); err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "2":
-		if err := menu.editWILProject(); err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "3":
-		fmt.Println("3 Not implemented yet...")
-	case "4":
-		if err := menu.listAllWILProject(); err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "5":
-		if err := menu.getWILProjectDetailByID(); err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "6":
-		if err := menu.deleteWILProjectByID(); err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "back":
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	default:
-		fmt.Println("Invalid Command")
+	err := menu.handler.HandleInput(input)
+	if err != nil {
+		return err
 	}
-
-	util.PressEnterToContinue()
-
 	return nil
 }
 
