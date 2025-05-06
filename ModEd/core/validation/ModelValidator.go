@@ -1,11 +1,12 @@
 package validation
 
-// Wrote by MEP-1010
+// Wrote by MEP-1010, MEP-1004, MEP-1002
 
 import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 )
 
 type ModelValidatorEnum string
@@ -23,9 +24,13 @@ const (
 
 type validationFunc func(value string) bool
 
-type validation struct {
-	Name string
-	Tags []validationFunc
+// fieldValidationRule stores the rules for a single field.
+type fieldValidationRule struct {
+	FieldName      string
+	ValidationTags []struct {
+		Tag  ModelValidatorEnum
+		Func validationFunc
+	}
 }
 
 type ModelValidator struct {
@@ -33,26 +38,31 @@ type ModelValidator struct {
 	validateTag map[ModelValidatorEnum]validationFunc
 }
 
-var modelValidatorInstance *ModelValidator
+var (
+	modelValidatorInstance *ModelValidator
+	modelValidatorOnce     sync.Once
+)
 
 func NewModelValidator() *ModelValidator {
-	if modelValidatorInstance == nil {
+	modelValidatorOnce.Do(func() {
+		validator := NewValidator()
+		validateTagMap := make(map[ModelValidatorEnum]validationFunc)
+
+		validateTagMap[GORM_VALIDATE_NOT_NULL] = validator.IsStringNotEmpty
+		validateTagMap[VALIDATE_STUDENT_ID] = validator.IsStudentID
+		validateTagMap[VALIDATE_PHONE] = validator.IsPhoneNumberValid
+		validateTagMap[VALIDATE_EMAIL] = validator.IsEmailValid
+		validateTagMap[VALIDATE_DATETIME] = validator.IsDateTimeValid
+
 		modelValidatorInstance = &ModelValidator{
-			validator:   NewValidator(),
-			validateTag: make(map[ModelValidatorEnum]validationFunc),
+			validator:   validator,
+			validateTag: validateTagMap,
 		}
-		modelValidatorInstance.validateTag[GORM_VALIDATE_NOT_NULL] = modelValidatorInstance.validator.IsStringNotEmpty
-
-		modelValidatorInstance.validateTag[VALIDATE_STUDENT_ID] = modelValidatorInstance.validator.IsStudentID
-		modelValidatorInstance.validateTag[VALIDATE_PHONE] = modelValidatorInstance.validator.IsPhoneNumberValid
-		modelValidatorInstance.validateTag[VALIDATE_EMAIL] = modelValidatorInstance.validator.IsEmailValid
-		modelValidatorInstance.validateTag[VALIDATE_DATETIME] = modelValidatorInstance.validator.IsDateTimeValid
-	}
+	})
 	return modelValidatorInstance
-
 }
 
-func (v ModelValidator) ModelValidate(model interface{}) error {
+func (mv *ModelValidator) ModelValidate(model interface{}) error {
 	st := reflect.TypeOf(model)
 	val := reflect.ValueOf(model)
 
@@ -62,35 +72,29 @@ func (v ModelValidator) ModelValidate(model interface{}) error {
 	}
 
 	if st.Kind() != reflect.Struct {
-		return fmt.Errorf("input is not a struct")
+		return fmt.Errorf("input is not a struct, got %s", st.Kind())
 	}
 
-	validations, err := getValidator(st)
+	fieldRules, err := mv.getFieldValidationRules(st)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting validation rules: %w", err)
 	}
 
-	for _, validation := range validations {
-		fieldValue := val.FieldByName(validation.Name)
+	for _, rule := range fieldRules {
+		fieldValue := val.FieldByName(rule.FieldName)
 		if !fieldValue.IsValid() {
-			return fmt.Errorf("field %s does not exist in the model", validation.Name)
+			return fmt.Errorf("field '%s' configured for validation does not exist in the model", rule.FieldName)
 		}
 
-		var value string
-		switch fieldValue.Kind() {
-		case reflect.String:
-			value = fieldValue.Interface().(string)
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			value = fmt.Sprintf("%d", fieldValue.Interface())
-		case reflect.Float32, reflect.Float64:
-			value = fmt.Sprintf("%f", fieldValue.Interface())
-		default:
-			value = fieldValue.Interface().(string)
-		}
+		// Convert field value to string for validation
+		// %v is a general verb that works for many types.
+		// If specific string formatting is needed for certain types,
+		// the switch statement can be reintroduced or refined.
+		valueStr := fmt.Sprintf("%v", fieldValue.Interface())
 
-		for _, tag := range validation.Tags {
-			if !tag(value) {
-				return fmt.Errorf("validation failed for field %s with value %s in tags", validation.Name, value)
+		for _, tagValidation := range rule.ValidationTags {
+			if !tagValidation.Func(valueStr) {
+				return fmt.Errorf("validation failed for field '%s' with value '%s' for rule '%s'", rule.FieldName, valueStr, tagValidation.Tag)
 			}
 		}
 	}
@@ -98,48 +102,69 @@ func (v ModelValidator) ModelValidate(model interface{}) error {
 	return nil
 }
 
-func getValidator(st reflect.Type) ([]validation, error) {
-	var validations []validation
+// getFieldValidationRules extracts validation rules for each field of a struct type.
+func (mv *ModelValidator) getFieldValidationRules(st reflect.Type) ([]fieldValidationRule, error) {
+	var rules []fieldValidationRule
 
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
-		var tags []validationFunc
+		var currentFieldTags []struct {
+			Tag  ModelValidatorEnum
+			Func validationFunc
+		}
 
-		tags = append(tags, getStructFieldTags(field, CONST_GORM_STRUCT_FIELD_TAGS)...)
-		tags = append(tags, getStructFieldTags(field, CONST_VALIDATION_STRUCT_FIELD_TAGS)...)
+		// Parse gorm tags
+		gormTags := mv.parseStructFieldTags(field, CONST_GORM_STRUCT_FIELD_TAGS)
+		currentFieldTags = append(currentFieldTags, gormTags...)
 
-		if len(tags) != 0 {
-			validations = append(validations, validation{
-				Name: field.Name,
-				Tags: tags,
+		// Parse validation tags
+		validationTags := mv.parseStructFieldTags(field, CONST_VALIDATION_STRUCT_FIELD_TAGS)
+		currentFieldTags = append(currentFieldTags, validationTags...)
+
+		if len(currentFieldTags) > 0 {
+			rules = append(rules, fieldValidationRule{
+				FieldName:      field.Name,
+				ValidationTags: currentFieldTags,
 			})
 		}
 	}
-	return validations, nil
+	return rules, nil
 }
 
-func getStructFieldTags(field reflect.StructField, fieldName string) []validationFunc {
-	var tags []validationFunc
-	if tag, ok := field.Tag.Lookup(fieldName); ok {
-		tagsValue := strings.Split(tag, ",")
-		for _, tagValue := range tagsValue {
-			tagValue = strings.TrimSpace(tagValue)
-
-			if tagValue == "" {
-				continue
-			}
-
-			validationFunc := getValidationFunc(ModelValidatorEnum(tagValue))
-			if validationFunc == nil {
-				continue
-			}
-			tags = append(tags, validationFunc)
-		}
+// parseStructFieldTags parses a specific tag (like "gorm" or "validation") from a struct field.
+func (mv *ModelValidator) parseStructFieldTags(field reflect.StructField, tagName string) []struct {
+	Tag  ModelValidatorEnum
+	Func validationFunc
+} {
+	var parsedTags []struct {
+		Tag  ModelValidatorEnum
+		Func validationFunc
+	}
+	tagValueStr, ok := field.Tag.Lookup(tagName)
+	if !ok {
+		return parsedTags // No tag found
 	}
 
-	return tags
+	tagValues := strings.Split(tagValueStr, ",")
+	for _, tv := range tagValues {
+		trimmedTag := ModelValidatorEnum(strings.TrimSpace(tv))
+		if trimmedTag == "" {
+			continue
+		}
+
+		fn := mv.getValidationFuncByTag(trimmedTag)
+		if fn != nil {
+			parsedTags = append(parsedTags, struct {
+				Tag  ModelValidatorEnum
+				Func validationFunc
+			}{Tag: trimmedTag, Func: fn})
+		}
+	}
+	return parsedTags
 }
 
-func getValidationFunc(tag ModelValidatorEnum) validationFunc {
-	return modelValidatorInstance.validateTag[tag]
+// getValidationFuncByTag retrieves the validation function associated with a ModelValidatorEnum tag.
+func (mv *ModelValidator) getValidationFuncByTag(tag ModelValidatorEnum) validationFunc {
+	// mv.validateTag is initialized in NewModelValidator
+	return mv.validateTag[tag]
 }
