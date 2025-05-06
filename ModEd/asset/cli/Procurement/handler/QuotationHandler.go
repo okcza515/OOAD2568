@@ -23,7 +23,7 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 		switch inputBuffer {
 		case "1":
 			fmt.Println("Import Quotations")
-			filename := util.GetStringInput("Enter path to the JSON file (e.g., data/quotations.json): ")
+			filename := util.GetStringInput("Enter path to the JSON file (data/quotations.json): ")
 		
 			err := ImportQuotationsFromJSON(facade.GetDB(), filename)
 			if err != nil {
@@ -57,7 +57,7 @@ func printQuotationSupplierOptions() {
 	fmt.Println("  1:\tImport Quotations")
 	fmt.Println("  2:\tShow Quotations by TOR ID")
 	fmt.Println("  3:\tQuotation Selection")
-	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit")
+	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit)")
 	fmt.Println()
 }
 
