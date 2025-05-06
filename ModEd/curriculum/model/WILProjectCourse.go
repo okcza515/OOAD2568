@@ -2,6 +2,6 @@
 package model
 
 type WILProjectCourse struct {
-	CourseId uint   `gorm:"not null" validation:"required,uint"`
-	Semester string `gorm:"not null" validation:"required,uint"`
+	CourseId uint   `gorm:"not null"`
+	Semester string `gorm:"not null"`
 }

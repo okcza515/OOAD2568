@@ -84,12 +84,14 @@ func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
 	validator := validation.NewModelValidator()
 	err := validator.ModelValidate(WILProject)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	err = menu.wrapper.WILProjectController.Insert(WILProject)
 	if err != nil {
-		return errors.New("error! cannot create WIL Project: " + err.Error())
+		errMsg := errors.New("error! cannot create WIL Project: " + err.Error())
+		return errMsg
 	} else {
 		fmt.Printf("WIL Project created successfully")
 	}
