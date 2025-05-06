@@ -10,7 +10,7 @@ type FacultyController struct {
 	DB *gorm.DB
 }
 
-func CreateFacultyController(db *gorm.DB) *FacultyController {
+func NewFacultyController(db *gorm.DB) *FacultyController {
 	db.AutoMigrate(&model.Faculty{})
 	return &FacultyController{DB: db}
 }

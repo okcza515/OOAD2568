@@ -12,7 +12,7 @@ type StudentController struct {
 	DB *gorm.DB
 }
 
-func CreateStudentController(db *gorm.DB) *StudentController {
+func NewStudentController(db *gorm.DB) *StudentController {
 	db.AutoMigrate(&model.Student{})
 	return &StudentController{DB: db}
 }
@@ -77,20 +77,20 @@ func (c *StudentController) ManualAddStudent() error {
 	fmt.Print("Enter Status: ")
 	var status model.StudentStatus
 	fmt.Scan(&status)
-	
+
 	parseStartDate, _ := time.Parse("02-01-2006", startDate)
 	parseBirthDate, _ := time.Parse("02-01-2006", birthDate)
 
 	student := &model.Student{
-		StudentCode: studentCode, 
-		FirstName: firstname, 
-		LastName: lastname, 
-		Email: email, 
-		StartDate: parseStartDate, 
-		BirthDate: parseBirthDate, 
-		Program: program, 
-		Department: department, 
-		Status: &status,
-	}	
+		StudentCode: studentCode,
+		FirstName:   firstname,
+		LastName:    lastname,
+		Email:       email,
+		StartDate:   parseStartDate,
+		BirthDate:   parseBirthDate,
+		Program:     program,
+		Department:  department,
+		Status:      &status,
+	}
 	return model.ManualAddStudent(c.DB, student)
 }

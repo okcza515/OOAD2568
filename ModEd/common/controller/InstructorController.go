@@ -12,7 +12,7 @@ type InstructorController struct {
 	DB *gorm.DB
 }
 
-func CreateInstructorController(db *gorm.DB) *InstructorController {
+func NewInstructorController(db *gorm.DB) *InstructorController {
 	db.AutoMigrate(&model.Instructor{})
 	return &InstructorController{DB: db}
 }

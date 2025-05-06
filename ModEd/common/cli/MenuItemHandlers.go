@@ -52,7 +52,7 @@ type RegisterModelHandler struct {
 }
 
 func (h *RegisterModelHandler) ExecuteItem(parameters []string) {
-	controller.GenericRegister(h.modelType, h.db, h.path)
+	GenericRegister(h.modelType, h.db, h.path)
 }
 
 type RetrieveHandler struct {
@@ -78,7 +78,7 @@ type RetrieveModelHandler struct {
 }
 
 func (h *RetrieveModelHandler) ExecuteItem(parameters []string) {
-	controller.GenericRetrieve(h.modelType, h.db)
+	GenericRetrieve(h.modelType, h.db)
 }
 
 type DeleteHandler struct {
@@ -104,7 +104,7 @@ type DeleteModelHandler struct {
 }
 
 func (h *DeleteModelHandler) ExecuteItem(parameters []string) {
-	controller.GenericDelete(h.modelType, h.db)
+	GenericDelete(h.modelType, h.db)
 }
 
 type ClearDBHandler struct {
@@ -113,10 +113,10 @@ type ClearDBHandler struct {
 
 func (h *ClearDBHandler) ExecuteItem(parameters []string) {
 	if confirmAction("Are you sure you want to clear all tables? This action cannot be undone (y/n): ") {
-		studentController := controller.CreateStudentController(h.db)
-		instructorController := controller.CreateInstructorController(h.db)
-		departmentController := controller.CreateDepartmentController(h.db)
-		facultyController := controller.CreateFacultyController(h.db)
+		studentController := controller.NewStudentController(h.db)
+		instructorController := controller.NewInstructorController(h.db)
+		departmentController := controller.NewDepartmentController(h.db)
+		facultyController := controller.NewFacultyController(h.db)
 
 		studentController.Truncate()
 		instructorController.Truncate()
@@ -146,7 +146,7 @@ type TestHandler struct {
 }
 
 func (h *TestHandler) ExecuteItem(parameters []string) {
-	studentController := controller.CreateStudentController(h.db)
+	studentController := controller.NewStudentController(h.db)
 	studentController.UpdateByField("student_code", "64070501092", map[string]any{"first_name": "John Doe"})
 }
 

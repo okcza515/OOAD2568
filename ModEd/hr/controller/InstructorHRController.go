@@ -180,7 +180,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, first
 			"Email":     email,
 		}
 
-		commonInstructorController := commonController.CreateInstructorController(tx)
+		commonInstructorController := commonController.NewInstructorController(tx)
 		if err := commonInstructorController.Update(instructorID, instructorData); err != nil {
 			return fmt.Errorf("failed to update common instructor data: %v", err)
 		}
