@@ -28,7 +28,7 @@ func (a *StudentMenuState) Render() {
 	fmt.Println("=== Student Menu ===")
 	a.handlerContext.ShowMenu()
 	// implement the remaining menu options
-	fmt.Println("exit !")
+	fmt.Println("back:\tBack to main menu")
 }
 
 func NewStudentMenuState(manager *cli.CLIMenuStateManager) *StudentMenuState {

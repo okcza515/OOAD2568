@@ -21,7 +21,7 @@ func (a *InstructorMenuState) Render() {
 	fmt.Println("=== Instructor Menu ===")
 	a.handlerContext.ShowMenu()
 	// implement the remaining menu options
-	fmt.Println("exit !")
+	fmt.Println("back:\tBack to main menu")
 }
 
 func NewInstructorMenuState(manager *cli.CLIMenuStateManager) *InstructorMenuState {
