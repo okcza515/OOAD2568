@@ -16,7 +16,6 @@ func (s *QuizSubmissionStrategy) ValidateSubmission(submission *assessmentModel.
 }
 
 func (s *QuizSubmissionStrategy) ProcessSubmission(submission *assessmentModel.AssessmentSubmission) error {
-	// Add quiz-specific processing logic here
 	return nil
 }
 
@@ -30,6 +29,5 @@ func (s *AssignmentSubmissionStrategy) ValidateSubmission(submission *assessment
 }
 
 func (s *AssignmentSubmissionStrategy) ProcessSubmission(submission *assessmentModel.AssessmentSubmission) error {
-	// Add assignment-specific processing logic here
 	return nil
 }
