@@ -5,16 +5,20 @@ package menu
 import (
 	"ModEd/asset/util"
 	"ModEd/core/cli"
+	"ModEd/core/handler"
 	"fmt"
 )
 
 type AssetMenuState struct {
-	manager *cli.CLIMenuStateManager
+	manager        *cli.CLIMenuStateManager
+	handlerContext *handler.HandlerContext
 }
 
 func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
+	handlerContext := handler.NewHandlerContext()
 	assetMenu := &AssetMenuState{
-		manager: manager,
+		manager:        manager,
+		handlerContext: handlerContext,
 	}
 
 	// Add more menu here
@@ -24,6 +28,20 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	manager.AddMenu(string(MENU_CATEGORY), NewCategoryMenuState(manager))
 	manager.AddMenu(string(MENU_INSTRUMENT_LOG), NewInstrumentLogMenuState(manager))
 	manager.AddMenu(string(MENU_SUPPLY_LOG), NewSupplyLogMenuState(manager))
+
+	assetHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
+	instrumentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT)))
+	supplyHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_SUPPLY)))
+	categoryHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_CATEGORY)))
+	instrumentLogHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT_LOG)))
+	supplyLogHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_SUPPLY_LOG)))
+
+	handlerContext.AddHandler("1", "", assetHandler)
+	handlerContext.AddHandler("2", "", instrumentHandler)
+	handlerContext.AddHandler("3", "", supplyHandler)
+	handlerContext.AddHandler("4", "", categoryHandler)
+	handlerContext.AddHandler("5", "", instrumentLogHandler)
+	handlerContext.AddHandler("6", "", supplyLogHandler)
 
 	return assetMenu
 }
@@ -47,7 +65,7 @@ func (menu *AssetMenuState) Render() {
 }
 
 func (menu *AssetMenuState) HandleUserInput(input string) error {
-	err := menu.manager.GoToMenu(input)
+	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println("err: Invalid input, menu '" + input + "' doesn't exist")
 		util.PressEnterToContinue()
