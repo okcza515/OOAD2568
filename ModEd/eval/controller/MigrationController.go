@@ -22,9 +22,8 @@ func (c *MigrationController) MigrateToDB() error {
 		&model.Question{},
 		&model.Answer{},
 		&model.Result{},
-		&model.Assessment{},
-		&model.AssessmentSubmission{},
 	)
+
 	if err != nil {
 		return errors.New("fail to Migrate to DB")
 	}
