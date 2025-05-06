@@ -12,7 +12,7 @@ import (
 )
 
 type Class struct {
-	ClassId     uint               `gorm:"primaryKey" csv:"class_id" json:"class_id" validate:"required"`
+	ClassId     uint               `gorm:"primaryKey" csv:"class_id" json:"class_id" validate:"-"`
 	CourseId    uint               `gorm:"not null" csv:"course_id" json:"course_id" validate:"required"`
 	Course      Course             `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-" validate:"-"`
 	Section     int                `gorm:"not null" csv:"section" json:"section" validate:"required,gt=0"`
