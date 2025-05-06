@@ -25,31 +25,12 @@ func NewReportController(db *gorm.DB) *ReportController {
 	}
 }
 
-func (c *ReportController) ListAllReports() ([]model.Report, error) {
-	reportPtrs, err := c.List(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	reports := make([]model.Report, len(reportPtrs))
-	for i, rPtr := range reportPtrs {
-		reports[i] = *rPtr
-	}
-
-	return reports, nil
-}
-
-func (c *ReportController) UpdateReport(reportID uint, newDueDate string) error {
+func (c *ReportController) UpdateReport(reportID uint, newDueDate time.Time) error {
 	var report model.Report
 	if err := c.db.First(&report, reportID).Error; err != nil {
 		return fmt.Errorf("error retrieving report: %w", err)
 	}
-	dueDate, err := time.Parse("2006-01-02", newDueDate)
-	if err != nil {
-		return fmt.Errorf("invalid due date format: %w", err)
-	}
-
-	report.DueDate = dueDate
+	report.DueDate = newDueDate
 	if err := c.db.Save(&report).Error; err != nil {
 		return fmt.Errorf("error updating report: %w", err)
 	}
@@ -70,7 +51,7 @@ func (c *ReportController) InsertReport(report model.Report) error {
 }
 
 func (c *ReportController) GetFormattedReportList() ([]string, error) {
-	reports, err := c.ListAllReports()
+	reports, err := c.List(map[string]interface{}{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve reports: %w", err)
 	}

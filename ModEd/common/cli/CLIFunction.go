@@ -1,39 +1,37 @@
-package controller
+package main
 
 import (
+	controller "ModEd/common/controller"
 	"ModEd/common/model"
 	"ModEd/common/util"
-	"ModEd/utils/deserializer"
 	"fmt"
 
 	"gorm.io/gorm"
 )
 
 func GenericRegister(choice int, db *gorm.DB, path string) {
-	deserializer := util.CommonDeserializer(path)
-
 	switch choice {
 	case 0:
 		fmt.Println("Exit")
 		return
 	case 1:
-		registerModel(db, &deserializer,
-			CreateStudentController(db),
+		RegisterModel(db, path,
+			controller.NewStudentController(db),
 			[]*model.Student{},
 			"student")
 	case 2:
-		registerModel(db, &deserializer,
-			CreateInstructorController(db),
+		RegisterModel(db, path,
+			controller.NewInstructorController(db),
 			[]*model.Instructor{},
 			"instructor")
 	case 3:
-		registerModel(db, &deserializer,
-			CreateDepartmentController(db),
+		RegisterModel(db, path,
+			controller.NewDepartmentController(db),
 			[]*model.Department{},
 			"department")
 	case 4:
-		registerModel(db, &deserializer,
-			CreateFacultyController(db),
+		RegisterModel(db, path,
+			controller.NewFacultyController(db),
 			[]*model.Faculty{},
 			"faculty")
 	default:
@@ -41,9 +39,11 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 	}
 }
 
-func registerModel[T model.CommonDataInterface](db *gorm.DB, deserializer *deserializer.FileDeserializer,
+func RegisterModel[T model.CommonDataInterface](db *gorm.DB, path string,
 	controller interface{ Register(models []*T) error },
 	models []*T, modelName string) {
+
+	deserializer := util.CommonDeserializer(path)
 
 	if err := deserializer.Deserialize(&models); err != nil {
 		fmt.Printf("Error deserializing %s data: %v\n", modelName, err)
@@ -59,7 +59,28 @@ func registerModel[T model.CommonDataInterface](db *gorm.DB, deserializer *deser
 }
 
 func GenericRetrieve(choice int, db *gorm.DB) {
-	controller := CreateStudentController(db)
+	switch choice {
+	case 0:
+		fmt.Println("Exit")
+		return
+	case 1:
+		RetrieveModel(db, controller.NewStudentController(db))
+	case 2:
+		RetrieveModel(db, controller.NewInstructorController(db))
+	case 3:
+		RetrieveModel(db, controller.NewDepartmentController(db))
+	case 4:
+		RetrieveModel(db, controller.NewFacultyController(db))
+	default:
+		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
+	}
+}
+
+func RetrieveModel[T model.CommonDataInterface](db *gorm.DB,
+	controller interface {
+		GetAll() (model []*T, err error)
+	}) {
+
 	data, err := controller.GetAll()
 	if err != nil {
 		fmt.Printf("Error retrieving data: %v\n", err)
@@ -70,7 +91,6 @@ func GenericRetrieve(choice int, db *gorm.DB) {
 	}
 }
 
-
 func GenericDelete(choice int, db *gorm.DB) {
 
 	var field string
@@ -80,7 +100,7 @@ func GenericDelete(choice int, db *gorm.DB) {
 	var key string
 	fmt.Print("Which record is to be deleted: ")
 	fmt.Scan(&key)
-	
+
 	switch choice {
 	case 0:
 		return
@@ -106,8 +126,8 @@ func GenericDelete(choice int, db *gorm.DB) {
 	}
 }
 
-func Delete[T model.CommonDataInterface](db *gorm.DB, controller interface{ Delete(field string, value interface{}) error },
-	feild string, value interface{}) {
+func Delete[T model.CommonDataInterface](db *gorm.DB, controller interface {
+	Delete(field string, value interface{}) error },feild string, value interface{}) {
 
 	if err := controller.Delete(feild, value); err != nil {
 		fmt.Printf("Error deleteing %s data in %s: %v\n", value, feild, err)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ModEd/core/cli"
 	"flag"
 	"fmt"
 
@@ -93,8 +94,11 @@ func main() {
 
 	db := ConnectDB()
 
-	menu := NewMenuHandler()
+	credentialCLI := cli.NewCredentialCLI()
+	credentialCLI.SetDB(db)
+	credentialCLI.ExecuteItem(args)
 
+	menu := NewMenuHandler()
 	menu.AppendItem("readfile", "Read file", &ReadFileHandler{path: path})
 	menu.AppendItem("register", "Register", &RegisterHandler{db: db, path: path})
 	menu.AppendItem("retrieve", "Retrieve", &RetrieveHandler{db: db})
@@ -102,7 +106,6 @@ func main() {
 	menu.AppendItem("cleardb", "Clear DB", &ClearDBHandler{db: db})
 	menu.AppendItem("exit", "Exit", &ExitHandler{})
 	menu.AppendItem("test", "Test", &TestHandler{db: db})
-
 	menu.SetDefaultHandler(&DefaultHandler{})
 
 	for {

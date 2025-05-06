@@ -12,9 +12,8 @@ type MultipleChoiceQuestionFactory struct {
 func (f MultipleChoiceQuestionFactory) CreateQuestion(base Question) QuestionProductInterface {
 	return &MultipleChoiceQuestion{
 		Question: Question{
-			ExamID:         base.ExamID,
+			ID:         base.ID,
 			QuestionDetail: base.QuestionDetail,
-			QuestionType:   base.QuestionType,
 			CorrectAnswer:  base.CorrectAnswer,
 			Score:          base.Score,
 		},

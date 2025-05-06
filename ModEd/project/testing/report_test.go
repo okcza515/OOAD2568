@@ -83,7 +83,7 @@ func TestListAllReports(t *testing.T) {
 		t.Fatalf("Failed to create report: %v", err)
 	}
 
-	reports, err := reportCtrl.ListAllReports()
+	reports, err := reportCtrl.List(map[string]interface{}{})
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
 	}

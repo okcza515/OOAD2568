@@ -15,7 +15,7 @@ func (h *ListCriteriaHandler) GetInputSequence() []utils.InputPrompt {
 }
 
 func (h *ListCriteriaHandler) ExecuteMenuComponent(_ []string) {
-	criteriaList, err := h.controller.ListAllAssessmentCriterias()
+	criteriaList, err := h.controller.List(map[string]interface{}{})
 	if err != nil {
 		fmt.Printf("Error listing criteria: %v\n", err)
 		return

@@ -12,9 +12,8 @@ type TrueFalseQuestionFactory struct{
 func (f TrueFalseQuestionFactory) CreateQuestion(base Question) QuestionProductInterface {
 	return &TrueFalseQuestion{
 		Question: Question{
-			ExamID:         base.ExamID,
+			ID:         	base.ID,
 			QuestionDetail: base.QuestionDetail,
-			QuestionType:   base.QuestionType,
 			CorrectAnswer:  base.CorrectAnswer,
 			Score:          base.Score,
 		},

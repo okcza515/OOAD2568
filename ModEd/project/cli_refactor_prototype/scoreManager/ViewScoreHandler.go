@@ -72,9 +72,10 @@ func (h *ViewScoresHandler) displayAdvisorScore(linkId uint) {
 }
 
 func (h *ViewScoresHandler) displayCommitteeScores(linkId uint) {
-	scores, err := h.committeeScoreCtrl.ListCommitteeScoresByCondition(
-		"assessment_criteria_link_id = ?",
-		linkId,
+	scores, err := h.committeeScoreCtrl.List(
+		map[string]interface{}{
+			"assessment_criteria_link_id": linkId,
+		},
 	)
 	if err != nil {
 		fmt.Println("  Committee Scores: -")

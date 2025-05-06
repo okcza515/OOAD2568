@@ -52,8 +52,8 @@ func main() {
 		fmt.Println(err)
 	}
 
-	facultyCtrl := common.CreateFacultyController(db.DB)
-	departmentCtrl := common.CreateDepartmentController(db.DB)
+	facultyCtrl := common.NewFacultyController(db.DB)
+	departmentCtrl := common.NewDepartmentController(db.DB)
 	interviewCriteriaCtrl := controller.NewInterviewCriteriaCtrl(db.DB)
 
 	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB)

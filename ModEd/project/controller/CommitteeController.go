@@ -28,18 +28,14 @@ func (cc *CommitteeController) InsertCommittee(committee *model.Committee) error
 	return nil
 }
 
-func (cc *CommitteeController) ListCommitteesByProject(projectId int) ([]model.Committee, error) {
+func (cc *CommitteeController) ListCommitteesByProject(projectId uint) ([]model.Committee, error) {
 	var committees []model.Committee
 	err := cc.DB.Where("seniorProjectId = ?", projectId).Find(&committees).Error
 	return committees, err
 }
 
-func (cc *CommitteeController) ListCommitteesByInstructor(instructorId int) ([]model.Committee, error) {
+func (cc *CommitteeController) ListCommitteesByInstructor(instructorId uint) ([]model.Committee, error) {
 	var committees []model.Committee
 	err := cc.DB.Where("instructorId = ?", instructorId).Find(&committees).Error
 	return committees, err
-}
-
-func (cc *CommitteeController) RemoveCommittee(committeeId int) error {
-	return cc.DB.Delete(&model.Committee{}, committeeId).Error
 }
