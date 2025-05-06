@@ -57,6 +57,11 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			} else {
 				fmt.Println("Procurement created with ID:", newProcurement.ProcurementID)
 			}
+
+			err = facade.RequestedItem.MarkAsUsed(instrumentRequestID)
+			if err != nil {
+				fmt.Println("Warning: Failed to mark Instrument Request as used:", err)
+			}
 			WaitForEnter()
 		case "2":
 			fmt.Println("List All Procurements")
