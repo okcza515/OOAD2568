@@ -14,7 +14,7 @@ func main() {
 	manager.SetState(assetMenu)
 
 	for {
-		core.ClearScreen()
+		// core.ClearScreen()
 
 		manager.Render()
 
@@ -23,7 +23,7 @@ func main() {
 			break
 		}
 
-		core.ClearScreen()
+		// core.ClearScreen()
 
 		err := manager.HandleUserInput()
 		if err != nil {

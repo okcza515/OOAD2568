@@ -3,9 +3,9 @@ package handler
 import (
 	"ModEd/core"
 	"ModEd/hr/controller"
+	"ModEd/hr/util"
+	"flag"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 type AddStudentStrategy[T core.RecordInterface] struct {
@@ -16,7 +16,11 @@ func NewAddStudentStrategy[T core.RecordInterface](controller interface{ InsertO
 	return &AddStudentStrategy[T]{controller: controller}
 }
 
-func (handler AddStudentStrategy[T]) Execute(db *gorm.DB) error {
+var (
+	databasePath = flag.String("database", "data/ModEd.bin", "Path of SQLite Database")
+)
+
+func (handler AddStudentStrategy[T]) Execute() error {
 	studentCode := core.GetUserInput("Enter student ID: ")
 	firstName := core.GetUserInput("Enter student first name: ")
 	lastName := core.GetUserInput("Enter student last name: ")
@@ -30,6 +34,9 @@ func (handler AddStudentStrategy[T]) Execute(db *gorm.DB) error {
 	citizenID := core.GetUserInput("Enter student citizen ID: ")
 	phoneNumber := core.GetUserInput("Enter student phone number: ")
 	advisorCode := core.GetUserInput("Enter student advisor code: ")
+
+	util.DatabasePath = databasePath
+	db := util.OpenDatabase(*databasePath)
 
 	studentController := controller.NewStudentHRController(db)
 	err := studentController.AddStudent(
@@ -52,7 +59,7 @@ func (handler AddStudentStrategy[T]) Execute(db *gorm.DB) error {
 		return fmt.Errorf("failed to add student: %w", err)
 	}
 
-	fmt.Println("Student added and HR info updated successfully!")
+	fmt.Println("Student is added successfully!")
 
 	return nil
 }
