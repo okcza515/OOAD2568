@@ -73,7 +73,7 @@ func viewProjectScores(
 		}
 
 		for _, link := range links {
-			criteria, err := criteriaCtrl.RetrieveAssessmentCriteria(link.AssessmentCriteriaId)
+			criteria, err := criteriaCtrl.RetrieveByID(link.AssessmentCriteriaId)
 			if err != nil {
 				continue
 			}

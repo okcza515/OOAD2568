@@ -125,7 +125,7 @@ func BuildEvaluateAssignmentMenu(
 				Title: "Check Score",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Checking Scores for Assignment...")
-		
+
 					io.Print("Enter Assignment ID (-1 to cancel): ")
 					assignmentIdStr, err := io.ReadInput()
 					if err != nil || assignmentIdStr == "-1" {
@@ -137,7 +137,7 @@ func BuildEvaluateAssignmentMenu(
 						io.Println("Invalid Assignment ID.")
 						return
 					}
-		
+
 					// Fetch advisor scores
 					advisorScores, err := scoreAssignmentAdvisorController.ListAdvisorScoresByCondition("assignment_id", assignmentId)
 					if err != nil {
@@ -150,7 +150,7 @@ func BuildEvaluateAssignmentMenu(
 							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
 						}
 					}
-		
+
 					// Fetch committee scores
 					committeeScores, err := scoreAssignmentCommitteeController.ListCommitteeScoresByCondition("assignment_id", assignmentId)
 					if err != nil {
@@ -164,7 +164,7 @@ func BuildEvaluateAssignmentMenu(
 						}
 					}
 				},
-			}
+			},
 		},
 	}
 }

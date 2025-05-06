@@ -47,3 +47,7 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 
 	return &facade, nil
 }
+
+func (f *ProcurementControllerFacade) GetDB() *gorm.DB {
+	return f.db
+}

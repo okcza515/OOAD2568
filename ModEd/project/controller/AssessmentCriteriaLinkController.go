@@ -68,9 +68,9 @@ func (c *AssessmentCriteriaLinkController) InsertAssessmentCriteriaLink(assessme
 	return &assessmentCriteriaLink, c.Insert(&assessmentCriteriaLink)
 }
 
-func (c *AssessmentCriteriaLinkController) UpdateAssessmentCriteriaLink(id uint, assessmentCriteriaLink *model.AssessmentCriteriaLink) error {
-	return c.UpdateByID(assessmentCriteriaLink)
-}
+// func (c *AssessmentCriteriaLinkController) UpdateAssessmentCriteriaLink(id uint, assessmentCriteriaLink *model.AssessmentCriteriaLink) error {
+// 	return c.UpdateByID(assessmentCriteriaLink)
+// }
 
 func (c *AssessmentCriteriaLinkController) DeleteAssessmentCriteriaLink(assessmentID uint, criteriaID uint) error {
 	return c.DB.

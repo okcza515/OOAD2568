@@ -29,6 +29,10 @@ func (c *StudentController) Update(code string, updatedData map[string]any) erro
 	return model.UpdateStudentByCode(c.DB, code, updatedData)
 }
 
+func (c *StudentController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
+	return model.UpdateRecordByField[model.Student](c.DB, field, value, updatedData, model.Student{})
+}
+
 func (c *StudentController) DeleteByCode(code string) error {
 	return model.DeleteStudentByCode(c.DB, code)
 }
@@ -38,7 +42,7 @@ func (c *StudentController) Register(students []*model.Student) error {
 }
 
 func (c *StudentController) Delete(field string, value interface{}) error {
-	return model.DeleteRecordByField[model.Student](c.DB, field, value)
+	return model.DeleteRecordByField[model.Student](c.DB, field, value, model.Student{})
 }
 
 func (c *StudentController) Truncate() error {

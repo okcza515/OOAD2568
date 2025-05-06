@@ -31,12 +31,16 @@ func (c *DepartmentController) UpdateBudget(name string, delta int) error {
 	return model.UpdateDepartmentBudget(c.DB, name, delta)
 }
 
+func (c *DepartmentController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
+	return model.UpdateRecordByField[model.Department](c.DB, field, value, updatedData, model.Department{})
+}
+
 func (c *DepartmentController) Register(department []*model.Department) error {
 	return model.CommonRegister(c.DB, department)
 }
 
 func (c *DepartmentController) Delete(field string, value interface{}) error {
-	return model.DeleteRecordByField[model.Department](c.DB, field, value)
+	return model.DeleteRecordByField[model.Department](c.DB, field, value, model.Department{})
 }
 
 func (c *DepartmentController) Truncate() error {

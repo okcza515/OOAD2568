@@ -8,7 +8,7 @@ import (
 
 type ScoreCommitteeController[T core.RecordInterface] struct {
 	*core.BaseController[T]
-	db             *gorm.DB
+	db *gorm.DB
 }
 
 func NewScoreCommitteeController[T core.RecordInterface](db *gorm.DB) *ScoreCommitteeController[T] {

@@ -30,12 +30,16 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			torID := util.GetUintInput("Enter TOR ID: ")
 			scope := util.GetStringInput("Enter TOR Scope: ")
 			deliverables := util.GetStringInput("Enter TOR Deliverables: ")
+			timeline := util.GetStringInput("Enter TOR Timeline: ")
+			committee := util.GetStringInput("Enter TOR Committee: ")
 		
 			tor := &model.TOR{
 				TORID:               torID,
 				InstrumentRequestID: instrumentRequestID,
 				Scope:               scope,
 				Deliverables:        deliverables,
+				Timeline:			 timeline,
+				Committee:			 committee,
 				CreatedAt:           time.Now(),
 			}
 		
@@ -53,7 +57,8 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			ListAllTORs(facade)
 			WaitForEnter()
 		case "3":
-			fmt.Println("View TOR by ID")
+			fmt.Println("View TOR Detail by ID")
+			ListAllTORs(facade)
 			id := util.GetUintInput("Enter TOR ID: ")
 			tor, err := facade.TOR.GetTORByID(id)
 			if err != nil {
@@ -72,6 +77,7 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("Scope: %s\n", tor.Scope)
 			fmt.Printf("Deliverables: %s\n", tor.Deliverables)
 			fmt.Printf("Status: %s\n", tor.Status)
+			fmt.Printf("Committee: %s\n", tor.Committee)
 			fmt.Printf("Created At: %s\n", createdAt)
 		
 			WaitForEnter()
@@ -87,6 +93,8 @@ func TORHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			fmt.Printf("TOR with ID %d deleted successfully.\n", id)
 			WaitForEnter()
+		case "5":
+			QuotationHandler(facade)
 		}
 
 		util.ClearScreen()
@@ -102,8 +110,9 @@ func printTOROptions() {
 	fmt.Println("--TOR Functions--")
 	fmt.Println("  1:\tCreate TOR")
 	fmt.Println("  2:\tList All TORs")
-	fmt.Println("  3:\tView TOR by ID")
+	fmt.Println("  3:\tView TOR Detail by ID")
 	fmt.Println("  4:\tDelete TOR")
+	fmt.Println("  5:\tQuotation Page")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit")
 	fmt.Println()
 }
@@ -149,8 +158,8 @@ func ListAllTORs(facade *procurement.ProcurementControllerFacade) {
 	fmt.Println("TOR List:")
 	for _, tor := range tors {
 		createdAt := tor.CreatedAt.Format("2006-01-02 15:04:05")
-		fmt.Printf("  TOR ID: %d | Instrument Request ID: %d | Scope: %s | Deliverables: %s | Status: %s | Created At: %s\n",
-			tor.TORID, tor.InstrumentRequestID, tor.Scope, tor.Deliverables, tor.Status,createdAt)
+		fmt.Printf("  TOR ID: %d | Instrument Request ID: %d | Status: %s | Created At: %s\n",
+			tor.TORID, tor.InstrumentRequestID, tor.Status, createdAt)
 	}
 
 }

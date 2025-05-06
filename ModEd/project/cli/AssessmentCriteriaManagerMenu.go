@@ -93,7 +93,7 @@ func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 			return
 		}
 
-		criteria, err := ctrl.RetrieveAssessmentCriteria(uint(id))
+		criteria, err := ctrl.RetrieveByID(uint(id))
 		if err != nil || criteria == nil {
 			io.Println("Criteria not found.")
 			return
@@ -107,7 +107,7 @@ func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 		}
 
 		criteria.CriteriaName = newName
-		err = ctrl.UpdateAssessmentCriteria(uint(id), criteria)
+		err = ctrl.UpdateByID(criteria)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error updating criteria: %v", err))
 		} else {
