@@ -12,7 +12,6 @@ type RaiseHRController struct {
 	db *gorm.DB
 }
 
-
 func NewRaiseHRController(db *gorm.DB) *RaiseHRController {
 	db.AutoMigrate(&model.RequestRaiseInstructor{})
 	return &RaiseHRController{db: db}
@@ -57,7 +56,7 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 	return tm.Execute(func(tx *gorm.DB) error {
 		raiseController := NewRaiseHRController(tx)
 
-		factory, err := model.GetFactory("instructor")
+		factory, err := model.GetFactory(1)
 		if err != nil {
 			return fmt.Errorf("failed to get factory: %v", err)
 		}
@@ -80,21 +79,20 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 }
 
 func (c *RaiseHRController) ReviewInstructorRaiseRequest(
-    tx *gorm.DB,
-    requestID, action, reason string,
+	tx *gorm.DB,
+	requestID, action, reason string,
 ) error {
-    return ReviewRequest(
-        requestID,
-        action,
-        reason,
-        // fetch
-        func(id uint) (Reviewable, error) {
-            return c.getByID(id)
-        },
-        // save
-        func(r Reviewable) error {
-            return tx.Save(r).Error
-        },
-    )
+	return ReviewRequest(
+		requestID,
+		action,
+		reason,
+		// fetch
+		func(id uint) (Reviewable, error) {
+			return c.getByID(id)
+		},
+		// save
+		func(r Reviewable) error {
+			return tx.Save(r).Error
+		},
+	)
 }
-

@@ -57,7 +57,7 @@ func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID,
 
 		leaveController := NewLeaveInstructorHRController(tx)
 
-		factory, err := model.GetFactory("instructor")
+		factory, err := model.GetFactory(1)
 		if err != nil {
 			return fmt.Errorf("failed to get instructor factory: %v", err)
 		}
