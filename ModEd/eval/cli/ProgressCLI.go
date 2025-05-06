@@ -175,17 +175,16 @@ func DisplayProgressByStatus(controller *controllerProgress.ProgressController) 
 		return
 	}
 
-	fmt.Println("Status options: completed, in_progress, not_started")
+	fmt.Println("Status options: submitted, unsubmitted")
 	status := util.PromptString("Enter status: ")
 
 	validStatuses := map[string]bool{
-		"completed":   true,
-		"in_progress": true,
-		"not_started": true,
+		"submitted":   true,
+		"unsubmitted": true,
 	}
 
 	if !validStatuses[status] {
-		fmt.Println("Invalid status. Must be one of: completed, in_progress, not_started")
+		fmt.Println("Invalid status. Must be one of: submitted, unsubmitted")
 		return
 	}
 
