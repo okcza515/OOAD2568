@@ -6,7 +6,6 @@ import (
 	"ModEd/core"
 	"ModEd/core/migration"
 	"errors"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -20,48 +19,10 @@ type SpaceManagementControllerManager struct {
 	Room                 RoomControllerInterface
 }
 
-// CheckRoomAvailability implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) CheckRoomAvailability(roomID uint, startDate time.Time, endDate time.Time) (bool, error) {
-	panic("unimplemented")
-}
-
-// DeleteAll implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) DeleteAll() error {
-	panic("unimplemented")
-}
-
-// DeleteByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) DeleteByID(id uint) error {
-	panic("unimplemented")
-}
-
-// List implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) List(condition map[string]interface{}) ([]model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// NewPermanentSchedule implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// RetrieveByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) RetrieveByID(id uint) (model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// SeedPermanentBookingSchedule implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) SeedPermanentBookingSchedule(path string) ([]*model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// UpdateByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) UpdateByID(schedule model.PermanentSchedule) error {
-	panic("unimplemented")
-}
 
 var spaceManagementInstance *SpaceManagementControllerManager
 
+//Singleton
 func GetSpaceManagementInstance(db *gorm.DB) *SpaceManagementControllerManager {
 	if spaceManagementInstance != nil {
 		return spaceManagementInstance
@@ -82,10 +43,7 @@ func NewSpaceManagementControllerManager(db *gorm.DB) (*SpaceManagementControlle
 	manager := &SpaceManagementControllerManager{
 		db: db,
 	}
-	// facade.InstrumentManagement = InstrumentManagementController{db: db}
-	// facade.SupplyManagement = SupplyManagementController{db: db}
-	// facade.Booking = BookingController{db: db}
-	// facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
+	
 	manager.Booking = NewBookingController()
 	manager.Room = NewRoomController()
 	manager.InstrumentManagement = NewInstrumentManagementController()
