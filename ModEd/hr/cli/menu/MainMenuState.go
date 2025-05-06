@@ -24,11 +24,10 @@ func (state *HRMainMenuState) HandleUserInput(input string) error {
 
 func (state *HRMainMenuState) Render() {
 	fmt.Println("=== HR Menu ===")
-    fmt.Println()
+	fmt.Println()
 	state.handlerContext.ShowMenu()
 	// implement the remaining menu options
 	fmt.Println("exit !")
-	fmt.Println("Enter your choice: ")
 }
 
 func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
@@ -41,8 +40,8 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
 	manager.AddMenu(string(MENU_HR), state)
 	manager.AddMenu(string(MENU_ADD), NewAddMenuState(manager))
 
-    addHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ADD)))
+	addHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ADD)))
 
-    handlerContext.AddHandler("1", "Add New Student/Instructor", addHandler)
+	handlerContext.AddHandler("1", "Add New Student/Instructor", addHandler)
 	return state
 }
