@@ -121,6 +121,9 @@ MEP-1012 Asset
 
 # Implemented Design Pattern Or Principles
 
+### Open/Closed (O in SOLID)
+- While refactoring `Switch-case hell` we try to keep the old codes running as much as possible.
+
 ### Singleton
 - SeedData (core) [become one with migration]
 
