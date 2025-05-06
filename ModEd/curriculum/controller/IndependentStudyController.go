@@ -3,6 +3,7 @@ package controller
 
 import (
 	"ModEd/core"
+	"ModEd/core/validation"
 	model "ModEd/curriculum/model"
 
 	"time"
@@ -32,6 +33,12 @@ func NewIndependentStudyController(connector *gorm.DB) *IndependentStudyControll
 }
 
 func (controller IndependentStudyController) CreateIndependentStudy(independentStudy *model.IndependentStudy, turnInDate string) error {
+	validator := validation.NewModelValidator()
+	err := validator.ModelValidate(independentStudy)
+
+	if err != nil {
+		return err
+	}
 
 	if turnInDate != "" {
 		t, err := time.Parse("2006-01-02 15:04:05", turnInDate)

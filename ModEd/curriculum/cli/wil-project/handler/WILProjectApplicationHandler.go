@@ -129,6 +129,8 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 		fmt.Println("\nError for WIL Project Application:", result)
 		return errors.New("error! cannot create a WIL Project application")
 	}
+
+	menu.showWILApplication(WILProjectApplicationModel)
 	return nil
 }
 
@@ -138,6 +140,15 @@ func (menu *WILProjectApplicationMenuStateHandler) getAllWILProjectApplication()
 		return nil, errors.New("error! cannot retrieve WIL Project application data")
 	}
 	return applications, nil
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) showWILApplication(application model.WILProjectApplication) {
+	fmt.Printf("%s\n", application.ToString())
+	fmt.Printf("Advisor %s %s\n", application.Advisor.FirstName, application.Advisor.LastName)
+	fmt.Println("Students")
+	for _, student := range application.Students {
+		fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)
+	}
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() error {
@@ -152,12 +163,7 @@ func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication(
 	}
 
 	for _, application := range applications {
-		fmt.Printf("%s\n", application.ToString())
-		fmt.Printf("Advisor %s %s\n", application.Advisor.FirstName, application.Advisor.LastName)
-		fmt.Println("Students")
-		for _, student := range application.Students {
-			fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)
-		}
+		menu.showWILApplication(application)
 		fmt.Println("===========================================================")
 	}
 	return nil

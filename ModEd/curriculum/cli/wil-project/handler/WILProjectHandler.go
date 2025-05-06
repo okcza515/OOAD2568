@@ -4,6 +4,7 @@ package handler
 import (
 	"ModEd/core"
 	"ModEd/core/cli"
+	"ModEd/core/validation"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
@@ -80,7 +81,13 @@ func (menu *WILProjectMenuStateHandler) createCreateWILProject() error {
 		Mentor:          mentor,
 	}
 
-	err := menu.wrapper.WILProjectController.Insert(WILProject)
+	validator := validation.NewModelValidator()
+	err := validator.ModelValidate(WILProject)
+	if err != nil {
+		return err
+	}
+
+	err = menu.wrapper.WILProjectController.Insert(WILProject)
 	if err != nil {
 		return errors.New("error! cannot create WIL Project: " + err.Error())
 	} else {
