@@ -75,7 +75,6 @@ func (cli *AssessmentCLI) handleCreate(args []string) {
 		instructorId   uint
 	)
 
-	// Parse arguments
 	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			break
@@ -100,13 +99,11 @@ func (cli *AssessmentCLI) handleCreate(args []string) {
 		}
 	}
 
-	// Validate required fields
 	if title == "" || assessmentType == "" || startDate == "" || dueDate == "" || courseId == 0 || instructorId == 0 {
 		fmt.Println("Error: Missing required fields")
 		return
 	}
 
-	// Parse dates
 	start, err := time.Parse("2006-01-02", startDate)
 	if err != nil {
 		fmt.Printf("Error parsing start date: %v\n", err)
@@ -119,7 +116,6 @@ func (cli *AssessmentCLI) handleCreate(args []string) {
 		return
 	}
 
-	// Create assessment using builder
 	builder := evalModel.NewAssessmentBuilder(evalModel.AssessmentType(assessmentType))
 	assessment := builder.
 		SetTitle(title).
@@ -144,7 +140,6 @@ func (cli *AssessmentCLI) handleList(args []string) {
 		assessmentType string
 	)
 
-	// Parse filters
 	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			break
@@ -179,7 +174,6 @@ func (cli *AssessmentCLI) handleList(args []string) {
 		return
 	}
 
-	// Print assessments in a table format
 	fmt.Println("ID\tType\tTitle\tStatus\tStart Date\tDue Date")
 	fmt.Println("--------------------------------------------------")
 	for _, a := range assessments {
@@ -207,7 +201,6 @@ func (cli *AssessmentCLI) handleGet(args []string) {
 		return
 	}
 
-	// Print assessment details
 	fmt.Printf("Assessment Details:\n")
 	fmt.Printf("ID: %d\n", assessment.AssessmentId)
 	fmt.Printf("Type: %s\n", assessment.Type)
@@ -231,7 +224,6 @@ func (cli *AssessmentCLI) handleUpdate(args []string) {
 		return
 	}
 
-	// Parse update fields
 	for i := 1; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			break
@@ -296,7 +288,6 @@ func (cli *AssessmentCLI) handleStatus(args []string) {
 	id := args[0]
 	var status string
 
-	// Parse status
 	for i := 1; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			break
@@ -337,7 +328,6 @@ func (cli *AssessmentCLI) handleSubmit(args []string) {
 	var studentId uint
 	var answers string
 
-	// Parse submission details
 	for i := 1; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			break
@@ -369,7 +359,6 @@ func (cli *AssessmentCLI) handleSubmit(args []string) {
 		SubmittedAt: time.Now(),
 	}
 
-	// Use appropriate strategy based on assessment type
 	var strategy evalModel.SubmissionStrategy
 	if assessment.Type == evalModel.QuizType {
 		strategy = &evalModel.QuizSubmissionStrategy{}

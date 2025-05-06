@@ -15,8 +15,8 @@ func NewMainMenuState(params *CurriculumCLIParams) MenuState {
 	mainState := NewBaseMenuState("Curriculum Module", nil)
 
 	curriculumHandler := newCurriculumHandler(params.CurriculumController)
-	courseHandler := newCourseHandler(params.CourseController)
-	classHandler := newClassHandler(params.ClassController)
+	courseHandler := newCourseHandler(params.CourseController, params.CurriculumController)
+	classHandler := newClassHandler(params.ClassController, params.CourseController)
 
 	curriculumState := NewCurriculumMenuState(curriculumHandler, mainState)
 	courseState := NewCourseMenuState(courseHandler, mainState)
