@@ -62,9 +62,7 @@ func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fu
 			io.Println("No assessment criteria found.")
 			return
 		}
-		for _, c := range criteriaList {
-			io.Println(fmt.Sprintf("ID: %v, Name: %v", c.ID, c.CriteriaName))
-		}
+		io.PrintTableFromSlice(criteriaList, []string{"ID", "CriteriaName"})
 	}
 }
 

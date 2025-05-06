@@ -22,9 +22,7 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 						io.Println("No assignments found.")
 						return
 					}
-					for _, a := range assignments {
-						io.Println(fmt.Sprintf("ID: %d | Project ID: %d | Name: %s | Due: %s", a.ID, a.SeniorProjectId, a.Name, a.DueDate.Format("2006-01-02")))
-					}
+					io.PrintTableFromSlice(assignments, []string{"ID", "SeniorProjectId", "Name", "DueDate"})
 				},
 			},
 			{

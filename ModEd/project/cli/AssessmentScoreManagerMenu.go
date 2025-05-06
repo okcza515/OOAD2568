@@ -203,9 +203,5 @@ func displayCommitteeScores(io *utils.MenuIO, scoreCtrl *controller.ScoreCommitt
 	}
 
 	io.Println("  Committee Scores:")
-	for _, cs := range committeeScores {
-		if cs.AssessmentCriteriaLinkId == linkId {
-			io.Println(fmt.Sprintf("    - Score: %.2f, By Committee ID: %d", cs.Score, cs.CommitteeId))
-		}
-	}
+	io.PrintTableFromSlice(committeeScores, []string{"Score", "CommitteeId"})
 }

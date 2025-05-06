@@ -42,8 +42,8 @@ func BuildEvaluateAssignmentMenu(
 					}
 
 					if err := scoreAssignmentAdvisorController.Insert(&model.ScoreAssignmentAdvisor{
-						AssignmentId: uint(assignmentId),
-						AdvisorId:    uint(advisorId),
+						AssignmentId: assignmentId,
+						AdvisorId:    advisorId,
 						Score:        score,
 					}); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert advisor score: %v", err))
@@ -107,9 +107,7 @@ func BuildEvaluateAssignmentMenu(
 						io.Println("No advisor scores found for this assignment.")
 					} else {
 						io.Println("Advisor Scores:")
-						for _, score := range advisorScores {
-							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"AdvisorId", "Score"})
 					}
 
 					// Fetch committee scores
@@ -120,9 +118,7 @@ func BuildEvaluateAssignmentMenu(
 						io.Println("No committee scores found for this assignment.")
 					} else {
 						io.Println("Committee Scores:")
-						for _, score := range committeeScores {
-							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
-						}
+						io.PrintTableFromSlice(committeeScores, []string{"CommitteeId", "Score"})
 					}
 				},
 			},

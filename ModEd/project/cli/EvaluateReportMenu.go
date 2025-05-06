@@ -111,9 +111,7 @@ func BuildEvaluateReportMenu(
 						io.Println("No advisor scores found for this report.")
 					} else {
 						io.Println("Advisor Scores:")
-						for _, score := range advisorScores {
-							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"AdvisorId", "Score"})
 					}
 
 					committeeScores, err := scoreReportCommitteeController.List(map[string]interface{}{"report_id": reportId})
@@ -123,9 +121,7 @@ func BuildEvaluateReportMenu(
 						io.Println("No committee scores found for this report.")
 					} else {
 						io.Println("Committee Scores:")
-						for _, score := range committeeScores {
-							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"CommitteeId", "Score"})
 					}
 				},
 			},

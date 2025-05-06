@@ -127,9 +127,7 @@ func BuildEvaluatePresentationMenu(
 						io.Println("No advisor scores found for this presentation.")
 					} else {
 						io.Println("Advisor Scores:")
-						for _, score := range advisorScores {
-							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"AdvisorId", "Score"})
 					}
 
 					// Fetch committee scores
@@ -140,9 +138,7 @@ func BuildEvaluatePresentationMenu(
 						io.Println("No committee scores found for this presentation.")
 					} else {
 						io.Println("Committee Scores:")
-						for _, score := range committeeScores {
-							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"CommitteeId", "Score"})
 					}
 				},
 			},

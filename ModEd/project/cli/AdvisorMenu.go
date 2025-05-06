@@ -101,7 +101,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 					}
 
 					advisors, err := advisorController.List(map[string]interface{}{
-						"seniorProjectId": projectId,
+						"senior_project_id": projectId,
 					})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error listing advisors: %v", err))
@@ -114,13 +114,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 					}
 
 					io.Println(fmt.Sprintf("Advisors for Project ID %v:", projectId))
-					for _, a := range advisors {
-						role := "Secondary"
-						if a.IsPrimary {
-							role = "Primary"
-						}
-						io.Println(fmt.Sprintf("Advisor ID: %v, Instructor ID: %v, Role: %v", a.ID, a.InstructorId, role))
-					}
+					io.PrintTableFromSlice(advisors, []string{"ID", "IsPrimary", "InstructorId", "CreatedAt"})
 				},
 			},
 			{
@@ -148,13 +142,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 					}
 
 					io.Println(fmt.Sprintf("Projects for Instructor ID %v:", instructorId))
-					for _, a := range advisors {
-						role := "Secondary"
-						if a.IsPrimary {
-							role = "Primary"
-						}
-						io.Println(fmt.Sprintf("Advisor ID: %v, Project ID: %v, Role: %v", a.ID, a.SeniorProjectId, role))
-					}
+					io.PrintTableFromSlice(advisors, []string{"ID", "IsPrimary", "SeniorProjectId", "CreatedAt"})
 				},
 			},
 		},

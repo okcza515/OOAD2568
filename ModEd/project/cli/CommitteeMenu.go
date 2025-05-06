@@ -94,9 +94,7 @@ func BuildCommitteeMenu(
 					}
 
 					io.Println(fmt.Sprintf("Projects for Instructor ID %v as Committee Member:", instructorId))
-					for _, c := range committees {
-						io.Println(fmt.Sprintf("Committee ID: %v, Project ID: %v", c.ID, c.SeniorProjectId))
-					}
+					io.PrintTableFromSlice(committees, []string{"ID", "SeniorProjectId"})
 				},
 			},
 			{

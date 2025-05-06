@@ -152,29 +152,13 @@ func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaControl
 		}
 
 		io.Print("Enter Criteria ID to link (-1 to cancel): ")
-		criteriaInput, err := io.ReadInput()
+		criteriaId, err := io.ReadInputID()
 		if err != nil {
-			io.Println(fmt.Sprintf("Error reading input: %v", err))
-			return
-		}
-		if criteriaInput == "-1" {
-			return
-		}
-
-		criteriaId, err := strconv.ParseUint(criteriaInput, 10, 32)
-		if err != nil {
-			io.Println(fmt.Sprintf("Invalid criteria ID: %v", err))
-			return
-		}
-
-		criteria, err := criteriaCtrl.RetrieveByID(uint(criteriaId))
-		if err != nil || criteria == nil {
-			io.Println(fmt.Sprintf("Criteria ID %v not found.", criteriaId))
 			return
 		}
 
 		for _, link := range links {
-			if link.AssessmentCriteriaId == uint(criteriaId) {
+			if link.AssessmentCriteriaId == criteriaId {
 				io.Println("This criteria is already linked to the project.")
 				return
 			}
