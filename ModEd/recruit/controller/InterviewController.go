@@ -26,8 +26,10 @@ func (c *InterviewController) CreateInterview(interview *model.Interview) error 
 }
 
 func (c *InterviewController) DeleteInterview(id uint) error {
-	return c.Base.DeleteByID(id)
+	condition := map[string]interface{}{"interview_id": id}
+	return c.Base.DeleteByCondition(condition)
 }
+
 
 func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 	var interview model.Interview
