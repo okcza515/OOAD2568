@@ -17,7 +17,6 @@ func NewAssessmentController(db *gorm.DB) *AssessmentController {
 	return &AssessmentController{db: db}
 }
 
-// CreateAssessment creates a new assessment
 func (c *AssessmentController) CreateAssessment(ctx *gin.Context) {
 	var assessment model.Assessment
 	if err := ctx.ShouldBindJSON(&assessment); err != nil {
@@ -25,7 +24,6 @@ func (c *AssessmentController) CreateAssessment(ctx *gin.Context) {
 		return
 	}
 
-	// Use AssessmentBuilder
 	builder := model.NewAssessmentBuilder(assessment.Type)
 	newAssessment := builder.
 		SetTitle(assessment.Title).
@@ -43,7 +41,6 @@ func (c *AssessmentController) CreateAssessment(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, newAssessment)
 }
 
-// GetAssessment retrieves an assessment by ID
 func (c *AssessmentController) GetAssessment(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var assessment model.Assessment
@@ -56,7 +53,6 @@ func (c *AssessmentController) GetAssessment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, assessment)
 }
 
-// UpdateAssessment updates an existing assessment
 func (c *AssessmentController) UpdateAssessment(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var assessment model.Assessment
@@ -79,7 +75,6 @@ func (c *AssessmentController) UpdateAssessment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, assessment)
 }
 
-// DeleteAssessment deletes an assessment
 func (c *AssessmentController) DeleteAssessment(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var assessment model.Assessment
@@ -97,12 +92,10 @@ func (c *AssessmentController) DeleteAssessment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Assessment deleted successfully"})
 }
 
-// ListAssessments lists all assessments with optional filters
 func (c *AssessmentController) ListAssessments(ctx *gin.Context) {
 	var assessments []model.Assessment
 	query := c.db.Model(&model.Assessment{})
 
-	// Apply filters
 	if courseId := ctx.Query("course_id"); courseId != "" {
 		query = query.Where("course_id = ?", courseId)
 	}
@@ -121,7 +114,6 @@ func (c *AssessmentController) ListAssessments(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, assessments)
 }
 
-// UpdateAssessmentStatus updates the status of an assessment
 func (c *AssessmentController) UpdateAssessmentStatus(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var assessment model.Assessment
@@ -150,7 +142,6 @@ func (c *AssessmentController) UpdateAssessmentStatus(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, assessment)
 }
 
-// SubmitAssessment handles student submissions
 func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
 	assessmentId := ctx.Param("id")
 	var submission model.AssessmentSubmission
@@ -160,14 +151,12 @@ func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
 		return
 	}
 
-	// Get the assessment to determine the type
 	var assessment model.Assessment
 	if err := c.db.First(&assessment, assessmentId).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
 		return
 	}
 
-	// Use appropriate strategy based on assessment type
 	var strategy model.SubmissionStrategy
 	if assessment.Type == model.QuizType {
 		strategy = &model.QuizSubmissionStrategy{}
@@ -175,7 +164,6 @@ func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
 		strategy = &model.AssignmentSubmissionStrategy{}
 	}
 
-	// Validate and process submission
 	if err := strategy.ValidateSubmission(&submission); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -191,4 +179,3 @@ func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, submission)
 }
-

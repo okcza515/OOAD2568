@@ -16,7 +16,6 @@ func main() {
 		log.Fatal("Connection failed:", err)
 	}
 
-	// Run migrations if you have a migration controller
 	migrationController := controller.NewMigrationController(db)
 	err = migrationController.MigrateToDB()
 	if err != nil {
@@ -30,7 +29,7 @@ func main() {
 		fmt.Println("\nEnter assessment command (or 'exit' to quit):")
 		var input string
 		fmt.Print("> ")
-		// Read the whole line as input
+
 		if _, err := fmt.Scanln(&input); err != nil {
 			if err.Error() == "unexpected newline" {
 				continue
@@ -42,7 +41,7 @@ func main() {
 			fmt.Println("Exiting Assessment CLI.")
 			break
 		}
-		// Split input into args (simulate os.Args)
+
 		args := append([]string{"assessment"}, input)
 		assessmentCLI.Run(args)
 	}
