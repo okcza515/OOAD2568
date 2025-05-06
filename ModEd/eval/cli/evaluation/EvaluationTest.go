@@ -11,13 +11,13 @@ import (
 
 func main() {
 	// ดึงข้อมูลจาก CSV
-	evals, err := model.LoadEvaluationsFromCSV("eval/cli/evaluation/EvalTest.csv")
+	evals, err := model.LoadEvaluationsFromCSV("ModEd/eval/cli/evaluation/EvalTest.csv")
 	if err != nil {
 		panic(err)
 	}
 
 	// สร้าง Evaluation Controller
-	evalController := controller.NewEvaluationController(evals, "eval/cli/evaluation/EvalTest.csv")
+	evalController := controller.NewEvaluationController(evals, "ModEd/eval/cli/evaluation/EvalTest.csv")
 
 	// เรียก CLI
 	cli.RunEvaluationCLI(evalController)

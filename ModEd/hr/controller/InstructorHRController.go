@@ -84,10 +84,12 @@ func (c *InstructorHRController) AddInstructor(
 			return fmt.Errorf("failed to add instructor: %w", err)
 		}
 
-		// Migrate here !!
+		instructorController := NewInstructorHRController(tx)
+		if err := instructorController.MigrateInstructorRecords(); err != nil {
+			return fmt.Errorf("failed to migrate instructor to HR module: %w", err)
+		}
 
 		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
-		instructorController := NewInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
 		}

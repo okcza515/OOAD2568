@@ -92,14 +92,21 @@ func (InstructorFactory) CreateRaise(id, reason string, targetSalary int) (inter
 	}, nil
 }
 
+type Role int
+
+const (
+	RoleStudent Role = iota
+	RoleInstructor
+)
+
 // GetFactory returns the appropriate factory based on the role provided
-func GetFactory(role string) (AbstractFactory, error) {
-	switch role {
-	case "student":
-		return StudentFactory{}, nil
-	case "instructor":
-		return InstructorFactory{}, nil
-	default:
-		return nil, fmt.Errorf("unknown role %q", role)
+func GetFactory(role Role) (AbstractFactory, error) {
+	factories := map[Role]AbstractFactory{
+		RoleStudent:    StudentFactory{},
+		RoleInstructor: InstructorFactory{},
 	}
+	if factory, ok := factories[role]; ok {
+		return factory, nil
+	}
+	return nil, fmt.Errorf("unknown role %v", role)
 }

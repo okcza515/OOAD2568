@@ -43,7 +43,7 @@ func newAssetControllerManager() (*AssetControllerManager, error) {
 	}
 
 	//manager.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
-	//manager.Category = &CategoryController{db: db, BaseController: core.NewBaseController[model.Category]("Category", db)}
+	manager.Category = NewCategoryController()
 	manager.Instrument = NewInstrumentController()
 	manager.InstrumentLog = NewInstrumentLogController()
 	manager.Supply = NewSupplyController()

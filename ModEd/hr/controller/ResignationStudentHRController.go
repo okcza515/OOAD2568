@@ -47,7 +47,7 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 	return tm.Execute(func(tx *gorm.DB) error {
 		studentController := NewResignationStudentHRController(tx)
 
-		factory, err := model.GetFactory("student")
+		factory, err := model.GetFactory(0)
 		if err != nil {
 			return fmt.Errorf("failed to get student factory: %v", err)
 		}

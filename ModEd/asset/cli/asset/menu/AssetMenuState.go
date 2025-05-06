@@ -29,17 +29,16 @@ func NewAssetMenuState(manager *cli.CLIMenuStateManager) *AssetMenuState {
 	manager.AddMenu(string(MENU_INSTRUMENT_LOG), NewInstrumentLogMenuState(manager))
 	manager.AddMenu(string(MENU_SUPPLY_LOG), NewSupplyLogMenuState(manager))
 
-	assetHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
+	categoryHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_CATEGORY)))
 	instrumentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT)))
 	supplyHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_SUPPLY)))
-	categoryHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_CATEGORY)))
 	instrumentLogHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT_LOG)))
 	supplyLogHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_SUPPLY_LOG)))
 
-	handlerContext.AddHandler("1", "", assetHandler)
+	handlerContext.AddHandler("1", "", categoryHandler)
 	handlerContext.AddHandler("2", "", instrumentHandler)
 	handlerContext.AddHandler("3", "", supplyHandler)
-	handlerContext.AddHandler("4", "", categoryHandler)
+	handlerContext.AddHandler("4", "", nil)
 	handlerContext.AddHandler("5", "", instrumentLogHandler)
 	handlerContext.AddHandler("6", "", supplyLogHandler)
 
