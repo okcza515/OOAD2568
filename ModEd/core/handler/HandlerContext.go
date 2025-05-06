@@ -3,41 +3,67 @@ package handler
 import (
 	"errors"
 	"fmt"
+	"sort"
 )
 
-// Wrote by MEP-1012
+// Wrote by MEP-1012, MEP-1010
+
+type MenuItem struct {
+	Label    string
+	Strategy HandlerStrategy
+}
 
 type HandlerContext struct {
-	handlerMap map[string]HandlerStrategy
-	labelMap   map[string]string
+	title string
+	menu  map[string]MenuItem
 }
 
 func NewHandlerContext() *HandlerContext {
 	return &HandlerContext{
-		handlerMap: make(map[string]HandlerStrategy),
-		labelMap:   make(map[string]string),
+		menu: make(map[string]MenuItem),
 	}
 }
 
 func (c *HandlerContext) HandleInput(userInput string) error {
-	fmt.Println(c.labelMap[userInput])
+	fmt.Println(c.menu[userInput].Label)
 
-	handler, ok := c.handlerMap[userInput]
+	handler, ok := c.menu[userInput]
 	if !ok {
 		fmt.Println("Invalid Command Input")
 		return nil
 	}
 
-	if handler == nil {
+	if handler.Strategy == nil || handler.Strategy.Execute == nil {
 		return errors.New("err : input handler not implemented")
 	}
 
-	return handler.Execute()
+	return handler.Strategy.Execute()
 }
 
 func (c *HandlerContext) AddHandler(userInput string, headerLabel string, s HandlerStrategy) {
-	c.labelMap[userInput] = headerLabel
-	c.handlerMap[userInput] = s
+	_, exists := c.menu[userInput]
+	if exists {
+		return
+	}
+
+	c.menu[userInput] = MenuItem{
+		Label:    headerLabel,
+		Strategy: s,
+	}
+}
+
+func (c *HandlerContext) ShowMenu() {
+	fmt.Println(c.title)
+	keys := make([]string, 0, len(c.menu))
+	for key := range c.menu {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		menu := c.menu[key]
+		fmt.Printf("  %s:\t%s\n", key, menu.Label)
+	}
 }
 
 // TODO for standard CLI
