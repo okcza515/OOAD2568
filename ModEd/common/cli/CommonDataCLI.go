@@ -94,9 +94,9 @@ func main() {
 
 	db := ConnectDB()
 
-	credentialCLI := cli.NewCredentialCLI()
-	credentialCLI.SetDB(db)
-	credentialCLI.ExecuteItem(args)
+	authenticationCLI := cli.NewAuthenticationCLI()
+	authenticationCLI.SetDB(db)
+	authenticationCLI.ExecuteItem(args)
 
 	menu := NewMenuHandler()
 	menu.AppendItem("readfile", "Read file", &ReadFileHandler{path: path})

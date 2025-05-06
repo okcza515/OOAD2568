@@ -1,4 +1,4 @@
-package credential
+package authentication
 
 import (
 	"context"
@@ -39,7 +39,7 @@ func (p *DBAuthProvider) Authenticate(ctx context.Context, username, password st
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)); err != nil {
-		return nil, ErrInvalidCredentials
+		return nil, ErrInvalidAuthentications
 	}
 
 	now := time.Now()
@@ -95,7 +95,7 @@ func (p *DBAuthProvider) UpdatePassword(ctx context.Context, username, oldPasswo
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(oldPassword)); err != nil {
-		return ErrInvalidCredentials
+		return ErrInvalidAuthentications
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)

@@ -4,30 +4,30 @@ import (
 	"context"
 	"fmt"
 
-	"ModEd/core/credential"
+	"ModEd/core/authentication"
 
 	"gorm.io/gorm"
 )
 
-type CredentialCLI struct {
+type AuthenticationCLI struct {
 	db *gorm.DB
 }
 
-func NewCredentialCLI() *CredentialCLI {
-	return &CredentialCLI{}
+func NewAuthenticationCLI() *AuthenticationCLI {
+	return &AuthenticationCLI{}
 }
 
-func (c *CredentialCLI) SetDB(db *gorm.DB) {
+func (c *AuthenticationCLI) SetDB(db *gorm.DB) {
 	c.db = db
 }
 
-func (c *CredentialCLI) ExecuteItem(parameters []string) {
+func (c *AuthenticationCLI) ExecuteItem(parameters []string) {
 	ctx := context.Background()
-	if err := credential.RequireAdmin(ctx); err == nil {
+	if err := authentication.RequireAdmin(ctx); err == nil {
 		return
 	}
 
-	authMenu := credential.NewAuthMenuState(c.db)
+	authMenu := authentication.NewAuthMenuState(c.db)
 
 	for {
 		authMenu.Render()

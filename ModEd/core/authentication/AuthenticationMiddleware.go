@@ -1,4 +1,4 @@
-package credential
+package authentication
 
 import (
 	"context"
@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrUserNotFound       = errors.New("user not found")
-	ErrUserExists         = errors.New("user already exists")
-	ErrUnauthorized       = errors.New("unauthorized: requires admin role")
+	ErrInvalidAuthentications = errors.New("invalid authentications")
+	ErrUserNotFound           = errors.New("user not found")
+	ErrUserExists             = errors.New("user already exists")
+	ErrUnauthorized           = errors.New("unauthorized: requires admin role")
 )
 
 type UserContext struct {
@@ -21,7 +21,7 @@ type UserContext struct {
 	ExpiresAt time.Time
 }
 
-type CredentialProvider interface {
+type AuthenticationProvider interface {
 	Authenticate(ctx context.Context, username, password string) (*UserContext, error)
 
 	CreateUser(ctx context.Context, username, password string, role string) error
@@ -32,10 +32,10 @@ type CredentialProvider interface {
 }
 
 type Middleware struct {
-	provider CredentialProvider
+	provider AuthenticationProvider
 }
 
-func NewMiddleware(provider CredentialProvider) *Middleware {
+func NewMiddleware(provider AuthenticationProvider) *Middleware {
 	return &Middleware{
 		provider: provider,
 	}
