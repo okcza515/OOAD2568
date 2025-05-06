@@ -24,9 +24,9 @@ func (state *HRMainMenuState) HandleUserInput(input string) error {
 
 func (state *HRMainMenuState) Render() {
 	fmt.Println("=== HR Menu ===")
-	fmt.Println()
 	state.handlerContext.ShowMenu()
-	fmt.Println("exit !")
+	fmt.Println("exit:\tExit the program.")
+	fmt.Println()
 }
 
 func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {

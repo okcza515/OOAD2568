@@ -19,7 +19,6 @@ func (a *InstructorMenuState) HandleUserInput(input string) error {
 // Render implements cli.MenuState.
 func (a *InstructorMenuState) Render() {
 	fmt.Println("=== Instructor Menu ===")
-	fmt.Println()
 	a.handlerContext.ShowMenu()
 	// implement the remaining menu options
 	fmt.Println("exit !")

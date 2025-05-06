@@ -2,38 +2,43 @@ package menu
 
 import (
 	"ModEd/core/cli"
-	"ModEd/core/handler"
+	coreHandler "ModEd/core/handler"
+	hrHandler "ModEd/hr/cli/menu/handler"
 	"ModEd/hr/model"
 	"fmt"
 )
 
 type StudentMenuState struct {
 	manager        *cli.CLIMenuStateManager
-	handlerContext *handler.HandlerContext
+	handlerContext *coreHandler.HandlerContext
 }
 
 // HandleUserInput implements cli.MenuState.
 func (a *StudentMenuState) HandleUserInput(input string) error {
-	panic("unimplemented")
+	err := a.handlerContext.HandleInput(input)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
 }
 
 // Render implements cli.MenuState.
 func (a *StudentMenuState) Render() {
 	fmt.Println("=== Student Menu ===")
-	fmt.Println()
 	a.handlerContext.ShowMenu()
 	// implement the remaining menu options
 	fmt.Println("exit !")
 }
 
 func NewStudentMenuState(manager *cli.CLIMenuStateManager) *StudentMenuState {
-	handlerContext := handler.NewHandlerContext()
+	handlerContext := coreHandler.NewHandlerContext()
 
-	addStudentHandler := handler.NewInsertHandlerStrategy[model.StudentInfo](nil)
-	listStudentHandler := handler.NewListHandlerStrategy[model.StudentInfo](nil)
+	addStudentHandler := hrHandler.NewAddStudentStrategy[model.StudentInfo](nil)
+	// listStudentHandler := handler.NewListHandlerStrategy[model.StudentInfo](nil)
 
 	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
-	handlerContext.AddHandler("2", "List student", listStudentHandler)
+	handlerContext.AddHandler("2", "List student", nil)
 
 	return &StudentMenuState{
 		manager:        manager,
