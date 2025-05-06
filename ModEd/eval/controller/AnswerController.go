@@ -20,41 +20,6 @@ func NewAnswerController(db *gorm.DB) *AnswerController {
 	return &AnswerController{db: db}
 }
 
-func (ac *AnswerController) NewAnswerFactory(questionType string, answerData interface{}) (model.AnswerFactory, error) {
-	switch questionType {
-	case "MultipleChoiceQuestion":
-		choices, ok := answerData.([]string)
-		if !ok {
-			return nil, fmt.Errorf("invalid data for multiple choice question")
-		}
-		return model.MCAnswerFactory{Choices: choices}, nil
-
-	case "ShortAnswerQuestion":
-		answer, ok := answerData.(string)
-		if !ok {
-			return nil, fmt.Errorf("invalid data for short answer question")
-		}
-		return model.ShortAnswerFactory{AnswerText: answer}, nil
-
-	case "TrueFalseQuestion":
-		answer, ok := answerData.(bool)
-		if !ok {
-			return nil, fmt.Errorf("invalid data for true/false question")
-		}
-		return model.TrueFalseFactory{Answer: answer}, nil
-
-	case "SubjectiveQuestion":
-		answer, ok := answerData.(string)
-		if !ok {
-			return nil, fmt.Errorf("invalid data for subjective question")
-		}
-		return model.SubjectiveAnswerFactory{Content: answer}, nil
-
-	default:
-		return nil, fmt.Errorf("unknown question type: %s", questionType)
-	}
-}
-
 func (ac *AnswerController) SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error) {
 	var results []model.AnswerProductInterface
 
