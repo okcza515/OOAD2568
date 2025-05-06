@@ -1,49 +1,87 @@
 package controller
 
 import (
+	"errors"
+	"time"
+
 	"ModEd/eval/model"
-	"ModEd/eval/service"
+	"gorm.io/gorm"
 )
 
 type IExaminationController interface {
 	CreateExam(exam *model.Examination) error
-	PublishExam(id uint) error
-	CloseExam(id uint) error
-	GetAll() ([]model.Examination, error)
-	Update(id uint, exam *model.Examination) error
-	Delete(id uint) error
+	PublishExam(examID uint) error
+	CloseExam(examID uint) error
+	GetAllExams() ([]model.Examination, error)
+	UpdateExam(id uint, exam *model.Examination) error
+	DeleteExam(id uint) error
 }
 
 type ExaminationController struct {
-	service *service.ExaminationService
+	db *gorm.DB
 }
 
-func NewExaminationController(svc *service.ExaminationService) *ExaminationController {
-	return &ExaminationController{
-		service: svc,
-	}
+func NewExaminationController(db *gorm.DB) *ExaminationController {
+	return &ExaminationController{db: db}
 }
 
 func (c *ExaminationController) CreateExam(exam *model.Examination) error {
-	return c.service.CreateExam(exam)
+	if exam.Exam_name == "" || exam.InstructorID == 0 || exam.CourseID == 0 || exam.CurriculumID == 0 {
+		return errors.New("missing required fields")
+	}
+	exam.ExamStatus = "draft"
+	exam.Create_at = time.Now()
+
+	return c.db.Create(exam).Error
 }
 
-func (c *ExaminationController) PublishExam(id uint) error {
-	return c.service.PublishExam(id)
+func (c *ExaminationController) PublishExam(examID uint) error {
+	var exam model.Examination
+	if err := c.db.First(&exam, examID).Error; err != nil {
+		return err
+	}
+
+	if time.Now().Before(exam.Start_date) {
+		return errors.New("cannot publish exam before start date")
+	}
+
+	exam.ExamStatus = "published"
+	return c.db.Save(&exam).Error
 }
 
-func (c *ExaminationController) CloseExam(id uint) error {
-	return c.service.CloseExam(id)
+func (c *ExaminationController) CloseExam(examID uint) error {
+	var exam model.Examination
+	if err := c.db.First(&exam, examID).Error; err != nil {
+		return err
+	}
+
+	if exam.ExamStatus != "published" {
+		return errors.New("exam must be published before it can be closed")
+	}	
+
+	if time.Now().Before(exam.End_date) {
+		return errors.New("cannot close exam before the end date")
+	}
+
+	exam.ExamStatus = "closed"
+	return c.db.Save(&exam).Error
 }
 
-func (c *ExaminationController) GetAll() ([]model.Examination, error) {
-	return c.service.GetAllExams()
+func (c *ExaminationController) GetAllExams() ([]model.Examination, error) {
+	var exams []model.Examination
+	if err := c.db.Find(&exams).Error; err != nil {
+		return nil, err
+	}
+	return exams, nil
 }
 
-func (c *ExaminationController) Update(id uint, exam *model.Examination) error {
-	return c.service.UpdateExam(id, exam)
+func (c *ExaminationController) UpdateExam(id uint, exam *model.Examination) error {
+	return c.db.Model(&model.Examination{}).Where("id = ?", id).Updates(exam).Error
 }
 
-func (c *ExaminationController) Delete(id uint) error {
-	return c.service.DeleteExam(id)
+func (c *ExaminationController) DeleteExam(id uint) error {
+	c.db.Where("ExamID = ?",id).Delete(&model.Question{})
+	c.db.Where("ExamID = ?",id).Delete(&model.Answer{})
+	c.db.Where("ExaminationID = ?",id).Delete(&model.Result{})
+	return c.db.Where("id = ?", id).Delete(&model.Examination{}).Error
 }
