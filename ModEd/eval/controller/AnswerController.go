@@ -22,28 +22,28 @@ func NewAnswerController(db *gorm.DB) *AnswerController {
 
 func (ac *AnswerController) NewAnswerFactory(questionType string, answerData interface{}) (model.AnswerFactory, error) {
 	switch questionType {
-	case "multiple_choice":
+	case "MultipleChoiceQuestion":
 		choices, ok := answerData.([]string)
 		if !ok {
 			return nil, fmt.Errorf("invalid data for multiple choice question")
 		}
 		return model.MCAnswerFactory{Choices: choices}, nil
 
-	case "short_answer":
+	case "ShortAnswerQuestion":
 		answer, ok := answerData.(string)
 		if !ok {
 			return nil, fmt.Errorf("invalid data for short answer question")
 		}
 		return model.ShortAnswerFactory{AnswerText: answer}, nil
 
-	case "true_false":
+	case "TrueFalseQuestion":
 		answer, ok := answerData.(bool)
 		if !ok {
 			return nil, fmt.Errorf("invalid data for true/false question")
 		}
 		return model.TrueFalseFactory{Answer: answer}, nil
 
-	case "subjective":
+	case "SubjectiveQuestion":
 		answer, ok := answerData.(string)
 		if !ok {
 			return nil, fmt.Errorf("invalid data for subjective question")
@@ -58,31 +58,33 @@ func (ac *AnswerController) NewAnswerFactory(questionType string, answerData int
 func (ac *AnswerController) SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error) {
 	var results []model.AnswerProductInterface
 
+	submissionTime := time.Now()
+
 	if len(questionIDs) != len(factories) {
 		return nil, fmt.Errorf("number of question IDs doesn't match the number of answer factories")
 	}
 
-	// var submission model.Answer
-	// if err := ac.db.Where("student_id = ? AND exam_id = ?", studentID, examID).First(&submission).Error; err == nil {
-	// 	if submission.IsLocked {
-	// 		return nil, fmt.Errorf("this exam has already been submitted by this student")
-	// 	}
-	// }
+	var exam model.Examination
+	if err := ac.db.First(&exam, examID).Error; err != nil {
+		return nil, fmt.Errorf("exam not found")
+	}
 
-	submissionTime := time.Now()
+	var count int64
+	ac.db.Model(&model.Answer{}).Where("student_id = ? AND exam_id = ?", studentID, examID).Count(&count)
+
+	if int(count) >= exam.Attempt {
+		return nil, fmt.Errorf("submission limit reached: allowed %d times", exam.Attempt)
+	}
 
 	for i, factory := range factories {
 		answer := factory.NewAnswer(questionIDs[i], studentID)
 		results = append(results, answer)
 	}
 
-	isLocked := true
-
 	submission := model.Answer{
 		StudentID:   studentID,
 		ExamID:      examID,
 		SubmittedAt: submissionTime,
-		IsLocked:    isLocked,
 	}
 
 	if err := ac.db.Create(&submission).Error; err != nil {
@@ -90,4 +92,31 @@ func (ac *AnswerController) SubmitAnswers(factories []model.AnswerFactory, quest
 	}
 
 	return results, nil
+}
+
+func (ac *AnswerController) StartExam(studentID uint, examID uint) error {
+	startTime := time.Now()
+
+	answer := model.Answer{
+		StudentID: studentID,
+		ExamID:    examID,
+		StartTime: startTime,
+	}
+
+	return ac.db.Create(&answer).Error
+}
+
+func (ac *AnswerController) GetDuration(submissionID uint) (time.Duration, error) {
+	var answer model.Answer
+
+	if err := ac.db.First(&answer, submissionID).Error; err != nil {
+		return 0, fmt.Errorf("submission not found: %v", err)
+	}
+
+	if answer.StartTime.IsZero() || answer.SubmittedAt.IsZero() {
+		return 0, fmt.Errorf("submission has incomplete timestamps")
+	}
+
+	duration := answer.SubmittedAt.Sub(answer.StartTime)
+	return duration, nil
 }

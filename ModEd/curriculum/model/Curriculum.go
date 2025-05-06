@@ -3,6 +3,7 @@ package model
 
 import (
 	"ModEd/common/model"
+
 	"ModEd/core"
 	"fmt"
 	"time"
@@ -12,7 +13,7 @@ import (
 )
 
 type Curriculum struct {
-	CurriculumId uint              `gorm:"primaryKey;unique" csv:"curriculum_id" json:"curriculum_id" validate:"required"`
+	CurriculumId uint              `gorm:"primaryKey;unique" csv:"curriculum_id" json:"curriculum_id" validate:"-"`
 	Name         string            `gorm:"not null" csv:"name" json:"name" validate:"required"`
 	StartYear    int               `gorm:"not null" csv:"start_year" json:"start_year" validate:"required"`
 	EndYear      int               `gorm:"not null" csv:"end_year" json:"end_year" validate:"required,gtefield=StartYear"`
