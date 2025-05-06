@@ -3,62 +3,102 @@ package credential
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-type AuthMenuState struct {
-	middleware *Middleware
-	ctx        context.Context
+type AuthMenuItemHandler interface {
+	ExecuteItem() error
 }
 
-func (a *AuthMenuState) Render() {
-	fmt.Println("\n=== Authentication Menu ===")
-	fmt.Println("1. Login")
-	fmt.Println("2. Register")
-	fmt.Println("3. Change Password")
-	fmt.Println("4. Delete Account")
-	fmt.Println("5. Exit")
-	fmt.Print("Select an option: ")
+type AuthMenuHandler struct {
+	itemHandlerMap map[string]AuthMenuItemHandler
+	itemLabelMap   map[string]string
+	items          []string
 }
 
-func (a *AuthMenuState) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		return a.handleLogin()
-	case "2":
-		return a.handleRegister()
-	case "3":
-		return a.handleChangePassword()
-	case "4":
-		return a.handleDeleteAccount()
-	case "5":
-		return fmt.Errorf("exit")
-	default:
-		return fmt.Errorf("invalid option")
+func NewAuthMenuHandler() *AuthMenuHandler {
+	return &AuthMenuHandler{
+		itemHandlerMap: make(map[string]AuthMenuItemHandler),
+		itemLabelMap:   make(map[string]string),
+		items:          []string{},
 	}
 }
 
-func (a *AuthMenuState) handleLogin() error {
+func (handler *AuthMenuHandler) AppendItem(key string, label string, itemHandler AuthMenuItemHandler) {
+	handler.itemHandlerMap[key] = itemHandler
+	handler.itemLabelMap[key] = label
+	handler.items = append(handler.items, key)
+}
+
+func (handler *AuthMenuHandler) Execute(selectedMenu string) error {
+	// Convert numeric input to menu key
+	if index, err := strconv.Atoi(selectedMenu); err == nil {
+		if index > 0 && index <= len(handler.items) {
+			selectedMenu = handler.items[index-1]
+		}
+	}
+
+	if itemHandler, exists := handler.itemHandlerMap[selectedMenu]; exists {
+		return itemHandler.ExecuteItem()
+	}
+	return fmt.Errorf("invalid option")
+}
+
+func (handler *AuthMenuHandler) DisplayMenu() {
+	fmt.Println("\n=== Authentication Menu ===")
+	for i, key := range handler.items {
+		fmt.Printf("%d. %s\n", i+1, handler.itemLabelMap[key])
+	}
+	fmt.Print("Select an option: ")
+}
+
+func (handler *AuthMenuHandler) GetMenuChoice() string {
+	var choiceIndex int
+	fmt.Scan(&choiceIndex)
+
+	if choiceIndex > 0 && choiceIndex <= len(handler.items) {
+		return handler.items[choiceIndex-1]
+	}
+
+	return ""
+}
+
+type AuthMenuState struct {
+	middleware *Middleware
+	ctx        context.Context
+	handler    *AuthMenuHandler
+}
+
+type LoginHandler struct {
+	state *AuthMenuState
+}
+
+func (h *LoginHandler) ExecuteItem() error {
 	var username, password string
 	fmt.Print("Username: ")
 	fmt.Scanln(&username)
 	fmt.Print("Password: ")
 	fmt.Scanln(&password)
 
-	userCtx, err := a.middleware.Authenticate(a.ctx, username, password)
+	userCtx, err := h.state.middleware.Authenticate(h.state.ctx, username, password)
 	if err != nil {
 		return fmt.Errorf("login failed: %v", err)
 	}
 
-	a.ctx = WithContext(context.Background(), userCtx)
+	h.state.ctx = WithContext(context.Background(), userCtx)
 	fmt.Printf("Login successful! Welcome %s (Role: %s)\n", userCtx.Username, userCtx.Role)
 
 	return fmt.Errorf("login_success")
 }
 
-func (a *AuthMenuState) handleRegister() error {
+type RegisterHandler struct {
+	state *AuthMenuState
+}
+
+func (h *RegisterHandler) ExecuteItem() error {
 	var username, password, role string
 	fmt.Print("Username: ")
 	fmt.Scanln(&username)
@@ -67,7 +107,7 @@ func (a *AuthMenuState) handleRegister() error {
 	fmt.Print("Role (user/admin): ")
 	fmt.Scanln(&role)
 
-	err := a.middleware.CreateUser(a.ctx, username, password, role)
+	err := h.state.middleware.CreateUser(h.state.ctx, username, password, role)
 	if err != nil {
 		return fmt.Errorf("registration failed: %v", err)
 	}
@@ -76,7 +116,11 @@ func (a *AuthMenuState) handleRegister() error {
 	return nil
 }
 
-func (a *AuthMenuState) handleChangePassword() error {
+type ChangePasswordHandler struct {
+	state *AuthMenuState
+}
+
+func (h *ChangePasswordHandler) ExecuteItem() error {
 	var username, oldPass, newPass string
 	fmt.Print("Username: ")
 	fmt.Scanln(&username)
@@ -85,7 +129,7 @@ func (a *AuthMenuState) handleChangePassword() error {
 	fmt.Print("New Password: ")
 	fmt.Scanln(&newPass)
 
-	err := a.middleware.UpdatePassword(a.ctx, username, oldPass, newPass)
+	err := h.state.middleware.UpdatePassword(h.state.ctx, username, oldPass, newPass)
 	if err != nil {
 		return fmt.Errorf("password change failed: %v", err)
 	}
@@ -94,18 +138,36 @@ func (a *AuthMenuState) handleChangePassword() error {
 	return nil
 }
 
-func (a *AuthMenuState) handleDeleteAccount() error {
+type DeleteAccountHandler struct {
+	state *AuthMenuState
+}
+
+func (h *DeleteAccountHandler) ExecuteItem() error {
 	var username string
 	fmt.Print("Username to delete: ")
 	fmt.Scanln(&username)
 
-	err := a.middleware.DeleteUser(a.ctx, username)
+	err := h.state.middleware.DeleteUser(h.state.ctx, username)
 	if err != nil {
 		return fmt.Errorf("account deletion failed: %v", err)
 	}
 
 	fmt.Println("Account deleted successfully!")
 	return nil
+}
+
+type ExitHandler struct{}
+
+func (h *ExitHandler) ExecuteItem() error {
+	return fmt.Errorf("exit")
+}
+
+func (a *AuthMenuState) Render() {
+	a.handler.DisplayMenu()
+}
+
+func (a *AuthMenuState) HandleUserInput(input string) error {
+	return a.handler.Execute(input)
 }
 
 func (a *AuthMenuState) GetContext() context.Context {
@@ -115,8 +177,18 @@ func (a *AuthMenuState) GetContext() context.Context {
 func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
 	provider := NewDBAuthProvider(db, 24*time.Hour)
 	middleware := NewMiddleware(provider)
-	return &AuthMenuState{
+	state := &AuthMenuState{
 		middleware: middleware,
 		ctx:        context.Background(),
+		handler:    NewAuthMenuHandler(),
 	}
+
+	// Initialize menu items
+	state.handler.AppendItem("login", "Login", &LoginHandler{state: state})
+	state.handler.AppendItem("register", "Register", &RegisterHandler{state: state})
+	state.handler.AppendItem("changepass", "Change Password", &ChangePasswordHandler{state: state})
+	state.handler.AppendItem("delete", "Delete Account", &DeleteAccountHandler{state: state})
+	state.handler.AppendItem("exit", "Exit", &ExitHandler{})
+
+	return state
 }
