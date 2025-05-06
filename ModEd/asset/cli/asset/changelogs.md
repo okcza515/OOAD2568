@@ -109,7 +109,7 @@ MEP-1012 Asset
    1. `HandlerContext` (core)
    2. `CLIMenuStateManager` (core)
    3. `MigrationManager` (core)
-   4. `Observer` in `Supply`,`SupplyLog`,`BorrowInstrument`,`Instrument`,`InstrumentLog`
+   4. `Observer` in `SupplyLog`,`InstrumentLog`
    5. `AssetMenuState`,`InstrumentMenuState`,`InstrumentLogMenuState`,`SupplyMenuState`,`CategoryMenuState` etc.
 2. Add `SeedDataLoader` feature into `MigrationManager` using `Builder`,`Singleton` DP.
 3. While keeping most of the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
