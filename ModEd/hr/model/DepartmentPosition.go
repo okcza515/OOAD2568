@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type DepartmentPosition int
 
@@ -11,17 +14,17 @@ const (
 	SECRETARY
 )
 
+var departmentPositionMap = map[string]DepartmentPosition{
+	"head":      HEAD,
+	"deputy":    DEPUTY,
+	"secretary": SECRETARY,
+	"none":      NONE_POSITION,
+}
+
 func ParseDepartmentPosition(posStr string) (DepartmentPosition, error) {
-	switch posStr {
-	case "head", "HEAD":
-		return HEAD, nil
-	case "deputy", "DEPUTY":
-		return DEPUTY, nil
-	case "secret":
-		return SECRETARY, nil
-	case "none", "NONE_POSITION":
-		return NONE_POSITION, nil
-	default:
+	position, ok := departmentPositionMap[strings.ToLower(posStr)]
+	if !ok {
 		return NONE_POSITION, fmt.Errorf("invalid department position: %s", posStr)
 	}
+	return position, nil
 }

@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Action int
 
@@ -9,13 +12,15 @@ const (
 	ActionReject
 )
 
+var actionMap = map[string]Action{
+	"approve": ActionApprove,
+	"reject":  ActionReject,
+}
+
 func ParseAction(actionStr string) (Action, error) {
-	switch actionStr {
-	case "approve", "APPROVE":
-		return ActionApprove, nil
-	case "reject", "REJECT":
-		return ActionReject, nil
-	default:
+	action, ok := actionMap[strings.ToLower(actionStr)]
+	if !ok {
 		return -1, fmt.Errorf("invalid action: %s", actionStr)
 	}
+	return action, nil
 }

@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type AcademicPosition int
 
@@ -11,17 +14,17 @@ const (
 	PROFESSOR
 )
 
+var academicPositionMap = map[string]AcademicPosition{
+	"assistant": ASSISTANT_PROF,
+	"associate": ASSOCIATE_PROF,
+	"professor": PROFESSOR,
+	"none":      NONE,
+}
+
 func ParseAcademicPosition(posStr string) (AcademicPosition, error) {
-	switch posStr {
-	case "assistant", "ASSISTANT_PROF":
-		return ASSISTANT_PROF, nil
-	case "associate", "ASSOCIATE_PROF":
-		return ASSOCIATE_PROF, nil
-	case "professor", "PROFESSOR":
-		return PROFESSOR, nil
-	case "none", "NONE":
-		return NONE, nil
-	default:
+	position, ok := academicPositionMap[strings.ToLower(posStr)]
+	if !ok {
 		return NONE, fmt.Errorf("invalid academic position: %s", posStr)
 	}
+	return position, nil
 }

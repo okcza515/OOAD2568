@@ -266,3 +266,9 @@
 
 ### Issues
 
+- Common CLI import instructor does not work.
+
+### Questions
+
+- 
+- Is it correct to create a adapter for menu to execute the command using flags?
