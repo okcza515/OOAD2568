@@ -37,16 +37,12 @@ type GetProgressByStatusStrategy struct {
 
 type Progress struct {
 	gorm.Model
-	StudentCode    string
-	Student        commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
-	AssessmentId   uint
-	Assessment     evalModel.Assessment `gorm:"foreignKey:AssessmentId"`
-	Type           evalModel.AssessmentType
-	Status         evalModel.AssessmentStatus
-	LastUpdate     time.Time `gorm:"autoUpdateTime"`
-	TotalSubmit    uint
-	Score          float64
-	SubmissionDate *time.Time
+	StudentCode  commonModel.Student        `gorm:"foreignKey:StudentCode;references:StudentCode"`
+	AssessmentId evalModel.Assessment       `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
+	Type         evalModel.AssessmentType   `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
+	Status       evalModel.AssessmentStatus `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
+	LastUpdate   time.Time                  `gorm:"autoUpdateTime"`
+	TotalSubmit  uint
 }
 
 type ProgressController struct {
@@ -127,7 +123,7 @@ func (strategy *GetProgressByStatusStrategy) Search(db *gorm.DB) ([]Progress, er
 	return progressList, nil
 }
 
-func (controller *ProgressController) GetProgressByType(assessmentType evalModel.AssessmentType, assessmentId uint) ([]Progress, error) {
+func (controller *ProgressController) GetAllProgressByType(assessmentType evalModel.AssessmentType, assessmentId uint) ([]Progress, error) {
 	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
 		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
 	}
@@ -141,7 +137,7 @@ func (controller *ProgressController) GetProgressByType(assessmentType evalModel
 	return strategy.Search(controller.db)
 }
 
-func (controller *ProgressController) GetProgressByTypeAndStudent(assessmentType evalModel.AssessmentType, assessmentId uint, studentCode string) ([]Progress, error) {
+func (controller *ProgressController) GetProgressByStudentCode(assessmentType evalModel.AssessmentType, assessmentId uint, studentCode string) ([]Progress, error) {
 	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
 		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
 	}
@@ -156,8 +152,7 @@ func (controller *ProgressController) GetProgressByTypeAndStudent(assessmentType
 	return strategy.Search(controller.db)
 }
 
-// GetProgressByTypeAndStatus gets progress for a specific type, assessment ID and status
-func (controller *ProgressController) GetProgressByTypeAndStatus(assessmentType evalModel.AssessmentType, assessmentId uint, status evalModel.AssessmentStatus) ([]Progress, error) {
+func (controller *ProgressController) GetProgressByStatus(assessmentType evalModel.AssessmentType, assessmentId uint, status evalModel.AssessmentStatus) ([]Progress, error) {
 	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
 		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
 	}
