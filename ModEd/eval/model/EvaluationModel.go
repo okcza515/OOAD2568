@@ -20,7 +20,6 @@ type Evaluation struct {
 	EvaluatedAt    time.Time
 }
 
-// ฟังก์ชันช่วยโหลดข้อมูล Evaluation จาก CSV
 func LoadEvaluationsFromCSV(filePath string) ([]*Evaluation, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -37,7 +36,7 @@ func LoadEvaluationsFromCSV(filePath string) ([]*Evaluation, error) {
 	var evaluations []*Evaluation
 	for i, record := range records {
 		if i == 0 {
-			continue // skip header
+			continue
 		}
 
 		score, _ := strconv.Atoi(record[4])
@@ -70,7 +69,6 @@ func SaveEvaluationsToCSV(filePath string, evaluations []*Evaluation) error {
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Write header
 	writer.Write([]string{"student_code", "instructor_code", "assessment_id", "assessment_type", "score", "comment", "evaluated_at"})
 
 	for _, e := range evaluations {
