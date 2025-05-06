@@ -24,10 +24,10 @@ func main() {
 			handler.InstrumentRequestHandler(facade)
 		case "2":
 			handler.ProcurementHandler(facade)
-		case "3":			
+		case "3":
 			handler.ApprovalHandler(facade)
 		case "4":
-			handler.TORHandler(facade)
+			fmt.Println("Not implemented yet...")
 		case "5":
 			fmt.Println("Not implemented yet...")
 		}

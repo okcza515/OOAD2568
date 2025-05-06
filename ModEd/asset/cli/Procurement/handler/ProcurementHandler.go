@@ -18,24 +18,46 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 
 		switch inputBuffer {
 		case "1":
-			fmt.Println("Create Procurement")
-			PID := util.GetUintInput("Enter Procurement ID: ")
-			AID := util.GetUintPointerInput("Enter Approver ID: ")
-			newProcurement := &model.Procurement{
-				ProcurementID: PID,
-				ApproverID:    AID,
-				Status:        model.ProcurementStatusPending,
-			}
-
-			err := facade.Procurement.CreateProcurement(newProcurement)
-			if err != nil {
-				fmt.Println("Failed to create Procurement:", err)
-				WaitForEnter()
+			fmt.Println("Create TOR and Procurement")
+			fmt.Println("List All Instrument Requests")
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if !showApprovedRequests(requests, err) {
 				break
 			}
-			fmt.Println("Procurement created with ID:", newProcurement.ProcurementID)
-			WaitForEnter()
 
+			instrumentRequestID := util.GetUintInput("Enter Instrument Request ID to create TOR for: ")
+			scope := util.GetStringInput("Enter TOR Scope: ")
+			deliverables := util.GetStringInput("Enter TOR Deliverables: ")
+			timeline := util.GetStringInput("Enter TOR Timeline: ")
+			committee := util.GetStringInput("Enter TOR Committee: ")
+
+			tor := &model.TOR{
+				InstrumentRequestID: instrumentRequestID,
+				Scope:               scope,
+				Deliverables:        deliverables,
+				Timeline:            timeline,
+				Committee:           committee,
+				CreatedAt:           time.Now(),
+			}
+
+			err = facade.TOR.CreateTOR(tor)
+			if err != nil {
+				fmt.Println("Failed to create TOR:", err)
+			} else {
+				fmt.Println("TOR created successfully with ID:", tor.TORID)
+			}
+			newProcurement := &model.Procurement{
+				TORID:     tor.TORID,
+				Status:    model.ProcurementStatusPending,
+				CreatedAt: time.Now(),
+			}
+			err = facade.Procurement.CreateProcurement(newProcurement)
+			if err != nil {
+				fmt.Println("Failed to create Procurement:", err)
+			} else {
+				fmt.Println("Procurement created with ID:", newProcurement.ProcurementID)
+			}
+			WaitForEnter()
 		case "2":
 			fmt.Println("List All Procurements")
 			ListAllProcurements(facade)
@@ -117,9 +139,11 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			fmt.Printf("Procurement with ID %d deleted successfully.\n", id)
 			WaitForEnter()
+		case "6":
+			TORHandler(facade)
+			util.ClearScreen()
+			WaitForEnter()
 		}
-
-		util.ClearScreen()
 	}
 
 	util.ClearScreen()
@@ -129,11 +153,12 @@ func printProcurementOptions() {
 	fmt.Println(":/Procurement/Main")
 	fmt.Println()
 	fmt.Println("--Procurement Functions--")
-	fmt.Println("  1:\tCreate Procurement")
+	fmt.Println("  1:\tCreate TOR and Procurement")
 	fmt.Println("  2:\tList All Procurements")
 	fmt.Println("  3:\tView Procurement Detail by ID")
 	fmt.Println("  4:\tUpdate Procurement Status")
 	fmt.Println("  5:\tDelete Procurement")
+	fmt.Println("  6:\tTOR Page")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }

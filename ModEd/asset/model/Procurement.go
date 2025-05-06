@@ -17,5 +17,6 @@ type Procurement struct {
 	Status                ProcurementStatus `gorm:"type:varchar(50);default:'pending'"`
 	DeletedAt             gorm.DeletedAt    `gorm:"index"`
 	ApprovalTime          *time.Time
+	CreatedAt             time.Time
 	TOR                   TOR
 }
