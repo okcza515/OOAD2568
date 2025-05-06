@@ -38,10 +38,13 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
 	}
 
 	manager.AddMenu(string(MENU_HR), state)
-	manager.AddMenu(string(MENU_ADD), NewAddMenuState(manager))
+	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager))
+	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager))
 
-	addHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ADD)))
+	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))
+	instructorHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUCTOR)))
 
-	handlerContext.AddHandler("1", "Add New Student/Instructor", addHandler)
+	handlerContext.AddHandler("1", "Student Menu", studentHandler)
+	handlerContext.AddHandler("2", "Instructor Menu", instructorHandler)
 	return state
 }
