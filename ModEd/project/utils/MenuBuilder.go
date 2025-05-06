@@ -218,6 +218,34 @@ func (mb *MenuBuilder) AddMenuPath(path []string, action func(io *MenuIO)) {
 	current.Action = action
 }
 
+func (mb *MenuBuilder) AddMenuChild(path []string, menu *MenuItem) {
+	current := mb.Root
+	for _, title := range path {
+		found := false
+		for _, child := range current.Children {
+			if child.Title == title {
+				current = child
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			newItem := &MenuItem{Title: title}
+			current.AddChild(newItem)
+			current = newItem
+		}
+	}
+
+	for _, child := range current.Children {
+		if child.Title == menu.Title {
+			return
+		}
+	}
+
+	current.AddChild(menu)
+}
+
 func (mb *MenuBuilder) Show() {
 	mb.showMenu(mb.Root, "")
 }
