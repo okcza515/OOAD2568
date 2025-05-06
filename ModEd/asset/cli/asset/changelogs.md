@@ -108,7 +108,7 @@ MEP-1012 Asset
 1. Refactor `Switch-Case hell` into a cooler hashmap in the following features:
    1. `HandlerContext` (core)
    2. `CLIMenuStateManager` (core)
-   3. `Observer` in `InstrumentLog`
+   3. `Observer` in `Supply`,`SupplyLog`,`BorrowInstrument`,`Instrument`,`InstrumentLog`
    4. `AssetMenuState`,`InstrumentMenuState`,`InstrumentLogMenuState`,`SupplyMenuState`,`CategoryMenuState` etc.
 2. Add `SeedDataLoader` feature into `MigrationManager` using `Builder` DP.
 3. While keeping most of the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
@@ -121,7 +121,7 @@ MEP-1012 Asset
 # Implemented Design Pattern Or Principles
 
 ### Singleton
-- SeedData (core) [in migration]
+- SeedData (core) [become one with migration]
 
 ### Builder
 - SeedData (core) [in migration]
