@@ -43,7 +43,7 @@ func (ac *AdvisorController) AssignAdvisor(projectId, instructorId uint, isPrima
 }
 
 func (ac *AdvisorController) UpdateAdvisorRole(advisorId uint, isPrimary bool) error {
-	advisor, err := getAdvisorByID(ac.DB, advisorId)
+	advisor, err := ac.RetrieveByID(advisorId)
 	if err != nil {
 		return err
 	}
@@ -55,31 +55,6 @@ func (ac *AdvisorController) UpdateAdvisorRole(advisorId uint, isPrimary bool) e
 	}
 
 	return ac.DB.Model(advisor).Update("isPrimary", isPrimary).Error
-}
-
-func (ac *AdvisorController) RemoveAdvisor(advisorId uint) error {
-	advisor, err := getAdvisorByID(ac.DB, advisorId)
-	if err != nil {
-		return err
-	}
-
-	if err := ac.DB.Delete(advisor).Error; err != nil {
-		return errors.New("failed to remove advisor")
-	}
-
-	return nil
-}
-
-func (ac *AdvisorController) ListAdvisorsByProject(projectId int) ([]model.Advisor, error) {
-	var advisors []model.Advisor
-	err := ac.DB.Where("seniorProjectId = ?", projectId).Find(&advisors).Error
-	return advisors, err
-}
-
-func (ac *AdvisorController) ListAdvisorsByInstructor(instructorId int) ([]model.Advisor, error) {
-	var advisors []model.Advisor
-	err := ac.DB.Where("instructorId = ?", instructorId).Find(&advisors).Error
-	return advisors, err
 }
 
 func advisorExists(db *gorm.DB, projectId, instructorId uint) (bool, error) {
@@ -102,14 +77,6 @@ func hasPrimaryAdvisor(db *gorm.DB, projectId uint) (bool, error) {
 		)
 	`, projectId).Scan(&exists).Error
 	return exists, err
-}
-
-func getAdvisorByID(db *gorm.DB, advisorId uint) (*model.Advisor, error) {
-	var advisor model.Advisor
-	if err := db.First(&advisor, "advisorId = ?", advisorId).Error; err != nil {
-		return nil, errors.New("advisor not found")
-	}
-	return &advisor, nil
 }
 
 func validateAdvisorAssignment(db *gorm.DB, projectId, instructorId uint, isPrimary bool) error {

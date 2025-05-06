@@ -16,7 +16,6 @@ func NewExaminationService(db *gorm.DB) *ExaminationService {
 	return &ExaminationService{db: db}
 }
 
-// Create new exam
 func (s *ExaminationService) CreateExam(exam *model.Examination) error {
 	if exam.Exam_name == "" || exam.Instructor_id == 0 || exam.CourseId == 0 || exam.CurriculumId == 0 {
 		return errors.New("missing required fields")
@@ -27,7 +26,6 @@ func (s *ExaminationService) CreateExam(exam *model.Examination) error {
 	return s.db.Create(exam).Error
 }
 
-// Publish exam
 func (s *ExaminationService) PublishExam(examID uint) error {
 	var exam model.Examination
 	if err := s.db.First(&exam, examID).Error; err != nil {
@@ -42,7 +40,6 @@ func (s *ExaminationService) PublishExam(examID uint) error {
 	return s.db.Save(&exam).Error
 }
 
-// Close exam
 func (s *ExaminationService) CloseExam(examID uint) error {
 	var exam model.Examination
 	if err := s.db.First(&exam, examID).Error; err != nil {
@@ -61,7 +58,6 @@ func (s *ExaminationService) CloseExam(examID uint) error {
 	return s.db.Save(&exam).Error
 }
 
-// List all exams
 func (s *ExaminationService) GetAllExams() ([]model.Examination, error) {
 	var exams []model.Examination
 	if err := s.db.Find(&exams).Error; err != nil {
@@ -70,12 +66,10 @@ func (s *ExaminationService) GetAllExams() ([]model.Examination, error) {
 	return exams, nil
 }
 
-// Update exam
 func (s *ExaminationService) UpdateExam(id uint, exam *model.Examination) error {
 	return s.db.Model(&model.Examination{}).Where("id = ?", id).Updates(exam).Error
 }
 
-// Delete exam
 func (s *ExaminationService) DeleteExam(id uint) error {
 	return s.db.Where("id = ?", id).Delete(&model.Examination{}).Error
 }

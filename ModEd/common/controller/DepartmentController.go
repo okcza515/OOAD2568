@@ -10,7 +10,7 @@ type DepartmentController struct {
 	DB *gorm.DB
 }
 
-func CreateDepartmentController(db *gorm.DB) *DepartmentController {
+func NewDepartmentController(db *gorm.DB) *DepartmentController {
 	db.AutoMigrate(&model.Department{})
 	return &DepartmentController{DB: db}
 }

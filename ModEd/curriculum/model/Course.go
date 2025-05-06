@@ -11,7 +11,7 @@ import (
 )
 
 type Course struct {
-	CourseId     uint           `gorm:"primaryKey" csv:"course_id" json:"course_id" validate:"required"`
+	CourseId     uint           `gorm:"primaryKey" csv:"course_id" json:"course_id" validate:"-"`
 	Name         string         `gorm:"not null" csv:"name" json:"name" validate:"required"`
 	Description  string         `gorm:"not null" csv:"description" json:"description" validate:"required"`
 	CurriculumId uint           `gorm:"not null" csv:"curriculum_id" json:"curriculum_id" validate:"required"`

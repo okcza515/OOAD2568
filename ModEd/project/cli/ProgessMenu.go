@@ -4,7 +4,6 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func BuildProgressMenu(progressController *controller.ProgressController) *utils.MenuItem {
@@ -39,14 +38,8 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Adding New Progress...")
 
 					io.Print("Enter Assignment ID: ")
-					assignmentIDInput, err := io.ReadInput()
+					assignmentID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
-						return
-					}
-					assignmentID, err := strconv.Atoi(assignmentIDInput)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Assignment ID: %v", err))
 						return
 					}
 
@@ -71,19 +64,12 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Viewing Progress by ID...")
 					io.Print("Enter Progress ID: ")
 
-					input, err := io.ReadInput()
+					progressID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
 						return
 					}
 
-					progressID, err := strconv.ParseUint(input, 10, 32)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Progress ID: %v", err))
-						return
-					}
-
-					progress, err := progressController.RetrieveByID(uint(progressID))
+					progress, err := progressController.RetrieveByID(progressID)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error retrieving progress: %v", err))
 						return
@@ -99,14 +85,8 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Updating Progress Name...")
 					io.Print("Enter Progress ID: ")
 
-					progressIDInput, err := io.ReadInput()
+					progressID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
-						return
-					}
-					progressID, err := strconv.ParseUint(progressIDInput, 10, 32)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Progress ID: %v", err))
 						return
 					}
 
@@ -117,7 +97,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 						return
 					}
 
-					err = progressController.UpdateProgressName(uint(progressID), newName)
+					err = progressController.UpdateProgressName(progressID, newName)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error updating progress name: %v", err))
 					} else {
@@ -131,15 +111,8 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Deleting Progress...")
 					io.Print("Enter Progress ID to delete: ")
 
-					input, err := io.ReadInput()
+					progressID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
-						return
-					}
-
-					progressID, err := strconv.ParseUint(input, 10, 32)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Progress ID: %v", err))
 						return
 					}
 
@@ -157,15 +130,8 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Marking Progress as Completed...")
 					io.Print("Enter Progress ID: ")
 
-					input, err := io.ReadInput()
+					progressID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
-						return
-					}
-
-					progressID, err := strconv.ParseUint(input, 10, 32)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Progress ID: %v", err))
 						return
 					}
 
@@ -183,15 +149,8 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 					io.Println("Marking Progress as Incomplete...")
 					io.Print("Enter Progress ID: ")
 
-					input, err := io.ReadInput()
+					progressID, err := io.ReadInputID()
 					if err != nil {
-						io.Println(fmt.Sprintf("Error reading input: %v", err))
-						return
-					}
-
-					progressID, err := strconv.ParseUint(input, 10, 32)
-					if err != nil {
-						io.Println(fmt.Sprintf("Invalid Progress ID: %v", err))
 						return
 					}
 

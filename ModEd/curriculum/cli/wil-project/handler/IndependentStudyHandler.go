@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -15,11 +14,11 @@ import (
 )
 
 type IndependentStudyMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.WILModuleWrapper
-
+	manager                   *cli.CLIMenuStateManager
+	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 	insertHandlerStrategy     *handler.InsertHandlerStrategy[model.IndependentStudy]
+	handler                   *utils.GeneralHandlerContext
 }
 
 func NewIndependentStudyMenuStateHandler(
@@ -30,60 +29,39 @@ func NewIndependentStudyMenuStateHandler(
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 		insertHandlerStrategy:     handler.NewInsertHandlerStrategy[model.IndependentStudy](wrapper.IndependentStudyController),
+		handler:                   utils.NewGeneralHandlerContext(),
 	}
 }
 
 func (menu *IndependentStudyMenuStateHandler) Render() {
-	fmt.Println("\nIndependent Study Menu:")
-	fmt.Println("1.Read independent study list from file")
-	fmt.Println("2.Assign new independent study")
-	fmt.Println("3.Find IS by Id")
-	fmt.Println("4.List all IS")
-	fmt.Println("5.Update IS by Id")
-	fmt.Println("6.Delete Independent Study")
-	fmt.Println("back: Exit Independent Study module")
+	menu.handler.SetMenuTitle("\nIndependent Study Menu")
+	menu.handler.AddHandler("1", "Read independent study list from file", utils.FuncStrategy{
+		Action: func() error {
+			err := menu.insertHandlerStrategy.Execute()
+			return err
+		},
+	})
+	menu.handler.AddHandler("2", "Assign new independent study", utils.FuncStrategy{Action: menu.assignNewIndependentStudy})
+	menu.handler.AddHandler("3", "Find IS by Id", utils.FuncStrategy{Action: menu.findISByID})
+	menu.handler.AddHandler("4", "List all IS", utils.FuncStrategy{Action: menu.listAllIS})
+	menu.handler.AddHandler("5", "Update IS by Id", utils.FuncStrategy{Action: menu.updateIS})
+	menu.handler.AddHandler("6", "Delete Independent StudyD", utils.FuncStrategy{Action: menu.deleteIS})
+	menu.handler.AddBackHandler(utils.FuncStrategy{
+		Action: func() error {
+			menu.manager.SetState(menu.wilModuleMenuStateHandler)
+			return nil
+		},
+	})
+
+	menu.handler.ShowMenu()
 }
 
 func (menu *IndependentStudyMenuStateHandler) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		err := menu.insertHandlerStrategy.Execute()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "2":
-		if err := menu.assignNewIndependentStudy(); err != nil {
-			fmt.Print("Assign failed exiting with error [")
-			fmt.Print(err)
-			fmt.Println("]")
-		}
-	case "3":
-		if err := menu.findISByID(); err != nil {
-			fmt.Print("Retrive failed exiting with error [")
-			fmt.Print(err)
-			fmt.Println("]")
-		}
-	case "4":
-		menu.listAllIS()
-	case "5":
-		menu.updateIS()
-	case "6":
-		if err := menu.deleteIS(); err != nil {
-			fmt.Print("Delete failed exiting with error [")
-			fmt.Print(err)
-			fmt.Println("]")
-		}
-	case "back":
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	default:
-		fmt.Println("Invalid Command")
+	err := menu.handler.HandleInput(input)
+	if err != nil {
+		return err
 	}
-
-	util.PressEnterToContinue()
-
 	return nil
-
 }
 
 func (menu *IndependentStudyMenuStateHandler) isInformationRenderer(is model.IndependentStudy) {
