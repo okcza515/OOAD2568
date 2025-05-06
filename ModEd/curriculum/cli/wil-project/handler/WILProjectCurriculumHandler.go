@@ -4,9 +4,9 @@ package handler
 import (
 	"ModEd/core"
 	"ModEd/core/cli"
+	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
 )
@@ -15,7 +15,8 @@ type WILProjectCurriculumMenuStateHandler struct {
 	manager                   *cli.CLIMenuStateManager
 	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
-	handler                   *utils.GeneralHandlerContext
+	handler                   *handler.HandlerContext
+	backHandler               *handler.ChangeMenuHandlerStrategy
 }
 
 func NewWILProjectCurriculumMenuStateHandler(
@@ -26,20 +27,18 @@ func NewWILProjectCurriculumMenuStateHandler(
 		manager:                   manager,
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
-		handler:                   utils.NewGeneralHandlerContext(),
+		handler:                   handler.NewHandlerContext(),
+		backHandler:               handler.NewChangeMenuHandlerStrategy(manager, wilModuleMenuStateHandler),
 	}
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
-	menu.handler.AddHandler("1", "Create WIL Course", utils.FuncStrategy{Action: menu.createWILCourse})
-	menu.handler.AddHandler("2", "Create WIL Class", utils.FuncStrategy{Action: menu.createWILClass})
-	menu.handler.AddHandler("3", "List all of WIL Course", utils.FuncStrategy{Action: menu.listWILCourse})
-	menu.handler.AddHandler("4", "List all of WIL Class", utils.FuncStrategy{Action: menu.listWILClass})
-	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	}})
+	menu.handler.AddHandler("1", "Create WIL Course", handler.FuncStrategy{Action: menu.createWILCourse})
+	menu.handler.AddHandler("2", "Create WIL Class", handler.FuncStrategy{Action: menu.createWILClass})
+	menu.handler.AddHandler("3", "List all of WIL Course", handler.FuncStrategy{Action: menu.listWILCourse})
+	menu.handler.AddHandler("4", "List all of WIL Class", handler.FuncStrategy{Action: menu.listWILClass})
+	menu.handler.AddBackHandler(menu.backHandler)
 
 	menu.handler.ShowMenu()
 }

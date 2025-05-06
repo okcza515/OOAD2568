@@ -7,7 +7,6 @@ import (
 	"ModEd/core/handler"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
 	"strings"
@@ -19,7 +18,8 @@ type WILProjectApplicationMenuStateHandler struct {
 	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 	insertHandlerStrategy     *handler.InsertHandlerStrategy[model.WILProjectApplication]
-	handler                   *utils.GeneralHandlerContext
+	handler                   *handler.HandlerContext
+	backHandler               *handler.ChangeMenuHandlerStrategy
 }
 
 func NewWILProjectApplicationMenuStateHandler(
@@ -30,24 +30,22 @@ func NewWILProjectApplicationMenuStateHandler(
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 		insertHandlerStrategy:     handler.NewInsertHandlerStrategy[model.WILProjectApplication](wrapper.WILProjectApplicationController),
-		handler:                   utils.NewGeneralHandlerContext(),
+		handler:                   handler.NewHandlerContext(),
+		backHandler:               handler.NewChangeMenuHandlerStrategy(manager, wilModuleMenuStateHandler),
 	}
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
-	menu.handler.AddHandler("1", "Create WIL Project Application", utils.FuncStrategy{Action: menu.createWILProjectApplication})
-	menu.handler.AddHandler("2", "Edit WIL Project Application", utils.FuncStrategy{Action: menu.editWILProjectApplication})
-	menu.handler.AddHandler("3", "Search WIL Project Application", utils.FuncStrategy{Action: menu.searchWILProjectApplication})
-	menu.handler.AddHandler("4", "List all WIL Project Application", utils.FuncStrategy{Action: menu.listAllWILProjectApplication})
-	menu.handler.AddHandler("5", "Load WIL Project Application From file", utils.FuncStrategy{Action: func() error {
+	menu.handler.AddHandler("1", "Create WIL Project Application", handler.FuncStrategy{Action: menu.createWILProjectApplication})
+	menu.handler.AddHandler("2", "Edit WIL Project Application", handler.FuncStrategy{Action: menu.editWILProjectApplication})
+	menu.handler.AddHandler("3", "Search WIL Project Application", handler.FuncStrategy{Action: menu.searchWILProjectApplication})
+	menu.handler.AddHandler("4", "List all WIL Project Application", handler.FuncStrategy{Action: menu.listAllWILProjectApplication})
+	menu.handler.AddHandler("5", "Load WIL Project Application From file", handler.FuncStrategy{Action: func() error {
 		err := menu.insertHandlerStrategy.Execute()
 		return err
 	}})
-	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	}})
+	menu.handler.AddBackHandler(menu.backHandler)
 
 	menu.handler.ShowMenu()
 }

@@ -18,7 +18,8 @@ type IndependentStudyMenuStateHandler struct {
 	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 	insertHandlerStrategy     *handler.InsertHandlerStrategy[model.IndependentStudy]
-	handler                   *utils.GeneralHandlerContext
+	handler                   *handler.HandlerContext
+	backHandler               *handler.ChangeMenuHandlerStrategy
 }
 
 func NewIndependentStudyMenuStateHandler(
@@ -29,29 +30,20 @@ func NewIndependentStudyMenuStateHandler(
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 		insertHandlerStrategy:     handler.NewInsertHandlerStrategy[model.IndependentStudy](wrapper.IndependentStudyController),
-		handler:                   utils.NewGeneralHandlerContext(),
+		handler:                   handler.NewHandlerContext(),
+		backHandler:               handler.NewChangeMenuHandlerStrategy(manager, wilModuleMenuStateHandler),
 	}
 }
 
 func (menu *IndependentStudyMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nIndependent Study Menu")
-	menu.handler.AddHandler("1", "Read independent study list from file", utils.FuncStrategy{
-		Action: func() error {
-			err := menu.insertHandlerStrategy.Execute()
-			return err
-		},
-	})
-	menu.handler.AddHandler("2", "Assign new independent study", utils.FuncStrategy{Action: menu.assignNewIndependentStudy})
-	menu.handler.AddHandler("3", "Find IS by Id", utils.FuncStrategy{Action: menu.findISByID})
-	menu.handler.AddHandler("4", "List all IS", utils.FuncStrategy{Action: menu.listAllIS})
-	menu.handler.AddHandler("5", "Update IS by Id", utils.FuncStrategy{Action: menu.updateIS})
-	menu.handler.AddHandler("6", "Delete Independent StudyD", utils.FuncStrategy{Action: menu.deleteIS})
-	menu.handler.AddBackHandler(utils.FuncStrategy{
-		Action: func() error {
-			menu.manager.SetState(menu.wilModuleMenuStateHandler)
-			return nil
-		},
-	})
+	menu.handler.AddHandler("1", "Read independent study list from file", menu.insertHandlerStrategy)
+	menu.handler.AddHandler("2", "Assign new independent study", handler.FuncStrategy{Action: menu.assignNewIndependentStudy})
+	menu.handler.AddHandler("3", "Find IS by Id", handler.FuncStrategy{Action: menu.findISByID})
+	menu.handler.AddHandler("4", "List all IS", handler.FuncStrategy{Action: menu.listAllIS})
+	menu.handler.AddHandler("5", "Update IS by Id", handler.FuncStrategy{Action: menu.updateIS})
+	menu.handler.AddHandler("6", "Delete Independent StudyD", handler.FuncStrategy{Action: menu.deleteIS})
+	menu.handler.AddBackHandler(menu.backHandler)
 
 	menu.handler.ShowMenu()
 }

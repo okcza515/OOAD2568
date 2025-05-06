@@ -8,6 +8,18 @@ import (
 
 // Wrote by MEP-1012, MEP-1010
 
+type MenuStrategy interface {
+	Execute() error
+}
+
+type FuncStrategy struct {
+	Action func() error
+}
+
+func (f FuncStrategy) Execute() error {
+	return f.Action()
+}
+
 type MenuItem struct {
 	Label    string
 	Strategy HandlerStrategy
@@ -64,6 +76,14 @@ func (c *HandlerContext) ShowMenu() {
 		menu := c.menu[key]
 		fmt.Printf("  %s:\t%s\n", key, menu.Label)
 	}
+}
+
+func (c *HandlerContext) SetMenuTitle(title string) {
+	c.title = title
+}
+
+func (c *HandlerContext) AddBackHandler(strategy HandlerStrategy) {
+	c.AddHandler("back", "exit to previous page", strategy)
 }
 
 // TODO for standard CLI

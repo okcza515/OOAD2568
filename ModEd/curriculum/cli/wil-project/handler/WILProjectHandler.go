@@ -4,6 +4,7 @@ package handler
 import (
 	"ModEd/core"
 	"ModEd/core/cli"
+	"ModEd/core/handler"
 	"ModEd/core/validation"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
@@ -18,32 +19,34 @@ type WILProjectMenuStateHandler struct {
 	manager                   *cli.CLIMenuStateManager
 	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
-	handler                   *utils.GeneralHandlerContext
+	backHander                *handler.ChangeMenuHandlerStrategy
+	handler                   *handler.HandlerContext
 }
 
 func NewWILProjectMenuStateHandler(
 	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *WILProjectMenuStateHandler {
-	return &WILProjectMenuStateHandler{
+
+	handlerStrategy := handler.NewHandlerContext()
+	stateHandler := &WILProjectMenuStateHandler{
 		manager:                   manager,
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
-		handler:                   utils.NewGeneralHandlerContext(),
+		handler:                   handlerStrategy,
+		backHander:                handler.NewChangeMenuHandlerStrategy(manager, wilModuleMenuStateHandler),
 	}
+	return stateHandler
 }
 
 func (menu *WILProjectMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nWIL Project Menu:")
-	menu.handler.AddHandler("1", "Create WIL Project", utils.FuncStrategy{Action: menu.createCreateWILProject})
-	menu.handler.AddHandler("2", "Edit WIL Project", utils.FuncStrategy{Action: menu.editWILProject})
+	menu.handler.AddHandler("1", "Create WIL Project", handler.FuncStrategy{Action: menu.createCreateWILProject})
+	menu.handler.AddHandler("2", "Edit WIL Project", handler.FuncStrategy{Action: menu.editWILProject})
 	menu.handler.AddHandler("3", "Search WIL Project", nil)
-	menu.handler.AddHandler("4", "List all WIL Project", utils.FuncStrategy{Action: menu.listAllWILProject})
-	menu.handler.AddHandler("5", "Get WIL Project Detail By ID", utils.FuncStrategy{Action: menu.getWILProjectDetailByID})
-	menu.handler.AddHandler("6", "Delete WIL Project By ID", utils.FuncStrategy{Action: menu.deleteWILProjectByID})
-	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	}})
+	menu.handler.AddHandler("4", "List all WIL Project", handler.FuncStrategy{Action: menu.listAllWILProject})
+	menu.handler.AddHandler("5", "Get WIL Project Detail By ID", handler.FuncStrategy{Action: menu.getWILProjectDetailByID})
+	menu.handler.AddHandler("6", "Delete WIL Project By ID", handler.FuncStrategy{Action: menu.deleteWILProjectByID})
+	menu.handler.AddBackHandler(menu.backHander)
 
 	menu.handler.ShowMenu()
 }
