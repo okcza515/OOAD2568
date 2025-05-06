@@ -8,13 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-// AuthMenuState implements the MenuState interface for authentication
 type AuthMenuState struct {
 	middleware *Middleware
 	ctx        context.Context
 }
 
-// Render displays the authentication menu
 func (a *AuthMenuState) Render() {
 	fmt.Println("\n=== Authentication Menu ===")
 	fmt.Println("1. Login")
@@ -25,7 +23,6 @@ func (a *AuthMenuState) Render() {
 	fmt.Print("Select an option: ")
 }
 
-// HandleUserInput processes user input for the authentication menu
 func (a *AuthMenuState) HandleUserInput(input string) error {
 	switch input {
 	case "1":
@@ -37,9 +34,9 @@ func (a *AuthMenuState) HandleUserInput(input string) error {
 	case "4":
 		return a.handleDeleteAccount()
 	case "5":
-		return nil
+		return fmt.Errorf("exit")
 	default:
-		return fmt.Errorf("invalid option: %s", input)
+		return fmt.Errorf("invalid option")
 	}
 }
 
@@ -55,8 +52,10 @@ func (a *AuthMenuState) handleLogin() error {
 		return fmt.Errorf("login failed: %v", err)
 	}
 
+	a.ctx = WithContext(context.Background(), userCtx)
 	fmt.Printf("Login successful! Welcome %s (Role: %s)\n", userCtx.Username, userCtx.Role)
-	return nil
+
+	return fmt.Errorf("login_success")
 }
 
 func (a *AuthMenuState) handleRegister() error {
@@ -109,7 +108,10 @@ func (a *AuthMenuState) handleDeleteAccount() error {
 	return nil
 }
 
-// NewAuthMenuState creates a new authentication menu state
+func (a *AuthMenuState) GetContext() context.Context {
+	return a.ctx
+}
+
 func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
 	provider := NewDBAuthProvider(db, 24*time.Hour)
 	middleware := NewMiddleware(provider)
