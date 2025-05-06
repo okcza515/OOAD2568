@@ -86,7 +86,6 @@ MEP-1012 Asset
 ### State
 - CLI Menu (core)
 
-
 ### Observer
 - AssetControllerManager
 
@@ -107,13 +106,27 @@ MEP-1012 Asset
 ### Done
 
 1. Refactor `Switch-Case hell` into a cooler hashmap in the following features:
-   1. `HandlerStrategy`
-   2. `MenuState`
-   3. A lot of `Observer`
+   1. `HandlerContext` (core)
+   2. `CLIMenuStateManager` (core)
+   3. `Observer` in `InstrumentLog`
+   4. `AssetMenuState`,`InstrumentMenuState`,`InstrumentLogMenuState`,`SupplyMenuState`,`CategoryMenuState` etc.
 2. Add `SeedDataLoader` feature into `MigrationManager` using `Builder` DP.
 3. While keeping most of the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
-4. 
 
 ### Actual New Feature
 1. Instrument `Delete`
-2. 
+2. SupplyLog `List`
+3. Category `Insert`,`List`,`Update`,`Delete`
+
+# Implemented Design Pattern Or Principles
+
+### Singleton
+- SeedData (core) [in migration]
+
+### Builder
+- SeedData (core) [in migration]
+
+### Observer
+- BorrowInstrument
+- SupplyLog
+- Supply
