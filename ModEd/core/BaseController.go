@@ -3,7 +3,12 @@
 package core
 
 import (
+	"encoding/csv"
 	"errors"
+	"fmt"
+	"os"
+	"reflect"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -133,4 +138,82 @@ func (controller *BaseController[T]) ListPagination(condition map[string]interfa
 	}
 
 	return records, nil
+}
+
+func (controller *BaseController[T]) FromCSV(path string) {
+	file, err := os.Open(path)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	rows, err := reader.ReadAll()
+	if err != nil {
+		fmt.Println("Error reading CSV:", err)
+		return
+	}
+
+	if len(rows) < 2 {
+		fmt.Println("CSV does not contain any data")
+		return
+	}
+
+	headers := rows[0]
+	var result []T
+
+	for rowIndex, row := range rows[1:] {
+		var zero T
+		tType := reflect.TypeOf(zero)
+		if tType.Kind() == reflect.Ptr {
+			tType = tType.Elem()
+		}
+		newObj := reflect.New(tType).Interface()
+
+		v := reflect.ValueOf(newObj).Elem()
+
+		for i, header := range headers {
+			if i >= len(row) {
+				continue
+			}
+
+			field := v.FieldByName(header)
+			if !field.IsValid() || !field.CanSet() {
+				continue
+			}
+
+			value := row[i]
+			switch field.Kind() {
+			case reflect.String:
+				field.SetString(value)
+			case reflect.Int, reflect.Int64, reflect.Int32:
+				if intVal, err := strconv.ParseInt(value, 10, 64); err == nil {
+					field.SetInt(intVal)
+				}
+			case reflect.Uint, reflect.Uint64, reflect.Uint32:
+				if uintVal, err := strconv.ParseUint(value, 10, 64); err == nil {
+					field.SetUint(uintVal)
+				}
+			case reflect.Float32, reflect.Float64:
+				if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
+					field.SetFloat(floatVal)
+				}
+			case reflect.Bool:
+				if boolVal, err := strconv.ParseBool(value); err == nil {
+					field.SetBool(boolVal)
+				}
+			default:
+				fmt.Printf("Unsupported field type: %s in row %d\n", field.Kind(), rowIndex+2)
+			}
+		}
+
+		typedObj := newObj.(T)
+		result = append(result, typedObj)
+	}
+
+	if err := controller.InsertMany(result); err != nil {
+		fmt.Println("InsertMany failed:", err)
+	}
 }

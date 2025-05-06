@@ -63,6 +63,15 @@ func (io *MenuIO) ReadInputID() (uint, error) {
 	return uint(id), nil
 }
 
+func (io *MenuIO) ReadYesOrNo() (bool, error) {
+	input, err := io.ReadInput()
+	if err != nil {
+		return false, err
+	}
+
+	return strings.ToLower(input) == "yes" || strings.ToLower(input) == "y", nil
+}
+
 func flattenFields(typ reflect.Type, prefix string, path []int, fieldMap map[string][]int) {
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)

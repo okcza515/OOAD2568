@@ -4,7 +4,6 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
-	"strings"
 )
 
 func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.MenuItem {
@@ -29,14 +28,12 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 					}
 
 					io.Print("Is this a primary advisor? (yes/no): ")
-					isPrimaryStr, err := io.ReadInput()
+					isPrimary, err := io.ReadYesOrNo()
 					if err != nil {
-
 						return
 					}
-					isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
-					advisor, err := advisorController.AssignAdvisor(uint(projectId), uint(instructorId), isPrimary)
+					advisor, err := advisorController.AssignAdvisor(projectId, instructorId, isPrimary)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error assigning advisor: %v", err))
 					} else {
@@ -56,11 +53,10 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 					}
 
 					io.Print("Set as primary advisor? (yes/no): ")
-					isPrimaryStr, err := io.ReadInput()
+					isPrimary, err := io.ReadYesOrNo()
 					if err != nil {
 						return
 					}
-					isPrimary := strings.ToLower(isPrimaryStr) == "yes" || strings.ToLower(isPrimaryStr) == "y"
 
 					err = advisorController.UpdateAdvisorRole(uint(advisorId), isPrimary)
 					if err != nil {
