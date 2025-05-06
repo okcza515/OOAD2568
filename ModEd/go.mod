@@ -4,7 +4,6 @@ go 1.24.0
 
 require (
 	github.com/cockroachdb/errors v1.11.3
-	github.com/gin-gonic/gin v1.8.1
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4

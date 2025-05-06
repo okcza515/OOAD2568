@@ -1,4 +1,4 @@
-package main
+package menu
 
 import (
 	"ModEd/project/controller"
