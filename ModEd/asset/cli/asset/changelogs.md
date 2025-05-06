@@ -109,7 +109,11 @@ MEP-1012 Asset
 1. Refactor `Switch-Case hell` into a cooler hashmap in the following features:
    1. `HandlerStrategy`
    2. `MenuState`
+   3. A lot of `Observer`
 2. Add `SeedDataLoader` feature into `MigrationManager` using `Builder` DP.
-3. While keeping the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
+3. While keeping most of the old code runnable. Of course. (Open/Close Principle a.k.a. O in SOLID)
+4. 
 
 ### Actual New Feature
+1. Instrument `Delete`
+2. 
