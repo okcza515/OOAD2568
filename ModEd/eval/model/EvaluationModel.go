@@ -13,8 +13,8 @@ import (
 type Evaluation struct {
 	StudentCode    string
 	InstructorCode string
-	AssignmentID   *uint
-	QuizID         *uint
+	AssessmentID   uint
+	AssessmentType string // "assignment" or "quiz"
 	Score          uint
 	Comment        string
 	EvaluatedAt    time.Time
@@ -41,25 +41,16 @@ func LoadEvaluationsFromCSV(filePath string) ([]*Evaluation, error) {
 		}
 
 		score, _ := strconv.Atoi(record[4])
-		var assignmentID, quizID *uint
-		if record[2] != "" {
-			id, _ := strconv.ParseUint(record[2], 10, 32)
-			tmp := uint(id)
-			assignmentID = &tmp
-		}
-		if record[3] != "" {
-			id, _ := strconv.ParseUint(record[3], 10, 32)
-			tmp := uint(id)
-			quizID = &tmp
-		}
+		assessmentID, _ := strconv.ParseUint(record[2], 10, 32)
+		assessmentType := record[3]
 
 		evaluatedAt, _ := time.Parse(time.RFC3339, record[6])
 
 		evaluations = append(evaluations, &Evaluation{
 			StudentCode:    record[0],
 			InstructorCode: record[1],
-			AssignmentID:   assignmentID,
-			QuizID:         quizID,
+			AssessmentID:   uint(assessmentID),
+			AssessmentType: assessmentType,
 			Score:          uint(score),
 			Comment:        record[5],
 			EvaluatedAt:    evaluatedAt,
@@ -80,22 +71,14 @@ func SaveEvaluationsToCSV(filePath string, evaluations []*Evaluation) error {
 	defer writer.Flush()
 
 	// Write header
-	writer.Write([]string{"student_code", "instructor_code", "assignment_id", "quiz_id", "score", "comment", "evaluated_at"})
+	writer.Write([]string{"student_code", "instructor_code", "assessment_id", "assessment_type", "score", "comment", "evaluated_at"})
 
 	for _, e := range evaluations {
-		assignmentID := ""
-		quizID := ""
-		if e.AssignmentID != nil {
-			assignmentID = strconv.FormatUint(uint64(*e.AssignmentID), 10)
-		}
-		if e.QuizID != nil {
-			quizID = strconv.FormatUint(uint64(*e.QuizID), 10)
-		}
 		writer.Write([]string{
 			e.StudentCode,
 			e.InstructorCode,
-			assignmentID,
-			quizID,
+			strconv.FormatUint(uint64(e.AssessmentID), 10),
+			e.AssessmentType,
 			strconv.FormatUint(uint64(e.Score), 10),
 			e.Comment,
 			e.EvaluatedAt.Format(time.RFC3339),

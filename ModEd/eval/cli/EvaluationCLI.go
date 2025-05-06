@@ -13,23 +13,15 @@ import (
 )
 
 type EvaluationStrategy interface {
-	Evaluate(studentCode, instructorCode string, id uint, score uint, comment string)
+	Evaluate(studentCode, instructorCode string, assessmentID uint, assessmentType string, score uint, comment string)
 }
 
-type AssignmentEvaluation struct {
+type AssessmentEvaluation struct {
 	Controller *controller.EvaluationController
 }
 
-func (a *AssignmentEvaluation) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
-	a.Controller.EvaluateAssignment(studentCode, instructorCode, id, score, comment)
-}
-
-type QuizEvaluation struct {
-	Controller *controller.EvaluationController
-}
-
-func (q *QuizEvaluation) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
-	q.Controller.EvaluateQuiz(studentCode, instructorCode, id, score, comment)
+func (a *AssessmentEvaluation) Evaluate(studentCode, instructorCode string, assessmentID uint, assessmentType string, score uint, comment string) {
+	a.Controller.EvaluateAssessment(studentCode, instructorCode, assessmentID, assessmentType, score, comment)
 }
 
 type EvaluationContext struct {
@@ -40,13 +32,13 @@ func (c *EvaluationContext) SetStrategy(s EvaluationStrategy) {
 	c.Strategy = s
 }
 
-func (c *EvaluationContext) Evaluate(studentCode, instructorCode string, id uint, score uint, comment string) {
-	c.Strategy.Evaluate(studentCode, instructorCode, id, score, comment)
+func (c *EvaluationContext) Evaluate(studentCode, instructorCode string, assessmentID uint, assessmentType string, score uint, comment string) {
+	c.Strategy.Evaluate(studentCode, instructorCode, assessmentID, assessmentType, score, comment)
 }
 
-func evaluateGeneral(ec *controller.EvaluationController, evalType string) {
+func evaluateGeneral(ec *controller.EvaluationController, assessmentType string) {
 	var studentCode, instructorCode string
-	var id, score uint
+	var assessmentID, score uint
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -66,14 +58,10 @@ func evaluateGeneral(ec *controller.EvaluationController, evalType string) {
 		return
 	}
 
-	if evalType == "assignment" {
-		fmt.Print("AssignmentID: ")
-	} else if evalType == "quiz" {
-		fmt.Print("QuizID: ")
-	}
-	fmt.Scanln(&id)
-	if id == 0 {
-		fmt.Printf("%s ID cannot be zero.\n", strings.Title(evalType))
+	fmt.Printf("%sID: ", strings.Title(assessmentType))
+	fmt.Scanln(&assessmentID)
+	if assessmentID == 0 {
+		fmt.Printf("%s ID cannot be zero.\n", strings.Title(assessmentType))
 		return
 	}
 
@@ -85,13 +73,9 @@ func evaluateGeneral(ec *controller.EvaluationController, evalType string) {
 	comment = strings.TrimSpace(comment)
 
 	ctx := &EvaluationContext{}
-	if evalType == "assignment" {
-		ctx.SetStrategy(&AssignmentEvaluation{Controller: ec})
-	} else if evalType == "quiz" {
-		ctx.SetStrategy(&QuizEvaluation{Controller: ec})
-	}
-	ctx.Evaluate(studentCode, instructorCode, id, score, comment)
-	fmt.Printf("%s evaluated successfully.\n", strings.Title(evalType))
+	ctx.SetStrategy(&AssessmentEvaluation{Controller: ec})
+	ctx.Evaluate(studentCode, instructorCode, assessmentID, assessmentType, score, comment)
+	fmt.Printf("%s evaluated successfully.\n", strings.Title(assessmentType))
 }
 
 func RunEvaluationCLI(ec *controller.EvaluationController) {
@@ -123,13 +107,7 @@ func RunEvaluationCLI(ec *controller.EvaluationController) {
 
 func displayEvaluations(ec *controller.EvaluationController) {
 	for _, e := range ec.ListEvaluations() {
-		if e.AssignmentID != nil {
-			fmt.Printf("Assignment Evaluation || StudentID: %s | AssignmentID: %d | Score: %d | Comment: %s | Evaluated At: %s\n",
-				e.StudentCode, *e.AssignmentID, e.Score, e.Comment, e.EvaluatedAt.Format(time.RFC1123))
-		}
-		if e.QuizID != nil {
-			fmt.Printf("Quiz Evaluation || StudentID: %s | QuizID: %d | Score: %d | Comment: %s | Evaluated At: %s\n",
-				e.StudentCode, *e.QuizID, e.Score, e.Comment, e.EvaluatedAt.Format(time.RFC1123))
-		}
+		fmt.Printf("%s Evaluation || StudentID: %s | AssessmentID: %d | Score: %d | Comment: %s | Evaluated At: %s\n",
+			strings.Title(e.AssessmentType), e.StudentCode, e.AssessmentID, e.Score, e.Comment, e.EvaluatedAt.Format(time.RFC1123))
 	}
 }

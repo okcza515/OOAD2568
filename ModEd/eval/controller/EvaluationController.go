@@ -20,9 +20,9 @@ func NewEvaluationController(evals []*model.Evaluation, csvPath string) *Evaluat
 	}
 }
 
-func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode string, assignmentID uint, score uint, comment string) {
+func (ec *EvaluationController) EvaluateAssessment(studentCode, instructorCode string, assessmentID uint, assessmentType string, score uint, comment string) {
 	for _, e := range ec.evaluations {
-		if e.StudentCode == studentCode && e.AssignmentID != nil && *e.AssignmentID == assignmentID {
+		if e.StudentCode == studentCode && e.AssessmentID == assessmentID && e.AssessmentType == assessmentType {
 			e.Score = score
 			e.Comment = comment
 			e.EvaluatedAt = time.Now()
@@ -33,28 +33,8 @@ func (ec *EvaluationController) EvaluateAssignment(studentCode, instructorCode s
 	ec.evaluations = append(ec.evaluations, &model.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssignmentID:   &assignmentID,
-		Score:          score,
-		Comment:        comment,
-		EvaluatedAt:    time.Now(),
-	})
-	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
-}
-
-func (ec *EvaluationController) EvaluateQuiz(studentCode, instructorCode string, quizID uint, score uint, comment string) {
-	for _, e := range ec.evaluations {
-		if e.StudentCode == studentCode && e.QuizID != nil && *e.QuizID == quizID {
-			e.Score = score
-			e.Comment = comment
-			e.EvaluatedAt = time.Now()
-			model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
-			return
-		}
-	}
-	ec.evaluations = append(ec.evaluations, &model.Evaluation{
-		StudentCode:    studentCode,
-		InstructorCode: instructorCode,
-		QuizID:         &quizID,
+		AssessmentID:   assessmentID,
+		AssessmentType: assessmentType,
 		Score:          score,
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
