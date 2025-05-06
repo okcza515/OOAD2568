@@ -15,7 +15,7 @@ type HRMainMenuState struct {
 func (state *HRMainMenuState) HandleUserInput(input string) error {
 	err := state.handlerContext.HandleInput(input)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error invalid input, please try again")
 		return err
 	}
 
@@ -26,7 +26,6 @@ func (state *HRMainMenuState) Render() {
 	fmt.Println("=== HR Menu ===")
 	fmt.Println()
 	state.handlerContext.ShowMenu()
-	// implement the remaining menu options
 	fmt.Println("exit !")
 }
 

@@ -3,6 +3,7 @@ package menu
 import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
+	"ModEd/hr/model"
 	"fmt"
 )
 
@@ -27,12 +28,15 @@ func (a *StudentMenuState) Render() {
 
 func NewStudentMenuState(manager *cli.CLIMenuStateManager) *StudentMenuState {
 	handlerContext := handler.NewHandlerContext()
-	addMenu := &StudentMenuState{
+
+	addStudentHandler := handler.NewInsertHandlerStrategy[model.StudentInfo](nil)
+	listStudentHandler := handler.NewListHandlerStrategy[model.StudentInfo](nil)
+
+	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
+	handlerContext.AddHandler("2", "List student", listStudentHandler)
+
+	return &StudentMenuState{
 		manager:        manager,
 		handlerContext: handlerContext,
 	}
-
-	// implement
-
-	return addMenu
 }
