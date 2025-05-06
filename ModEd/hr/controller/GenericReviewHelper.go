@@ -1,13 +1,14 @@
 package controller
 
 import (
+	"ModEd/hr/model"
 	"fmt"
 	"strconv"
 )
 
 // Reviewable is any request that can be approved or rejected.
 type Reviewable interface {
-	ApplyStatus(action, reason string) error
+	ApplyStatus(action model.Action, reason string) error
 }
 
 type fetcher func(id uint) (Reviewable, error)
@@ -27,7 +28,11 @@ func ReviewRequest(
 	if err != nil {
 		return fmt.Errorf("failed to fetch request: %v", err)
 	}
-	if err := req.ApplyStatus(action, reason); err != nil {
+	parsedAction, err := model.ParseAction(action)
+	if err != nil {
+		return fmt.Errorf("invalid action: %v", err)
+	}
+	if err := req.ApplyStatus(parsedAction, reason); err != nil {
 		return err
 	}
 	if err := save(req); err != nil {

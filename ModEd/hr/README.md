@@ -182,41 +182,43 @@
         Status string `gorm:"default:Pending"`
       }
 
-      func (b *BaseStandardRequest) ApplyStatus(action, reason string) error {
-        switch action {
-        case "approve":
-          b.Status = action
-        case "reject":
-          b.Status = action
-          b.Reason = reason
-        default:
-          return fmt.Errorf("invalid action: %q", action)
-        }
-        return nil
+      // SetStatus implements RequestStatus.
+      func (b *BaseStandardRequest) SetStatus(status string) {
+        b.Status = status
       }
 
-      // BaseLeaveRequest holds fields common to Leave requests
-      type BaseLeaveRequest struct {
-        gorm.Model
-        Status    string `gorm:"default:Pending"`
-        LeaveType string
-        Reason    string `gorm:"type:text"`
-        LeaveDate time.Time
+      // SetReason implements RequestStatus.
+      func (b *BaseStandardRequest) SetReason(reason string) {
+        b.Reason = reason
       }
 
-      func (b *BaseLeaveRequest) ApplyStatus(action, reason string) error {
-        switch action {
-        case "approve":
-          b.Status = action
-        case "reject":
-          b.Status = action
-          b.Reason = reason
-        default:
-          return fmt.Errorf("invalid action: %q", action)
-        }
-        return nil
+      func (b *BaseStandardRequest) ApplyStatus(action Action, reason string) error {
+        return ApplyStatus(b, action, reason)
       }
     ```
+
+    - Using common handler to support both `BaseStandardRequest` and `BaseLeaveRequest`
+    ```go
+      // commonActionHandlers maps actions to their handler functions for any RequestStatus.
+      var commonActionHandlers = map[Action]func(RequestStatus, string){
+        ActionApprove: func(r RequestStatus, _ string) {
+          r.SetStatus("approve")
+        },
+        ActionReject: func(r RequestStatus, reason string) {
+          r.SetStatus("reject")
+          r.SetReason(reason)
+        },
+      }
+
+      // ApplyStatus updates the status on any RequestStatus using the common map.
+      func ApplyStatus(r RequestStatus, action Action, reason string) error {
+        if handler, ok := commonActionHandlers[action]; ok {
+          handler(r, reason)
+          return nil
+        }
+        return fmt.Errorf("invalid action: %v", action)
+      }
+    ``` 
 
     - When new types of requests are added that share common fields, they can embed the base struct, keeping instantiation logic and field consistent.
 
