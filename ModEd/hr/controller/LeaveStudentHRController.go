@@ -58,12 +58,16 @@ func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(studentID, leaveTyp
 	return tm.Execute(func(tx *gorm.DB) error {
 		leaveController := NewLeaveStudentHRController(tx)
 
-		factory, err := model.GetFactory(0)
-		if err != nil {
-			return fmt.Errorf("failed to get student factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:        studentID,
+			LeaveType: leaveType,
+			Reason:    reason,
+			DateStr:   leaveDateStr,
 		}
 
-		reqInterface, err := factory.CreateLeave(studentID, leaveType, reason, leaveDateStr)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeLeave, params)
 		if err != nil {
 			return fmt.Errorf("failed to create leave request using factory: %v", err)
 		}

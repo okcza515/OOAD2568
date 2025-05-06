@@ -56,22 +56,25 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 	return tm.Execute(func(tx *gorm.DB) error {
 		raiseController := NewRaiseHRController(tx)
 
-		factory, err := model.GetFactory(1)
-		if err != nil {
-			return fmt.Errorf("failed to get factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:           instructorID,
+			Reason:       reason,
+			TargetSalary: amount,
 		}
 
-		requestObj, err := factory.CreateRaise(instructorID, reason, amount)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeLeave, params)
 		if err != nil {
-			return fmt.Errorf("failed to create raise request using factory: %v", err)
+			return fmt.Errorf("failed to create raise request: %v", err)
 		}
 
-		request, ok := requestObj.(*model.RequestRaiseInstructor)
+		req, ok := reqInterface.(*model.RequestRaiseInstructor)
 		if !ok {
-			return fmt.Errorf("factory returned unexpected type for raise request")
+			return fmt.Errorf("failed to cast request to RequestRaiseInstructor")
 		}
 
-		if err := raiseController.insert(request); err != nil {
+		if err := raiseController.insert(req); err != nil {
 			return fmt.Errorf("failed to submit raise request: %v", err)
 		}
 		return nil

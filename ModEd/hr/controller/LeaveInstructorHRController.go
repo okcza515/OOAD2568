@@ -57,23 +57,27 @@ func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID,
 
 		leaveController := NewLeaveInstructorHRController(tx)
 
-		factory, err := model.GetFactory(1)
-		if err != nil {
-			return fmt.Errorf("failed to get instructor factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:        instructorID,
+			LeaveType: leaveType,
+			Reason:    reason,
+			DateStr:   leaveDateStr,
 		}
 
-		reqInterface, err := factory.CreateLeave(instructorID, leaveType, reason, leaveDateStr)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeLeave, params)
 		if err != nil {
-			return fmt.Errorf("failed to create leave request using factory: %v", err)
+			return fmt.Errorf("failed to create leave request using factory: %w", err)
 		}
 
 		req, ok := reqInterface.(*model.RequestLeaveInstructor)
 		if !ok {
-			return fmt.Errorf("factory returned unexpected type for instructor leave request")
+			return fmt.Errorf("factory returned unexpected type for instructor leave request, got %T", reqInterface)
 		}
 
 		if err := leaveController.insert(req); err != nil {
-			return fmt.Errorf("failed to submit leave request within transaction: %v", err)
+			return fmt.Errorf("failed to submit leave request within transaction: %w", err)
 		}
 
 		return nil

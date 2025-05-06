@@ -47,12 +47,14 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 	return tm.Execute(func(tx *gorm.DB) error {
 		studentController := NewResignationStudentHRController(tx)
 
-		factory, err := model.GetFactory(0)
-		if err != nil {
-			return fmt.Errorf("failed to get student factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:     studentID,
+			Reason: reason,
 		}
 
-		reqInterface, err := factory.CreateResignation(studentID, reason)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleStudent, model.RequestTypeResignation, params)
 		if err != nil {
 			return fmt.Errorf("failed to create resignation request using factory: %v", err)
 		}

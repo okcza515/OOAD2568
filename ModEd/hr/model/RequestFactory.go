@@ -5,93 +5,7 @@ import (
 	"time"
 )
 
-// AbstractFactory interface
-type AbstractFactory interface {
-	CreateLeave(id, leaveType, reason, dateStr string) (interface{}, error)
-	CreateResignation(id, reason string) (interface{}, error)
-	CreateRaise(id, reason string, targetSalary int) (interface{}, error)
-}
-
-// Concrete factories implementing the AbstractFactory interface
-type StudentFactory struct{}
-
-// CreateLeave creates a leave request for a student
-func (StudentFactory) CreateLeave(id, leaveType, reason, dateStr string) (interface{}, error) {
-	t, err := time.Parse("02-01-2006", dateStr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid date: %w", err)
-	}
-	// Initialize embedded BaseLeaveRequest and specific fields
-	return &RequestLeaveStudent{
-		BaseLeaveRequest: BaseLeaveRequest{
-			Status:    "Pending",
-			LeaveType: leaveType,
-			Reason:    reason,
-			LeaveDate: t,
-		},
-		StudentCode: id,
-	}, nil
-}
-
-func (StudentFactory) CreateResignation(id, reason string) (interface{}, error) {
-	// Initialize embedded BaseStandardRequest and specific fields
-	return &RequestResignationStudent{
-		BaseStandardRequest: BaseStandardRequest{
-			Reason: reason,
-			Status: "Pending",
-		},
-		StudentCode: id,
-	}, nil
-}
-
-func (StudentFactory) CreateRaise(id, reason string, targetSalary int) (interface{}, error) {
-	return nil, fmt.Errorf("students cannot request a raise")
-}
-
-// Concrete factories implementing the AbstractFactory interface
-type InstructorFactory struct{}
-
-// CreateLeave creates a leave request for an instructor
-func (InstructorFactory) CreateLeave(id, leaveType, reason, dateStr string) (interface{}, error) {
-	t, err := time.Parse("02-01-2006", dateStr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid date: %w", err)
-	}
-	// Initialize embedded BaseLeaveRequest and specific fields
-	return &RequestLeaveInstructor{
-		BaseLeaveRequest: BaseLeaveRequest{
-			Status:    "Pending",
-			LeaveType: leaveType,
-			Reason:    reason,
-			LeaveDate: t,
-		},
-		InstructorCode: id,
-	}, nil
-}
-
-func (InstructorFactory) CreateResignation(id, reason string) (interface{}, error) {
-	// Initialize embedded BaseStandardRequest and specific fields
-	return &RequestResignationInstructor{
-		BaseStandardRequest: BaseStandardRequest{
-			Reason: reason,
-			Status: "Pending",
-		},
-		InstructorCode: id,
-	}, nil
-}
-
-func (InstructorFactory) CreateRaise(id, reason string, targetSalary int) (interface{}, error) {
-	// Initialize embedded BaseStandardRequest and specific fields
-	return &RequestRaiseInstructor{
-		BaseStandardRequest: BaseStandardRequest{
-			Reason: reason,
-			Status: "Pending",
-		},
-		InstructorCode: id,
-		TargetSalary:   targetSalary,
-	}, nil
-}
-
+// Role defines the type of user making a request.
 type Role int
 
 const (
@@ -99,14 +13,145 @@ const (
 	RoleInstructor
 )
 
-// GetFactory returns the appropriate factory based on the role provided
-func GetFactory(role Role) (AbstractFactory, error) {
-	factories := map[Role]AbstractFactory{
-		RoleStudent:    StudentFactory{},
-		RoleInstructor: InstructorFactory{},
+type RequestType int
+
+// RequestType defines the type of request.
+const (
+	RequestTypeLeave RequestType = iota
+	RequestTypeResignation
+	RequestTypeRaise
+)
+
+// CreateRequestParams holds the parameters for creating a request.
+type CreateRequestParams struct {
+	ID           string
+	LeaveType    string // For Leave
+	Reason       string
+	DateStr      string // For Leave (format "02-01-2006")
+	TargetSalary int    // For Raise
+}
+
+// requestCreator defines a function signature for creating a specific request.
+type requestCreator func(params CreateRequestParams) (interface{}, error)
+
+// --- Student Request Creators ---
+
+func createStudentLeaveRequest(params CreateRequestParams) (interface{}, error) {
+	if params.LeaveType == "" || params.Reason == "" || params.DateStr == "" {
+		return nil, fmt.Errorf("missing parameters for student leave request (LeaveType, Reason, DateStr are required)")
 	}
-	if factory, ok := factories[role]; ok {
-		return factory, nil
+	t, err := time.Parse("02-01-2006", params.DateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid date format for student leave request ('%s'): %w", params.DateStr, err)
 	}
-	return nil, fmt.Errorf("unknown role %v", role)
+	return &RequestLeaveStudent{
+		BaseLeaveRequest: BaseLeaveRequest{
+			Status:    "Pending",
+			LeaveType: params.LeaveType,
+			Reason:    params.Reason,
+			LeaveDate: t,
+		},
+		StudentCode: params.ID,
+	}, nil
+}
+
+func createStudentResignationRequest(params CreateRequestParams) (interface{}, error) {
+	if params.Reason == "" {
+		return nil, fmt.Errorf("missing Reason parameter for student resignation request")
+	}
+	return &RequestResignationStudent{
+		BaseStandardRequest: BaseStandardRequest{
+			Reason: params.Reason,
+			Status: "Pending",
+		},
+		StudentCode: params.ID,
+	}, nil
+}
+
+func createStudentRaiseRequest(params CreateRequestParams) (interface{}, error) {
+	return nil, fmt.Errorf("students cannot request a raise")
+}
+
+// --- Instructor Request Creators ---
+
+func createInstructorLeaveRequest(params CreateRequestParams) (interface{}, error) {
+	if params.LeaveType == "" || params.Reason == "" || params.DateStr == "" {
+		return nil, fmt.Errorf("missing parameters for instructor leave request (LeaveType, Reason, DateStr are required)")
+	}
+	t, err := time.Parse("02-01-2006", params.DateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid date format for instructor leave request ('%s'): %w", params.DateStr, err)
+	}
+	return &RequestLeaveInstructor{
+		BaseLeaveRequest: BaseLeaveRequest{
+			Status:    "Pending",
+			LeaveType: params.LeaveType,
+			Reason:    params.Reason,
+			LeaveDate: t,
+		},
+		InstructorCode: params.ID,
+	}, nil
+}
+
+func createInstructorResignationRequest(params CreateRequestParams) (interface{}, error) {
+	if params.Reason == "" {
+		return nil, fmt.Errorf("missing Reason parameter for instructor resignation request")
+	}
+	return &RequestResignationInstructor{
+		BaseStandardRequest: BaseStandardRequest{
+			Reason: params.Reason,
+			Status: "Pending",
+		},
+		InstructorCode: params.ID,
+	}, nil
+}
+
+func createInstructorRaiseRequest(params CreateRequestParams) (interface{}, error) {
+	if params.Reason == "" {
+		return nil, fmt.Errorf("missing Reason parameter for instructor raise request")
+	}
+	return &RequestRaiseInstructor{
+		BaseStandardRequest: BaseStandardRequest{
+			Reason: params.Reason,
+			Status: "Pending",
+		},
+		InstructorCode: params.ID,
+		TargetSalary:   params.TargetSalary,
+	}, nil
+}
+
+// requestCreatorsByRole holds all request creation functions, keyed by Role and then by RequestType.
+var requestCreatorsByRole = map[Role]map[RequestType]requestCreator{
+	RoleStudent: {
+		RequestTypeLeave:       createStudentLeaveRequest,
+		RequestTypeResignation: createStudentResignationRequest,
+		RequestTypeRaise:       createStudentRaiseRequest,
+	},
+	RoleInstructor: {
+		RequestTypeLeave:       createInstructorLeaveRequest,
+		RequestTypeResignation: createInstructorResignationRequest,
+		RequestTypeRaise:       createInstructorRaiseRequest,
+	},
+}
+
+// RequestFactory is a unified factory for creating various types of requests.
+type RequestFactory struct{}
+
+// CreateRequest creates a specific request object based on the role, request type, and parameters.
+func (f RequestFactory) CreateRequest(role Role, requestType RequestType, params CreateRequestParams) (interface{}, error) {
+	if params.ID == "" {
+		return nil, fmt.Errorf("ID parameter is required")
+	}
+
+	roleSpecificCreators, ok := requestCreatorsByRole[role]
+	if !ok {
+		return nil, fmt.Errorf("unknown role: %v", role)
+	}
+
+	creator, ok := roleSpecificCreators[requestType]
+	if !ok {
+		return nil, fmt.Errorf("unknown request type '%v' for role %v", requestType, role)
+	}
+
+	return creator(params)
 }
