@@ -41,9 +41,7 @@ func (menu *SupplyLogMenuState) Render() {
 	fmt.Println()
 	fmt.Println("Supply Management")
 	fmt.Println("Your options are...")
-	fmt.Println()
-	fmt.Println("  1:\tList all SupplyLog")
-	fmt.Println("  back:\tBack to main menu")
+	menu.handlerContext.ShowMenu()
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }

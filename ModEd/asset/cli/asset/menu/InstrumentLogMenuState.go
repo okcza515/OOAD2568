@@ -42,10 +42,7 @@ func (menu *InstrumentLogMenuState) Render() {
 	fmt.Println()
 	fmt.Println("Instrument Log Management")
 	fmt.Println("Your options are...")
-	fmt.Println()
-	fmt.Println("   1:\tList all Instrument Log")
-	fmt.Println("   2:\tGet detail of an Instrument Log")
-	fmt.Println("  back:\tBack to main menu")
+	menu.handlerContext.ShowMenu()
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
