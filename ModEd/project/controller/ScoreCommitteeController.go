@@ -17,11 +17,3 @@ func NewScoreCommitteeController[T core.RecordInterface](db *gorm.DB) *ScoreComm
 		BaseController: core.NewBaseController[T](db),
 	}
 }
-
-func (c *ScoreCommitteeController[T]) ListAllCommitteeScores() ([]T, error) {
-	return c.List(nil)
-}
-
-func (c *ScoreCommitteeController[T]) ListCommitteeScoresByCondition(condition string, value interface{}) ([]T, error) {
-	return c.List(map[string]interface{}{condition: value})
-}

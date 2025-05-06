@@ -2,7 +2,9 @@ package cli
 
 import (
 	controllerProgress "ModEd/eval/controller"
+
 	evalModel "ModEd/eval/model"
+
 	util "ModEd/eval/util"
 
 	"fmt"
@@ -97,7 +99,6 @@ func handleQuizProgress(controller *controllerProgress.ProgressController) {
 	}
 }
 
-// Helper function to get assessment type and ID
 func getAssessmentTypeAndID() (evalModel.AssessmentType, uint, error) {
 	fmt.Println("\nSelect Assessment Type:")
 	fmt.Println("1. Assignment")
@@ -136,7 +137,7 @@ func DisplayAllProgress(controller *controllerProgress.ProgressController) {
 		return
 	}
 
-	progressList, err := controller.GetProgressByType(assessmentType, id)
+	progressList, err := controller.GetAllProgressByType(assessmentType, id)
 	if err != nil {
 		fmt.Println("Error fetching data:", err)
 		return
@@ -153,7 +154,7 @@ func DisplayProgressByStudentCode(controller *controllerProgress.ProgressControl
 
 	studentCode := util.PromptString("Enter Student Code: ")
 
-	progressList, err := controller.GetProgressByTypeAndStudent(assessmentType, id, studentCode)
+	progressList, err := controller.GetProgressByStudentCode(assessmentType, id, studentCode)
 	if err != nil {
 		fmt.Println("Error fetching data:", err)
 		return
@@ -177,7 +178,6 @@ func DisplayProgressByStatus(controller *controllerProgress.ProgressController) 
 	fmt.Println("Status options: completed, in_progress, not_started")
 	status := util.PromptString("Enter status: ")
 
-	// Validate status
 	validStatuses := map[string]bool{
 		"completed":   true,
 		"in_progress": true,
@@ -189,7 +189,7 @@ func DisplayProgressByStatus(controller *controllerProgress.ProgressController) 
 		return
 	}
 
-	progressList, err := controller.GetProgressByTypeAndStatus(assessmentType, id, evalModel.AssessmentStatus(status))
+	progressList, err := controller.GetProgressByStatus(assessmentType, id, evalModel.AssessmentStatus(status))
 	if err != nil {
 		fmt.Println("Error fetching data:", err)
 		return
@@ -216,9 +216,6 @@ func DisplayProgressList(progressList []controllerProgress.Progress) {
 		fmt.Printf("Assessment ID: %d | Status: %s\n", p.AssessmentId, p.Status)
 		fmt.Printf("Last Update: %v | Total Submit: %d\n",
 			p.LastUpdate.Format("2006-01-02 15:04:05"), p.TotalSubmit)
-		if p.Score > 0 {
-			fmt.Printf("Score: %.2f\n", p.Score)
-		}
 		fmt.Println()
 	}
 }

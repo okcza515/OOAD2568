@@ -5,7 +5,6 @@ import (
 	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func BuildCommitteeMenu(
@@ -20,31 +19,19 @@ func BuildCommitteeMenu(
 					io.Println("Adding Committee Member...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
-					projectIdStr, err := io.ReadInput()
-					if err != nil || projectIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					projectId, err := strconv.Atoi(projectIdStr)
+					projectId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID format.")
 						return
 					}
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")
-					instructorIdStr, err := io.ReadInput()
-					if err != nil || instructorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					instructorId, err := strconv.Atoi(instructorIdStr)
+					instructorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Instructor ID format.")
 						return
 					}
 
 					committee := &model.Committee{
-						SeniorProjectId: uint(projectId),
+						SeniorProjectId: projectId,
 						InstructorId:    instructorId,
 					}
 
@@ -62,14 +49,8 @@ func BuildCommitteeMenu(
 					io.Println("Listing Committee Members by Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
-					projectIdStr, err := io.ReadInput()
-					if err != nil || projectIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					projectId, err := strconv.Atoi(projectIdStr)
+					projectId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID format.")
 						return
 					}
 
@@ -96,14 +77,8 @@ func BuildCommitteeMenu(
 					io.Println("Listing Projects by Committee Member...")
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")
-					instructorIdStr, err := io.ReadInput()
-					if err != nil || instructorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					instructorId, err := strconv.Atoi(instructorIdStr)
+					instructorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Instructor ID format.")
 						return
 					}
 
@@ -119,9 +94,7 @@ func BuildCommitteeMenu(
 					}
 
 					io.Println(fmt.Sprintf("Projects for Instructor ID %v as Committee Member:", instructorId))
-					for _, c := range committees {
-						io.Println(fmt.Sprintf("Committee ID: %v, Project ID: %v", c.ID, c.SeniorProjectId))
-					}
+					io.PrintTableFromSlice(committees, []string{"ID", "SeniorProjectId"})
 				},
 			},
 			{
@@ -130,18 +103,12 @@ func BuildCommitteeMenu(
 					io.Println("Removing Committee Member...")
 
 					io.Print("Enter Committee ID (-1 to cancel): ")
-					committeeIdStr, err := io.ReadInput()
-					if err != nil || committeeIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					committeeId, err := strconv.Atoi(committeeIdStr)
+					committeeId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Committee ID format.")
 						return
 					}
 
-					err = committeeController.RemoveCommittee(committeeId)
+					err = committeeController.DeleteByID(committeeId)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error removing committee member: %v", err))
 					} else {

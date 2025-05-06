@@ -6,7 +6,7 @@ import (
 
 type Committee struct {
 	gorm.Model
-	InstructorId    int `gorm:"type:text;not null;index"`
+	InstructorId    uint `gorm:"type:text;not null;index"`
 	SeniorProjectId uint
 	SeniorProject   SeniorProject `gorm:"foreignKey:SeniorProjectId"`
 }

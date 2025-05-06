@@ -4,9 +4,6 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func BuildAssignmentMenu(assignmentController *controller.AssignmentController) *utils.MenuItem {
@@ -16,7 +13,7 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 			{
 				Title: "View All Assignments",
 				Action: func(io *utils.MenuIO) {
-					assignments, err := assignmentController.ListAllAssignments()
+					assignments, err := assignmentController.List(map[string]interface{}{})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error retrieving assignments: %v", err))
 						return
@@ -25,41 +22,32 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 						io.Println("No assignments found.")
 						return
 					}
-					for _, a := range assignments {
-						io.Println(fmt.Sprintf("ID: %d | Project ID: %d | Name: %s | Due: %s", a.ID, a.SeniorProjectId, a.Name, a.DueDate.Format("2006-01-02")))
-					}
+					io.PrintTableFromSlice(assignments, []string{"ID", "SeniorProjectId", "Name", "DueDate"})
 				},
 			},
 			{
 				Title: "Add New Assignment",
 				Action: func(io *utils.MenuIO) {
 					io.Print("Enter Senior Project ID: ")
-					projectIDInput, _ := io.ReadInput()
-					projectIDInput = strings.TrimSpace(projectIDInput)
-					projectID, err := strconv.Atoi(projectIDInput)
+					projectID, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID.")
 						return
 					}
 
 					io.Print("Enter Assignment Name: ")
 					name, _ := io.ReadInput()
-					name = strings.TrimSpace(name)
 
 					io.Print("Enter Assignment Description: ")
 					description, _ := io.ReadInput()
-					description = strings.TrimSpace(description)
 
 					io.Print("Enter Due Date (YYYY-MM-DD): ")
-					dueInput, _ := io.ReadInput()
-					dueInput = strings.TrimSpace(dueInput)
-					dueDate, err := time.Parse("2006-01-02", dueInput)
+					dueDate, err := io.ReadInputTime()
 					if err != nil {
 						io.Println("Invalid date format.")
 						return
 					}
 
-					_, err = assignmentController.InsertAssignment(uint(projectID), name, description, dueDate)
+					_, err = assignmentController.InsertAssignment(projectID, name, description, dueDate)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error adding assignment: %v", err))
 					} else {
@@ -71,14 +59,12 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 				Title: "Delete Assignment",
 				Action: func(io *utils.MenuIO) {
 					io.Print("Enter Assignment ID to delete: ")
-					idInput, _ := io.ReadInput()
-					id, err := strconv.Atoi(strings.TrimSpace(idInput))
+					id, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Assignment ID.")
 						return
 					}
 
-					err = assignmentController.DeleteAssignment(uint(id))
+					err = assignmentController.DeleteAssignment(id)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error deleting assignment: %v", err))
 					} else {

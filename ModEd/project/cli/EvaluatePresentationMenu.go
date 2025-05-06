@@ -21,37 +21,24 @@ func BuildEvaluatePresentationMenu(
 					io.Println("Evaluating Presentation for Advisor...")
 
 					io.Print("Enter Presentation ID (-1 to cancel): ")
-					presentationIdStr, err := io.ReadInput()
-					if err != nil || presentationIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					presentationId, err := strconv.Atoi(presentationIdStr)
+					presentationId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Presentation ID.")
 						return
 					}
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
-					advisorIdStr, err := io.ReadInput()
-					if err != nil || advisorIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					advisorId, err := strconv.Atoi(advisorIdStr)
+					advisorId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Advisor ID.")
 						return
 					}
 
 					io.Print("Enter Score (0.0 - 100.0): ")
-					scoreStr, err := io.ReadInput()
+					score, err := io.ReadInputFloat()
 					if err != nil {
-						io.Println("Cancelled.")
 						return
 					}
-					score, err := strconv.ParseFloat(scoreStr, 64)
-					if err != nil || score < 0 || score > 100 {
+
+					if score < 0 || score > 100 {
 						io.Println("Invalid Score. Must be between 0.0 and 100.0.")
 						return
 					}
@@ -98,70 +85,60 @@ func BuildEvaluatePresentationMenu(
 					}
 
 					io.Print("Enter Score (0.0 - 100.0): ")
-					scoreStr, err := io.ReadInput()
+					score, err := io.ReadInputFloat()
 					if err != nil {
-						io.Println("Cancelled.")
 						return
 					}
-					score, err := strconv.ParseFloat(scoreStr, 64)
-					if err != nil || score < 0 || score > 100 {
+					if score < 0 || score > 100 {
 						io.Println("Invalid Score. Must be between 0.0 and 100.0.")
 						return
 					}
 
-					newScore := &model.ScorePresentationCommittee{
+					if err := scorePresentationCommitteeController.Insert(&model.ScorePresentationCommittee{
 						PresentationId: uint(presentationId),
 						CommitteeId:    uint(committeeId),
 						Score:          score,
-					}
-					if err := scorePresentationCommitteeController.Insert(newScore); err != nil {
+					}); err != nil {
 						io.Println(fmt.Sprintf("Failed to insert committee score: %v", err))
 					} else {
 						io.Println("Committee score submitted successfully!")
 					}
 				},
-				},
+			},
 			{
 				Title: "Check Score",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Checking Scores for Presentation...")
 
 					io.Print("Enter Presentation ID (-1 to cancel): ")
-					presentationIdStr, err := io.ReadInput()
-					if err != nil || presentationIdStr == "-1" {
-						io.Println("Cancelled.")
-						return
-					}
-					presentationId, err := strconv.Atoi(presentationIdStr)
+					presentationId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Presentation ID.")
+						io.Println("Cancelled.")
 						return
 					}
 
 					// Fetch advisor scores
-					advisorScores, err := scorePresentationAdvisorController.ListAdvisorScoresByCondition("presentation_id", presentationId)
+					advisorScores, err := scorePresentationAdvisorController.List(map[string]interface{}{
+						"presentation_id": presentationId,
+					})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error fetching advisor scores: %v", err))
 					} else if len(advisorScores) == 0 {
 						io.Println("No advisor scores found for this presentation.")
 					} else {
 						io.Println("Advisor Scores:")
-						for _, score := range advisorScores {
-							io.Println(fmt.Sprintf("Advisor ID: %d, Score: %.2f", score.AdvisorId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"AdvisorId", "Score"})
 					}
 
 					// Fetch committee scores
-					committeeScores, err := scorePresentationCommitteeController.ListCommitteeScoresByCondition("presentation_id", presentationId)
+					committeeScores, err := scorePresentationCommitteeController.List(map[string]interface{}{"presentation_id": presentationId})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error fetching committee scores: %v", err))
 					} else if len(committeeScores) == 0 {
 						io.Println("No committee scores found for this presentation.")
 					} else {
 						io.Println("Committee Scores:")
-						for _, score := range committeeScores {
-							io.Println(fmt.Sprintf("Committee ID: %d, Score: %.2f", score.CommitteeId, score.Score))
-						}
+						io.PrintTableFromSlice(advisorScores, []string{"CommitteeId", "Score"})
 					}
 				},
 			},

@@ -83,7 +83,10 @@ func (ps PermanentSchedule) ToString() string {
 	}
 
 	// Section
-	section := ps.Class.Section
+	section := ps.ClassId
+	// if ps.Class.Name != "" {
+	// 	section = ps.Class.Name
+	// }
 
 	dataRow := fmt.Sprintf("| %-*d | %-*d | %-*s | %-*s | %-*s | %-*s | %-*d |",
 		idWidth, ps.ID,

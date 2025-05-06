@@ -15,7 +15,7 @@ const (
 	VALIDATE_EMAIL    ModelValidtorEnum = "email"
 	VALIDATE_NUMERIC  ModelValidtorEnum = "numeric"
 	VALIDATE_UINT     ModelValidtorEnum = "uint"
-	VALIDATE_DATE     ModelValidtorEnum = "date"
+	VALIDATE_DATETIME ModelValidtorEnum = "datetime"
 	VALIDATE_PHONE    ModelValidtorEnum = "phone"
 )
 
@@ -44,8 +44,7 @@ func NewModelValidator() *ModelValidator {
 		modelValidatorInstance.validateTag[VALIDATE_REQUIRED] = modelValidatorInstance.validator.IsStringNotEmpty
 		modelValidatorInstance.validateTag[VALIDATE_NUMERIC] = modelValidatorInstance.validator.IsNumberValid
 		modelValidatorInstance.validateTag[VALIDATE_UINT] = modelValidatorInstance.validator.IsUintValid
-		// modelValidatorInstance.validateTag[VALIDATE_DATE] = modelValidatorInstance.validator.IsDate
-		// modelValidatorInstance.validateTag[VALIDATE_TIME] = modelValidatorInstance.validator.IsTime
+		modelValidatorInstance.validateTag[VALIDATE_DATETIME] = modelValidatorInstance.validator.IsDateTimeValid
 	}
 	return modelValidatorInstance
 

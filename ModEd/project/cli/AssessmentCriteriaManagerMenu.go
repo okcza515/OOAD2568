@@ -4,7 +4,6 @@ import (
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func BuildAssessmentCriteriaManagerMenu(
@@ -54,7 +53,7 @@ func defineAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Println("Listing All Assessment Criteria...")
-		criteriaList, err := ctrl.ListAllAssessmentCriterias()
+		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {
 			io.Println(fmt.Sprintf("Error listing criteria: %v", err))
 			return
@@ -63,16 +62,14 @@ func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fu
 			io.Println("No assessment criteria found.")
 			return
 		}
-		for _, c := range criteriaList {
-			io.Println(fmt.Sprintf("ID: %v, Name: %v", c.ID, c.CriteriaName))
-		}
+		io.PrintTableFromSlice(criteriaList, []string{"ID", "CriteriaName"})
 	}
 }
 
 func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Println("All Criteria:")
-		criteriaList, err := ctrl.ListAllAssessmentCriterias()
+		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {
 			io.Println(fmt.Sprintf("Error retrieving criteria list: %v", err))
 			return
@@ -82,14 +79,8 @@ func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 		}
 
 		io.Print("Enter Criteria ID to update (-1 to cancel): ")
-		input, _ := io.ReadInput()
-		if input == "-1" {
-			io.Println("Cancelled.")
-			return
-		}
-		id, err := strconv.Atoi(input)
+		id, err := io.ReadInputID()
 		if err != nil {
-			io.Println("Invalid ID.")
 			return
 		}
 
@@ -119,7 +110,7 @@ func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 func deleteAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
 	return func(io *utils.MenuIO) {
 		io.Println("All Criteria:")
-		criteriaList, err := ctrl.ListAllAssessmentCriterias()
+		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {
 			io.Println(fmt.Sprintf("Error listing criteria: %v", err))
 			return
@@ -129,18 +120,12 @@ func deleteAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 		}
 
 		io.Print("Enter Criteria ID to delete (-1 to cancel): ")
-		input, _ := io.ReadInput()
-		if input == "-1" {
-			io.Println("Cancelled.")
-			return
-		}
-		id, err := strconv.Atoi(input)
+		id, err := io.ReadInputID()
 		if err != nil {
-			io.Println("Invalid ID.")
 			return
 		}
 
-		err = ctrl.DeleteAssessmentCriteria(uint(id))
+		err = ctrl.DeleteAssessmentCriteria(id)
 		if err != nil {
 			io.Println(fmt.Sprintf("Error deleting criteria: %v", err))
 		} else {
