@@ -5,7 +5,6 @@ import (
 	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
-	"strconv"
 )
 
 func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *utils.MenuItem {
@@ -16,7 +15,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 				Title: "View All Group Members",
 				Action: func(io *utils.MenuIO) {
 					io.Println("Listing All Group Members...")
-					members, err := groupMemberController.ListAllGroupMembers()
+					members, err := groupMemberController.List(map[string]interface{}{})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error: %v", err))
 						return
@@ -25,27 +24,21 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 						io.Println("No group members found.")
 						return
 					}
-					for _, m := range members {
-						io.Println(fmt.Sprintf("ID: %d, Student ID: %d, Project ID: %d", m.ID, m.StudentId, m.SeniorProjectId))
-					}
+					io.PrintTableFromSlice(members, []string{"ID", "StudentId", "SeniorProjectId"})
 				},
 			},
 			{
 				Title: "Add Group Member",
 				Action: func(io *utils.MenuIO) {
 					io.Print("Enter Student ID (number): ")
-					studentIdStr, _ := io.ReadInput()
-					studentId, err := strconv.ParseUint(studentIdStr, 10, 32)
+					studentId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Student ID.")
 						return
 					}
 
 					io.Print("Enter Senior Project ID: ")
-					projectIdStr, _ := io.ReadInput()
-					projectId, err := strconv.ParseUint(projectIdStr, 10, 32)
+					projectId, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid Project ID.")
 						return
 					}
 
@@ -54,7 +47,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 						SeniorProjectId: uint(projectId),
 					}
 
-					if err := groupMemberController.InsertGroupMember(member); err != nil {
+					if err := groupMemberController.Insert(member); err != nil {
 						io.Println(fmt.Sprintf("Error adding group member: %v", err))
 					} else {
 						io.Println("Group member added successfully.")
@@ -65,42 +58,29 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 				Title: "Update Group Member",
 				Action: func(io *utils.MenuIO) {
 					io.Print("Enter Group Member ID to update: ")
-					idStr, _ := io.ReadInput()
-					id, err := strconv.ParseUint(idStr, 10, 32)
-					if err != nil {
-						io.Println("Invalid ID.")
-						return
-					}
+					id, _ := io.ReadInputID()
 
-					member, err := groupMemberController.RetrieveGroupMember(uint(id))
+					member, err := groupMemberController.RetrieveByID(id)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error retrieving group member: %v", err))
 						return
 					}
 
 					io.Print(fmt.Sprintf("Current Student ID (%d): ", member.StudentId))
-					newStudentIdStr, _ := io.ReadInput()
-					if newStudentIdStr != "" {
-						newStudentId, err := strconv.ParseUint(newStudentIdStr, 10, 32)
-						if err != nil {
-							io.Println("Invalid Student ID.")
-							return
-						}
-						member.StudentId = uint(newStudentId)
+					newStudentId, err := io.ReadInputID()
+					if err != nil {
+						return
 					}
+					member.StudentId = newStudentId
 
 					io.Print(fmt.Sprintf("Current Project ID (%d): ", member.SeniorProjectId))
-					newProjectIdStr, _ := io.ReadInput()
-					if newProjectIdStr != "" {
-						newProjectId, err := strconv.ParseUint(newProjectIdStr, 10, 32)
-						if err != nil {
-							io.Println("Invalid Project ID.")
-							return
-						}
-						member.SeniorProjectId = uint(newProjectId)
+					newProjectId, err := io.ReadInputID()
+					if err != nil {
+						return
 					}
+					member.SeniorProjectId = newProjectId
 
-					if err := groupMemberController.UpdateGroupMember(member); err != nil {
+					if err := groupMemberController.UpdateByID(member); err != nil {
 						io.Println(fmt.Sprintf("Error updating member: %v", err))
 					} else {
 						io.Println("Group member updated.")
@@ -111,14 +91,12 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 				Title: "Delete Group Member",
 				Action: func(io *utils.MenuIO) {
 					io.Print("Enter Group Member ID to delete: ")
-					idStr, _ := io.ReadInput()
-					id, err := strconv.ParseUint(idStr, 10, 32)
+					id, err := io.ReadInputID()
 					if err != nil {
-						io.Println("Invalid ID.")
 						return
 					}
 
-					err = groupMemberController.DeleteGroupMember(uint(id))
+					err = groupMemberController.DeleteByID(id)
 					if err != nil {
 						io.Println(fmt.Sprintf("Error deleting member: %v", err))
 					} else {
