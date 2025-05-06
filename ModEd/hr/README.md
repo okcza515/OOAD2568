@@ -264,6 +264,3 @@
 
 ### Issues
 
-- Who can implement function inside core module?
-- What is the criteria for the function to be inside core module?
-- Should there be a documentation for every core module implementation?
