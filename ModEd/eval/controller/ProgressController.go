@@ -53,12 +53,12 @@ func NewProgressController(db *gorm.DB) *ProgressController {
 	return &ProgressController{db: db}
 }
 
-func (controller *ProgressController) GetAssessmentsByType(assessmentType evalModel.AssessmentType) ([]evalModel.Assessment, error) {
-	var assessments []evalModel.Assessment
-	if err := controller.db.Where("type = ?", assessmentType).Find(&assessments).Error; err != nil {
-		return nil, fmt.Errorf("error getting %s list: %v", assessmentType, err)
+func (controller *ProgressController) GetAssessmentsByType(AssessmentType evalModel.AssessmentType) ([]evalModel.Assessment, error) {
+	var Assessments []evalModel.Assessment
+	if err := controller.db.Where("type = ?", AssessmentType).Find(&Assessments).Error; err != nil {
+		return nil, fmt.Errorf("error getting %s list: %v", AssessmentType, err)
 	}
-	return assessments, nil
+	return Assessments, nil
 }
 
 func (strategy *GetAllStudentProgressStrategy) Search(db *gorm.DB) ([]Progress, error) {
@@ -123,54 +123,54 @@ func (strategy *GetProgressByStatusStrategy) Search(db *gorm.DB) ([]Progress, er
 	return progressList, nil
 }
 
-func (controller *ProgressController) GetAllProgressByType(assessmentType evalModel.AssessmentType, assessmentId uint) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
+func (controller *ProgressController) GetAllProgressByType(AssessmentType evalModel.AssessmentType, AssessmentId uint) ([]Progress, error) {
+	if AssessmentType != evalModel.QuizType && AssessmentType != evalModel.AssignmentType {
+		return nil, fmt.Errorf("invalid assessment type: %s", AssessmentType)
 	}
 
 	strategy := &GetAllStudentProgressStrategy{
 		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
+			AssessmentId: AssessmentId,
+			Type:         AssessmentType,
 		},
 	}
 	return strategy.Search(controller.db)
 }
 
-func (controller *ProgressController) GetProgressByStudentCode(assessmentType evalModel.AssessmentType, assessmentId uint, studentCode string) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
+func (controller *ProgressController) GetProgressByStudentCode(AssessmentType evalModel.AssessmentType, AssessmentId uint, StudentCode string) ([]Progress, error) {
+	if AssessmentType != evalModel.QuizType && AssessmentType != evalModel.AssignmentType {
+		return nil, fmt.Errorf("invalid assessment type: %s", AssessmentType)
 	}
 
 	strategy := &GetProgressByStudentCodeStrategy{
 		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
+			AssessmentId: AssessmentId,
+			Type:         AssessmentType,
 		},
-		StudentCode: studentCode,
+		StudentCode: StudentCode,
 	}
 	return strategy.Search(controller.db)
 }
 
-func (controller *ProgressController) GetProgressByStatus(assessmentType evalModel.AssessmentType, assessmentId uint, status evalModel.AssessmentStatus) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
+func (controller *ProgressController) GetProgressByStatus(AssessmentType evalModel.AssessmentType, AssessmentId uint, Status evalModel.AssessmentStatus) ([]Progress, error) {
+	if AssessmentType != evalModel.QuizType && AssessmentType != evalModel.AssignmentType {
+		return nil, fmt.Errorf("invalid assessment type: %s", AssessmentType)
 	}
 
 	strategy := &GetProgressByStatusStrategy{
 		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
+			AssessmentId: AssessmentId,
+			Type:         AssessmentType,
 		},
-		Status: status,
+		Status: Status,
 	}
 	return strategy.Search(controller.db)
 }
 
-func (controller *ProgressController) GetSubmitCount(assessmentId uint) (uint, error) {
+func (controller *ProgressController) GetSubmitCount(AssessmentId uint) (uint, error) {
 	var count int64
 	if err := controller.db.Model(&evalModel.AssessmentSubmission{}).
-		Where("assessment_id = ? AND submitted = ?", assessmentId, true).
+		Where("assessment_id = ? AND submitted = ?", AssessmentId, true).
 		Count(&count).Error; err != nil {
 		return 0, err
 	}
