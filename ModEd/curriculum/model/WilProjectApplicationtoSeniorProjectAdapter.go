@@ -17,17 +17,23 @@ func (adapter *WILProjectApplicationToSeniorProjectAdapter) ToSeniorProject() (*
 		return nil, errors.New("WILProject is nil")
 	}
 
-	if adapter.WILProject.ProjectName == "" {
-		return nil, errors.New("ProjectName is empty in WILProject")
-	}
-
 	return &seniorProjectModel.SeniorProject{
 		Model: gorm.Model{
-			ID:        adapter.WILProject.ID,
 			CreatedAt: adapter.WILProject.CreatedAt,
 			UpdatedAt: adapter.WILProject.UpdatedAt,
 			DeletedAt: adapter.WILProject.DeletedAt,
 		},
 		GroupName: adapter.WILProject.ProjectName,
+		Members: []seniorProjectModel.GroupMember{},
+		Advisors: []seniorProjectModel.Advisor{
+			{
+				
+			},
+		},
+		Committees: []seniorProjectModel.Committee{},
+		Assignments: []seniorProjectModel.Assignment{},
+		Presentations: []seniorProjectModel.Presentation{},
+		Reports: []seniorProjectModel.Report{},
+		Assessments: []seniorProjectModel.Assessment{},
 	}, nil
 }

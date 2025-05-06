@@ -45,6 +45,13 @@ func (menu *WILProjectApplicationMenuStateHandler) Render() {
 		err := menu.insertHandlerStrategy.Execute()
 		return err
 	}})
+	menu.handler.AddHandler("6", "Convert WIL Project Application to Senior Project", handler.FuncStrategy{Action: func() error {
+		_, err := menu.newSeniorProjectFromWILProject()
+		if err != nil {
+			return err
+		}
+		return nil
+	}})
 	menu.handler.AddBackHandler(menu.backHandler)
 
 	menu.handler.ShowMenu()
@@ -328,4 +335,24 @@ func showProjectDetail(selectedApplication model.WILProjectApplication) {
 		fmt.Printf("   %d. %s\n", i+1, student.StudentId)
 	}
 	fmt.Println("10. Exit Edit Menu")
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) newSeniorProjectFromWILProject() (uint, error) {
+    // Get the WIL Project Application ID from the user
+    wilProjectID := core.ExecuteUserInputStep(core.UintInputStep{
+        PromptText:    "Enter WIL Project Application ID:",
+        FieldNameText: "WILProjectApplicationID",
+    }).(uint)
+    // Find the WIL Project Application by ID
+	wilProjectApplication, err := menu.wrapper.WILProjectApplicationController.RetrieveByID(wilProjectID)
+	if err != nil {
+		return 0, errors.New("error! cannot retrieve WIL Project application data")
+	}
+	
+	converter := controller.NewWILToSeniorProjectController(menu.wrapper.WILProjectApplicationToSeniorProjectController.Connector)
+	seniorProjectID, err := converter.NewSeniorProjectbyWILProjectApplication(&wilProjectApplication)
+	if err != nil {
+		return 0, errors.New("error! cannot convert WIL Project application to Senior Project")
+	}
+	return seniorProjectID, nil
 }

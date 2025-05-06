@@ -108,6 +108,7 @@ func main() {
 		MigrateModule(core.MODULE_INSTRUCTOR).
 		MigrateModule(core.MODULE_INTERNSHIP).
 		MigrateModule(core.MODULE_WILPROJECT).
+		MigrateModule(core.MODULE_PROJECT).
 		BuildDB()
 
 	if err != nil {
