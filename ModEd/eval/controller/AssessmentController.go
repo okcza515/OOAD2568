@@ -1,181 +1,86 @@
 package controller
 
 import (
-	"ModEd/eval/model"
-	"net/http"
+	"fmt"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	assessmentModel "ModEd/eval/model"
 )
 
 type AssessmentController struct {
-	db *gorm.DB
+	assessments []*assessmentModel.Assessment
 }
 
-func NewAssessmentController(db *gorm.DB) *AssessmentController {
-	return &AssessmentController{db: db}
+func NewAssessmentController() *AssessmentController {
+	return &AssessmentController{
+		assessments: make([]*assessmentModel.Assessment, 0),
+	}
 }
 
-func (c *AssessmentController) CreateAssessment(ctx *gin.Context) {
-	var assessment model.Assessment
-	if err := ctx.ShouldBindJSON(&assessment); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	builder := model.NewAssessmentBuilder(assessment.Type)
-	newAssessment := builder.
-		SetTitle(assessment.Title).
-		SetDescription(assessment.Description).
-		SetDates(assessment.StartDate, assessment.DueDate).
-		SetCourse(assessment.CourseId).
-		SetInstructor(assessment.InstructorCode).
-		Build()
-
-	if err := c.db.Create(newAssessment).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, newAssessment)
+func (c *AssessmentController) CreateAssessment(assessmentType assessmentModel.AssessmentType) assessmentModel.AssessmentBuilder {
+	return assessmentModel.NewAssessmentBuilder(assessmentType)
 }
 
-func (c *AssessmentController) GetAssessment(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var assessment model.Assessment
-
-	if err := c.db.First(&assessment, id).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, assessment)
+func (c *AssessmentController) AddAssessment(assessment *assessmentModel.Assessment) {
+	c.assessments = append(c.assessments, assessment)
 }
 
-func (c *AssessmentController) UpdateAssessment(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var assessment model.Assessment
-
-	if err := c.db.First(&assessment, id).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
-		return
+func (c *AssessmentController) GetAssessmentByID(id uint) (*assessmentModel.Assessment, error) {
+	for _, a := range c.assessments {
+		if a.AssessmentId == id {
+			return a, nil
+		}
 	}
-
-	if err := ctx.ShouldBindJSON(&assessment); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := c.db.Save(&assessment).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, assessment)
+	return nil, fmt.Errorf("assessment not found")
 }
 
-func (c *AssessmentController) DeleteAssessment(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var assessment model.Assessment
-
-	if err := c.db.First(&assessment, id).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
-		return
+func (c *AssessmentController) UpdateAssessmentStatus(assessment *assessmentModel.Assessment, newStatus assessmentModel.AssessmentStatus) error {
+	if assessment.State == nil {
+		assessment.State = &DraftState{}
 	}
-
-	if err := c.db.Delete(&assessment).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	if err := assessment.State.HandleStatusChange(assessment, newStatus); err != nil {
+		return err
 	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "Assessment deleted successfully"})
+	for _, observer := range assessment.Observers {
+		observer.OnStatusChanged(assessment, assessment.Status)
+	}
+	return nil
 }
 
-func (c *AssessmentController) ListAssessments(ctx *gin.Context) {
-	var assessments []model.Assessment
-	query := c.db.Model(&model.Assessment{})
-
-	if courseId := ctx.Query("course_id"); courseId != "" {
-		query = query.Where("course_id = ?", courseId)
+func (c *AssessmentController) SubmitAssessment(assessment *assessmentModel.Assessment, submission *assessmentModel.AssessmentSubmission) error {
+	if assessment.State == nil {
+		assessment.State = &DraftState{}
 	}
-	if instructorId := ctx.Query("instructor_id"); instructorId != "" {
-		query = query.Where("instructor_code = ?", instructorId)
-	}
-	if assessmentType := ctx.Query("type"); assessmentType != "" {
-		query = query.Where("type = ?", assessmentType)
-	}
-
-	if err := query.Find(&assessments).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, assessments)
+	return assessment.State.HandleSubmission(assessment, submission)
 }
 
-func (c *AssessmentController) UpdateAssessmentStatus(ctx *gin.Context) {
-	id := ctx.Param("id")
-	var assessment model.Assessment
-
-	if err := c.db.First(&assessment, id).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
-		return
+func (c *AssessmentController) AddObserver(assessment *assessmentModel.Assessment, observer assessmentModel.AssessmentObserver) {
+	if assessment.Observers == nil {
+		assessment.Observers = make([]assessmentModel.AssessmentObserver, 0)
 	}
-
-	var statusUpdate struct {
-		Status model.AssessmentStatus `json:"status"`
-	}
-
-	if err := ctx.ShouldBindJSON(&statusUpdate); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	assessment.SetStatus(statusUpdate.Status)
-
-	if err := c.db.Save(&assessment).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, assessment)
+	assessment.Observers = append(assessment.Observers, observer)
 }
 
-func (c *AssessmentController) SubmitAssessment(ctx *gin.Context) {
-	assessmentId := ctx.Param("id")
-	var submission model.AssessmentSubmission
+func (c *AssessmentController) CreateTimedAssessment(assessment *assessmentModel.Assessment, timeLimit time.Duration) assessmentModel.AssessmentDecorator {
+	return assessmentModel.NewTimedAssessmentDecorator(assessment, timeLimit)
+}
 
-	if err := ctx.ShouldBindJSON(&submission); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+func (c *AssessmentController) ValidateQuizSubmission(submission *assessmentModel.AssessmentSubmission) error {
+	strategy := &QuizSubmissionStrategy{}
+	return strategy.ValidateSubmission(submission)
+}
 
-	var assessment model.Assessment
-	if err := c.db.First(&assessment, assessmentId).Error; err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Assessment not found"})
-		return
-	}
+func (c *AssessmentController) ValidateAssignmentSubmission(submission *assessmentModel.AssessmentSubmission) error {
+	strategy := &AssignmentSubmissionStrategy{}
+	return strategy.ValidateSubmission(submission)
+}
 
-	var strategy model.SubmissionStrategy
-	if assessment.Type == model.QuizType {
-		strategy = &model.QuizSubmissionStrategy{}
-	} else {
-		strategy = &model.AssignmentSubmissionStrategy{}
-	}
+func (c *AssessmentController) ProcessQuizSubmission(submission *assessmentModel.AssessmentSubmission) error {
+	strategy := &QuizSubmissionStrategy{}
+	return strategy.ProcessSubmission(submission)
+}
 
-	if err := strategy.ValidateSubmission(&submission); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	submission.Submitted = true
-	submission.SubmittedAt = time.Now()
-
-	if err := c.db.Create(&submission).Error; err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, submission)
+func (c *AssessmentController) ProcessAssignmentSubmission(submission *assessmentModel.AssessmentSubmission) error {
+	strategy := &AssignmentSubmissionStrategy{}
+	return strategy.ProcessSubmission(submission)
 }
