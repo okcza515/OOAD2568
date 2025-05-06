@@ -60,6 +60,19 @@ func (ctrl *ApplicationReportController) GetApplicationStatusByApplicantID(appli
 	return status, err
 }
 
+func (ctrl *ApplicationReportController) GetAllApplicationReports() ([]*model.ApplicationReport, error) {
+	var report []*model.ApplicationReport
+	err := ctrl.DB.Preload("Applicant").
+		Preload("ApplicationRound").
+		Preload("Faculty").
+		Preload("Department").
+		Find(&report).Error
+	if err != nil {
+		return nil, err
+	}
+	return report, nil
+}
+
 func (ctrl *ApplicationReportController) GetFullApplicationReportByApplicationID(applicantionReportID uint) (*model.ApplicationReport, error) {
 	var report model.ApplicationReport
 	err := ctrl.DB.Preload("Applicant").

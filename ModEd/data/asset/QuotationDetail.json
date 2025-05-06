@@ -1,0 +1,164 @@
+[
+    {
+    "QuotationDetailID": 1,
+    "QuotationID": 1,
+    "InstrumentLabel": "Oscilloscope",
+    "Description": null,
+    "CategoryID": 1,
+    "Quantity": 2,
+    "OfferedPrice": 3000.00
+  },
+  {
+    "QuotationDetailID": 2,
+    "QuotationID": 1,
+    "InstrumentLabel": "Multimeter",
+    "Description": null,
+    "CategoryID": 1,
+    "Quantity": 3,
+    "OfferedPrice": 1500.00
+  },
+  {
+    "QuotationDetailID": 3,
+    "QuotationID": 2,
+    "InstrumentLabel": "Function Generator",
+    "Description": null,
+    "CategoryID": 2,
+    "Quantity": 1,
+    "OfferedPrice": 3500.00
+  },
+  {
+    "QuotationDetailID": 4,
+    "QuotationID": 2,
+    "InstrumentLabel": "DC Power Supply",
+    "Description": null,
+    "CategoryID": 2,
+    "Quantity": 2,
+    "OfferedPrice": 3700.00
+  },
+  {
+    "QuotationDetailID": 5,
+    "QuotationID": 3,
+    "InstrumentLabel": "Notebook Paper",
+    "Description": null,
+    "CategoryID": 3,
+    "Quantity": 100,
+    "OfferedPrice": 2000.00
+  },
+  {
+    "QuotationDetailID": 6,
+    "QuotationID": 3,
+    "InstrumentLabel": "Stapler",
+    "Description": null,
+    "CategoryID": 3,
+    "Quantity": 10,
+    "OfferedPrice": 3500.00
+  },
+  {
+    "QuotationDetailID": 7,
+    "QuotationID": 4,
+    "InstrumentLabel": "Pen Set",
+    "Description": null,
+    "CategoryID": 3,
+    "Quantity": 100,
+    "OfferedPrice": 3000.00
+  },
+  {
+    "QuotationDetailID": 8,
+    "QuotationID": 4,
+    "InstrumentLabel": "A4 Paper Box",
+    "Description": null,
+    "CategoryID": 3,
+    "Quantity": 10,
+    "OfferedPrice": 2600.00
+  },
+  {
+    "QuotationDetailID": 9,
+    "QuotationID": 5,
+    "InstrumentLabel": "Breadboard Kit",
+    "Description": null,
+    "CategoryID": 4,
+    "Quantity": 10,
+    "OfferedPrice": 5000.00
+  },
+  {
+    "QuotationDetailID": 10,
+    "QuotationID": 5,
+    "InstrumentLabel": "Resistor Pack",
+    "Description": null,
+    "CategoryID": 4,
+    "Quantity": 50,
+    "OfferedPrice": 3300.00
+  },
+  {
+    "QuotationDetailID": 11,
+    "QuotationID": 6,
+    "InstrumentLabel": "IC Set",
+    "Description": null,
+    "CategoryID": 4,
+    "Quantity": 20,
+    "OfferedPrice": 4100.00
+  },
+  {
+    "QuotationDetailID": 12,
+    "QuotationID": 6,
+    "InstrumentLabel": "Capacitor Box",
+    "Description": null,
+    "CategoryID": 4,
+    "Quantity": 15,
+    "OfferedPrice": 4000.00
+  },
+  {
+    "QuotationDetailID": 13,
+    "QuotationID": 7,
+    "InstrumentLabel": "Office Desk",
+    "Description": null,
+    "CategoryID": 5,
+    "Quantity": 3,
+    "OfferedPrice": 3000.00
+  },
+  {
+    "QuotationDetailID": 14,
+    "QuotationID": 7,
+    "InstrumentLabel": "Office Chair",
+    "Description": null,
+    "CategoryID": 5,
+    "Quantity": 4,
+    "OfferedPrice": 1300.00
+  },
+  {
+    "QuotationDetailID": 15,
+    "QuotationID": 8,
+    "InstrumentLabel": "Drawer Cabinet",
+    "Description": null,
+    "CategoryID": 5,
+    "Quantity": 2,
+    "OfferedPrice": 2000.00
+  },
+  {
+    "QuotationDetailID": 16,
+    "QuotationID": 8,
+    "InstrumentLabel": "Meeting Table",
+    "Description": null,
+    "CategoryID": 5,
+    "Quantity": 1,
+    "OfferedPrice": 2450.00
+  },
+  {
+    "QuotationDetailID": 17,
+    "QuotationID": 9,
+    "InstrumentLabel": "Printer",
+    "Description": null,
+    "CategoryID": 1,
+    "Quantity": 1,
+    "OfferedPrice": 6200.00
+  },
+  {
+    "QuotationDetailID": 18,
+    "QuotationID": 10,
+    "InstrumentLabel": "Scanner",
+    "Description": null,
+    "CategoryID": 1,
+    "Quantity": 1,
+    "OfferedPrice": 6000.00
+  }
+]

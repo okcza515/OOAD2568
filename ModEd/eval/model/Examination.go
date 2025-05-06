@@ -1,8 +1,8 @@
 package model
 
 import (
-	curriculumModel "ModEd/curriculum/model"
 	instructorModel "ModEd/common/model"
+	curriculumModel "ModEd/curriculum/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,8 +18,11 @@ type Examination struct {
 	Course      		curriculumModel.Course 			`gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
 	CurriculumId    	uint            				`gorm:"not null" csv:"curriculum_id" json:"curriculum_id"`
 	Curriculum  		curriculumModel.Curriculum 		`gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-"`
-	Criteria    		string 							`gorm:"not null" csv:"criteria" json:"criteria"`
+	Criteria    		ExaminationCriteria 			`gorm:"not null" csv:"criteria" json:"criteria"`
 	Description 		string 							`gorm:"not null" csv:"description" json:"description"`
-	Exam_date   		time.Time 						`gorm:"not null" csv:"exam_date" json:"exam_date"`
+	ExamStatus          string    						`gorm:"not null" csv:"exam_status" json:"exam_status"` // draft, published, closed
+	Attempt  			int     						`gorm:"not null" csv:"attempt" json:"attempt"`
+	Start_date   		time.Time 						`gorm:"not null" csv:"start_date" json:"start_date"`
+	End_date   			time.Time 						`gorm:"not null" csv:"end_date" json:"end_date"`
 	Create_at   		time.Time 						`gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
 }

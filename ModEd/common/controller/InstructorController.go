@@ -12,7 +12,7 @@ type InstructorController struct {
 	DB *gorm.DB
 }
 
-func CreateInstructorController(db *gorm.DB) *InstructorController {
+func NewInstructorController(db *gorm.DB) *InstructorController {
 	db.AutoMigrate(&model.Instructor{})
 	return &InstructorController{DB: db}
 }
@@ -27,6 +27,10 @@ func (c *InstructorController) GetBy(field string, value interface{}) ([]*model.
 
 func (c *InstructorController) Update(code string, updatedData map[string]any) error {
 	return model.UpdateInstructorByCode(c.DB, code, updatedData)
+}
+
+func (c *InstructorController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
+	return model.UpdateRecordByField[model.Instructor](c.DB, field, value, updatedData, model.Instructor{})
 }
 
 func (c *InstructorController) DeleteByCode(code string) error {

@@ -2,7 +2,6 @@
 package controller
 
 import (
-	commonModel "ModEd/common/model"
 	"ModEd/core"
 	model "ModEd/curriculum/model"
 	"errors"
@@ -12,7 +11,6 @@ import (
 
 type MeetingControllerInterface interface {
 	List(condition map[string]interface{}) ([]*model.Meeting, error)
-
 	RetrieveByID(id uint) (*model.Meeting, error)
 	CreateMeeting(body *model.Meeting) error
 	CreateMeetingByFactory(factory model.MeetingFactory, meeting model.Meeting) error
@@ -53,20 +51,16 @@ func (c *MeetingController) CreateMeetingByFactory(factory model.MeetingFactory,
 	}
 }
 
-func (c *MeetingController) AddAttendee(meetingID uint, instructorID uint) error {
+func (c *MeetingController) AddAttendee(meetingID uint, attendee model.AttendeeAdapter) error {
 	var meeting model.Meeting
 	if err := c.Connector.First(&meeting, meetingID).Error; err != nil {
 		return err
 	}
 
-	var instructor commonModel.Instructor
-	if err := c.Connector.First(&instructor, instructorID).Error; err != nil {
+	attendeeRecord := attendee.ToMeetingAttendee(meetingID)
+
+	if err := c.Connector.Model(&meeting).Association("Attendees").Append(&attendeeRecord); err != nil {
 		return err
 	}
-
-	if err := c.Connector.Model(&meeting).Association("Attendees").Append(&instructor); err != nil {
-		return err
-	}
-
 	return nil
 }

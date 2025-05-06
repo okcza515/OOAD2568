@@ -21,14 +21,6 @@ func NewAssignmentController(db *gorm.DB) *AssignmentController {
 	}
 }
 
-func (c *AssignmentController) ListAllAssignments() ([]*model.Assignment, error) {
-	assignments, err := c.List(map[string]interface{}{})
-	if err != nil {
-		return nil, err
-	}
-	return assignments, nil
-}
-
 func (c *AssignmentController) RetrieveAssignment(id uint) (*model.Assignment, error) {
 	return c.RetrieveByID(id)
 }

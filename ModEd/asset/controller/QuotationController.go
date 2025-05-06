@@ -11,16 +11,8 @@ type SupplierSelectionController struct {
 	db *gorm.DB
 }
 
-func CreateSupplierSelectionController(db *gorm.DB) *SupplierSelectionController {
+func QuotationController(db *gorm.DB) *SupplierSelectionController {
 	return &SupplierSelectionController{db: db}
-}
-
-func (c *SupplierSelectionController) CreateQuotation(body *model.Quotation) error {
-	return c.db.Create(body).Error
-}
-
-func (c *SupplierSelectionController) CreateSupplier(body *model.Supplier) error {
-	return c.db.Create(body).Error
 }
 
 func (c *SupplierSelectionController) ListAllQuotation() ([]model.Quotation, error) {

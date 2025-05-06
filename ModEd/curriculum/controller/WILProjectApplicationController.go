@@ -4,6 +4,7 @@ package controller
 import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
+	"ModEd/core/validation"
 	model "ModEd/curriculum/model"
 
 	"gorm.io/gorm"
@@ -38,6 +39,13 @@ func (controller WILProjectApplicationController) RegisterWILProjectsApplication
 	studentIds []string,
 ) error {
 
+	validator := validation.NewModelValidator()
+
+	err := validator.ModelValidate(wilprojectApplication)
+	if err != nil {
+		return err
+	}
+
 	resultError := controller.Insert(wilprojectApplication)
 	if resultError != nil {
 		return resultError
@@ -56,7 +64,7 @@ func (controller WILProjectApplicationController) RegisterWILProjectsApplication
 
 	}
 
-	err := controller.wilProjectMemberController.InsertMany(wilMembers)
+	err = controller.wilProjectMemberController.InsertMany(wilMembers)
 
 	if err != nil {
 		return err

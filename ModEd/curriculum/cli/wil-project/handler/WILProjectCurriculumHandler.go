@@ -2,72 +2,53 @@
 package handler
 
 import (
-	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
+	"ModEd/curriculum/utils"
 	"errors"
 	"fmt"
 )
 
 type WILProjectCurriculumMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.WILModuleWrapper
-
+	manager                   *cli.CLIMenuStateManager
+	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
+	handler                   *utils.GeneralHandlerContext
 }
 
 func NewWILProjectCurriculumMenuStateHandler(
 	manager *cli.CLIMenuStateManager, wrapper *controller.WILModuleWrapper, wilModuleMenuStateHandler *WILModuleMenuStateHandler,
 ) *WILProjectCurriculumMenuStateHandler {
+
 	return &WILProjectCurriculumMenuStateHandler{
 		manager:                   manager,
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
+		handler:                   utils.NewGeneralHandlerContext(),
 	}
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) Render() {
-	fmt.Println("\nWIL Project Curriculum Menu:")
-	fmt.Println("1. Create WIL Course")
-	fmt.Println("2. Create WIL Class")
-	fmt.Println("3. List all of WIL Course")
-	fmt.Println("4. List all of WIL Class")
-	fmt.Println("back: Exit the module")
+	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
+	menu.handler.AddHandler("1", "Create WIL Course", utils.FuncStrategy{Action: menu.createWILCourse})
+	menu.handler.AddHandler("2", "Create WIL Class", utils.FuncStrategy{Action: menu.createWILClass})
+	menu.handler.AddHandler("3", "List all of WIL Course", utils.FuncStrategy{Action: menu.listWILCourse})
+	menu.handler.AddHandler("4", "List all of WIL Class", utils.FuncStrategy{Action: menu.listWILClass})
+	menu.handler.AddBackHandler(utils.FuncStrategy{Action: func() error {
+		menu.manager.SetState(menu.wilModuleMenuStateHandler)
+		return nil
+	}})
+
+	menu.handler.ShowMenu()
 }
 
 func (menu *WILProjectCurriculumMenuStateHandler) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		err := menu.createWILCourse()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "2":
-		err := menu.createWILClass()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "3":
-		err := menu.listWILCourse()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "4":
-		err := menu.listWILClass()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "back":
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	default:
-		fmt.Println("Invalid Command")
+	err := menu.handler.HandleInput(input)
+	if err != nil {
+		return err
 	}
-
-	util.PressEnterToContinue()
-
 	return nil
 }
 

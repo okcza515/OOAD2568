@@ -1,19 +1,20 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/project/model"
 
 	"gorm.io/gorm"
 )
 
 type SeniorProjectController struct {
+	*core.BaseController[*model.SeniorProject]
 	DB *gorm.DB
 }
 
 func NewSeniorProjectController(db *gorm.DB) *SeniorProjectController {
-	return &SeniorProjectController{DB: db}
-}
-
-func (controller *SeniorProjectController) InsertSeniorProject(seniorProject model.SeniorProject) error {
-	return controller.DB.Create(&seniorProject).Error
+	return &SeniorProjectController{
+		BaseController: core.NewBaseController[*model.SeniorProject](db),
+		DB:             db,
+	}
 }

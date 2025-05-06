@@ -3,7 +3,10 @@ package model
 
 import (
 	projectModel "ModEd/project/model"
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 )
 
 type EvaluationStrategy interface {
@@ -25,7 +28,7 @@ type WeightedCriteria struct {
 }
 
 func (p *PresentationEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string) {
-	fmt.Println("Evaluate Presentation")
+	fmt.Println("------------Evaluate Presentation------------")
 
 	score := 0.0
 	scale := map[string]float64{
@@ -34,24 +37,42 @@ func (p *PresentationEvaluationStrategy) Evaluate(criteria []projectModel.Assess
 		"good":    15,
 	}
 
+	scanner := bufio.NewScanner(os.Stdin)
+
 	for _, c := range criteria {
-		if val, ok := scale[c.CriteriaName]; ok {
-			score += val
+		for {
+			fmt.Printf("Rate '%s' (poor/average/good): ", c.CriteriaName)
+			scanner.Scan()
+			input := strings.ToLower(strings.TrimSpace(scanner.Text()))
+
+			if val, ok := scale[input]; ok {
+				score += val
+				break
+			} else {
+				fmt.Println("Invalid input. Please enter 'poor', 'average', or 'good'.")
+			}
 		}
 	}
 
-	comment := "Should be improved"
+	fmt.Print("Enter comment: ")
+	scanner.Scan()
+	comment := scanner.Text()
 
 	return score, comment
 }
 
 func (a *AssignmentEvaluationStrategy) Evaluate(criteria []projectModel.AssessmentCriteria) (float64, string) {
-	fmt.Println("Evaluate Assignment")
+	fmt.Println("------------Evaluate Assignment------------")
 
-	mockedCriteria := []MarkedCriteria{
-		{criteria[0], true},
-		{criteria[1], false},
-		{criteria[2], true},
+	mockedCriteria := []MarkedCriteria{}
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for _, c := range criteria {
+		fmt.Printf("%s pass ? (yes/no): ", c.CriteriaName)
+		scanner.Scan()
+		input := strings.TrimSpace(scanner.Text())
+		isPass := strings.ToLower(input) == "yes"
+		mockedCriteria = append(mockedCriteria, MarkedCriteria{c, isPass})
 	}
 
 	score := 0.0
@@ -61,7 +82,10 @@ func (a *AssignmentEvaluationStrategy) Evaluate(criteria []projectModel.Assessme
 		}
 	}
 
-	comment := "Good job!"
+	fmt.Print("Enter comment: ")
+	scanner.Scan()
+	comment := scanner.Text()
+
 	return score, comment
 }
 

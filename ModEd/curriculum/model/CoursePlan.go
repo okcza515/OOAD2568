@@ -21,7 +21,7 @@ type CoursePlan struct {
 	Date time.Time `gorm:"not null" json:"date"`
 
 	InstructorId uint              `gorm:"not null" json:"instructor_id"`
-	Instructor   common.Instructor `gorm:"type:varchar(100);not null" json:"instructor"`
+	Instructor   common.Instructor `gorm:"-" json:"instructor"`
 	Topic        string            `gorm:"type:varchar(255);not null" json:"topic"`
 	Description  string            `gorm:"type:text" json:"description"`
 	*core.SerializableRecord

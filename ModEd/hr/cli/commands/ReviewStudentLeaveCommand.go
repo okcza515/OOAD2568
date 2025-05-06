@@ -9,7 +9,7 @@ import (
 type ReviewStudentLeaveCommand struct{}
 
 func (cmd *ReviewStudentLeaveCommand) Execute(args []string, tx *gorm.DB) error {
-	controller := controller.CreateLeaveStudentHRController(tx)
+	controller := controller.NewLeaveStudentHRController(tx)
 	return handleReviewCommand(
 		args,
 		tx,

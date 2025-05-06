@@ -14,9 +14,6 @@ type InstructorWorkloadModuleWrapper struct {
 	SeniorProjectController  *ProjectController
 	StudentRequestController *StudentRequestController
 	MeetingController        *MeetingController
-	WorkloadReportController *WorkloadReportController
-	WorkloadReportFacade     *WorkloadReportFacade
-	WorkloadReportBuilder    *WorkloadReportBuilder
 }
 
 func NewInstructorWorkloadModuleWrapper(
@@ -26,11 +23,9 @@ func NewInstructorWorkloadModuleWrapper(
 	curriculumController CurriculumControllerInterface,
 ) *InstructorWorkloadModuleWrapper {
 	return &InstructorWorkloadModuleWrapper{
-		CoursePlanController:     NewCoursePlanController(db),
-		ClassMaterialController:  NewClassMaterialController(db),
-		SeniorProjectController:  NewProjectController(db),
-		StudentRequestController: NewStudentWorkloadController(db),
-		MeetingController:        NewMeetingController(db),
-		WorkloadReportController: NewWorkloadReportController(db),
+		CoursePlanController:    NewCoursePlanController(db),
+		ClassMaterialController: NewClassMaterialController(db),
+		SeniorProjectController: NewProjectController(db),
+		MeetingController:       NewMeetingController(db),
 	}
 }

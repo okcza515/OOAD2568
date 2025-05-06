@@ -14,7 +14,7 @@ func (c *PullInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	fs := flag.NewFlagSet("pull-instructor", flag.ExitOnError)
 	fs.Parse(args)
 
-	instructorController := controller.CreateInstructorHRController(tx)
+	instructorController := controller.NewInstructorHRController(tx)
 	if err := instructorController.MigrateInstructorRecords(); err != nil {
 		return fmt.Errorf("failed to pull instructor record into instructorinfo: %w", err)
 	}

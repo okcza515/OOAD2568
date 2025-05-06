@@ -1,11 +1,12 @@
 package controller
 
 import (
+	commonController "ModEd/common/controller"
 	commonModel "ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
-	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ type InstructorHRController struct {
 	db *gorm.DB
 }
 
-func CreateInstructorHRController(db *gorm.DB) *InstructorHRController {
+func NewInstructorHRController(db *gorm.DB) *InstructorHRController {
 	db.AutoMigrate(&model.InstructorInfo{})
 	return &InstructorHRController{db: db}
 }
@@ -28,7 +29,7 @@ func (c *InstructorHRController) getAll() ([]*model.InstructorInfo, error) {
 
 func (c *InstructorHRController) getById(id string) (*model.InstructorInfo, error) {
 	var instructorInfo model.InstructorInfo
-	if err := c.db.Where("instructor_id = ?", id).First(&instructorInfo).Error; err != nil {
+	if err := c.db.Where("instructor_code = ?", id).First(&instructorInfo).Error; err != nil {
 		return nil, err
 	}
 	return &instructorInfo, nil
@@ -45,7 +46,7 @@ func (c *InstructorHRController) update(info *model.InstructorInfo) error {
 }
 
 func (c *InstructorHRController) delete(id string) error {
-	return c.db.Where("instructor_id = ?", id).Delete(&model.InstructorInfo{}).Error
+	return c.db.Where("instructor_code = ?", id).Delete(&model.InstructorInfo{}).Error
 }
 
 func (c *InstructorHRController) AddInstructor(
@@ -86,11 +87,59 @@ func (c *InstructorHRController) AddInstructor(
 		// Migrate here !!
 
 		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
-		instructorController := CreateInstructorHRController(tx)
+		instructorController := NewInstructorHRController(tx)
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
 		}
 
+		return nil
+	})
+	return err
+}
+
+func (c *InstructorHRController) ImportInstructors(filePath string) error {
+	tm := &util.TransactionManager{DB: c.db}
+	err := tm.Execute(func(tx *gorm.DB) error {
+		hrMapper, err := core.CreateMapper[model.InstructorInfo](filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create mapper: %w", err)
+		}
+		hrRecords := hrMapper.Deserialize()
+		hrRecordsMap := make(map[string]model.InstructorInfo)
+		for _, record := range hrRecords {
+			if _, exists := hrRecordsMap[record.InstructorCode]; exists {
+				return fmt.Errorf("duplicate instructor code found: %s", record.InstructorCode)
+			}
+			if record != nil {
+				hrRecordsMap[record.InstructorCode] = *record
+			} else {
+				continue
+			}
+		}
+
+		instructorController := NewInstructorHRController(tx)
+		for instructorCode, record := range hrRecordsMap {
+			instructorInfo, err := instructorController.getById(instructorCode)
+			if err != nil {
+				return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorCode, err)
+			}
+
+			importInstructor := model.NewUpdatedInstructorInfo(
+				instructorInfo,
+				instructorInfo.FirstName,
+				instructorInfo.LastName,
+				instructorInfo.Email,
+				record.Gender,
+				record.CitizenID,
+				record.PhoneNumber,
+				record.AcademicPosition,
+				record.DepartmentPosition,
+			)
+			if err := instructorController.update(importInstructor); err != nil {
+				return fmt.Errorf("error updating instructor with ID %s: %v", instructorCode, err)
+			}
+
+		}
 		return nil
 	})
 	return err
@@ -104,31 +153,47 @@ func (c *InstructorHRController) GetAllInstructors() ([]*model.InstructorInfo, e
 	return instructors, nil
 }
 
-func (c *InstructorHRController) UpdateInstructorInfo(instructorID, field, value string) error {
+func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, firstName string, lastName string, email string,
+	gender string, citizenID string, phoneNumber string, academicPosition string, departmentPosition string) error {
 	tm := &util.TransactionManager{DB: c.db}
 	return tm.Execute(func(tx *gorm.DB) error {
-		instructorInfo, err := c.getById(instructorID)
+		instructorController := NewInstructorHRController(tx)
+
+		academicPos, err := model.ParseAcademicPosition(academicPosition)
+		if err != nil {
+			return fmt.Errorf("failed to parse academic position: %w", err)
+		}
+
+		departmentPos, err := model.ParseDepartmentPosition(departmentPosition)
+		if err != nil {
+			return fmt.Errorf("failed to parse department position: %w", err)
+		}
+
+		instructorInfo, err := instructorController.getById(instructorID)
 		if err != nil {
 			return fmt.Errorf("error retrieving instructor with ID %s: %v", instructorID, err)
 		}
 
-		switch strings.ToLower(field) {
-		case "position", "academicposition", "academic_position":
-			parsedPos, err := model.ParseAcademicPosition(value)
-			if err != nil {
-				return fmt.Errorf("invalid academic position: %v", err)
-			}
-			instructorInfo.AcademicPosition = parsedPos
-		case "department":
-			// Uncomment and adjust if InstructorInfo has a Department field.
-			// instructorInfo.Department = value
-		default:
-			return fmt.Errorf("unknown field for instructor update: %s", field)
+		instructorData := map[string]any{
+			"FirstName": firstName,
+			"LastName":  lastName,
+			"Email":     email,
 		}
 
-		if err := c.update(instructorInfo); err != nil {
-			return fmt.Errorf("error updating instructor: %v", err)
+		commonInstructorController := commonController.NewInstructorController(tx)
+		if err := commonInstructorController.Update(instructorID, instructorData); err != nil {
+			return fmt.Errorf("failed to update common instructor data: %v", err)
 		}
+
+		if err := instructorController.MigrateInstructorRecords(); err != nil {
+			return fmt.Errorf("failed to migrate instructor to HR module: %v", err)
+		}
+
+		instructorHRData := model.NewUpdatedInstructorInfo(instructorInfo, firstName, lastName, email, gender, citizenID, phoneNumber, academicPos, departmentPos)
+		if err := instructorController.update(instructorHRData); err != nil {
+			return fmt.Errorf("failed to update instructor HR info: %v", err)
+		}
+
 		fmt.Println("Instructor updated successfully!")
 		return nil
 	})

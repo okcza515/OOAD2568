@@ -11,7 +11,7 @@ import (
 type ReviewInstructorLeaveCommand struct{}
 
 func (cmd *ReviewInstructorLeaveCommand) Execute(args []string, tx *gorm.DB) error {
-	controller := controller.CreateLeaveInstructorHRController(tx)
+	controller := controller.NewLeaveInstructorHRController(tx)
 	return handleReviewCommand(
 		args,
 		tx,
