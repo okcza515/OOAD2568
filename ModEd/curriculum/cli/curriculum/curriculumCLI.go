@@ -30,19 +30,3 @@ func RunCurriculumModuleCLI(params *CurriculumCLIParams) {
 		fmt.Println("Error:", err)
 	}
 }
-
-func printCurriculumMenu() {
-	fmt.Println("\nCurriculum Module Menu:")
-	fmt.Println("1. Curriculum")
-	fmt.Println("2. Course")
-	fmt.Println("3. Class")
-	fmt.Println("0. Exit")
-}
-
-func newCurriculumCLI(params *CurriculumCLIParams) *CurriculumCLIParams {
-	return &CurriculumCLIParams{
-		CurriculumController: params.CurriculumController,
-		CourseController:     params.CourseController,
-		ClassController:      params.ClassController,
-	}
-}
