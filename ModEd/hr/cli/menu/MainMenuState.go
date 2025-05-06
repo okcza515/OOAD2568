@@ -11,6 +11,26 @@ type HRMainMenuState struct {
 	handlerContext *handler.HandlerContext
 }
 
+// HandleUserInput implements cli.MenuState.
+func (state *HRMainMenuState) HandleUserInput(input string) error {
+	err := state.handlerContext.HandleInput(input)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+func (state *HRMainMenuState) Render() {
+	fmt.Println("=== HR Menu ===")
+    fmt.Println()
+	state.handlerContext.ShowMenu()
+	// implement the remaining menu options
+	fmt.Println("exit !")
+	fmt.Println("Enter your choice: ")
+}
+
 func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
 	handlerContext := handler.NewHandlerContext()
 	state := &HRMainMenuState{
@@ -18,15 +38,11 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
 		handlerContext: handlerContext,
 	}
 
-    manager.AddMenu(string(MENU_ADD), NewAddMenuState(manager))
-	return state
-}
+	manager.AddMenu(string(MENU_HR), state)
+	manager.AddMenu(string(MENU_ADD), NewAddMenuState(manager))
 
-func (state *HRMainMenuState) Render() {
-	fmt.Println("=== HR Main Menu ===")
-	fmt.Println("1. Add Personnel")
-	fmt.Println("2. List Personnel")
-	// implement the remaining menu options
-	fmt.Println("0. Exit")
-	fmt.Print("Enter your choice: ")
+    addHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ADD)))
+
+    handlerContext.AddHandler("1", "Add New Student/Instructor", addHandler)
+	return state
 }

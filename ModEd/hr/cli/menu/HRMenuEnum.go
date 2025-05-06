@@ -3,6 +3,7 @@ package menu
 type HRMenuEnum string
 
 const (
+	MENU_HR      HRMenuEnum = "hr"
 	MENU_ADD     HRMenuEnum = "add"
 	MENU_LIST    HRMenuEnum = "list"
 	MENU_UPDATE  HRMenuEnum = "update"
