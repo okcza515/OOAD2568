@@ -35,12 +35,7 @@ func main() {
 			{
 				Title: "Senior Project Setup",
 				Children: []*utils.MenuItem{
-					{
-						Title: "Manage Senior Project",
-						Children: []*utils.MenuItem{
-							BuildSeniorProjectMenu(seniorProjectController),
-						},
-					},
+					BuildSeniorProjectMenu(seniorProjectController),
 					{
 						Title: "Assign Groups, Advisors, and Committees",
 						Children: []*utils.MenuItem{
@@ -88,6 +83,11 @@ func main() {
 			},
 		},
 	}, nil, nil)
+
+	builder.AddMenuChild([]string{"Main Menu"}, &utils.MenuItem{
+		Title:  "Example",
+		Action: func(io *utils.MenuIO) {},
+	})
 
 	builder.Show()
 }
