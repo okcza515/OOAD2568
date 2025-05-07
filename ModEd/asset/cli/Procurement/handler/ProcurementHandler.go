@@ -4,6 +4,7 @@ import (
 	procurement "ModEd/asset/controller"
 	model "ModEd/asset/model"
 	util "ModEd/asset/util"
+	"ModEd/core/validation"
 	"fmt"
 	"time"
 )
@@ -38,6 +39,13 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 				Timeline:            timeline,
 				Committee:           committee,
 				CreatedAt:           time.Now(),
+			}
+
+			validator := validation.NewModelValidator()
+			if err := validator.ModelValidate(tor); err != nil {
+				fmt.Println("Validation failed:", err)
+				WaitForEnter()
+				break
 			}
 
 			err = facade.TOR.CreateTOR(tor)
