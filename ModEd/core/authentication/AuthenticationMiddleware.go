@@ -29,6 +29,12 @@ type AuthenticationProvider interface {
 	DeleteUser(ctx context.Context, username string) error
 
 	UpdatePassword(ctx context.Context, username, oldPassword, newPassword string) error
+
+	ListUsers(ctx context.Context) ([]UserContext, error)
+
+	GetCurrentUser(ctx context.Context) (*UserContext, error)
+
+	UpdateUserRole(ctx context.Context, username, role string) error
 }
 
 type Middleware struct {
@@ -55,6 +61,17 @@ func (m *Middleware) DeleteUser(ctx context.Context, username string) error {
 
 func (m *Middleware) UpdatePassword(ctx context.Context, username, oldPassword, newPassword string) error {
 	return m.provider.UpdatePassword(ctx, username, oldPassword, newPassword)
+}
+
+func (m *Middleware) ListUsers(ctx context.Context) ([]UserContext, error) {
+	return m.provider.ListUsers(ctx)
+}
+func (m *Middleware) GetCurrentUser(ctx context.Context) (*UserContext, error) {
+	return m.provider.GetCurrentUser(ctx)
+}
+
+func (m *Middleware) UpdateUserRole(ctx context.Context, username, role string) error {
+	return m.provider.UpdateUserRole(ctx, username, role)
 }
 
 func WithContext(ctx context.Context, userCtx *UserContext) context.Context {

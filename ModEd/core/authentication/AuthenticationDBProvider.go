@@ -107,3 +107,41 @@ func (p *DBAuthProvider) UpdatePassword(ctx context.Context, username, oldPasswo
 	user.UpdatedAt = time.Now()
 	return p.db.Save(&user).Error
 }
+
+func (p *DBAuthProvider) ListUsers(ctx context.Context) ([]UserContext, error) {
+	var dbUsers []DBUser
+	if err := p.db.Find(&dbUsers).Error; err != nil {
+		return nil, err
+	}
+
+	userContexts := make([]UserContext, len(dbUsers))
+	for i, user := range dbUsers {
+		userContexts[i] = UserContext{
+			UserID:    strconv.FormatUint(uint64(user.ID), 10),
+			Username:  user.Username,
+			Role:      user.Role,
+			CreatedAt: user.CreatedAt,
+			ExpiresAt: user.CreatedAt.Add(p.expiryAge),
+		}
+	}
+
+	return userContexts, nil
+}
+
+func (p *DBAuthProvider) GetCurrentUser(ctx context.Context) (*UserContext, error) {
+	userCtx, ok := ctx.Value("user").(*UserContext)
+	if !ok || userCtx == nil {
+		return nil, ErrUnauthorized
+	}
+	return userCtx, nil
+}
+
+func (p *DBAuthProvider) UpdateUserRole(ctx context.Context, username, newRole string) error {
+	var user DBUser
+	if err := p.db.Where("username = ?", username).First(&user).Error; err != nil {
+		return ErrUserNotFound
+	}
+
+	user.Role = newRole
+	return p.db.Save(&user).Error
+}
