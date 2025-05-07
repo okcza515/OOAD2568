@@ -66,11 +66,10 @@ func NewMenuState(manager *cli.CLIMenuStateManager) *MenuState {
 }
 
 func (menu *MenuState) Render() {
-	fmt.Println("\nWIL Module Menu:")
-	fmt.Println("1. WIL Project Curriculum")
-	fmt.Println("2. WIL Project Application")
-	fmt.Println("3. WIL Project")
-	fmt.Println("4. Independent Study")
+	fmt.Println("\n Module Menu:")
+	fmt.Println("1. Module State 1")
+	fmt.Println("2. Module State 2")
+	fmt.Println("3. Module State 3")
 	fmt.Println("exit: Exit the module")
 }
 
