@@ -1,11 +1,15 @@
-// MEP-1007
 package model
 
-import "ModEd/core"
+import (
+	"ModEd/common/model"
+	"ModEd/core"
+)
 
 type AnswerSubmission struct {
 	core.BaseModel
-	StudentID uint `json:"student_id"`
-	ExamID    uint `json:"exam_id"`
-	Score     float64
+	StudentID   uint          `gorm:"type:integer;not null" json:"student_id" csv:"student_id"`
+	ExamID      uint          `gorm:"type:integer;not null" json:"exam_id" csv:"exam_id"`
+	Score       float64       `gorm:"type:decimal(5,2);not null" json:"score" csv:"score"`
+	Student     model.Student `gorm:"foreignKey:StudentID;references:ID" json:"-" csv:"-"`
+	Examination Examination   `gorm:"foreignKey:ExamID;references:ID" json:"-" csv:"-"`
 }
