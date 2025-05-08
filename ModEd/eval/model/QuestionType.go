@@ -3,8 +3,7 @@ package model
 type QuestionType string
 
 const (
-	MultipleChoiceQuestionType QuestionType = "MultipleChoiceQuestion"
-	ShortAnswerQuestionType    QuestionType = "ShortAnswerQuestion"
-	TrueFalseQuestionType      QuestionType = "TrueFalseQuestion"
-	SubjectiveQuestionType     QuestionType = "SubjectiveQuestion"
+	MultipleChoiceQuestion QuestionType = "MultipleChoiceQuestion"
+	ShortAnswerQuestion    QuestionType = "ShortAnswerQuestion"
+	TrueFalseQuestion      QuestionType = "TrueFalseQuestion"
 )

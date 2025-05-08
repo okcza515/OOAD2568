@@ -4,7 +4,7 @@ import (
 	"ModEd/core"
 )
 
-type ShortAnswer struct {
+type ShortAnswerSubmission struct {
 	core.BaseModel
 	QuestionID    uint
 	SubmissionID  uint
