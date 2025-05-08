@@ -1,87 +1,118 @@
+// MEP-1007
 package controller
 
 import (
-	"errors"
-	"time"
 
+	"ModEd/core"
 	"ModEd/eval/model"
+	"ModEd/utils/deserializer"
+	"fmt"
+
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
-
-type IExaminationController interface {
-	CreateExam(exam *model.Examination) error
-	PublishExam(examID uint) error
-	CloseExam(examID uint) error
-	GetAllExams() ([]model.Examination, error)
-	UpdateExam(id uint, exam *model.Examination) error
-	DeleteExam(id uint) error
-}
-
 type ExaminationController struct {
 	db *gorm.DB
+	core *core.BaseController[*model.Examination]
 }
+type IExaminationController interface {
+	CreateSeedExamination(path string) (exams []*model.Examination, err error)
+	CreateExam(exam *model.Examination) (examId uint, err error)
+	UpdateExamStatus(examId uint) (exam *model.Examination, err error)
+	GetAllExams(preloads ...string) (exams []*model.Examination, err error)
+	UpdateExam(updatedExam *model.Examination) (exam *model.Examination, err error)
+	DeleteExam(examId uint) (exam *model.Examination, err error)
+}
+
 
 func NewExaminationController(db *gorm.DB) *ExaminationController {
-	return &ExaminationController{db: db}
+	return &ExaminationController{
+		db: db,
+		core: core.NewBaseController[*model.Examination](db),
+	}
 }
 
-func (c *ExaminationController) CreateExam(exam *model.Examination) error {
-	if exam.Exam_name == "" || exam.InstructorID == 0 || exam.CourseID == 0 || exam.CurriculumID == 0 {
-		return errors.New("missing required fields")
+func (c *ExaminationController) CreateExam(exam *model.Examination) (examId uint, err error) {
+	if err := c.core.Insert(exam); err != nil {
+		return 0, err
 	}
-	exam.ExamStatus = "draft"
-	exam.Create_at = time.Now()
-
-	return c.db.Create(exam).Error
+	return examId, nil
 }
 
-func (c *ExaminationController) PublishExam(examID uint) error {
-	var exam model.Examination
-	if err := c.db.First(&exam, examID).Error; err != nil {
-		return err
-	}
-
-	if time.Now().Before(exam.Start_date) {
-		return errors.New("cannot publish exam before start date")
-	}
-
-	exam.ExamStatus = "published"
-	return c.db.Save(&exam).Error
-}
-
-func (c *ExaminationController) CloseExam(examID uint) error {
-	var exam model.Examination
-	if err := c.db.First(&exam, examID).Error; err != nil {
-		return err
-	}
-
-	if exam.ExamStatus != "published" {
-		return errors.New("exam must be published before it can be closed")
-	}	
-
-	if time.Now().Before(exam.End_date) {
-		return errors.New("cannot close exam before the end date")
-	}
-
-	exam.ExamStatus = "closed"
-	return c.db.Save(&exam).Error
-}
-
-func (c *ExaminationController) GetAllExams() ([]model.Examination, error) {
-	var exams []model.Examination
-	if err := c.db.Find(&exams).Error; err != nil {
+// Read all exams
+func (c *ExaminationController) GetAllExams(preloads ...string) (exams []*model.Examination, err error) {
+	exams,err = c.core.List(nil,preloads...)
+	if err != nil {
 		return nil, err
 	}
 	return exams, nil
 }
 
-func (c *ExaminationController) UpdateExam(id uint, exam *model.Examination) error {
-	return c.db.Model(&model.Examination{}).Where("id = ?", id).Updates(exam).Error
+// Read one exam
+func (c *ExaminationController) GetExam(examId uint, preload ...string) (exam *model.Examination, err error) {
+	exam, err = c.core.RetrieveByCondition(map[string]interface{}{"id": examId}, preload...)
+	if err != nil {
+		return nil, err
+	}
+	return exam, nil
 }
 
-func (c *ExaminationController) DeleteExam(id uint) error {
-	c.db.Where("ExamID = ?",id).Delete(&model.Question{})
-	c.db.Where("ExamID = ?",id).Delete(&model.Answer{})
-	c.db.Where("ExaminationID = ?",id).Delete(&model.Result{})
-	return c.db.Where("id = ?", id).Delete(&model.Examination{}).Error
+func (c *ExaminationController) UpdateExam(updatedExam *model.Examination) (exam *model.Examination, err error) {
+	exam, err = c.core.RetrieveByCondition(map[string]interface{}{"id": updatedExam.ID})
+	if err != nil {
+		return nil, err
+	}
+	if exam.ExamStatus == "Publish" {
+		return exam, errors.Wrap(err,"publish exam can not update")
+	}
+	if exam.ExamStatus == "Hidden" {
+		return exam, errors.Wrap(err,"hidden exam can not update")
+	}
+	exam.ExamName = updatedExam.ExamName
+	exam.InstructorID = updatedExam.InstructorID
+	exam.CourseID = updatedExam.CourseID
+	exam.ExamStatus = updatedExam.ExamStatus
+	exam.Description = updatedExam.Description
+	exam.Attempt = updatedExam.Attempt
+	exam.StartDate = updatedExam.StartDate
+	exam.EndDate = updatedExam.EndDate
+	if err := c.core.UpdateByCondition(map[string]interface{}{"id": updatedExam.ID}, exam); err != nil{
+		return nil, err
+	}
+	return exam, nil
+}
+
+// Not finish delete exam
+// func (c *ExaminationController) DeleteExam(examId uint) (exam *model.Examination, err error) {
+// 	c.db.Where("ExamID = ?",examId).Delete(&model.ExamSection{})
+// 	c.db.Where("ExamID = ?",examId).Delete(&model.Submission{})
+// 	exam,err = c.core.RetrieveByCondition(map[string]interface{}{"id":examId})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	if err := c.core.DeleteByCondition(map[string]interface{}{"id": examId}); err != nil {
+// 		return nil, err
+// 	}
+// 	return exam, nil
+// }
+
+func (c *ExaminationController) CreateSeedExamination(path string) (exams []*model.Examination, err error) {
+	deserializer, err := deserializer.NewFileDeserializer(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create file deserializer")
+	}
+
+	if err := deserializer.Deserialize(&exams); err != nil {
+		return nil, errors.Wrap(err, "failed to deserialize exam")
+	}
+
+	for _, exam := range exams {
+		_, err := c.CreateExam(exam)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create exam")
+		}
+	}
+	fmt.Println("Create Exam Seed Successfully")
+	return exams, nil
 }
