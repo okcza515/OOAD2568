@@ -6,8 +6,7 @@ import (
 )
 
 type ExamSection struct {
-	core.BaseModel
-	ID          		uint			`gorm:"primaryKey" csv:"id" json:"id"` 				
+	core.BaseModel	
 	ExamID   		    string 			`gorm:"not null" csv:"exam_id" json:"exam_id"`
 	Exam				Examination 	`gorm:"foreignKey:ExamID;references:ID" csv:"-" json:"-"`
 	SectionNo           uint			`gorm:"not null" csv:"section_no" json:"section_no"`

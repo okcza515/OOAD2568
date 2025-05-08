@@ -10,7 +10,6 @@ import (
 
 type Examination struct {
 	core.BaseModel
-	ID          		uint 							`gorm:"primaryKey" csv:"id" json:"id"`
 	ExamName   		    string 							`gorm:"not null" csv:"exam_name" json:"exam_name"`
 	InstructorID 		uint 							`gorm:"not null" csv:"instructor_id" json:"instructor_id"`
 	Instructor  		instructorModel.Instructor 		`gorm:"foreignKey:Instructor_id;references:ID" csv:"-" json:"-"`
