@@ -12,5 +12,5 @@ type ExamSection struct {
 	SectionNo           uint			`gorm:"type:integer;not null" json:"section_no" csv:"section_no"`
 	Description			string			`gorm:"type:text;not null" json:"description" csv:"description"`
 	NumQuestions		int				`gorm:"type:integer;not null" json:"num_questions" csv:"num_questions"`
-	Score				float64			`gorm:"type:decimal(10,2);not null" json:"score" csv:"score"`
+	Score				float64			`gorm:"type:decimal(5,2);not null" json:"score" csv:"score"`
 }
