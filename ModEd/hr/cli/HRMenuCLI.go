@@ -3,32 +3,74 @@ package main
 import (
 	"ModEd/core"
 	"ModEd/core/cli"
+	"ModEd/core/migration"
 	"ModEd/hr/cli/menu"
+	hrController "ModEd/hr/controller"
+	"flag"
+	"fmt"
 )
 
-func main() {
+var (
+	databasePath = flag.String("database", "data/ModEd.bin", "Path to SQLite Database file")
+)
 
-	manager := cli.NewCLIMenuManager()
-	assetMenu := menu.NewHRMainMenuState(manager)
+type HRMenuCLI struct {
+	manager   *cli.CLIMenuStateManager
+	lastError error
+}
 
-	manager.SetState(assetMenu)
+func NewHRMenuCLI(manager *cli.CLIMenuStateManager) *HRMenuCLI {
+	return &HRMenuCLI{
+		manager:   manager,
+		lastError: nil,
+	}
+}
 
+func (app *HRMenuCLI) Run() {
 	for {
-		// core.ClearScreen()
+		core.ClearScreen()
 
-		manager.Render()
+		if app.lastError != nil {
+			fmt.Printf("Error: %v\nPlease try again.\n\n", app.lastError)
+			app.lastError = nil
+		}
 
-		manager.UserInput = core.GetUserInput("Enter your choice: ")
-		if manager.UserInput == "exit" {
+		app.manager.Render()
+
+		userInput := core.GetUserInput("Enter your choice: ")
+		if userInput == "exit" {
+			fmt.Println("Exiting HR Menu CLI.")
 			break
 		}
 
-		// core.ClearScreen()
+		app.manager.UserInput = userInput
+		err := app.manager.HandleUserInput()
 
-		err := manager.HandleUserInput()
 		if err != nil {
-			panic(err)
+			app.lastError = err
 		}
 	}
+}
 
+func main() {
+	db, err := migration.
+		GetInstance().
+		MigrateModule(core.MODULE_HR).
+		BuildDB()
+
+	if err != nil {
+		fmt.Printf("Error migrating database: %v\n", err)
+		return
+	}
+
+	manager := cli.NewCLIMenuManager()
+
+	mainMenu := menu.NewHRMainMenuState(manager,
+		hrController.NewStudentHRController(db))
+
+	manager.SetState(mainMenu)
+
+	app := NewHRMenuCLI(manager)
+
+	app.Run()
 }

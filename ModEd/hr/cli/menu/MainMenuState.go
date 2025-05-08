@@ -3,6 +3,7 @@ package menu
 import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
+	"ModEd/hr/controller"
 	"fmt"
 )
 
@@ -29,7 +30,7 @@ func (state *HRMainMenuState) Render() {
 	fmt.Println()
 }
 
-func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
+func NewHRMainMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController) *HRMainMenuState {
 	handlerContext := handler.NewHandlerContext()
 	state := &HRMainMenuState{
 		manager:        manager,
@@ -37,7 +38,7 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager) *HRMainMenuState {
 	}
 
 	manager.AddMenu(string(MENU_HR), state)
-	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager))
+	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl))
 	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager))
 
 	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))

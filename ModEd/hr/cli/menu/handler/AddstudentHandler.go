@@ -2,44 +2,37 @@ package handler
 
 import (
 	"ModEd/core"
+	"ModEd/core/validation"
 	"ModEd/hr/controller"
-	"ModEd/hr/util"
-	"flag"
 	"fmt"
 )
 
-type AddStudentStrategy[T core.RecordInterface] struct {
-	controller interface{ InsertOne(data interface{}) error }
+type AddStudentStrategy struct {
+	studentController *controller.StudentHRController
 }
 
-func NewAddStudentStrategy[T core.RecordInterface](controller interface{ InsertOne(data interface{}) error }) *AddStudentStrategy[T] {
-	return &AddStudentStrategy[T]{controller: controller}
+func NewAddStudentStrategy(studentCtrl *controller.StudentHRController) *AddStudentStrategy {
+	return &AddStudentStrategy{studentController: studentCtrl}
 }
 
-var (
-	databasePath = flag.String("database", "data/ModEd.bin", "Path of SQLite Database")
-)
+func (handler AddStudentStrategy) Execute() error {
+	validator := validation.NewValidationChain(core.GetUserInput)
 
-func (handler AddStudentStrategy[T]) Execute() error {
-	studentCode := core.GetUserInput("Enter student ID: ")
-	firstName := core.GetUserInput("Enter student first name: ")
-	lastName := core.GetUserInput("Enter student last name: ")
-	email := core.GetUserInput("Enter student email: ")
-	startDate := core.GetUserInput("Enter student start date: ")
-	birthDate := core.GetUserInput("Enter student birth date: ")
-	program := core.GetUserInput("Enter student program: ")
-	department := core.GetUserInput("Enter student department: ")
-	status := core.GetUserInput("Enter student status: ")
-	gender := core.GetUserInput("Enter student gender: ")
-	citizenID := core.GetUserInput("Enter student citizen ID: ")
-	phoneNumber := core.GetUserInput("Enter student phone number: ")
-	advisorCode := core.GetUserInput("Enter student advisor code: ")
+	studentCode := validator.Field(validation.FieldConfig{Name: "studentCode", Prompt: "Enter student ID (11 digits): "}).Required().IsStudentCode().GetInput()
+	firstName := validator.Field(validation.FieldConfig{Name: "firstName", Prompt: "Enter student first name: "}).Required().GetInput()
+	lastName := validator.Field(validation.FieldConfig{Name: "lastName", Prompt: "Enter student last name: "}).Required().GetInput()
+	email := validator.Field(validation.FieldConfig{Name: "email", Prompt: "Enter student email: "}).Required().IsEmail().GetInput()
+	startDate := validator.Field(validation.FieldConfig{Name: "startDate", Prompt: "Enter student start date (YYYY-MM-DD HH:MM:SS): "}).Required().IsDateTime().GetInput()
+	birthDate := validator.Field(validation.FieldConfig{Name: "birthDate", Prompt: "Enter student birth date (YYYY-MM-DD HH:MM:SS): "}).Required().IsDateTime().GetInput()
+	program := validator.Field(validation.FieldConfig{Name: "program", Prompt: "Enter student program: "}).Required().GetInput()
+	department := validator.Field(validation.FieldConfig{Name: "department", Prompt: "Enter student department: "}).Required().GetInput()
+	status := validator.Field(validation.FieldConfig{Name: "status", Prompt: "Enter student status (e.g., Active, Graduated): "}).Required().GetInput()   // Consider .AllowedValues()
+	gender := validator.Field(validation.FieldConfig{Name: "gender", Prompt: "Enter student gender (e.g., Male, Female, Other): "}).Required().GetInput() // Consider .AllowedValues()
+	citizenID := validator.Field(validation.FieldConfig{Name: "citizenID", Prompt: "Enter student citizen ID (13 digits): "}).Required().IsAllDigits().Length(13).GetInput()
+	phoneNumber := validator.Field(validation.FieldConfig{Name: "phoneNumber", Prompt: "Enter student phone number (10 digits, e.g., 0812345678): "}).Required().IsPhoneNumber().GetInput()
+	advisorCode := validator.Field(validation.FieldConfig{Name: "advisorCode", Prompt: "Enter student advisor code: "}).Required().GetInput()
 
-	util.DatabasePath = databasePath
-	db := util.OpenDatabase(*databasePath)
-
-	studentController := controller.NewStudentHRController(db)
-	err := studentController.AddStudent(
+	err := handler.studentController.AddStudent(
 		studentCode,
 		firstName,
 		lastName,
