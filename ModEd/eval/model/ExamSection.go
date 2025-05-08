@@ -7,10 +7,10 @@ import (
 
 type ExamSection struct {
 	core.BaseModel	
-	ExamID   		    string 			`gorm:"not null" csv:"exam_id" json:"exam_id"`
-	Exam				Examination 	`gorm:"foreignKey:ExamID;references:ID" csv:"-" json:"-"`
-	SectionNo           uint			`gorm:"not null" csv:"section_no" json:"section_no"`
-	Description			string			`gorm:"not null" csv:"description" json:"description"`
-	NumQuestions		int				`gorm:"not null" csv:"num_question" json:"num_question"`
-	Score				float64			`gorm:"not null" csv:"score" json:"score"`
+	ExamID				uint			`gorm:"type:integer;not null" json:"exam_id" csv:"exam_id"`
+	Exam  				Examination 	`gorm:"foreignKey:ExamID;references:ID" json:"exam" csv:"exam"`
+	SectionNo           uint			`gorm:"type:integer;not null" json:"section_no" csv:"section_no"`
+	Description			string			`gorm:"type:text;not null" json:"description" csv:"description"`
+	NumQuestions		int				`gorm:"type:integer;not null" json:"num_questions" csv:"num_questions"`
+	Score				float64			`gorm:"type:decimal(10,2);not null" json:"score" csv:"score"`
 }

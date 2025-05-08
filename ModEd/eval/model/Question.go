@@ -6,11 +6,11 @@ import (
 
 type Question struct {
 	core.BaseModel
-	ExamID         uint         `gorm:"not null" csv:"exam_id" json:"exam_id"`
-	SectionNo      uint         `gorm:"not null" csv:"section_no" json:"section_no"`
-	ActualQuestion string       `gorm:"not null" csv:"actual_question" json:"actual_question"`
-	QuestionType   QuestionType `gorm:"not null;type:varchar(50);" csv:"question_type" json:"question_type"`
-	Score          float64      `gorm:"not null" csv:"score" json:"score"`
+	SectionID		uint 			`gorm:"type:integer;not null" json:"section_id" csv:"section_id"`
+	Section			ExamSection 	`gorm:"foreignKey:SectionID;references:ID" json:"section" csv:"section"`
+	Score			float64			`gorm:"type:decimal(10,2);not null" json:"score" csv:"score"`
+	ActualQuestion	string			`gorm:"type:text;not null" json:"actual_question" csv:"actual_question"`
+	QuestionType	QuestionType	`gorm:"type:text;not null" json:"question_type" csv:"question_type"`
 }
 
 // type QuestionProductInterface interface {
