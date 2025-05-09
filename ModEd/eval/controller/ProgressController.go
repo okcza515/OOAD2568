@@ -50,16 +50,19 @@ func (controller *ProgressController) GetProgress(filter ProgressFilter) ([]eval
 	return ProgressList, nil
 }
 
-func (controller *ProgressController) GetProgressByID(id uint) (evalModel.Progress, error) {
-	return controller.RetrieveByID(id, "Student", "Assessment")
-}
-
-func (controller *ProgressController) ListAllProgress() ([]evalModel.Progress, error) {
+func (controller *ProgressController) GetAllProgress() ([]evalModel.Progress, error) {
 	return controller.List(nil, "Student", "Assessment")
 }
 
-func (controller *ProgressController) ListProgressWithPagination(page, pageSize int) ([]evalModel.Progress, error) {
-	return controller.ListPagination(nil, page, pageSize, "Student", "Assessment")
+func (controller *ProgressController) GetProgressByStudentCode(id uint) (evalModel.Progress, error) {
+	return controller.RetrieveByID(id, "Student", "Assessment")
+}
+
+func (controller *ProgressController) GetProgressByStudentStatus(id uint, Status string) (evalModel.Progress, error) {
+	return controller.RetrieveByCondition(map[string]interface{}{
+		"id":     id,
+		"status": Status,
+	}, "Student", "Assessment")
 }
 
 func (controller *ProgressController) GetSubmitCount(assessmentId uint) (uint, error) {
