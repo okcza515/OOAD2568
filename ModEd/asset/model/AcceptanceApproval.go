@@ -15,7 +15,7 @@ type AcceptanceApproval struct {
 	ApproverID           *uint             `gorm:"index"`
 	Approver             master.Instructor `gorm:"foreignKey:ApproverID"`
 	Status               AcceptanceStatus  `gorm:"type:varchar(50);default:'pending'"`
-	ApprovalTime         *time.Time        `gorm:"type:time"`
+	ApprovalTime         *time.Time        `gorm:"type:datetime"`
 	DeletedAt            gorm.DeletedAt    `gorm:"index"`
 	CreatedAt            time.Time
 }

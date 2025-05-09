@@ -196,7 +196,7 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 		}
 	}
 }
-
+	
 func showApprovedRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
 		fmt.Println("Failed to retrieve requests:", err)

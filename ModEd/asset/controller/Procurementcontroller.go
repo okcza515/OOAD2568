@@ -71,6 +71,7 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 			Updates(map[string]interface{}{
 				"status":      model.ProcurementStatusApproved,
 				"approver_id": approverID,
+				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
 		}
