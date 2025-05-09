@@ -1,28 +1,37 @@
 package evaluation
 
 import (
+	"ModEd/core/cli"
 	"ModEd/eval/cli/evaluation/handler"
-	"ModEd/eval/controller"
-	"ModEd/eval/model"
 	"fmt"
 
 	"gorm.io/gorm"
 )
 
 func RunEvaluationModuleCLI(db *gorm.DB) {
-	// Initialize controllers
-	evaluationController := controller.NewEvaluationController([]*model.Evaluation{}, "")
+	// Create CLI state manager
+	manager := cli.NewCLIMenuManager()
 
-	params := &handler.EvaluationCLIParams{
-		EvaluationController: evaluationController,
-	}
+	// Create evaluation module handler
+	evalHandler := handler.NewEvalModuleHandler(manager, db)
 
-	mainState := handler.NewMainMenuState(params)
-	stateManager := handler.NewMenuStateManager(mainState)
+	// Set initial state
+	manager.SetState(evalHandler)
 
 	// Run menu state manager
-	err := stateManager.Run()
-	if err != nil {
-		fmt.Println("Error:", err)
+	for {
+		evalHandler.Render()
+		var input string
+		fmt.Print("Enter your choice: ")
+		fmt.Scanln(&input)
+
+		if input == "exit" {
+			break
+		}
+
+		err := evalHandler.HandleUserInput(input)
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
 	}
 }
