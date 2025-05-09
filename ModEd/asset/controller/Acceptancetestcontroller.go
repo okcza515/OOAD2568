@@ -1,43 +1,56 @@
 // MEP-1014
 package controller
 
-// import (
-// 	model "ModEd/asset/model/Procurement"
+import (
+	model "ModEd/asset/model"
 
-// 	"gorm.io/gorm"
-// )
+	"gorm.io/gorm"
+)
 
-// type AcceptanceTestController struct {
-// 	Connector *gorm.DB
-// }
+type AcceptanceTestController struct {
+	db *gorm.DB
+}
 
-// func CreateAcceptanceTestController(connector *gorm.DB) *AcceptanceTestController {
-// 	acceptanceTest := AcceptanceTestController{Connector: connector}
-// 	connector.AutoMigrate(&model.AcceptanceTest{})
-// 	return &acceptanceTest
-// }
+func (c *AcceptanceTestController) CreateAcceptanceTest(body *model.AcceptanceTest) error {
+	return c.db.Create(body).Error
+}
 
-// func (acceptanceTest AcceptanceTestController) ListAll() ([]model.AcceptanceTest, error) {
-// 	tests := []model.AcceptanceTest{}
-// 	result := acceptanceTest.Connector.
-// 		Select("AcceptanceTestID").Find(&tests)
-// 	return tests, result.Error
-// }
+func (c *AcceptanceTestController) ListAllAcceptanceTest() (*[]model.AcceptanceTest, error) {
+	var acceptancetest []model.AcceptanceTest
+	err := c.db.Find(&acceptancetest).Error
+	return &acceptancetest, err
+}
 
-// func (acceptanceTest AcceptanceTestController) GetByID(id uint) (AcceptanceTestID string) ([]model.AcceptanceTest, error) {
-// 	t := &model.AcceptanceTest{}
-// 	result := acceptanceTest.Connector.Where("AcceptanceTestID = ?", id).First(t)
-// 	return t, result.Error
-// }
+func (c *AcceptanceTestController) GetAcceptanceTestByID(id uint) (*model.AcceptanceTest, error) {
+	var acceptancetest model.AcceptanceTest
+	err := c.db.First(&acceptancetest, id).Error
+	return &acceptancetest, err
+}
 
-// func (acceptanceTest AcceptanceTestController) Create(t *model.AcceptanceTest) error {
-// 	return acceptanceTest.Connector.Create(t).Error
-// }
+func (c *AcceptanceTestController) GetQuotationDetailsByTOR(torID uint) ([]model.QuotationDetail, error) {
+	var quotations []model.Quotation
 
-// func (acceptanceTest AcceptanceTestController) Update(AcceptanceTestID uint, updatedData map[string]interface{}) error {
-// 	return acceptanceTest.Connector.Model(&model.AcceptanceTest{}).Where("AcceptanceTestID = ?", AcceptanceTestID).Updates(updatedData).Error
-// }
+	err := c.db.Preload("Details").
+		Where("tor_id = ?", torID).
+		Find(&quotations).Error
+	if err != nil {
+		return nil, err
+	}
 
-// func (acceptanceTest AcceptanceTestController) DeleteByID(AcceptanceTestID uint) error {
-// 	return acceptanceTest.Connector.Where("AcceptanceTestID = ?", AcceptanceTestID).Delete(&model.AcceptanceTest{}).Error
-// }
+	var details []model.QuotationDetail
+	for _, quotation := range quotations {
+		details = append(details, quotation.Details...)
+	}
+
+	return details, nil
+}
+
+func (c *AcceptanceTestController) GetCategoriesByIDs(ids []uint) ([]model.Category, error) {
+	var categories []model.Category
+	if len(ids) == 0 {
+		return categories, nil
+	}
+
+	err := c.db.Where("id IN ?", ids).Find(&categories).Error
+	return categories, err
+}
