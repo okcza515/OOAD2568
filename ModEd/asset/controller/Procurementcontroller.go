@@ -1,3 +1,4 @@
+// MEP-1014
 package controller
 
 import (
@@ -29,10 +30,6 @@ func (c *ProcurementController) GetProcurementByID(id uint) (*model.Procurement,
 	var procurement model.Procurement
 	err := c.db.First(&procurement, id).Error
 	return &procurement, err
-}
-
-func (c *ProcurementController) Create(p *model.Procurement) error {
-	return c.db.Create(p).Error
 }
 
 // Update procurement fields (generic)
@@ -86,4 +83,3 @@ func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
 			"approver_id": approverID,
 		}).Error
 }
-
