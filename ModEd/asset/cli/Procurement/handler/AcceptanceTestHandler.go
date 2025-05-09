@@ -32,7 +32,7 @@ func AcceptanceTestHandler(facade *controller.ProcurementControllerFacade) {
 func printAcceptanceTestOptions() {
 	fmt.Println(":/Procurement/Main")
 	fmt.Println()
-	fmt.Println("--AcceptanceTest Functions--")
+	fmt.Println("--Acceptance Functions--")
 	fmt.Println("  1:\tAccept")
 	fmt.Println("  2:\tReject")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")

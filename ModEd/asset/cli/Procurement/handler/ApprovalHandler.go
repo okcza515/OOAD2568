@@ -117,7 +117,7 @@ func printApprovalList(observer controller.ApprovalObserver) {
 		}
 
 	case *controller.AcceptanceApprovalController:
-		approvals, err := o.ListAllAcceptanceApprovals()
+		approvals, err := o.ListAllApprovals()
 		if err != nil {
 			fmt.Println("Failed to fetch acceptance approvals:", err)
 			return

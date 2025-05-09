@@ -2,8 +2,8 @@
 package controller
 
 import (
+	"time"
 	model "ModEd/asset/model"
-	"errors"
 	"gorm.io/gorm"
 )
 
@@ -11,80 +11,62 @@ type AcceptanceApprovalController struct {
 	db *gorm.DB
 }
 
-func (c *AcceptanceApprovalController) CreateAcceptanceApproval(body *model.AcceptanceApproval) error {
-	return c.db.Create(body).Error
+func (c *AcceptanceApprovalController) CreateAcceptanceRequest(req *model.AcceptanceApproval) error {
+	return c.db.Create(req).Error
 }
 
-func (c *AcceptanceApprovalController) ListAllAcceptanceApprovals() (*[]model.AcceptanceApproval, error) {
-	var approvals  []model.AcceptanceApproval
-	err := c.db.Preload("Procurement").
-		Preload("Approver").
-		Find(&approvals ).Error
-	return &approvals , err
-}
-
-func (c *AcceptanceApprovalController) GetAcceptanceApprovalByID(id uint) (*model.AcceptanceApproval, error) {
-	var approvals  model.AcceptanceApproval
+func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApproval, error) {
+	var approvals []model.AcceptanceApproval
 	err := c.db.
 		Preload("Procurement").
 		Preload("Approver").
-		First(&approvals , id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
-	}
-	return &approvals , err
+		Find(&approvals).Error
+	return approvals, err
 }
 
-func (c *AcceptanceApprovalController) UpdateAcceptanceApprovalStatus(id uint, status model.AcceptanceStatus, approverID uint) error {
-	return c.db.Model(&model.AcceptanceApproval{}).
-		Where("acceptance_approval_id = ?", id).
-		Updates(map[string]interface{}{
-			"status":      status,
-			"approver_id": approverID,
-		}).Error
-}
-
-func (c *AcceptanceApprovalController) DeleteAcceptanceApproval(id uint) error {
-	return c.db.Model(&model.AcceptanceApproval{}).
-		Where("acceptance_approval_id = ?", id).
-		Delete(&model.AcceptanceApproval{}).Error
-}
-
-func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurementID uint) ([]model.QuotationDetail, error) {
-	var quotations []model.Quotation
-
-	err := c.db.Preload("Details").
+func (c *AcceptanceApprovalController) ShowAcceptanceRequestList(procurementID uint) ([]model.AcceptanceApproval, error) {
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
 		Where("procurement_id = ?", procurementID).
-		Find(&quotations).Error
-	if err != nil {
-		return nil, err
-	}
-
-	var details []model.QuotationDetail
-	for _, quotation := range quotations {
-		details = append(details, quotation.Details...)
-	}
-
-	return details, nil
+		Find(&approvals).Error
+	return approvals, err
 }
 
-func (c *AcceptanceApprovalController) GetCategoriesByIDs(ids []uint) ([]model.Category, error) {
-	var categories []model.Category
-	if len(ids) == 0 {
-		return categories, nil
-	}
+func (c *AcceptanceApprovalController) ShowAcceptanceRequestStatus(id uint) (*model.AcceptanceApproval, error) {
+	approval := new(model.AcceptanceApproval)
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
+		First(approval, id).Error
+	return approval, err
+}
 
-	err := c.db.Where("id IN ?", ids).Find(&categories).Error
-	return categories, err
+func (c *AcceptanceApprovalController) ShowAcceptanceRequestByStatus(status model.AcceptanceStatus) ([]model.AcceptanceApproval, error) {
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
+		Where("status = ?", status).
+		Find(&approvals).Error
+	return approvals, err
+}
+
+func (c *AcceptanceApprovalController) DeleteAcceptanceRequest(id uint) error {
+	return c.db.Model(&model.AcceptanceApproval{}).
+		Where("acceptance_approval_id = ?", id).
+		Update("deleted_at", time.Now()).Error
 }
 
 func (c *AcceptanceApprovalController) OnApproved(id uint, approverID uint) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {		
+	return c.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.AcceptanceApproval{}).
 			Where("acceptance_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":      model.AcceptanceStatusApproved,
-				"approver_id": approverID,
+				"status":       model.AcceptanceStatusApproved,
+				"approver_id":  approverID,
+				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
 		}
@@ -105,12 +87,13 @@ func (c *AcceptanceApprovalController) OnApproved(id uint, approverID uint) erro
 }
 
 func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) error {
-	return c.db.Transaction(func(tx *gorm.DB) error {		
+	return c.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Model(&model.AcceptanceApproval{}).
 			Where("acceptance_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":      model.AcceptanceStatusRejected,
-				"approver_id": approverID,
+				"status":       model.AcceptanceStatusRejected,
+				"approver_id":  approverID,
+				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
 		}
