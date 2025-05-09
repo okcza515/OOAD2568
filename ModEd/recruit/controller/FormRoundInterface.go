@@ -12,6 +12,8 @@ type FormRound interface {
 
 var strategyRegistry = map[string]FormRound{
 	"Portfolio":   &PortfolioStrategy{},
+	"Quota":       &QuotaStrategy{},
+	"Admission":   &AdmissionStrategy{},
 	"Scholarship": &ScholarshipStrategy{},
 }
 
