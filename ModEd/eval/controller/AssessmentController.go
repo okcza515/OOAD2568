@@ -117,15 +117,15 @@ func (c *AssessmentController) SavePathFile(submissionID uint, pathFile *assessm
 	return c.DB.Save(&submission).Error
 }
 
-// ScoreSubmission updates the score and feedback for a submission
-func (c *AssessmentController) ScoreSubmission(submissionID uint, score float64, feedback string) error {
-	var submission assessmentModel.AssessmentSubmission
-	err := c.DB.First(&submission, submissionID).Error
-	if err != nil {
-		return err
-	}
+// // ScoreSubmission updates the score and feedback for a submission
+// func (c *AssessmentController) ScoreSubmission(submissionID uint, score float64, feedback string) error {
+// 	var submission assessmentModel.AssessmentSubmission
+// 	err := c.DB.First(&submission, submissionID).Error
+// 	if err != nil {
+// 		return err
+// 	}
 
-	submission.Score = score
-	submission.Feedback = feedback
-	return c.DB.Save(&submission).Error
-}
+// 	submission.Score = score
+// 	submission.Feedback = feedback
+// 	return c.DB.Save(&submission).Error
+// }
