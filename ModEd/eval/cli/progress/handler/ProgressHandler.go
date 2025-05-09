@@ -19,12 +19,12 @@ import (
 type ProgressMenuStateHandler struct {
 	Manager                    *cli.CLIMenuStateManager
 	wrapper                    *controller.EvalModuleWrapper
-	EvalModuleMenuStateHandler *EvalModuleMenuStateHandler
+	EvalModuleMenuStateHandler cli.MenuState
 	handler                    *handler.HandlerContext
 	backhandler                *handler.ChangeMenuHandlerStrategy
 }
 
-func NewProgressMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.EvalModuleWrapper, evalModuleMenuStateHandler *EvalModuleMenuStateHandler) *ProgressMenuStateHandler {
+func NewProgressMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.EvalModuleWrapper, evalModuleMenuStateHandler cli.MenuState) *ProgressMenuStateHandler {
 	return &ProgressMenuStateHandler{
 		Manager:                    manager,
 		wrapper:                    wrapper,

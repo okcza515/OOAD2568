@@ -1,69 +1,96 @@
 package handler
 
 import (
+	// "ModEd/core/cli" // Remove unused import
+	"ModEd/curriculum/cli/curriculum/handler"
 	"ModEd/eval/controller"
 	"fmt"
 )
 
-// QuizCLIParams contains controllers needed for Quiz CLI
 type QuizCLIParams struct {
 	QuizController     controller.QuizController
 	QuestionController *controller.QuestionController
 }
 
-// QuizMenuState represents the main menu of the Quiz CLI
 type QuizMenuState struct {
+	*handler.BaseMenuState
 	params *QuizCLIParams
 }
 
-// NewMainMenuState creates a new main menu state
 func NewMainMenuState(params *QuizCLIParams) *QuizMenuState {
-	return &QuizMenuState{
-		params: params,
+	state := &QuizMenuState{
+		BaseMenuState: handler.NewBaseMenuState("Quiz Management", nil),
+		params:        params,
 	}
+
+	state.AddMenuItem("1", "List Quizzes", state.listQuizzes)
+	state.AddMenuItem("2", "Create Quiz", state.createQuiz)
+	state.AddMenuItem("3", "Update Quiz", state.updateQuiz)
+	state.AddMenuItem("4", "Delete Quiz", state.deleteQuiz)
+	state.AddMenuItem("5", "Manage Quiz Questions", state.manageQuestions)
+	state.AddBackItem() // Add back option
+	return state
 }
 
-// Enter displays the main menu
 func (s *QuizMenuState) Enter() error {
-	fmt.Println("\n===== Quiz Management =====")
-	fmt.Println("1. List Quizzes")
-	fmt.Println("2. Create Quiz")
-	fmt.Println("3. Update Quiz")
-	fmt.Println("4. Delete Quiz")
-	fmt.Println("5. Manage Quiz Questions")
-	fmt.Println("back - Return to previous menu")
+	s.Display()
 	return nil
 }
 
-// Exit handles exit from the main menu
 func (s *QuizMenuState) Exit() error {
 	return nil
 }
 
-// HandleInput processes user input in the main menu
-func (s *QuizMenuState) HandleInput(input string) (MenuState, error) {
-	switch input {
-	case "1":
-		fmt.Println("\n===== Quizzes =====")
-		fmt.Println("Quiz listing will be implemented here")
-		return s, nil
-	case "2":
-		fmt.Println("\n===== Create Quiz =====")
-		fmt.Println("Quiz creation will be implemented here")
-		return s, nil
-	case "3":
-		fmt.Println("\n===== Update Quiz =====")
-		fmt.Println("Quiz update will be implemented here")
-		return s, nil
-	case "4":
-		fmt.Println("\n===== Delete Quiz =====")
-		fmt.Println("Quiz deletion will be implemented here")
-		return s, nil
-	case "5":
-		return NewQuestionMenuState(s.params), nil
-	case "back":
-		return nil, nil
-	default:
-		return s, fmt.Errorf("invalid choice: %s", input)
-	}
+func (s *QuizMenuState) HandleInput(input string) (handler.MenuState, error) {
+	return s.BaseMenuState.HandleInput(input)
+}
+
+func (s *QuizMenuState) listQuizzes() (handler.MenuState, error) {
+	fmt.Println("\n===== Quizzes =====")
+	fmt.Println("Quiz listing will be implemented here")
+	return s, nil
+}
+
+// createQuiz handles creating a quiz
+func (s *QuizMenuState) createQuiz() (handler.MenuState, error) {
+	fmt.Println("\n===== Create Quiz =====")
+	fmt.Println("Quiz creation will be implemented here")
+	// Your logic here
+	return s, nil
+}
+
+// updateQuiz handles updating a quiz
+func (s *QuizMenuState) updateQuiz() (handler.MenuState, error) {
+	fmt.Println("\n===== Update Quiz =====")
+	fmt.Println("Quiz update will be implemented here")
+	// Your logic here
+	return s, nil
+}
+
+// deleteQuiz handles deleting a quiz
+func (s *QuizMenuState) deleteQuiz() (handler.MenuState, error) {
+	fmt.Println("\n===== Delete Quiz =====")
+	fmt.Println("Quiz deletion will be implemented here")
+	// Your logic here
+	return s, nil
+}
+
+// manageQuestions handles managing quiz questions
+func (s *QuizMenuState) manageQuestions() (handler.MenuState, error) {
+	fmt.Println("\n===== Manage Quiz Questions =====")
+	fmt.Println("Question management will be implemented here")
+	// Your logic here
+	return s, nil
+}
+
+func (s *QuizMenuState) AddMenuItem(key, description string, action func() (handler.MenuState, error)) {
+	s.BaseMenuState.AddMenuItem(key, description, action)
+}
+
+func (s *QuizMenuState) AddBackItem() {
+	s.BaseMenuState.AddBackItem()
+}
+
+func (s *QuizMenuState) Display() {
+	s.BaseMenuState.Display()
 }

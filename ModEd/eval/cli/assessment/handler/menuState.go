@@ -56,52 +56,47 @@ func (m *MenuStateManager) Run() error {
 	}
 }
 
-// BaseMenuState provides common functionality for menu states
-type BaseMenuState struct {
-	title    string
-	options  map[string]string
-	handlers map[string]func() (MenuState, error)
+// Define FuncStrategy to encapsulate action functions
+type FuncStrategy struct {
+	Action func() error
 }
 
-// NewBaseMenuState creates a new base menu state
-func NewBaseMenuState(title string) *BaseMenuState {
-	return &BaseMenuState{
-		title:    title,
-		options:  make(map[string]string),
-		handlers: make(map[string]func() (MenuState, error)),
+// Define NewHandlerContext to create a new handler context
+func NewHandlerContext() *HandlerContext {
+	return &HandlerContext{
+		handlers: make(map[string]FuncStrategy),
 	}
 }
 
-// AddOption adds a menu option
-func (s *BaseMenuState) AddOption(key, description string, handler func() (MenuState, error)) {
-	s.options[key] = description
-	s.handlers[key] = handler
+// Define HandlerContext to manage menu states
+type HandlerContext struct {
+	menuTitle string
+	handlers  map[string]FuncStrategy
 }
 
-// Enter displays the menu
-func (s *BaseMenuState) Enter() error {
-	fmt.Printf("\n===== %s =====\n", s.title)
-	for key, description := range s.options {
-		fmt.Printf("%s. %s\n", key, description)
+func (ctx *HandlerContext) SetMenuTitle(title string) {
+	ctx.menuTitle = title
+}
+
+func (ctx *HandlerContext) AddHandler(key, description string, strategy FuncStrategy) {
+	ctx.handlers[key] = strategy
+}
+
+func (ctx *HandlerContext) AddBackHandler(strategy FuncStrategy) {
+	ctx.AddHandler("back", "Back", strategy)
+}
+
+func (ctx *HandlerContext) ShowMenu() {
+	fmt.Printf("\n%s Menu:\n", ctx.menuTitle)
+	for key := range ctx.handlers {
+		fmt.Printf("%s. %s\n", key, key)
 	}
-	fmt.Println("back - Return to previous menu")
+}
+
+func (ctx *HandlerContext) HandleInput(input string) error {
+	if strategy, exists := ctx.handlers[input]; exists {
+		return strategy.Action()
+	}
+	fmt.Println("Invalid option")
 	return nil
-}
-
-// Exit handles exit from the menu
-func (s *BaseMenuState) Exit() error {
-	return nil
-}
-
-// HandleInput processes user input
-func (s *BaseMenuState) HandleInput(input string) (MenuState, error) {
-	if input == "back" {
-		return nil, nil
-	}
-
-	if handler, exists := s.handlers[input]; exists {
-		return handler()
-	}
-
-	return s, fmt.Errorf("invalid choice: %s", input)
 }

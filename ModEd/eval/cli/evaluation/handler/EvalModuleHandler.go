@@ -8,22 +8,25 @@ import (
 	"ModEd/eval/controller"
 
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type EvalModuleMenuStateHandler struct {
 	Manager *cli.CLIMenuStateManager
 	wrapper *controller.EvalModuleWrapper
 
-	ProgressMenuStateHandler *ProgressMenuStateHandler
+	ProgressMenuStateHandler *progressHandler.ProgressMenuStateHandler
 }
 
-func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.EvalModuleWrapper) *EvalModuleMenuStateHandler {
+func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, db *gorm.DB) *EvalModuleMenuStateHandler {
+	wrapper := controller.NewEvalModuleWrapper(db)
 	evalModuleHandler := &EvalModuleMenuStateHandler{
 		Manager: manager,
 		wrapper: wrapper,
 	}
 
-	evalModuleHandler.ProgressMenuStateHandler = NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
+	evalModuleHandler.ProgressMenuStateHandler = progressHandler.NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
 
 	evalModuleHandler.Manager.AddMenu("3", evalModuleHandler.ProgressMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("Exit", nil)
