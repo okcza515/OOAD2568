@@ -17,7 +17,7 @@ type ProcurementControllerFacade struct {
 	BudgetApproval              BudgetApprovalController
 	Procurement                 ProcurementController
 	TOR                         TORController
-	AcceptanceTest              AcceptanceTestController
+	Acceptance                  AcceptanceApprovalController
 	// BudgetAllocation            BudgetAllocationController
 	//ProcurementApproval ProcurementApprovalController
 }
@@ -38,7 +38,7 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	facade.BudgetApproval = BudgetApprovalController{db: db}
 	facade.Procurement = ProcurementController{db: db}
 	facade.TOR = TORController{db: db}
-	facade.AcceptanceTest = AcceptanceTestController{db: db}
+	facade.Acceptance = AcceptanceApprovalController{db: db}
 	// facade.BudgetAllocation = BudgetAllocationController{db: db}
 
 	// fmt.Println("I'm In Facade yippie!")
