@@ -43,7 +43,7 @@ type AssessmentSubmission struct {
 	FirstName   string
 	LastName    string
 	Email       string
-	Answers     pathFile.PathFile
+	Answers     PathFile
 	Submitted   bool
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at" validate:"-"`
 	Score       float64
