@@ -6,7 +6,6 @@ import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	curriculumModel "ModEd/curriculum/model"
-	pathFile "ModEd/eval/model"
 
 	"gorm.io/gorm"
 )
