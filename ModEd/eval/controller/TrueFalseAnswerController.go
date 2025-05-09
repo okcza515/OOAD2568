@@ -16,6 +16,7 @@ type ITrueFalseAnswer interface {
 	CreateTrueFalseAnswer(tfAnswer *model.TrueFalseAnswer) (tfAnswerId uint, err error)
 	GetAllTrueFalseAnswers(preloads ...string) (tfAnswers []*model.TrueFalseAnswer, err error)
 	GetTrueFalseAnswer(tfAnswerId uint, preload ...string) (tfAnswer *model.TrueFalseAnswer, err error)
+	GetTrueFalseAnswerByQuestionID(questionID uint) (tfAnswer *model.TrueFalseAnswer, err error)
 	UpdateTrueFalseAnswer(updatedTfAnswer *model.TrueFalseAnswer) (tfAnswer *model.TrueFalseAnswer, err error)
 	DeleteTrueFalseAnswer(tfAnswerId uint) (tfAnswer *model.TrueFalseAnswer, err error)
 }
@@ -48,6 +49,18 @@ func (c *TrueFalseAnswerController) GetTrueFalseAnswer(tfAnswerId uint, preload 
 		return nil, err
 	}
 	return tfAnswer, nil
+}
+
+func (c *TrueFalseAnswerController) GetTrueFalseAnswerByQuestionID(questionID uint) (tfAnswer *model.TrueFalseAnswer, err error) {
+    err = c.db.
+        Where("question_id = ?", questionID).
+        Find(&tfAnswer).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+    return tfAnswer, err
 }
 
 func (c *TrueFalseAnswerController) UpdateTrueFalseAnswer(updatedTfAnswer *model.TrueFalseAnswer) (tfAnswer *model.TrueFalseAnswer, err error) {

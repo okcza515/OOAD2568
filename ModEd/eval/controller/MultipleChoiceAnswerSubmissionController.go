@@ -17,7 +17,7 @@ type IMultipleChoiceAnswerSubmission interface {
 	CreateMultipleChoiceAnswerSubmission(mcAnsSub *model.MultipleChoiceAnswerSubmission) (mcAnsSubId uint, err error)
 	GetAllMultipleChoiceAnswerSubmissions(preloads ...string) (mcAnsSubs []*model.MultipleChoiceAnswerSubmission, err error)
 	GetMultipleChoiceAnswerSubmission(mcAnsSubId uint, preload ...string) (mcAnsSub *model.MultipleChoiceAnswerSubmission, err error)
-	GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) ([]model.MultipleChoiceAnswerSubmission, error) 
+	GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) (mcAnsSubs []*model.MultipleChoiceAnswerSubmission, err error) 
 	UpdateMultipleChoiceAnswerSubmission(updateMcAnsSub *model.MultipleChoiceAnswerSubmission) (mcAnsSub *model.MultipleChoiceAnswerSubmission, err error)
 	DeleteMultipleChoiceAnswerSubmission(mcAnsSubId uint) (mcAnsSub *model.MultipleChoiceAnswerSubmission, err error)
 }
@@ -52,9 +52,8 @@ func (c *MultipleChoiceAnswerSubmissionController) GetMultipleChoiceAnswerSubmis
 	return mcAnsSub, nil
 }
 
-func (c *MultipleChoiceAnswerSubmissionController) GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) ([]model.MultipleChoiceAnswerSubmission, error) {
-    var mcAnsSubs []model.MultipleChoiceAnswerSubmission
-    err := c.db.
+func (c *MultipleChoiceAnswerSubmissionController) GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) (mcAnsSubs []*model.MultipleChoiceAnswerSubmission, err error) {
+    err = c.db.
         Where("submission_id = ?", submissionID).
 		Preload("Question").
         Preload("Choice").

@@ -17,7 +17,7 @@ type IShortAnswerSubmission interface {
 	CreateShortAnswerSubmission(shortAnsSub *model.ShortAnswerSubmission) (shortAnsSubId uint, err error)
 	GetAllShortAnswerSubmissions(preloads ...string) (shortAnsSubs []*model.ShortAnswerSubmission, err error)
 	GetShortAnswerSubmission(shortAnsSubId uint, preload ...string) (shortAnsSub *model.ShortAnswerSubmission, err error)
-	GetShortAnswerSubmissionsBySubmissionID(submissionID uint) ([]model.ShortAnswerSubmission, error) 
+	GetShortAnswerSubmissionsBySubmissionID(submissionID uint) (shortAnsSubs []*model.ShortAnswerSubmission, err error) 
 	UpdateShortAnswerSubmission(updatedShortAnsSub *model.ShortAnswerSubmission) (shortAnsSub *model.ShortAnswerSubmission, err error)
 	DeleteShortAnswerSubmission(shortAnsSubId uint) (shortAnsSub *model.ShortAnswerSubmission, err error)
 }
@@ -52,18 +52,17 @@ func (c *ShortAnswerSubmissionController) GetShortAnswerSubmission(shortAnsSubId
 	return shortAnsSub, nil
 }
 
-func (c *ShortAnswerSubmissionController) GetShortAnswerSubmissionsBySubmissionID(submissionID uint) ([]model.ShortAnswerSubmission, error) {
-    var shortAnsSub []model.ShortAnswerSubmission
-    err := c.db.
+func (c *ShortAnswerSubmissionController) GetShortAnswerSubmissionsBySubmissionID(submissionID uint) (shortAnsSubs []*model.ShortAnswerSubmission, err error) {
+    err = c.db.
         Where("submission_id = ?", submissionID).
 		Preload("Question").
-        Find(&shortAnsSub).Error
+        Find(&shortAnsSubs).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-    return shortAnsSub, err
+    return shortAnsSubs, err
 }
 
 

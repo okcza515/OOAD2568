@@ -50,6 +50,18 @@ func (c *ShortAnswerController) GetShortAnswer(shortAnswerId uint, preload ...st
 	return shortAnswer, nil
 }
 
+func (c *ShortAnswerController) GetShortAnswerByQuestionID(questionID uint) (shortAnswer *model.ShortAnswer, err error) {
+    err = c.db.
+        Where("question_id = ?", questionID).
+        Find(&shortAnswer).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+    return shortAnswer, err
+}
+
 func (c *ShortAnswerController) UpdateShortAnswer(updatedShortAnswer *model.ShortAnswer) (shortAnswer *model.ShortAnswer, err error) {
 	shortAnswer, err = c.core.RetrieveByCondition(map[string]interface{}{"id": updatedShortAnswer.ID})
 	if err != nil {
