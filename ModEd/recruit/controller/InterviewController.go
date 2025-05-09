@@ -30,6 +30,14 @@ func (c *InterviewController) DeleteInterview(id uint) error {
 	return c.Base.DeleteByCondition(condition)
 }
 
+func (c *InterviewController) GetFilteredInterviews(condition map[string]interface{}) ([]*model.Interview, error) {
+	return c.Base.List(
+		condition,
+		"Instructor",
+		"ApplicationReport",
+		"ApplicationReport.Applicant",
+	)
+}
 
 func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
 	var interview model.Interview

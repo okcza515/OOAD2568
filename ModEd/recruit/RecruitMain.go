@@ -56,7 +56,7 @@ func main() {
 	departmentCtrl := common.NewDepartmentController(db.DB)
 	interviewCriteriaCtrl := controller.NewInterviewCriteriaCtrl(db.DB)
 
-	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB)
+	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB, interviewController)
 	instructorEvaluateApplicantService := cli.NewInstructorEvaluateApplicantService(
 		db.DB,
 		interviewCriteriaCtrl,
@@ -69,8 +69,7 @@ func main() {
 		facultyCtrl,
 		departmentCtrl,
 	)
-	applicantReportService := cli.NewApplicantReportService(db.DB)
-	interviewService := cli.NewInterviewService(db.DB)
+	applicantReportService := cli.NewApplicantReportService(db.DB, applicationReportCtrl)
 
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
 		fmt.Println("Failed to initialize application rounds:", err)
@@ -92,7 +91,7 @@ func main() {
 		AdminCtrl:                          adminCtrl,
 		LoginCtrl:                          &loginController,
 		AdminInterviewService:              cli.NewAdminInterviewService(interviewController),
-		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl),
+		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl, interviewController),
 		AdminScheduleInterviewService:      cli.NewAdminScheduleInterviewService(interviewController, applicationReportCtrl),
 	}
 
@@ -119,7 +118,7 @@ func main() {
 			switch roleChoice {
 			case 1:
 				loginController.SetStrategy(factory.CreateStrategy("user"))
-				cli.UserCLI(applicantRegistrationService, applicantReportService, interviewService)
+				cli.UserCLI(applicantRegistrationService, applicantReportService)
 			case 2:
 				loginController.SetStrategy(factory.CreateStrategy("admin"))
 				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)

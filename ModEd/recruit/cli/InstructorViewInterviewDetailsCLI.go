@@ -38,7 +38,7 @@ func NewInstructorViewInterviewDetailsMenuState(
 func (m *InstructorViewInterviewDetailsMenuState) Render() {
 	util.ClearScreen()
 
-	interviews, err := m.service.ViewInterviewDetails(m.instructorID, m.filter, m.controller)
+	interviews, err := m.service.ViewInterviewDetails(m.instructorID, m.filter)
 	if err != nil {
 		fmt.Println("Error fetching interview details:", err)
 		util.WaitForEnter()
@@ -46,8 +46,7 @@ func (m *InstructorViewInterviewDetailsMenuState) Render() {
 		return
 	}
 
-	report := controller.InterviewReport{}
-	report.DisplayReport(interviews)
+	m.service.DisplayReport(interviews)
 
 	fmt.Println("\nPress Enter to go back...")
 }

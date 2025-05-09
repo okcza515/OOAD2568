@@ -5,45 +5,17 @@ import (
 	"fmt"
 )
 
-type InterviewDataProvider interface {
-	GetAllInterviews() ([]*model.Interview, error)
-}
-
 type InterviewReport struct {
-	Filters           []FilterStrategy[model.Interview]
-	InterviewProvider InterviewDataProvider
+	Controller *InterviewController
 }
 
-func (r *InterviewReport) GetReport() ([]model.Interview, error) {
-	ptrs, err := r.InterviewProvider.GetAllInterviews()
-	if err != nil {
-		return nil, err
-	}
-
-	var result []model.Interview
-	for _, p := range ptrs {
-		result = append(result, *p)
-	}
-	return result, nil
+func (r *InterviewReport) GetFilteredInterviews(condition map[string]interface{}) ([]*model.Interview, error) {
+	return r.Controller.GetFilteredInterviews(condition)
 }
 
-func (r *InterviewReport) FilterReport(report []model.Interview) ([]model.Interview, error) {
-	var filtered []model.Interview = report
-
-	for _, filter := range r.Filters {
-		var err error
-		filtered, err = filter.Filter(filtered)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return filtered, nil
-}
-
-func (r *InterviewReport) DisplayReport(filteredReport []model.Interview) {
-	fmt.Println("\n==== Interview Schedule ====")
-	for i, interview := range filteredReport {
-		fmt.Printf("\nInterview #%d\n", i+1)
+func (r *InterviewReport) DisplayReport(filteredReport []*model.Interview) {
+	for _, interview := range filteredReport {
+		// fmt.Printf("\nInterview #%d\n", i+1)
 		fmt.Println("----------------------------------------")
 		fmt.Printf("Interview ID       : %d\n", interview.InterviewID)
 		fmt.Printf("Applicant Fullname : %s %s\n",

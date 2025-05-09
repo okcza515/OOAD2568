@@ -50,29 +50,25 @@ func NewAdminMenuState(
 func (a *AdminMenuState) Render() {
 	util.ClearScreen()
 	fmt.Println("\n\033[1;35m╔════════════════════════════════╗")
-	fmt.Printf("║ Welcome, Admin: %-16s ║\n", a.username)
+	fmt.Printf("║ Welcome, Admin: %-14s ║\n", a.username)
 	fmt.Println("╚════════════════════════════════╝\033[0m")
 
-	fmt.Println("\n\033[1;36m[1]\033[0m Manage Applicants")
-	fmt.Println("\033[1;36m[2]\033[0m View Application Reports")
-	fmt.Println("\033[1;36m[3]\033[0m Schedule Interview")
-	fmt.Println("\033[1;36m[4]\033[0m Delete Interview")
-	fmt.Println("\033[1;36m[5]\033[0m Back")
+	fmt.Println("\033[1;36m[1]\033[0m View Application Reports")
+	fmt.Println("\033[1;36m[2]\033[0m Schedule Interview")
+	fmt.Println("\033[1;36m[3]\033[0m Delete Interview")
+	fmt.Println("\033[1;36m[4]\033[0m Back")
 	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 }
 
 func (a *AdminMenuState) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		ManageApplicants(a.applicantController)
-		//util.WaitForEnter()
-	case "2":
 		a.manager.SetState(a.reportMenu)
-	case "3":
+	case "2":
 		a.manager.SetState(a.scheduleMenu)
-	case "4":
+	case "3":
 		a.manager.SetState(a.deleteMenu)
-	case "5":
+	case "4":
 		return ErrExitAdminMenu
 	default:
 		fmt.Println("Invalid option. Try again.")
