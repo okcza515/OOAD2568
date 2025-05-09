@@ -113,12 +113,12 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 				WaitForEnter()
 				break
 			}
-		
+
 			createdAt := "-"
 			if !tor.CreatedAt.IsZero() {
 				createdAt = tor.CreatedAt.Format("2006-01-02 15:04:05")
 			}
-		
+
 			fmt.Printf("TOR ID: %d\n", tor.TORID)
 			fmt.Printf("Instrument Request ID: %d\n", tor.InstrumentRequestID)
 			fmt.Printf("Scope: %s\n", tor.Scope)
@@ -126,7 +126,7 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("Status: %s\n", tor.Status)
 			fmt.Printf("Committee: %s\n", tor.Committee)
 			fmt.Printf("Created At: %s\n", createdAt)
-		
+
 			WaitForEnter()
 		case "6":
 			fmt.Println("Delete Procurement")
