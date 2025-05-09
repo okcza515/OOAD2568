@@ -24,7 +24,7 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 		case "1":
 			fmt.Println("Import Quotations")
 			filename := util.GetStringInput("Enter path to the JSON file (data/quotations.json): ")
-		
+
 			err := ImportQuotationsFromJSON(facade.GetDB(), filename)
 			if err != nil {
 				fmt.Println("Error:", err)
@@ -33,11 +33,22 @@ func QuotationHandler(facade *procurement.ProcurementControllerFacade) {
 			}
 			WaitForEnter()
 		case "2":
+			fmt.Println("Import Quotation Details")
+			filename := util.GetStringInput("Enter path to the JSON file (data/quotationdetail.json): ")
+
+			err := ImportQuotationDetailsFromJSON(facade.GetDB(), filename)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Import successful.")
+			}
+			WaitForEnter()
+		case "3":
 			fmt.Println("Show Quotations by TOR ID")
 			ListAllTORs(facade)
 			ShowQuotationsByTORID(facade.GetDB())
 			WaitForEnter()
-		case "3":
+		case "4":
 			fmt.Println("Quotation Selection")
 			ListAllTORs(facade)
 			SelectQuotation(facade.GetDB())
@@ -55,8 +66,9 @@ func printQuotationSupplierOptions() {
 	fmt.Println()
 	fmt.Println("--Quotation Functions--")
 	fmt.Println("  1:\tImport Quotations")
-	fmt.Println("  2:\tShow Quotations by TOR ID")
-	fmt.Println("  3:\tQuotation Selection")
+	fmt.Println("  2:\tImport Quotation Details")
+	fmt.Println("  3:\tShow Quotations by TOR ID")
+	fmt.Println("  4:\tQuotation Selection")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit)")
 	fmt.Println()
 }
@@ -82,6 +94,30 @@ func ImportQuotationsFromJSON(db *gorm.DB, filename string) error {
 	}
 
 	fmt.Println("Quotations imported successfully.")
+	return nil
+}
+
+func ImportQuotationDetailsFromJSON(db *gorm.DB, filename string) error {
+	var details []model.QuotationDetail
+
+	file, err := os.Open(filename)
+	if err != nil {
+		return fmt.Errorf("failed to open JSON file: %v", err)
+	}
+	defer file.Close()
+
+	if err := json.NewDecoder(file).Decode(&details); err != nil {
+		return fmt.Errorf("failed to decode JSON: %v", err)
+	}
+
+	for _, d := range details {
+		err := db.Create(&d).Error
+		if err != nil {
+			return fmt.Errorf("failed to insert detail (QuotationID %d, InstrumentLabel: %s): %v", d.QuotationID, d.InstrumentLabel, err)
+		}
+	}
+
+	fmt.Println("Quotation details imported successfully.")
 	return nil
 }
 
