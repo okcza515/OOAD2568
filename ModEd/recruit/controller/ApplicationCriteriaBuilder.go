@@ -15,6 +15,10 @@ func (b *ApplicationCriteriaBuilder) AddRoundCriteria(roundName string) *Applica
 		b.criteriaList = append(b.criteriaList, &PortfolioCriteria{})
 	case "Scholarship":
 		b.criteriaList = append(b.criteriaList, &ScholarshipCriteria{})
+	case "Quota":
+		b.criteriaList = append(b.criteriaList, &QuotaCriteria{})
+	case "Admission":
+		b.criteriaList = append(b.criteriaList, &AdmissionCriteria{})
 	}
 	return b
 }
