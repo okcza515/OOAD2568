@@ -11,7 +11,7 @@ import (
 type AcceptanceApproval struct {
 	AcceptanceApprovalID uint `gorm:"primaryKey"`
 	ProcurementID        uint `gorm:"index"`
-	Procurement          Procurement
+	Procurement          *Procurement
 	ApproverID           *uint             `gorm:"index"`
 	Approver             master.Instructor `gorm:"foreignKey:ApproverID"`
 	Status               AcceptanceStatus  `gorm:"type:varchar(50);default:'pending'"`
