@@ -8,7 +8,7 @@ import (
 )
 
 type TrueFalseAnswerController struct {
-	db *gorm.DB
+	db   *gorm.DB
 	core *core.BaseController[*model.TrueFalseAnswer]
 }
 
@@ -22,7 +22,7 @@ type ITrueFalseAnswer interface {
 
 func NewTrueFalseAnswerController(db *gorm.DB) *TrueFalseAnswerController {
 	return &TrueFalseAnswerController{
-		db: db,
+		db:   db,
 		core: core.NewBaseController[*model.TrueFalseAnswer](db),
 	}
 }
@@ -31,11 +31,11 @@ func (c *TrueFalseAnswerController) CreateTrueFalseAnswer(tfAnswer *model.TrueFa
 	if err := c.core.Insert(tfAnswer); err != nil {
 		return 0, err
 	}
-	return tfAnswerId, nil
+	return tfAnswer.ID, nil
 }
 
 func (c *TrueFalseAnswerController) GetAllTrueFalseAnswers(preloads ...string) (tfAnswers []*model.TrueFalseAnswer, err error) {
-	tfAnswers,err = c.core.List(nil,preloads...)
+	tfAnswers, err = c.core.List(nil, preloads...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,18 +50,18 @@ func (c *TrueFalseAnswerController) GetTrueFalseAnswer(tfAnswerId uint, preload 
 	return tfAnswer, nil
 }
 
-func (c *TrueFalseAnswerController) UpdateTrueFalseAnswer(updatedTfAnswer *model.TrueFalseAnswer) (tfAnswer *model.TrueFalseAnswer, err error){
+func (c *TrueFalseAnswerController) UpdateTrueFalseAnswer(updatedTfAnswer *model.TrueFalseAnswer) (tfAnswer *model.TrueFalseAnswer, err error) {
 	tfAnswer, err = c.core.RetrieveByCondition(map[string]interface{}{"id": updatedTfAnswer.ID})
 	if err != nil {
 		return nil, err
 	}
 	tfAnswer.QuestionID = updatedTfAnswer.QuestionID
 	tfAnswer.IsExpected = updatedTfAnswer.IsExpected
-	if err := c.core.UpdateByCondition(map[string]interface{}{"id": updatedTfAnswer.ID}, tfAnswer); err != nil{
+	if err := c.core.UpdateByCondition(map[string]interface{}{"id": updatedTfAnswer.ID}, tfAnswer); err != nil {
 		return nil, err
 	}
 	return tfAnswer, nil
-} 
+}
 
 func (c *TrueFalseAnswerController) DeleteTrueFalseAnswer(tfAnswerId uint) (tfAnswer *model.TrueFalseAnswer, err error) {
 	tfAnswer, err = c.core.RetrieveByCondition(map[string]interface{}{"id": tfAnswerId})
