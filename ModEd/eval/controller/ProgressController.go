@@ -20,57 +20,62 @@ func NewProgressController(db *gorm.DB) *ProgressController {
 	}
 }
 
-func (controller *ProgressController) GetProgress(filter ProgressFilter) ([]evalModel.Progress, error) {
-	var ProgressList []evalModel.Progress
+func (controller *ProgressController) List(filters map[string]interface{}) ([]evalModel.Progress, error) {
+	var progressList []evalModel.Progress
 
 	query := controller.db.Model(&evalModel.Progress{}).
 		Preload("Student").
 		Preload("Assessment")
 
-	if filter.AssessmentId != 0 {
-		query = query.Where("AssessmentId = ?", filter.AssessmentId)
+	if filters != nil {
+		if assessmentId, exists := filters["assessment_id"]; exists {
+			query = query.Where("assessment_id = ?", assessmentId)
+		}
+		if studentCode, exists := filters["student_code"]; exists {
+			query = query.Where("student_code = ?", studentCode)
+		}
+		if status, exists := filters["status"]; exists {
+			query = query.Where("status = ?", status)
+		}
 	}
 
-	if filter.Type != "" {
-		query = query.Where("type = ?", filter.Type)
-	}
-
-	if filter.StudentCode != "" {
-		query = query.Where("student_code = ?", filter.StudentCode)
-	}
-
-	if filter.Status != "" {
-		query = query.Where("status = ?", filter.Status)
-	}
-
-	if err := query.Find(&ProgressList).Error; err != nil {
+	if err := query.Find(&progressList).Error; err != nil {
 		return nil, err
 	}
 
-	return ProgressList, nil
+	return progressList, nil
 }
 
 func (controller *ProgressController) GetAllProgress() ([]evalModel.Progress, error) {
-	return controller.List(nil, "Student", "Assessment")
+	return controller.List(nil)
 }
 
-func (controller *ProgressController) GetProgressByStudentCode(id uint) (evalModel.Progress, error) {
-	return controller.RetrieveByID(id, "Student", "Assessment")
+func (controller *ProgressController) GetProgressByStudentCode(assessmentId uint, studentCode string) ([]evalModel.Progress, error) {
+	return controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+		"student_code":  studentCode,
+	})
 }
 
-func (controller *ProgressController) GetProgressByStudentStatus(id uint, Status string) (evalModel.Progress, error) {
-	return controller.RetrieveByCondition(map[string]interface{}{
-		"id":     id,
-		"status": Status,
-	}, "Student", "Assessment")
+func (controller *ProgressController) GetProgressByAssessmentStatus(assessmentId uint, status string) ([]evalModel.Progress, error) {
+	return controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+		"status":        status,
+	})
 }
 
-func (controller *ProgressController) GetSubmitCount(assessmentId uint) (uint, error) {
-	var count int64
-	if err := controller.db.Model(&evalModel.AssessmentSubmission{}).
-		Where("assessment_id = ? AND submitted = ?", assessmentId, true).
-		Count(&count).Error; err != nil {
-		return 0, err
+func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint) (map[evalModel.AssessmentStatus]int, error) {
+	progressList, err := controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+	})
+	if err != nil {
+		return nil, err
 	}
-	return uint(count), nil
+
+	statusCount := make(map[evalModel.AssessmentStatus]int)
+	for _, progress := range progressList {
+		statusCount[progress.Status]++
+	}
+
+	return statusCount, nil
 }
