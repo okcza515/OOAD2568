@@ -44,7 +44,7 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 		cmd := util.GetCommandInput()
 
 		switch cmd {
-		
+
 		case "1":
 			id := util.GetUintInput("Enter ID to Approve: ")
 			approverID := util.GetUintInput("Enter Your Instructor ID (Approver): ")
@@ -54,7 +54,7 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 			} else {
 				fmt.Println("Approved successfully.")
 			}
-			WaitForEnter()		
+			WaitForEnter()
 		case "2":
 			id := util.GetUintInput("Enter ID to Reject: ")
 			approverID := util.GetUintInput("Enter Approver ID: ")
@@ -64,7 +64,7 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 			} else {
 				fmt.Println("Rejected successfully.")
 			}
-			WaitForEnter()		
+			WaitForEnter()
 		case "back":
 			return
 		default:

@@ -3,6 +3,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -32,14 +33,12 @@ func (c *ProcurementController) GetProcurementByID(id uint) (*model.Procurement,
 	return &procurement, err
 }
 
-// Update procurement fields (generic)
 func (c *ProcurementController) Update(id uint, updates map[string]any) error {
 	return c.db.Model(&model.Procurement{}).
 		Where("procurement_id = ?", id).
 		Updates(updates).Error
 }
 
-// Approve procurement
 func (c *ProcurementController) Approve(id uint, approverID uint) error {
 	now := time.Now()
 	return c.db.Model(&model.Procurement{}).
@@ -51,7 +50,6 @@ func (c *ProcurementController) Approve(id uint, approverID uint) error {
 		}).Error
 }
 
-// Reject procurement
 func (c *ProcurementController) Reject(id uint, approverID uint) error {
 	return c.db.Model(&model.Procurement{}).
 		Where("procurement_id = ?", id).
@@ -61,18 +59,42 @@ func (c *ProcurementController) Reject(id uint, approverID uint) error {
 		}).Error
 }
 
-// Delete soft
 func (c *ProcurementController) Delete(id uint) error {
 	return c.db.Delete(&model.Procurement{}, id).Error
 }
 
 func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
-	return c.db.Model(&model.Procurement{}).
-		Where("procurement_id = ?", id).
-		Updates(map[string]interface{}{
-			"status":      model.ProcurementStatusApproved,
-			"approver_id": approverID,
-		}).Error
+	return c.db.Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Model(&model.Procurement{}).
+			Where("procurement_id = ?", id).
+			Updates(map[string]interface{}{
+				"status":      model.ProcurementStatusApproved,
+				"approver_id": approverID,
+			}).Error; err != nil {
+			return err
+		}
+
+		var procurement model.Procurement
+		if err := tx.First(&procurement, id).Error; err != nil {
+			return err
+		}
+
+		acceptanceApproval := model.AcceptanceApproval{
+			ProcurementID: procurement.ProcurementID,
+			Status:        model.AcceptanceStatusPending,
+			ApproverID:    &approverID,
+			CreatedAt:     time.Now(),
+		}
+
+		if err := tx.Create(&acceptanceApproval).Error; err != nil {
+			return err
+		}
+
+		fmt.Printf("Acceptance Approval created for Procurement ID %d with ID %d\n", procurement.ProcurementID, acceptanceApproval.AcceptanceApprovalID)
+
+		return nil
+	})
 }
 
 func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
