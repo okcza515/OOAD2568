@@ -11,11 +11,13 @@ func AcceptanceTestHandler(facade *controller.ProcurementControllerFacade) {
 
 	for inputBuffer != "back" {
 		util.ClearScreen()
+		facade.Acceptance.ListAllApprovals()
 		printAcceptanceTestOptions()
 		inputBuffer = util.GetCommandInput()
 
 		switch inputBuffer {
 		case "1":
+			
 			ListAllTORs(facade)
 			// torID := util.GetUintInput("Enter TOR ID: ")
 			// PrintCategoriesByTOR(torID, facade)
@@ -31,7 +33,7 @@ func AcceptanceTestHandler(facade *controller.ProcurementControllerFacade) {
 
 func printAcceptanceTestOptions() {
 	fmt.Println(":/Procurement/Main")
-	fmt.Println()
+	fmt.Println()	
 	fmt.Println("--Acceptance Functions--")
 	fmt.Println("  1:\tAccept")
 	fmt.Println("  2:\tReject")

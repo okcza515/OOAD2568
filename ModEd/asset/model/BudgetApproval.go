@@ -15,6 +15,7 @@ type BudgetApproval struct {
 	Approver            master.Instructor    `gorm:"foreignKey:ApproverID"`
 	Status              BudgetApprovalStatus `gorm:"type:varchar(50);default:'pending'"`
 	DeletedAt           gorm.DeletedAt       `gorm:"index"`
+	ApprovalTime *time.Time `gorm:"type:time"`
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 	InstrumentRequest   InstrumentRequest
