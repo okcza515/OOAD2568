@@ -31,6 +31,11 @@ func NewSubmissionController(db *gorm.DB) *SubmissionController {
 	return &SubmissionController{
 		db: db,
 		core: core.NewBaseController[*model.AnswerSubmission](db),
+		McAnsSubController: NewMultipleChoiceAnswerSubmissionController(db),
+		TfAnsSubController: NewTrueFalseAnswerSubmissionController(db),
+		ShortAnsSubController: NewShortAnswerSubmissionController(db),
+		TfAnswerController: NewTrueFalseAnswerController(db),
+		ShortAnswerController: NewShortAnswerController(db),
 	}
 }
 
@@ -38,7 +43,7 @@ func (c *SubmissionController) CreateSubmission(submission *model.AnswerSubmissi
 	if err := c.core.Insert(submission); err != nil {
 		return 0, err
 	}
-	return submissionId, nil
+	return submission.ID, nil
 }
 
 func (c *SubmissionController) GetAllSubmissions(preloads ...string) (submissions []*model.AnswerSubmission, err error) {
