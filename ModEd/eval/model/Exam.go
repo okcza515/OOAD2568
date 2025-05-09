@@ -8,7 +8,7 @@ import (
 	"ModEd/core"
 )
 
-type Examination struct {
+type Exam struct {
 	core.BaseModel
 	ExamName   		    string 							`gorm:"type:text;not null" json:"exam_name" csv:"exam_name"`
 	InstructorID 		uint 							`gorm:"type:integer;not null" json:"instructor_id" csv:"instructor_id"`

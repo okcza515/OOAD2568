@@ -16,9 +16,9 @@ func RunAssessmentModuleCLI(db *gorm.DB) {
 	resultController := controller.NewResultController(db)
 
 	params := &handler.AssessmentCLIParams{
-		AssessmentController: assessmentController,
-		SubmissionController: submissionController,
-		ResultController:     resultController,
+		AssessmentController: *assessmentController,
+		SubmissionController: *submissionController,
+		ResultController:     *resultController,
 	}
 
 	mainState := handler.NewMainMenuState(params)

@@ -1,8 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 )
+
+// Define ExitCommand and BackCommand
+var ExitCommand = errors.New("exit")
+var BackCommand = errors.New("back")
 
 type MenuItem struct {
 	Key         string

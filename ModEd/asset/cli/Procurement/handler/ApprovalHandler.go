@@ -11,6 +11,7 @@ func ApprovalHandler(facade *controller.ProcurementControllerFacade) {
 	fmt.Println("Select Approval Type:")
 	fmt.Println("  1:\tBudget Approval")
 	fmt.Println("  2:\tProcurement Approval")
+	fmt.Println("  3:\tAcceptance Approval")
 	fmt.Println("  back:\tBack to main menu")
 	fmt.Println()
 
@@ -21,34 +22,12 @@ func ApprovalHandler(facade *controller.ProcurementControllerFacade) {
 		printApprovalOption(&facade.BudgetApproval)
 	case "2":
 		printApprovalOption(&facade.Procurement)
+	case "3":
+		printApprovalOption(&facade.Acceptance)
 	case "back":
 		return
 	default:
 		fmt.Println("Invalid option, returning to menu...")
-	}
-}
-
-func printApprovalList(observer controller.ApprovalObserver) {
-	switch o := observer.(type) {
-	case *controller.BudgetApprovalController:
-		approvals, err := o.ListAllApprovals()
-		if err != nil {
-			fmt.Println("Failed to fetch budget approvals:", err)
-			return
-		}
-		if len(approvals) == 0 {
-			fmt.Println("No budget approvals found.")
-			return
-		}
-		fmt.Println("Available Budget Approvals:")
-		for _, a := range approvals {
-			approverID := "waiting"
-			if a.ApproverID != nil && *a.ApproverID != 0 {
-				approverID = fmt.Sprintf("%d", *a.ApproverID)
-			}
-			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
-				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
-		}
 	}
 }
 
@@ -91,6 +70,70 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 		default:
 			fmt.Println("Invalid command!")
 			WaitForEnter()
+		}
+	}
+}
+
+func printApprovalList(observer controller.ApprovalObserver) {
+	switch o := observer.(type) {
+	case *controller.BudgetApprovalController:
+		approvals, err := o.ListAllApprovals()
+		if err != nil {
+			fmt.Println("Failed to fetch budget approvals:", err)
+			return
+		}
+		if len(approvals) == 0 {
+			fmt.Println("No budget approvals found.")
+			return
+		}
+		fmt.Println("Available Budget Approvals:")
+		for _, a := range approvals {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
+				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
+		}
+
+	case *controller.ProcurementController:
+		approvals, err := o.ListAllProcurement()
+		if err != nil {
+			fmt.Println("Failed to fetch procurement approvals:", err)
+			return
+		}
+		if len(*approvals) == 0 {
+			fmt.Println("No procurement approvals found.")
+			return
+		}
+		fmt.Println("Available Procurement Approvals:")
+		for _, a := range *approvals {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | ProcurementID: %d | Status: %s | Approver ID: %s\n",
+				a.ProcurementID, a.ProcurementID, a.Status, approverID)
+		}
+
+	case *controller.AcceptanceApprovalController:
+		approvals, err := o.ListAllApprovals()
+		if err != nil {
+			fmt.Println("Failed to fetch acceptance approvals:", err)
+			return
+		}
+		if len(approvals) == 0 {
+			fmt.Println("No acceptance approvals found.")
+			return
+		}
+		fmt.Println("Available Acceptance Approvals:")
+		for _, a := range approvals {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | ProcurementID: %d | Status: %s | Approver ID: %s\n",
+				a.AcceptanceApprovalID, a.ProcurementID, a.Status, approverID)
 		}
 	}
 }

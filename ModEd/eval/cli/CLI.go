@@ -5,7 +5,6 @@ import (
 	"ModEd/core/migration"
 	"ModEd/eval/cli/assessment"
 	"ModEd/eval/cli/examination"
-	"ModEd/eval/cli/quiz"
 	"fmt"
 	"os"
 
@@ -35,11 +34,6 @@ func (c *AssessmentCommand) Execute() error {
 // QuizCommand
 type QuizCommand struct {
 	db *gorm.DB
-}
-
-func (q *QuizCommand) Execute() error {
-	quiz.RunQuizModuleCLI(q.db)
-	return nil
 }
 
 // ExaminationCommand
@@ -106,7 +100,7 @@ func main() {
 
 	commandExecutor := NewCommandExecutor()
 	commandExecutor.RegisterCommand("1", &AssessmentCommand{db})
-	commandExecutor.RegisterCommand("2", &QuizCommand{db})
+	//commandExecutor.RegisterCommand("2", &QuizCommand{db})
 	commandExecutor.RegisterCommand("3", &ExaminationCommand{db})
 	commandExecutor.RegisterCommand("4", &QuestionCommand{db})
 	commandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
@@ -129,7 +123,7 @@ func main() {
 func displayMainMenu() {
 	fmt.Println("\nEvaluation Module CLI Menu")
 	fmt.Println("1. Assessment Management")
-	fmt.Println("2. Quiz Management")
+	//fmt.Println("2. Quiz Management")
 	fmt.Println("3. Examination Management")
 	fmt.Println("4. Question Management")
 	fmt.Println("0. Exit")

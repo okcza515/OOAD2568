@@ -24,6 +24,16 @@ func (ctrl *ApplicationReportController) SaveApplicationReport(report *model.App
 	return ctrl.Base.Insert(report)
 }
 
+func (c *ApplicationReportController) GetFilteredApplication(condition map[string]interface{}) ([]*model.ApplicationReport, error) {
+	return c.Base.List(
+		condition,
+		"Applicant",
+		"ApplicationRound",
+		"Faculty",
+		"Department",
+	)
+}
+
 func (ctrl *ApplicationReportController) GetApplicationReportByApplicantID(applicantID uint) (*model.ApplicationReport, error) {
 	var report model.ApplicationReport
 	err := ctrl.DB.Where("applicant_id = ?", applicantID).First(&report).Error

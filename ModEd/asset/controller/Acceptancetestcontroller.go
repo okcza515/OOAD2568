@@ -1,43 +1,110 @@
-// MEP-1014
+// // MEP-1014
 package controller
 
 // import (
-// 	model "ModEd/asset/model/Procurement"
+// 	model "ModEd/asset/model"
+// 	"fmt"
 
 // 	"gorm.io/gorm"
 // )
 
 // type AcceptanceTestController struct {
-// 	Connector *gorm.DB
+// 	db *gorm.DB
 // }
 
-// func CreateAcceptanceTestController(connector *gorm.DB) *AcceptanceTestController {
-// 	acceptanceTest := AcceptanceTestController{Connector: connector}
-// 	connector.AutoMigrate(&model.AcceptanceTest{})
-// 	return &acceptanceTest
+// func (c *AcceptanceTestController) CreateAcceptanceTest(body *model.AcceptanceTest) error {
+// 	return c.db.Create(body).Error
 // }
 
-// func (acceptanceTest AcceptanceTestController) ListAll() ([]model.AcceptanceTest, error) {
-// 	tests := []model.AcceptanceTest{}
-// 	result := acceptanceTest.Connector.
-// 		Select("AcceptanceTestID").Find(&tests)
-// 	return tests, result.Error
+// func (c *AcceptanceTestController) ListAllAcceptanceTest() (*[]model.AcceptanceTest, error) {
+// 	var acceptancetest []model.AcceptanceTest
+// 	err := c.db.Find(&acceptancetest).Error
+// 	return &acceptancetest, err
 // }
 
-// func (acceptanceTest AcceptanceTestController) GetByID(id uint) (AcceptanceTestID string) ([]model.AcceptanceTest, error) {
-// 	t := &model.AcceptanceTest{}
-// 	result := acceptanceTest.Connector.Where("AcceptanceTestID = ?", id).First(t)
-// 	return t, result.Error
+// func (c *AcceptanceTestController) GetAcceptanceTestByID(id uint) (*model.AcceptanceTest, error) {
+// 	var acceptancetest model.AcceptanceTest
+// 	err := c.db.First(&acceptancetest, id).Error
+// 	return &acceptancetest, err
 // }
 
-// func (acceptanceTest AcceptanceTestController) Create(t *model.AcceptanceTest) error {
-// 	return acceptanceTest.Connector.Create(t).Error
+// func (c *AcceptanceTestController) GetCategoriesByIDs(ids []uint) ([]model.Category, error) {
+// 	var categories []model.Category
+// 	if len(ids) == 0 {
+// 		return categories, nil
+// 	}
+
+// 	err := c.db.Where("id IN ?", ids).Find(&categories).Error
+// 	return categories, err
 // }
 
-// func (acceptanceTest AcceptanceTestController) Update(AcceptanceTestID uint, updatedData map[string]interface{}) error {
-// 	return acceptanceTest.Connector.Model(&model.AcceptanceTest{}).Where("AcceptanceTestID = ?", AcceptanceTestID).Updates(updatedData).Error
+// func (c *AcceptanceTestController) GetQuotationDetailsByTOR(torID uint) ([]model.QuotationDetail, error) {
+// 	var quotations []model.Quotation
+
+// 	err := c.db.Preload("Details").
+// 		Where("tor_id = ?", torID).
+// 		Find(&quotations).Error
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var details []model.QuotationDetail
+// 	for _, quotation := range quotations {
+// 		details = append(details, quotation.Details...)
+// 	}
+
+// 	return details, nil
 // }
 
-// func (acceptanceTest AcceptanceTestController) DeleteByID(AcceptanceTestID uint) error {
-// 	return acceptanceTest.Connector.Where("AcceptanceTestID = ?", AcceptanceTestID).Delete(&model.AcceptanceTest{}).Error
+// func (c *AcceptanceTestController) PrintQuotationDetailsByTOR(torID uint) {
+// 	details, err := c.GetQuotationDetailsByTOR(torID)
+// 	if err != nil {
+// 		fmt.Println("Error retrieving quotation details:", err)
+// 		return
+// 	}
+
+// 	if len(details) == 0 {
+// 		fmt.Println("No quotation details found for TOR ID:", torID)
+// 		return
+// 	}
+
+// 	fmt.Println("Quotation Details for TOR ID:", torID)
+// 	for _, detail := range details {
+// 		fmt.Printf("QuotationDetailID: %d\n", detail.QuotationDetailID)
+// 		fmt.Printf("InstrumentLabel: %s\n", detail.InstrumentLabel)
+// 		if detail.Description != nil {
+// 			fmt.Printf("Description: %s\n", *detail.Description)
+// 		} else {
+// 			fmt.Println("Description: (none)")
+// 		}
+// 		fmt.Printf("CategoryID: %d\n", detail.CategoryID)
+// 		fmt.Printf("Quantity: %d\n", detail.Quantity)
+// 		fmt.Printf("Offered Price: %.2f\n", detail.OfferedPrice)
+// 		fmt.Println("------")
+// 	}
+// }
+
+// func (c *AcceptanceTestController) PrintCategoriesByIDs(ids []uint) {
+// 	categories, err := c.GetCategoriesByIDs(ids)
+// 	if err != nil {
+// 		fmt.Println("Error retrieving categories:", err)
+// 		return
+// 	}
+
+// 	if len(categories) == 0 {
+// 		fmt.Println("No categories found for the provided IDs.")
+// 		return
+// 	}
+
+// 	fmt.Println("Categories:")
+// 	for _, category := range categories {
+// 		fmt.Printf("ID: %d\n", category.ID)
+// 		fmt.Printf("Category Name: %s\n", category.CategoryName)
+// 		if category.Description != nil {
+// 			fmt.Printf("Description: %s\n", *category.Description)
+// 		} else {
+// 			fmt.Println("Description: (none)")
+// 		}
+// 		fmt.Println("------")
+// 	}
 // }

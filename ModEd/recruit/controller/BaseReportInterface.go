@@ -1,7 +1,6 @@
 package controller
 
 type BaseReport interface {
-	GetReport(model interface{}) ([]interface{}, error)
-	FilterReport(report []interface{}) ([]interface{}, error)
+	GetFilteredInterviews(condition map[string]interface{}) ([]interface{}, error)
 	DisplayReport(filteredReport []interface{})
 }

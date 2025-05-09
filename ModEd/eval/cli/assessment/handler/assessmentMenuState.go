@@ -1,27 +1,22 @@
 package handler
 
 import (
-	"ModEd/eval/controller"
 	"fmt"
 )
 
-// AssessmentCLIParams contains controllers needed for Assessment CLI
-type AssessmentCLIParams struct {
-	AssessmentController controller.AssessmentController
-	SubmissionController controller.SubmissionController
-	ResultController     controller.ResultController
-}
-
 // AssessmentMenuState represents the main menu of the Assessment CLI
 type AssessmentMenuState struct {
-	params *AssessmentCLIParams
+	params    *AssessmentCLIParams
+	menuItems []MenuItem
 }
 
-// NewMainMenuState creates a new main menu state
-func NewMainMenuState(params *AssessmentCLIParams) *AssessmentMenuState {
-	return &AssessmentMenuState{
-		params: params,
-	}
+// Add a method to add menu items
+func (s *AssessmentMenuState) AddMenuItem(key, description string, action func() (MenuState, error)) {
+	s.menuItems = append(s.menuItems, MenuItem{
+		Key:         key,
+		Description: description,
+		Action:      action,
+	})
 }
 
 // Enter displays the main menu
@@ -42,32 +37,12 @@ func (s *AssessmentMenuState) Exit() error {
 	return nil
 }
 
-// HandleInput processes user input in the main menu
+// Refactor HandleInput to use menu items
 func (s *AssessmentMenuState) HandleInput(input string) (MenuState, error) {
-	switch input {
-	case "1":
-		fmt.Println("\n===== Assessments =====")
-		fmt.Println("Assessment listing will be implemented here")
-		return s, nil
-	case "2":
-		fmt.Println("\n===== Create Assessment =====")
-		fmt.Println("Assessment creation will be implemented here")
-		return s, nil
-	case "3":
-		fmt.Println("\n===== Update Assessment =====")
-		fmt.Println("Assessment update will be implemented here")
-		return s, nil
-	case "4":
-		fmt.Println("\n===== Delete Assessment =====")
-		fmt.Println("Assessment deletion will be implemented here")
-		return s, nil
-	case "5":
-		return NewSubmissionMenuState(s.params), nil
-	case "6":
-		return NewResultMenuState(s.params), nil
-	case "back":
-		return nil, nil
-	default:
-		return s, fmt.Errorf("invalid choice: %s", input)
+	for _, item := range s.menuItems {
+		if item.Key == input {
+			return item.Action()
+		}
 	}
+	return s, fmt.Errorf("invalid choice: %s", input)
 }

@@ -5,45 +5,18 @@ import (
 	"fmt"
 )
 
-type ApplicationDataProvider interface {
-	GetAllApplicationReports() ([]*model.ApplicationReport, error)
-}
-
 type ApplicationReport struct {
-	Filters             []FilterStrategy[model.ApplicationReport]
-	ApplicationProvider ApplicationDataProvider
+	Controller *ApplicationReportController
 }
 
-func (r *ApplicationReport) GetReport() ([]model.ApplicationReport, error) {
-	ptrs, err := r.ApplicationProvider.GetAllApplicationReports()
-	if err != nil {
-		return nil, err
-	}
-
-	var result []model.ApplicationReport
-	for _, p := range ptrs {
-		result = append(result, *p)
-	}
-	return result, nil
-}
-
-func (r *ApplicationReport) FilterReport(report []model.ApplicationReport) ([]model.ApplicationReport, error) {
-	var filtered []model.ApplicationReport = report
-
-	for _, filter := range r.Filters {
-		var err error
-		filtered, err = filter.Filter(filtered)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return filtered, nil
+func (r *ApplicationReport) GetFilteredApplication(condition map[string]interface{}) ([]*model.ApplicationReport, error) {
+	return r.Controller.GetFilteredApplication(condition)
 }
 
 func (r *ApplicationReport) DisplayReport(filteredReport []model.ApplicationReport) {
-	fmt.Println("\n==== Interview Schedule ====")
-	for _, report := range filteredReport {
-		fmt.Println("\n==== Applicant Report ====")
+	for i, report := range filteredReport {
+		fmt.Printf("\nApplication #%d\n", i+1)
+		fmt.Println("----------------------------------------")
 		fmt.Printf("Applicant ID: %d\n", report.Applicant.ApplicantID)
 		fmt.Printf("Full Name: %s %s\n", report.Applicant.FirstName, report.Applicant.LastName)
 		fmt.Printf("Email: %s\n", report.Applicant.Email)
@@ -52,6 +25,15 @@ func (r *ApplicationReport) DisplayReport(filteredReport []model.ApplicationRepo
 
 		fmt.Println("\n==== Application Info ====")
 		fmt.Printf("Round: %s\n", report.ApplicationRound.RoundName)
+		roundData, err := report.Applicant.GetRoundInfo()
+		if err != nil {
+			fmt.Println("Error retrieving round data:", err)
+		} else {
+			fmt.Println("Round Information:")
+			for field, data := range roundData {
+				fmt.Printf("  - %s: %s\n", field, data)
+			}
+		}
 		fmt.Printf("Faculty: %s\n", report.Faculty.Name)
 		fmt.Printf("Department: %s\n", report.Department.Name)
 
