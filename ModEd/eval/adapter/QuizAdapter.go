@@ -37,7 +37,7 @@ func (a *QuizAdapter) FromExamination(exam *model.Examination) {
 	a.quiz.EndDate = exam.EndDate
 	a.quiz.InstructorID = exam.InstructorID
 	a.quiz.CourseID = exam.CourseID
-	a.quiz.Attempts = int(exam.Attempt)
+	a.quiz.Attempts = uint(exam.Attempt)
 }
 
 func (a *QuizAdapter) GetQuiz() *model.Quiz {
@@ -120,7 +120,7 @@ func (a *QuizControllerAdapter) GetQuiz(id uint) (*model.Quiz, error) {
 		EndDate:      exam.EndDate,
 		InstructorID: exam.InstructorID,
 		CourseID:     exam.CourseID,
-		Attempts:     int(exam.Attempt),
+		Attempts:     uint(exam.Attempt),
 	}
 
 	return quiz, nil
@@ -142,7 +142,7 @@ func (a *QuizControllerAdapter) GetAllQuizzes() ([]*model.Quiz, error) {
 			EndDate:      exam.EndDate,
 			InstructorID: exam.InstructorID,
 			CourseID:     exam.CourseID,
-			Attempts:     int(exam.Attempt),
+			Attempts:     uint(exam.Attempt),
 		}
 		quizzes = append(quizzes, quiz)
 	}
