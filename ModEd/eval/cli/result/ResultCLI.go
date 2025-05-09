@@ -1,19 +1,12 @@
-package cli
+package result
 
 import (
 	result_controller "ModEd/eval/controller"
 	"ModEd/eval/util"
 	"strconv"
 
-	// "bufio"
-	// "os"
-	// "strings"
-
 	"fmt"
 
-	// "log"
-
-	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

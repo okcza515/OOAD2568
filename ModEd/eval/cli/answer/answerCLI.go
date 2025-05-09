@@ -1,22 +1,15 @@
-package cli
+// Answer CLI Module
+package answer
 
 import (
 	answer_controller "ModEd/eval/controller"
 	"ModEd/eval/util"
-	// "bufio"
-	// "os"
-	// "strings"
-
 	"fmt"
 
-	// "log"
-
-	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func RunAnswerCLI(db *gorm.DB) {
-
+func RunAnswerModuleCLI(db *gorm.DB) {
 	answerController := answer_controller.NewAnswerController(db)
 
 	for {
