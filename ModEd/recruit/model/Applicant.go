@@ -23,6 +23,9 @@ type Applicant struct {
 
 	PortfolioURL string  `gorm:"not null" json:"portfolio_url" csv:"portfolio_url"`
 	FamilyIncome float32 `gorm:"not null" json:"family_income" csv:"family_income"`
+	MathGrade    float32 `gorm:"default:0" json:"math_grade" csv:"math_grade"`
+	ScienceGrade float32 `gorm:"default:0" json:"science_grade" csv:"science_grade"`
+	EnglishGrade float32 `gorm:"default:0" json:"english_grade" csv:"english_grade"`
 }
 
 func (i *Applicant) GetID() uint {
