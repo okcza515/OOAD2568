@@ -1,7 +1,9 @@
 package controller
 
 import (
-	model "ModEd/eval/model"
+	"ModEd/core"
+	"ModEd/eval/model"
+
 	"gorm.io/gorm"
 )
 
@@ -13,43 +15,51 @@ type IQuestionController interface {
 }
 
 type QuestionController struct {
-	db *gorm.DB
+	db   *gorm.DB
+	core *core.BaseController[*model.Question]
 }
 
 func NewQuestionController(db *gorm.DB) *QuestionController {
-	return &QuestionController{db: db}
+	return &QuestionController{
+		db:   db,
+		core: core.NewBaseController[*model.Question](db),
+	}
 }
 
 func (c *QuestionController) CreateQuestion(question *model.Question) error {
-	if err := c.db.Create(question).Error; err != nil {
+	if err := c.core.Insert(question); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (c *QuestionController) UpdateQuestion(id uint, updatedQuestion *model.Question) error {
-	var question model.Question
-	if err := c.db.First(&question, id).Error; err != nil {
-		return err
-	}
 
-	if err := c.db.Model(&question).Select("*").Updates(updatedQuestion).Error; err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"id": id}, updatedQuestion); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (c *QuestionController) GetQuestionsByExamID(examID uint) ([]model.Question, error) {
-    var questions []model.Question
-    if err := c.db.Where("exam_id = ?", examID).Find(&questions).Error; err != nil {
-        return nil, err
-    }
-    return questions, nil
+	var questions []model.Question
+
+	err := c.db.
+		Joins("JOIN exam_sections ON exam_sections.id = questions.section_id").
+		Where("exam_sections.exam_id = ?", examID).
+		Preload("Section").
+		Find(&questions).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return questions, nil
 }
 
 func (c *QuestionController) DeleteQuestion(id uint) error {
-    if err := c.db.Where("id = ?", id).Delete(&model.Question{}).Error; err != nil {
-        return err
-    }
-    return nil
+	if err := c.core.DeleteByCondition(map[string]interface{}{"id": id}); err != nil {
+		return err
+	}
+	return nil
 }
