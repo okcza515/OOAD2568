@@ -57,7 +57,7 @@ func (controller *ProgressController) GetProgressByStudentCode(assessmentId uint
 	})
 }
 
-func (controller *ProgressController) GetProgressByAssessmentStatus(assessmentId uint, status string) ([]evalModel.Progress, error) {
+func (controller *ProgressController) GetProgressByStatus(assessmentId uint, status string) ([]evalModel.Progress, error) {
 	return controller.List(map[string]interface{}{
 		"assessment_id": assessmentId,
 		"status":        status,

@@ -38,7 +38,7 @@ func (menu *ProgressMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nProgress tracking menu:")
 	menu.handler.AddHandler("1", "List all progress in each assessment.", handler.FuncStrategy{Action: menu.GetAllProgress})
 	menu.handler.AddHandler("2", "Get progress by student ID.", handler.FuncStrategy{Action: menu.GetProgressByStudentCode})
-	menu.handler.AddHandler("3", "Get progress by assessment status.", handler.FuncStrategy{Action: menu.GetProgressByAssessmentStatus})
+	menu.handler.AddHandler("3", "Get progress by assessment status.", handler.FuncStrategy{Action: menu.GetProgressByStatus})
 	menu.handler.AddHandler("4", "Get Assessment submit count.", handler.FuncStrategy{Action: menu.GetAssessmentSubmitCount})
 
 	menu.handler.ShowMenu()
@@ -121,7 +121,7 @@ func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 	return nil
 }
 
-func (menu *ProgressMenuStateHandler) GetProgressByAssessmentStatus() error {
+func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
 		PromptText:    "Enter Assessment ID:",
 		FieldNameText: "Assessment ID",
