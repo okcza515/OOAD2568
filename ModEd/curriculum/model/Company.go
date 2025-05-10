@@ -5,9 +5,6 @@ import "ModEd/core"
 
 type Company struct {
 	core.BaseModel
-	CompanyName     string `gorm:"type:varchar(255)"`
-	MentorFirstName string `gorm:"type:varchar(255)"`
-	MentorLastName  string `gorm:"type:varchar(255)"`
-	MentorEmail     string `gorm:"type:varchar(255)"`
-	MentorPhone     string `gorm:"type:varchar(255)"`
+	CompanyName    string `gorm:"type:varchar(255)"`
+	CompanyAddress string `gorm:"type:varchar(255)"`
 }
