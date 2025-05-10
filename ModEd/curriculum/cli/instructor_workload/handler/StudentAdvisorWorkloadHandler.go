@@ -1,9 +1,9 @@
 // MEP-1008
 package handler
 
-type StudentAdvisorWokrload struct{}
+type StudentAdvisorWorkload struct{}
 
-func (s StudentAdvisorWokrload) Execute() {
+func (s StudentAdvisorWorkload) Execute() {
 	StudentAdvisorMenu := NewMenuHandler("Senior Project Workload Menu", true)
 	StudentAdvisorMenu.Add("View Advising Project", nil)
 	StudentAdvisorMenu.Add("View Committee Project", nil)
