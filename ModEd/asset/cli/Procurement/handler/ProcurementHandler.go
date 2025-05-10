@@ -113,12 +113,12 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 				WaitForEnter()
 				break
 			}
-		
+
 			createdAt := "-"
 			if !tor.CreatedAt.IsZero() {
 				createdAt = tor.CreatedAt.Format("2006-01-02 15:04:05")
 			}
-		
+
 			fmt.Printf("TOR ID: %d\n", tor.TORID)
 			fmt.Printf("Instrument Request ID: %d\n", tor.InstrumentRequestID)
 			fmt.Printf("Scope: %s\n", tor.Scope)
@@ -126,7 +126,7 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Printf("Status: %s\n", tor.Status)
 			fmt.Printf("Committee: %s\n", tor.Committee)
 			fmt.Printf("Created At: %s\n", createdAt)
-		
+
 			WaitForEnter()
 		case "6":
 			fmt.Println("Delete Procurement")
@@ -187,15 +187,16 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 			if procurement.ApproverID != nil {
 				approverID = fmt.Sprintf("%d", *procurement.ApproverID)
 			}
-			approvalTime := "-"
-			if procurement.ApprovalTime != nil {
-				approvalTime = procurement.ApprovalTime.Format("2006-01-02 15:04:05")
+			createdAt := "-"
+			if !procurement.CreatedAt.IsZero() {
+				createdAt = procurement.CreatedAt.Format("2006-01-02 15:04:05")
 			}
-			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | ApprovalTime: %s\n", procurement.ProcurementID, approverID, procurement.Status, approvalTime)
+			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | CreatedAt: %s\n", 
+				procurement.ProcurementID, approverID, procurement.Status, createdAt)
 		}
 	}
 }
-
+	
 func showApprovedRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
 		fmt.Println("Failed to retrieve requests:", err)

@@ -60,22 +60,13 @@ func (m *InstructorEvaluateApplicantMenuState) HandleUserInput(input string) err
 		return nil
 	}
 
-	reportList, err := m.reportService.GetFullApplicationReportByApplicationID(applicationReportID)
+	report, err := m.reportService.GetApplicationReport(applicationReportID)
 	if err != nil {
 		fmt.Println("Failed to fetch application report:", err)
 		recruitUtil.WaitForEnter()
 		m.manager.SetState(m.previousState)
 		return nil
 	}
-
-	if len(reportList) == 0 {
-		fmt.Println("No application report found.")
-		recruitUtil.WaitForEnter()
-		m.manager.SetState(m.previousState)
-		return nil
-	}
-
-	report := reportList[0]
 
 	err = m.evaluateService.EvaluateApplicant(applicationReportID, report.ApplicationRound.RoundName, report.Faculty.Name, report.Department.Name)
 	if err != nil {

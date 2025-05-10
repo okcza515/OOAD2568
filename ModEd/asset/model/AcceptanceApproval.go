@@ -2,6 +2,7 @@
 package model
 
 import (
+	master "ModEd/common/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -9,9 +10,12 @@ import (
 
 type AcceptanceApproval struct {
 	AcceptanceApprovalID uint `gorm:"primaryKey"`
-	// Approver             Approver       `gorm:"foreignKey:ApproversID"`
-	Status       string         `gorm:"type:varchar(50);not null"`
-	Description  string         `gorm:"type:text"`
-	ApprovalTime time.Time      `gorm:"type:time;not null"`
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	ProcurementID        uint `gorm:"index"`
+	Procurement          *Procurement
+	ApproverID           *uint             `gorm:"index"`
+	Approver             master.Instructor `gorm:"foreignKey:ApproverID"`
+	Status               AcceptanceStatus  `gorm:"type:varchar(50);default:'pending'"`
+	ApprovalTime         *time.Time        `gorm:"type:datetime"`
+	DeletedAt            gorm.DeletedAt    `gorm:"index"`
+	CreatedAt            time.Time
 }

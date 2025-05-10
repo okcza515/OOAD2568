@@ -9,14 +9,13 @@ import (
 )
 
 type Procurement struct {
-	ProcurementID         uint              `gorm:"primaryKey"`
-	TORID                 uint              `gorm:"index"`
-	ApproverID            *uint             `gorm:"index"`
-	Approver              master.Instructor `gorm:"foreignKey:ApproverID"`
-	ProcurementApprovalID uint              `gorm:"foreignKey:ProcurementApprovalID"`
-	Status                ProcurementStatus `gorm:"type:varchar(50);default:'pending'"`
-	DeletedAt             gorm.DeletedAt    `gorm:"index"`
-	ApprovalTime          *time.Time
-	CreatedAt             time.Time
-	TOR                   TOR
+	ProcurementID uint              `gorm:"primaryKey"`
+	TORID         uint              `gorm:"index"`
+	ApproverID    *uint             `gorm:"index"`
+	Approver      master.Instructor `gorm:"foreignKey:ApproverID"`
+	Status        ProcurementStatus `gorm:"type:varchar(50);default:'pending'"`
+	DeletedAt     gorm.DeletedAt    `gorm:"index"`
+	ApprovalTime  *time.Time        `gorm:"type:datetime"`
+	CreatedAt     time.Time
+	TOR           TOR
 }

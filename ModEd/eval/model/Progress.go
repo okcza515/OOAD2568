@@ -14,7 +14,6 @@ type Progress struct {
 	Student      commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
 	AssessmentId uint
 	Assessment   Assessment       `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
-	Type         AssessmentType   `gorm:"column:type;not null"`
 	Status       AssessmentStatus `gorm:"column:status;not null"`
 	TotalSubmit  uint             `gorm:"column:total_submit;default:0"`
 }

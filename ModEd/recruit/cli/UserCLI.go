@@ -14,7 +14,6 @@ type UserMenuState struct {
 	manager          *cli.CLIMenuStateManager
 	applicantService ApplicantRegistrationService
 	reportService    ApplicantReportService
-	interviewService InterviewService
 	registrationMenu cli.MenuState
 	reportMenu       cli.MenuState
 }
@@ -23,16 +22,14 @@ func NewUserMenuState(
 	manager *cli.CLIMenuStateManager,
 	applicantService ApplicantRegistrationService,
 	reportService ApplicantReportService,
-	interviewService InterviewService,
 ) *UserMenuState {
 	menu := &UserMenuState{
 		manager:          manager,
 		applicantService: applicantService,
 		reportService:    reportService,
-		interviewService: interviewService,
 	}
 	menu.registrationMenu = NewApplicantRegistrationMenuState(manager, applicantService, menu)
-	menu.reportMenu = NewApplicantReportMenuState(manager, reportService, interviewService, menu)
+	menu.reportMenu = NewApplicantReportMenuState(manager, reportService, menu)
 
 	return menu
 
@@ -69,9 +66,9 @@ func (menu *UserMenuState) HandleUserInput(input string) error {
 	return nil
 }
 
-func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService, interviewService InterviewService) {
+func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService) {
 	manager := cli.NewCLIMenuManager()
-	userMenu := NewUserMenuState(manager, applicantRegistrationService, applicantReportService, interviewService)
+	userMenu := NewUserMenuState(manager, applicantRegistrationService, applicantReportService)
 
 	manager.SetState(userMenu)
 

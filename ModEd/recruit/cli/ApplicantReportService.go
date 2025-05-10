@@ -3,66 +3,54 @@ package cli
 import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
-	"fmt"
 
 	"gorm.io/gorm"
 )
 
 type ApplicantReportService interface {
-	GetFullApplicationReportByApplicationID(applicantionReportID uint) ([]model.ApplicationReport, error)
-}
-
-type InterviewService interface {
-	GetInterviewDetails(applicantID uint) (*model.Interview, error)
+	GetApplicationReport(applicantionReportID uint) (*model.ApplicationReport, error)
+	DisplayReport([]*model.ApplicationReport)
 }
 
 type applicantReportService struct {
-	DB *gorm.DB
+	DB                  *gorm.DB
+	ApplicantReportCtrl *controller.ApplicationReportController
 }
 
-type interviewService struct {
-	DB *gorm.DB
-}
-
-func NewApplicantReportService(DB *gorm.DB) *applicantReportService {
+func NewApplicantReportService(DB *gorm.DB, applicationReportCtrl *controller.ApplicationReportController) *applicantReportService {
 	return &applicantReportService{
-		DB: DB,
+		DB:                  DB,
+		ApplicantReportCtrl: applicationReportCtrl,
 	}
 }
 
-func (s *applicantReportService) GetFullApplicationReportByApplicationID(applicantionReportID uint) ([]model.ApplicationReport, error) {
-	provider := controller.NewApplicationReportController(s.DB)
-
+func (s *applicantReportService) GetApplicationReport(applicantionReportID uint) (*model.ApplicationReport, error) {
 	report := controller.ApplicationReport{
-		ApplicationProvider: provider,
-		Filters: []controller.FilterStrategy[model.ApplicationReport]{
-			&controller.ApplicationReportFilterByID{ApplicationReportID: applicantionReportID},
-		},
+		Controller: s.ApplicantReportCtrl,
 	}
 
-	allData, err := report.GetReport()
+	var condition map[string]interface{}
+	condition = map[string]interface{}{
+		"application_report_id": applicantionReportID,
+	}
+
+	filteredData, err := report.GetFilteredApplication(condition)
 	if err != nil {
+		println("can't get report")
 		return nil, err
 	}
+	return filteredData[0], nil
 
-	filtered, err := report.FilterReport(allData)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(filtered) == 0 {
-		return nil, fmt.Errorf("no report found with ID %d", applicantionReportID)
-	}
-
-	return filtered, nil
 }
 
-func NewInterviewService(DB *gorm.DB) *interviewService {
-	return &interviewService{
-		DB: DB,
+func (s *applicantReportService) DisplayReport(reports []*model.ApplicationReport) {
+	reportDisplay := controller.ApplicationReport{
+		Controller: s.ApplicantReportCtrl,
 	}
-}
+	converted := make([]model.ApplicationReport, len(reports))
+	for i, r := range reports {
+		converted[i] = *r
+	}
 
-func (s *interviewService) GetInterviewDetails(applicantID uint) (*model.Interview, error) {
-	return controller.GetInterviewDetails(s.DB, applicantID)
+	reportDisplay.DisplayReport(converted)
 }
