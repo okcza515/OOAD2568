@@ -13,7 +13,6 @@ type InternShipModuleMenuStateHandler struct {
 	wrapper     *controller.InternshipModuleWrapper
 
 	InternshipApplicationMenuStateHandler *InternshipApplicationHandler
-	InternshipEvaluationMenuStateHandler  *InternshipEvaluationHandler
 }
 
 func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternShipModuleMenuStateHandler {
@@ -22,7 +21,6 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 		wrapper:     wrapper,
 	}
 	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
-	InternshipModule.InternshipEvaluationMenuStateHandler = NewInternshipEvaluationHandler(manager, wrapper)
 
 	return InternshipModule
 }
@@ -47,7 +45,6 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
 		return nil
 	case "3":
-		handler.menuManager.SetState(handler.InternshipEvaluationMenuStateHandler)
 		return nil
 	case "4":
 		err := handler.handleUpdateApprovalStatus()

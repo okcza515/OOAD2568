@@ -17,7 +17,7 @@ type SeniorProjectWorkloadHandler struct {
 	db *gorm.DB
 }
 
-func NewSeniorProjectWorkload(db *gorm.DB) SeniorProjectWorkloadHandler {
+func NewSeniorProjectWorkloadHandler(db *gorm.DB) SeniorProjectWorkloadHandler {
 	return SeniorProjectWorkloadHandler{db: db}
 }
 

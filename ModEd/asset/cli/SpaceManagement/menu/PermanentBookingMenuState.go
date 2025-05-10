@@ -3,8 +3,8 @@
 package menu
 
 import (
+	spaceManagementHandler "ModEd/asset/cli/spacemanagement/handler"
 	controller "ModEd/asset/controller"
-	spaceManagementHandler "ModEd/asset/handler"
 	"ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"

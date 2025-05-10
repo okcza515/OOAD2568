@@ -8,8 +8,6 @@ import (
 type InternshipModuleWrapper struct {
 	CurriculumController  *CurriculumController
 	InternshipApplication *InternshipApplicationController
-	Review                *ReviewController
-	Report                *ReportController
 	Approved              *ApprovedController
 	Company               *CompanyController
 	InternStudent         *InternStudentController
@@ -22,8 +20,6 @@ func NewInternshipModuleWrapper(
 ) *InternshipModuleWrapper {
 	return &InternshipModuleWrapper{
 		InternshipApplication: NewInternshipApplicationController(db),
-		Review:                NewReviewController(db),
-		Report:                NewReportController(db),
 		Approved:              NewApprovedController(db),
 		Company:               NewCompanyController(db),
 		InternStudent:         NewInternStudentController(db),

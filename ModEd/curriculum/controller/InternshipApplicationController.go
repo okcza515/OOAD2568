@@ -30,19 +30,6 @@ func NewInternshipApplicationController(connector *gorm.DB) *InternshipApplicati
 
 func (repo InternshipApplicationController) RegisterInternshipApplications(applications []*model.InternshipApplication) error {
 	for _, application := range applications {
-		report := model.InternshipReport{}
-		if err := repo.Connector.Create(&report).Error; err != nil {
-			return err
-		}
-
-		review := model.SupervisorReview{}
-		if err := repo.Connector.Create(&review).Error; err != nil {
-			return err
-		}
-
-		application.InternshipReportId = report.ID
-		application.SupervisorReviewId = review.ID
-
 		if err := repo.Connector.Create(application).Error; err != nil {
 			return err
 		}

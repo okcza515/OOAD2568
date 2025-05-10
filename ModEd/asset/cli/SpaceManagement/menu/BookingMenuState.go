@@ -2,8 +2,8 @@
 package menu
 
 import (
+	spaceManagementHandler "ModEd/asset/cli/spacemanagement/handler"
 	controller "ModEd/asset/controller"
-	spaceManagementHandler "ModEd/asset/handler"
 	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
@@ -73,7 +73,7 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 	}
 
 	handlerContext := handler.NewHandlerContext()
-	
+
 	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.Booking](bookingController)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Booking](bookingController)
