@@ -1,3 +1,4 @@
+// MEP-1013
 package handler
 
 import (
@@ -26,6 +27,7 @@ func NewUpdateBookingHandlerStrategy(controller interface {
 func (h *UpdateBookingHandlerStrategy) Execute() error {
     fmt.Println("===== Update Booking =====")
 
+    // Get booking ID
     fmt.Print("Enter Booking ID to update: ")
     var idStr string
     fmt.Scanln(&idStr)
@@ -34,100 +36,124 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         fmt.Println("Invalid Booking ID")
         return err
     }
-    
+
+    // Retrieve existing booking
     booking, err := h.controller.RetrieveByID(uint(id))
     if err != nil {
         fmt.Println("Error retrieving booking:", err)
         return err
     }
-    
-    bookingPtr := &booking
-    
-    fmt.Printf("Current Event Name: %s\n", bookingPtr.EventName)
+
+    // Store original booking for comparison
+    originalBooking := booking
+
+    // Update Event Name
+    fmt.Printf("Current Event Name: %s\n", booking.EventName)
     fmt.Print("Enter new Event Name (or press Enter to keep current): ")
     newEventName := util.GetCommandInput()
     if newEventName != "" {
-        bookingPtr.EventName = newEventName
+        booking.EventName = newEventName
     }
-    
-    fmt.Printf("Current User Role: %s\n", bookingPtr.UserRole)
+
+    // Update User Role
+    fmt.Printf("Current User Role: %s\n", booking.UserRole)
     fmt.Print("Enter new User Role (STUDENT/ADVISOR/ADMIN) (or press Enter to keep current): ")
     newRole := util.GetCommandInput()
     if newRole != "" {
         newRole = strings.ToUpper(strings.TrimSpace(newRole))
         switch newRole {
         case "STUDENT":
-            bookingPtr.UserRole = model.ROLE_STUDENT
+            booking.UserRole = model.ROLE_STUDENT
         case "ADVISOR":
-            bookingPtr.UserRole = model.ROLE_ADVISOR
+            booking.UserRole = model.ROLE_ADVISOR
         case "ADMIN":
-            bookingPtr.UserRole = model.ROLE_ADMIN
+            booking.UserRole = model.ROLE_ADMIN
         default:
             fmt.Println("Invalid role. Keeping current role.")
         }
     }
 
-    fmt.Printf("Current Start Date: %v\n", bookingPtr.TimeTable.StartDate.Format("2006-01-02 15:04"))
-    fmt.Print("Enter new Start Date (YYYY-MM-DD) (or press Enter to keep current): ")
-    newStartDateStr := util.GetCommandInput()
-    
-    if newStartDateStr != "" {
+    // Update Start Date/Time
+    fmt.Printf("Current Start Date/Time: %s\n", booking.TimeTable.StartDate.Format("2006-01-02 15:04"))
+    fmt.Print("Update start date/time? (y/n): ")
+    var updateStart string
+    fmt.Scanln(&updateStart)
+    if strings.ToLower(strings.TrimSpace(updateStart)) == "y" {
+        fmt.Print("Enter new Start Date (YYYY-MM-DD): ")
+        startDateStr := util.GetCommandInput()
         fmt.Print("Enter new Start Time (HH:MM): ")
-        newStartTimeStr := util.GetCommandInput()
-        
-        startDateTime := newStartDateStr + " " + newStartTimeStr
+        startTimeStr := util.GetCommandInput()
+
+        startDateTime := startDateStr + " " + startTimeStr
         newStartDate, err := time.Parse("2006-01-02 15:04", startDateTime)
         if err != nil {
             fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
             return err
         }
-        bookingPtr.TimeTable.StartDate = newStartDate
+        booking.TimeTable.StartDate = newStartDate
     }
-    
-    fmt.Printf("Current End Date: %v\n", bookingPtr.TimeTable.EndDate.Format("2006-01-02 15:04"))
-    fmt.Print("Enter new End Date (YYYY-MM-DD) (or press Enter to keep current): ")
-    newEndDateStr := util.GetCommandInput()
-    
-    if newEndDateStr != "" {
+
+    // Update End Date/Time
+    fmt.Printf("Current End Date/Time: %s\n", booking.TimeTable.EndDate.Format("2006-01-02 15:04"))
+    fmt.Print("Update end date/time? (y/n): ")
+    var updateEnd string
+    fmt.Scanln(&updateEnd)
+    if strings.ToLower(strings.TrimSpace(updateEnd)) == "y" {
+        fmt.Print("Enter new End Date (YYYY-MM-DD): ")
+        endDateStr := util.GetCommandInput()
         fmt.Print("Enter new End Time (HH:MM): ")
-        newEndTimeStr := util.GetCommandInput()
-        
-        endDateTime := newEndDateStr + " " + newEndTimeStr
+        endTimeStr := util.GetCommandInput()
+
+        endDateTime := endDateStr + " " + endTimeStr
         newEndDate, err := time.Parse("2006-01-02 15:04", endDateTime)
         if err != nil {
             fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
             return err
         }
-        bookingPtr.TimeTable.EndDate = newEndDate
+        booking.TimeTable.EndDate = newEndDate
     }
 
     // Validate date range
-    if bookingPtr.TimeTable.EndDate.Before(bookingPtr.TimeTable.StartDate) {
+    if booking.TimeTable.EndDate.Before(booking.TimeTable.StartDate) {
         fmt.Println("Error: End date/time must be after start date/time")
         return fmt.Errorf("invalid date range")
     }
 
-    // Show updated booking details
-    fmt.Printf("\nUpdated Booking Details:\n")
-    fmt.Printf("Event Name: %s\n", bookingPtr.EventName)
-    fmt.Printf("User Role: %s\n", bookingPtr.UserRole)
-    fmt.Printf("Start Date: %v\n", bookingPtr.TimeTable.StartDate.Format("2006-01-02 15:04"))
-    fmt.Printf("End Date: %v\n", bookingPtr.TimeTable.EndDate.Format("2006-01-02 15:04"))
+    // Display changes and confirm
+    fmt.Println("\nChanges to be made:")
+    fmt.Println("==================================================================")
+    if booking.EventName != originalBooking.EventName {
+        fmt.Printf("Event Name: %s -> %s\n", originalBooking.EventName, booking.EventName)
+    }
+    if booking.UserRole != originalBooking.UserRole {
+        fmt.Printf("User Role: %s -> %s\n", originalBooking.UserRole, booking.UserRole)
+    }
+    if !booking.TimeTable.StartDate.Equal(originalBooking.TimeTable.StartDate) {
+        fmt.Printf("Start Date/Time: %s -> %s\n",
+            originalBooking.TimeTable.StartDate.Format("2006-01-02 15:04"),
+            booking.TimeTable.StartDate.Format("2006-01-02 15:04"))
+    }
+    if !booking.TimeTable.EndDate.Equal(originalBooking.TimeTable.EndDate) {
+        fmt.Printf("End Date/Time: %s -> %s\n",
+            originalBooking.TimeTable.EndDate.Format("2006-01-02 15:04"),
+            booking.TimeTable.EndDate.Format("2006-01-02 15:04"))
+    }
+    fmt.Println("==================================================================")
 
-    fmt.Print("\nConfirm update? (y/n): ")
+    fmt.Print("\nConfirm these changes? (y/n): ")
     var confirm string
     fmt.Scanln(&confirm)
     if strings.ToLower(strings.TrimSpace(confirm)) != "y" {
         fmt.Println("Update cancelled")
         return nil
     }
-    
-    err = h.controller.UpdateByID(bookingPtr)
+
+    err = h.controller.UpdateByID(&booking)
     if err != nil {
         fmt.Println("Error updating booking:", err)
         return err
     }
-    
+
     fmt.Println("Booking updated successfully")
     util.PressEnterToContinue()
     return nil

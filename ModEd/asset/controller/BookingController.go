@@ -1,3 +1,4 @@
+// MEP-1013
 package controller
 
 import (
@@ -5,6 +6,7 @@ import (
     "ModEd/core"
     "ModEd/core/migration"
     "time"
+    "fmt"
 
     "gorm.io/gorm"
 )
@@ -45,9 +47,21 @@ func (c *BookingController) NotifyObservers(eventType string, booking model.Book
 }
 
 func (c *BookingController) Insert(data model.Booking) error {
+    timeTable := model.TimeTable{
+        StartDate:   data.TimeTable.StartDate,
+        EndDate:     data.TimeTable.EndDate,
+        RoomID:      data.TimeTable.RoomID,
+        IsAvailable: false,
+        BookingType: data.TimeTable.BookingType,
+    }
+
+    data.TimeTableID = timeTable.ID
+
     if err := c.baseController.Insert(data); err != nil {
+        c.db.Delete(&timeTable)
         return err
     }
+
     c.NotifyObservers("booking_created", data)
     return nil
 }
@@ -58,15 +72,48 @@ func (c *BookingController) RetrieveByID(id uint, preloads ...string) (model.Boo
 
 func (c *BookingController) UpdateByID(booking *model.Booking) error {
     var existing model.Booking
-    if err := c.db.First(&existing, booking.ID).Error; err != nil {
+    if err := c.db.Preload("TimeTable").First(&existing, booking.ID).Error; err != nil {
         return err
     }
 
-    if err := c.db.Model(&existing).Updates(booking).Error; err != nil {
+    tx := c.db.Begin()
+
+    if err := tx.Model(&existing.TimeTable).Updates(map[string]interface{}{
+        "start_date":   booking.TimeTable.StartDate,
+        "end_date":     booking.TimeTable.EndDate,
+        "booking_type": booking.TimeTable.BookingType,
+    }).Error; err != nil {
+        tx.Rollback()
         return err
     }
 
-    c.NotifyObservers("booking_updated", *booking)
+    if err := tx.Model(&existing).Updates(map[string]interface{}{
+        "event_name": booking.EventName,
+        "user_role":  booking.UserRole,
+    }).Error; err != nil {
+        tx.Rollback()
+        return err
+    }
+
+    isAvailable, err := c.CheckRoomAvailability(
+        existing.TimeTable.RoomID,
+        booking.TimeTable.StartDate,
+        booking.TimeTable.EndDate,
+    )
+    if err != nil {
+        tx.Rollback()
+        return err
+    }
+    if !isAvailable {
+        tx.Rollback()
+        return fmt.Errorf("room is not available for the selected time period")
+    }
+
+    if err := tx.Commit().Error; err != nil {
+        return err
+    }
+
+    c.NotifyObservers("booking_updated", existing)
     return nil
 }
 
