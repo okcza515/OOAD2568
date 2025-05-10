@@ -129,14 +129,6 @@ func (h *CreatePermanentScheduleHandler) Execute() error {
 		return err
 	}
 
-	// timeTable := model.TimeTable{
-	//     StartDate:   startDate,
-	//     EndDate:     endDate,
-	//     RoomID:      uint(roomID),
-	//     IsAvailable: true,
-	//     BookingType: model.BOOKING_PERMANENT,
-	// }
-
 	schedule := model.PermanentSchedule{
 		TimeTableID:   0,
 		CourseId:      uint(courseID),

@@ -16,14 +16,10 @@ type PermanentBookingControllerInterface interface {
 	SeedPermanentBookingSchedule(path string) ([]*model.PermanentSchedule, error)
 	NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error)
 	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
-	//RetrieveByID(id uint) (model.PermanentSchedule, error)
 	UpdateByID(schedule model.PermanentSchedule) error
 	DeleteByID(id uint) error
 	DeleteAll() error
-	// List(condition map[string]interface{}) ([]model.PermanentSchedule, error)
 	List(condition map[string]interface{}, preloads ...string) ([]model.PermanentSchedule, error)
-
-	// List(condition map[string]interface{}) ([]model.PermanentSchedule, error)
 	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
 }
 type PermanentBookingController struct {
@@ -113,10 +109,6 @@ func (controller *PermanentBookingController) NewPermanentSchedule(schedule mode
 	return schedules, nil
 }
 
-// func (controller *PermanentBookingController) RetrieveByID(id uint) (model.PermanentSchedule, error) {
-// 	return controller.baseController.RetrieveByID(id, "TimeTable", "TimeTable.Room")
-// }
-
 func (controller *PermanentBookingController) RetrieveByID(id uint, preloads ...string) (model.PermanentSchedule, error) {
 	return controller.baseController.RetrieveByID(id, "TimeTable", "TimeTable.Room")
 }
@@ -161,10 +153,6 @@ func (controller *PermanentBookingController) DeleteByID(id uint) error {
 
 	return nil
 }
-
-// func (controller *PermanentBookingController) List(condition map[string]interface{}) ([]model.PermanentSchedule, error) {
-// 	return controller.baseController.List(condition, "TimeTable", "TimeTable.Room")
-// }
 
 func (c *PermanentBookingController) List(condition map[string]interface{}, preloads ...string) ([]model.PermanentSchedule, error) {
 	return c.baseController.List(condition, "TimeTable", "TimeTable.Room")

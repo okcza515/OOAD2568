@@ -19,10 +19,9 @@ type SpaceManagementControllerManager struct {
 	Room                 RoomControllerInterface
 }
 
-
 var spaceManagementInstance *SpaceManagementControllerManager
 
-//Singleton -> to prevent multiple database initialization
+// Singleton -> to prevent multiple database initialization
 func GetSpaceManagementInstance(db *gorm.DB) *SpaceManagementControllerManager {
 	if spaceManagementInstance != nil {
 		return spaceManagementInstance
@@ -43,7 +42,7 @@ func NewSpaceManagementControllerManager(db *gorm.DB) (*SpaceManagementControlle
 	manager := &SpaceManagementControllerManager{
 		db: db,
 	}
-	
+
 	//facade create controller
 	manager.Booking = NewBookingController()
 	manager.Room = NewRoomController()
