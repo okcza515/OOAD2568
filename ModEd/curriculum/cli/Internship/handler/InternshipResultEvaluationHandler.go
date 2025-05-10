@@ -5,10 +5,14 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
+	"log"
 )
 
 type InternshipResultEvaluationHandler struct {
-	controller *controller.InternshipResultEvaluationController
+	controller                 *controller.InternshipResultEvaluationController
+	InternshipInformation      *controller.InternshipInformationController
+	InternshipCriteria         *controller.InternshipCriteriaController
+	InternshipResultEvaluation *controller.InternshipResultEvaluationController
 }
 
 func NewInternshipResultEvaluationHandler(controller *controller.InternshipResultEvaluationController) *InternshipResultEvaluationHandler {
@@ -119,6 +123,20 @@ func (handler *InternshipResultEvaluationHandler) listAllResultEvaluations() err
 	for _, evaluation := range evaluations {
 		fmt.Printf("ID: %d, Comment: %s, Score: %d, Internship Information ID: %d\n",
 			evaluation.ID, evaluation.Comment, evaluation.Score, evaluation.InternshipInformationId)
+	}
+	return nil
+}
+
+func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() error {
+	facade := controller.NewInternshipEvaluationFacade(*handler.InternshipInformation, *handler.InternshipCriteria, *handler.InternshipResultEvaluation)
+
+	err := facade.EvaluateInternship("65070501070", map[uint]uint{
+		1: 5,
+		2: 4,
+		3: 5,
+	}, "Great performance overall.")
+	if err != nil {
+		log.Println("Evaluation failed:", err)
 	}
 	return nil
 }
