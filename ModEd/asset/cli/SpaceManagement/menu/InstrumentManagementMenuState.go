@@ -1,20 +1,21 @@
 // MEP-1013
-  package menu
+package menu
 
 import (
+	spaceManagementHandler "ModEd/asset/cli/spacemanagement/handler"
 	controller "ModEd/asset/controller"
 	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"fmt"
+
 	"gorm.io/gorm"
-	spaceManagementHandler "ModEd/asset/handler"
 )
 
-type InstrumentManagementMenuState struct{
-	manager			*cli.CLIMenuStateManager //changing the state(handler), encapsulate menu transition
-	handlerContext	*handler.HandlerContext //selecting the func(strategy), hold command handlers
+type InstrumentManagementMenuState struct {
+	manager        *cli.CLIMenuStateManager //changing the state(handler), encapsulate menu transition
+	handlerContext *handler.HandlerContext  //selecting the func(strategy), hold command handlers
 }
 
 func (menu *InstrumentManagementMenuState) Render() {
@@ -31,7 +32,7 @@ func (menu *InstrumentManagementMenuState) Render() {
 	fmt.Println("========================================")
 }
 
-func (menu *InstrumentManagementMenuState) HandleUserInput(input string) error{
+func (menu *InstrumentManagementMenuState) HandleUserInput(input string) error {
 	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println("Error handling user input", err)
@@ -62,31 +63,31 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 		}
 	}
 
-  controllerInstance := controllerManager.InstrumentManagement
-  if controllerInstance == nil{
-    fmt.Println("Error: Instrument Management controller is nil")
-    return &InstrumentManagementMenuState{
-      manager: manager,
-      handlerContext: handler.NewHandlerContext(),
-    }
-  }
+	controllerInstance := controllerManager.InstrumentManagement
+	if controllerInstance == nil {
+		fmt.Println("Error: Instrument Management controller is nil")
+		return &InstrumentManagementMenuState{
+			manager:        manager,
+			handlerContext: handler.NewHandlerContext(),
+		}
+	}
 
-  handlerContext := handler.NewHandlerContext()
+	handlerContext := handler.NewHandlerContext()
 
-  	//handler strategy select each handler function
-  	//Standard Handlers
+	//handler strategy select each handler function
+	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
-  	insertManyhandler := handler.NewInsertHandlerStrategy[model.InstrumentManagement](controllerInstance)
+	insertManyhandler := handler.NewInsertHandlerStrategy[model.InstrumentManagement](controllerInstance)
 
-  	//Custom Handlers
+	//Custom Handlers
 	updateHandler := spaceManagementHandler.NewUpdateInstrumentManagementStrategy(controllerInstance)
-  	getByRoomIDhandler := spaceManagementHandler.NewGetInstrumentManagementByRoomIdStrategy(controllerInstance)
-  	insertHandler := spaceManagementHandler.NewInsertInstrumentManagementStrategy(controllerInstance)
+	getByRoomIDhandler := spaceManagementHandler.NewGetInstrumentManagementByRoomIdStrategy(controllerInstance)
+	insertHandler := spaceManagementHandler.NewInsertInstrumentManagementStrategy(controllerInstance)
 
-  	handlerContext.AddHandler("1", "Get all Instrument Managements", listHandler)
+	handlerContext.AddHandler("1", "Get all Instrument Managements", listHandler)
 	handlerContext.AddHandler("2", "Get Instrument Management by ID", getHandler)
 	handlerContext.AddHandler("3", "Get Instrument Management by RoomID", getByRoomIDhandler)
 	handlerContext.AddHandler("4", "Create an Instrument Management", insertHandler)
@@ -95,11 +96,10 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 	handlerContext.AddHandler("7", "Seed Instrument Managements data", insertManyhandler)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
-
-  return &InstrumentManagementMenuState{
-    manager: manager,
-    handlerContext: handlerContext,
-  }
+	return &InstrumentManagementMenuState{
+		manager:        manager,
+		handlerContext: handlerContext,
+	}
 
 }
 
