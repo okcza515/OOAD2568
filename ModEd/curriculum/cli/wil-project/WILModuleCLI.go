@@ -23,11 +23,13 @@ func RunWILModuleCLI(
 	for {
 		menuManager.Render()
 		menuManager.UserInput = utils.GetUserChoice()
+
+		if menuManager.UserInput == "exit" {
+			break
+		}
+
 		err := menuManager.HandleUserInput()
 		if err != nil {
-			if err.Error() != "exited" {
-				panic(err)
-			}
 			return
 		}
 	}

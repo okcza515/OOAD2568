@@ -5,9 +5,7 @@ import (
 	"ModEd/asset/model"
 	"ModEd/core"
 	"ModEd/core/migration"
-	"ModEd/utils/deserializer"
 	"errors"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -21,48 +19,10 @@ type SpaceManagementControllerManager struct {
 	Room                 RoomControllerInterface
 }
 
-// CheckRoomAvailability implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) CheckRoomAvailability(roomID uint, startDate time.Time, endDate time.Time) (bool, error) {
-	panic("unimplemented")
-}
-
-// DeleteAll implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) DeleteAll() error {
-	panic("unimplemented")
-}
-
-// DeleteByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) DeleteByID(id uint) error {
-	panic("unimplemented")
-}
-
-// List implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) List(condition map[string]interface{}) ([]model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// NewPermanentSchedule implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// RetrieveByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) RetrieveByID(id uint) (model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// SeedPermanentBookingSchedule implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) SeedPermanentBookingSchedule(path string) ([]*model.PermanentSchedule, error) {
-	panic("unimplemented")
-}
-
-// UpdateByID implements PermanentBookingControllerInterface.
-func (manager *SpaceManagementControllerManager) UpdateByID(schedule model.PermanentSchedule) error {
-	panic("unimplemented")
-}
 
 var spaceManagementInstance *SpaceManagementControllerManager
 
+//Singleton -> to prevent multiple database initialization
 func GetSpaceManagementInstance(db *gorm.DB) *SpaceManagementControllerManager {
 	if spaceManagementInstance != nil {
 		return spaceManagementInstance
@@ -83,10 +43,8 @@ func NewSpaceManagementControllerManager(db *gorm.DB) (*SpaceManagementControlle
 	manager := &SpaceManagementControllerManager{
 		db: db,
 	}
-	// facade.InstrumentManagement = InstrumentManagementController{db: db}
-	// facade.SupplyManagement = SupplyManagementController{db: db}
-	// facade.Booking = BookingController{db: db}
-	// facade.PermanentSchedule = *NewPermanentBookingController(db, core.NewBaseController[model.PermanentSchedule](db))
+	
+	//facade create controller
 	manager.Booking = NewBookingController()
 	manager.Room = NewRoomController()
 	manager.InstrumentManagement = NewInstrumentManagementController()
@@ -110,39 +68,19 @@ func (manager *SpaceManagementControllerManager) ResetDatabase() error {
 }
 
 func (manager *SpaceManagementControllerManager) LoadSeedData() error {
-	seedData := map[string]interface{}{
-		"Room":     &[]model.Room{},
-		"Booking":  &[]model.Booking{},
-		"Schedule": &[]model.PermanentSchedule{},
-	}
-	for filename, m := range seedData {
-		fd, err := deserializer.NewFileDeserializer("data/asset/" + filename + ".JSON")
-		if err != nil {
-			return err
-		}
-
-		err = fd.Deserialize(m)
-		if err != nil {
-			return err
-		}
-
-		result := migration.GetInstance().DB.Create(m)
-		if result.Error != nil {
-			return result.Error
-		}
-	}
-	return nil
-}
-
-func (manager *SpaceManagementControllerManager) ResetDB() error {
-	err := migration.GetInstance().DropAllTables()
+	err := manager.ResetDatabase()
 	if err != nil {
 		return err
 	}
 
-	_, err = migration.GetInstance().MigrateModule(core.MODULE_SPACEMANAGEMENT).BuildDB()
+	err = migration.GetInstance().AddSeedData(("data/asset/Room.JSON"), &[]model.Room{}).
+		AddSeedData(("data/asset/Booking.JSON"), &[]model.Booking{}).
+		AddSeedData(("data/asset/PermanentSchedule.JSON"), &[]model.PermanentSchedule{}).
+		//Add more seed data as needed
+		LoadSeedData()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

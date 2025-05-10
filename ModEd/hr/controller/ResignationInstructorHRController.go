@@ -49,12 +49,14 @@ func (c *ResignationInstructorHRController) SubmitResignationInstructor(instruct
 
 		instructorController := NewResignationInstructorHRController(tx)
 
-		factory, err := model.GetFactory("instructor")
-		if err != nil {
-			return fmt.Errorf("failed to get instructor factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:     instructorID,
+			Reason: reason,
 		}
 
-		reqInterface, err := factory.CreateResignation(instructorID, reason)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeResignation, params)
 		if err != nil {
 			return fmt.Errorf("failed to create resignation request using factory: %v", err)
 		}

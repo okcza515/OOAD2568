@@ -5,6 +5,7 @@ package menu
 import (
 	controller "ModEd/asset/controller"
 	spaceManagementHandler "ModEd/asset/handler"
+	"ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -52,7 +53,16 @@ func NewPermanentScheduleState(db *gorm.DB, manager *cli.CLIMenuStateManager, sp
 		}
 	}
 
-	controllerInstance := controller.NewPermanentBookingController()
+	controllerFacade := controller.GetSpaceManagementInstance(db)
+	if controllerFacade == nil {
+		fmt.Println("Error: Space Management Controller Facade is nil")
+		return &PermanentBookingState{
+			manager:        manager,
+			handlerContext: handler.NewHandlerContext(),
+		}
+	}
+
+	controllerInstance := controllerFacade.PermanentSchedule
 	if controllerInstance == nil {
 		fmt.Println("Error: Permanent Booking Controller is nil")
 		return &PermanentBookingState{
@@ -64,9 +74,10 @@ func NewPermanentScheduleState(db *gorm.DB, manager *cli.CLIMenuStateManager, sp
 	handlerContext := handler.NewHandlerContext()
 
 	createHandler := spaceManagementHandler.NewCreatePermanentScheduleHandler(controllerInstance)
-	listHandler := handler.NewListHandlerStrategy(controllerInstance)
-	//listHandler := spaceManagementHandler.NewListPermanentSchedulesHandler(controllerInstance)
-	getHandler := spaceManagementHandler.NewGetScheduleDetailsHandler(controllerInstance)
+	listHandler := handler.NewListHandlerStrategy[model.PermanentSchedule](controllerInstance)
+	// listHandler := spaceManagementHandler.NewListPermanentSchedulesHandler(controllerInstance)
+	// getHandler := spaceManagementHandler.NewGetScheduleDetailsHandler(controllerInstance)
+	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.PermanentSchedule](controllerInstance)
 	updateHandler := spaceManagementHandler.NewUpdateScheduleHandler(controllerInstance)
 	deleteHandler := spaceManagementHandler.NewDeleteScheduleHandler(controllerInstance)
 	//seedHandler := spaceManagementHandler.NewSeedAllSchedulesHandler(controllerInstance)

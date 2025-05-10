@@ -2,7 +2,6 @@
 package handler
 
 import (
-	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -15,11 +14,12 @@ import (
 )
 
 type WILProjectApplicationMenuStateHandler struct {
-	manager *cli.CLIMenuStateManager
-	wrapper *controller.WILModuleWrapper
-
+	manager                   *cli.CLIMenuStateManager
+	wrapper                   *controller.WILModuleWrapper
 	wilModuleMenuStateHandler *WILModuleMenuStateHandler
 	insertHandlerStrategy     *handler.InsertHandlerStrategy[model.WILProjectApplication]
+	handler                   *handler.HandlerContext
+	backHandler               *handler.ChangeMenuHandlerStrategy
 }
 
 func NewWILProjectApplicationMenuStateHandler(
@@ -30,56 +30,38 @@ func NewWILProjectApplicationMenuStateHandler(
 		wrapper:                   wrapper,
 		wilModuleMenuStateHandler: wilModuleMenuStateHandler,
 		insertHandlerStrategy:     handler.NewInsertHandlerStrategy[model.WILProjectApplication](wrapper.WILProjectApplicationController),
+		handler:                   handler.NewHandlerContext(),
+		backHandler:               handler.NewChangeMenuHandlerStrategy(manager, wilModuleMenuStateHandler),
 	}
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) Render() {
-	fmt.Println("\nWIL Project Application Menu:")
-	fmt.Println("1. Create WIL Project Application")
-	fmt.Println("2. Edit WIL Project Application")
-	fmt.Println("3. Search WIL Project Application")
-	fmt.Println("4. List all WIL Project Application")
-	fmt.Println("5. Load WIL Project Application From file")
-	fmt.Println("back: Exit the module")
+	menu.handler.SetMenuTitle("\nWIL Project Curriculum Menu:")
+	menu.handler.AddHandler("1", "Create WIL Project Application", handler.FuncStrategy{Action: menu.createWILProjectApplication})
+	menu.handler.AddHandler("2", "Edit WIL Project Application", handler.FuncStrategy{Action: menu.editWILProjectApplication})
+	menu.handler.AddHandler("3", "Search WIL Project Application", handler.FuncStrategy{Action: menu.searchWILProjectApplication})
+	menu.handler.AddHandler("4", "List all WIL Project Application", handler.FuncStrategy{Action: menu.listAllWILProjectApplication})
+	menu.handler.AddHandler("5", "Load WIL Project Application From file", handler.FuncStrategy{Action: func() error {
+		err := menu.insertHandlerStrategy.Execute()
+		return err
+	}})
+	menu.handler.AddHandler("6", "Convert WIL Project Application to Senior Project", handler.FuncStrategy{Action: func() error {
+		_, err := menu.newSeniorProjectFromWILProject()
+		if err != nil {
+			return err
+		}
+		return nil
+	}})
+	menu.handler.AddBackHandler(menu.backHandler)
+
+	menu.handler.ShowMenu()
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) HandleUserInput(input string) error {
-
-	switch input {
-	case "1":
-		err := menu.createWILProjectApplication()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "2":
-		err := menu.editWILProjectApplication()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "3":
-		err := menu.searchWILProjectApplication()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "4":
-		_, err := menu.listAllWILProjectApplication()
-		if err != nil {
-			fmt.Println("error! cannot use this function")
-		}
-	case "5":
-		err := menu.insertHandlerStrategy.Execute()
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-	case "back":
-		menu.manager.SetState(menu.wilModuleMenuStateHandler)
-		return nil
-	default:
-		fmt.Println("Invalid Command")
+	err := menu.handler.HandleInput(input)
+	if err != nil {
+		return err
 	}
-
-	util.PressEnterToContinue()
-
 	return nil
 }
 
@@ -152,32 +134,50 @@ func (menu *WILProjectApplicationMenuStateHandler) createWILProjectApplication()
 		fmt.Println("\nError for WIL Project Application:", result)
 		return errors.New("error! cannot create a WIL Project application")
 	}
+
+	menu.showWILApplication(WILProjectApplicationModel)
 	return nil
 }
 
-func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() ([]model.WILProjectApplication, error) {
-	fmt.Println("WIL Project Application List")
+func (menu *WILProjectApplicationMenuStateHandler) getAllWILProjectApplication() ([]model.WILProjectApplication, error) {
 	applications, err := menu.wrapper.WILProjectApplicationController.ListWILProjectApplication()
 	if err != nil {
 		return nil, errors.New("error! cannot retrieve WIL Project application data")
 	}
+	return applications, nil
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) showWILApplication(application model.WILProjectApplication) {
+	fmt.Printf("%s\n", application.ToString())
+	fmt.Printf("Advisor %s %s\n", application.Advisor.FirstName, application.Advisor.LastName)
+	fmt.Println("Students")
+	for _, student := range application.Students {
+		fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)
+	}
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) listAllWILProjectApplication() error {
+	fmt.Println("WIL Project Application List")
+	applications, err := menu.getAllWILProjectApplication()
+	if err != nil {
+		return errors.New("error! cannot retrieve WIL Project application data")
+	}
+
+	if len(applications) == 0 {
+		fmt.Println("no records")
+	}
 
 	for _, application := range applications {
-		fmt.Printf("%s\n", application.ToString())
-		fmt.Printf("Advisor %s %s\n", application.Advisor.FirstName, application.Advisor.LastName)
-		fmt.Println("Students")
-		for _, student := range application.Students {
-			fmt.Printf("%s %s %s\n", student.StudentId, student.Student.FirstName, student.Student.LastName)
-		}
+		menu.showWILApplication(application)
 		fmt.Println("===========================================================")
 	}
-	return applications, nil
+	return nil
 }
 
 func (menu *WILProjectApplicationMenuStateHandler) editWILProjectApplication() error {
 	// Step 1: Display all WIL Project Applications
 	fmt.Println("WIL Project Application List")
-	applications, err := menu.listAllWILProjectApplication()
+	applications, err := menu.getAllWILProjectApplication()
 
 	if err != nil {
 		return err
@@ -335,4 +335,24 @@ func showProjectDetail(selectedApplication model.WILProjectApplication) {
 		fmt.Printf("   %d. %s\n", i+1, student.StudentId)
 	}
 	fmt.Println("10. Exit Edit Menu")
+}
+
+func (menu *WILProjectApplicationMenuStateHandler) newSeniorProjectFromWILProject() (uint, error) {
+    // Get the WIL Project Application ID from the user
+    wilProjectID := core.ExecuteUserInputStep(core.UintInputStep{
+        PromptText:    "Enter WIL Project Application ID:",
+        FieldNameText: "WILProjectApplicationID",
+    }).(uint)
+    // Find the WIL Project Application by ID
+	wilProjectApplication, err := menu.wrapper.WILProjectApplicationController.RetrieveByID(wilProjectID)
+	if err != nil {
+		return 0, errors.New("error! cannot retrieve WIL Project application data")
+	}
+	
+	converter := controller.NewWILToSeniorProjectController(menu.wrapper.WILProjectApplicationToSeniorProjectController.Connector)
+	seniorProjectID, err := converter.NewSeniorProjectbyWILProjectApplication(&wilProjectApplication)
+	if err != nil {
+		return 0, errors.New("error! cannot convert WIL Project application to Senior Project")
+	}
+	return seniorProjectID, nil
 }

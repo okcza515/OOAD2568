@@ -2,11 +2,13 @@ package model
 
 import (
 	"ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/util"
 )
 
 type StudentInfo struct {
 	model.Student
+	core.BaseModel
 	Gender      string           `csv:"Gender" json:"Gender"`
 	CitizenID   string           `csv:"CitizenID" json:"CitizenID"`
 	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber"`
@@ -47,6 +49,3 @@ func NewUpdatedStudentInfo(
 	}
 }
 
-func (StudentInfo) TableName() string {
-	return "student_infos"
-}

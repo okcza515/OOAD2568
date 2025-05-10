@@ -38,7 +38,7 @@ func (c *InstrumentRequestController) GetInstrumentRequestByName(name string) (*
 
 func (c *InstrumentRequestController) ListAllInstrumentRequests() (*[]model.InstrumentRequest, error) {
 	var requests []model.InstrumentRequest
-	err := c.db.Find(&requests).Error
+	err := c.db.Where("is_linked_to_tor = ?", false).Find(&requests).Error
 	return &requests, err
 }
 
@@ -81,4 +81,10 @@ func (c *InstrumentRequestController) DeleteInstrumentRequest(id uint) error {
 
 func (c *InstrumentRequestController) RemoveInstrumentFromRequest(detailID uint) error {
 	return c.db.Delete(&model.InstrumentDetail{}, detailID).Error
+}
+
+func (c *InstrumentRequestController) MarkAsUsed(id uint) error {
+	return c.db.Model(&model.InstrumentRequest{}).
+		Where("instrument_request_id = ?", id).
+		Update("is_linked_to_tor", true).Error
 }

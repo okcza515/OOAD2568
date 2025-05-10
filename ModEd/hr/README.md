@@ -6,6 +6,7 @@
 
 - #### CLI
 
+  - All command that has been implemented is working.
   - Refactor Command CLI to be able to support dynamically adding command at runtime.
 
     ```go
@@ -80,8 +81,10 @@
   - Redo all controller method
   - Add Generic Review Helper with Strategy Pattern
 
-    - `fetcher` and `saver` act as strategies.
-    - `ReviewRequest` don't need to know specific implementation details. The caller provides the concrete strategies (`fetcher` and `saver` function).
+    - `fetcher` and `saver` represent families of algorithms (different ways to fetch or save data).
+    - Each specific fetch or save logic is encapsulated within a function (`fetcher` or `saver` type).
+    - The `ReviewRequest` function can work with any concrete `fetcher` or `saver` function that matches the required signature. The caller provides the specific strategy (the concrete function) to use.
+    - `ReviewRequest` don't need to know specific implementation details. It also decoupled from the implementation details of how data is fetch or saved. It only depends on function signatures (the strategy interface).
     - `Reviewable` interface defines a contract `ApplyStatus` that any request type must fufill to be processbed by `ReviewRequest`.
     - The `ReviewRequest` function defining the algorithm and accepting strategies:
 
@@ -173,44 +176,49 @@
     - Seperate repeated fields to deadicated structs
 
     ```go
-    // BaseStandardRequest holds fields common to Resignation and Raise requests
-    type BaseStandardRequest struct {
+      type BaseStandardRequest struct {
         gorm.Model
         Reason string `gorm:"type:text"`
         Status string `gorm:"default:Pending"`
-    }
+      }
 
-    // BaseLeaveRequest holds fields common to Leave requests
-    type BaseLeaveRequest struct {
-        gorm.Model
-        Status    string `gorm:"default:Pending"`
-        LeaveType string
-        Reason    string `gorm:"type:text"`
-        LeaveDate time.Time
-    }
+      // SetStatus implements RequestStatus.
+      func (b *BaseStandardRequest) SetStatus(status string) {
+        b.Status = status
+      }
+
+      // SetReason implements RequestStatus.
+      func (b *BaseStandardRequest) SetReason(reason string) {
+        b.Reason = reason
+      }
+
+      func (b *BaseStandardRequest) ApplyStatus(action Action, reason string) error {
+        return ApplyStatus(b, action, reason)
+      }
     ```
 
-    - Embed `BaseStandardRequest` into concrete request models
-
+    - Using common handler to support both `BaseStandardRequest` and `BaseLeaveRequest`
     ```go
-    type RequestResignationInstructor struct {
-        BaseStandardRequest
-        InstructorCode string `gorm:"not null"`
-    }
+      // commonActionHandlers maps actions to their handler functions for any RequestStatus.
+      var commonActionHandlers = map[Action]func(RequestStatus, string){
+        ActionApprove: func(r RequestStatus, _ string) {
+          r.SetStatus("approve")
+        },
+        ActionReject: func(r RequestStatus, reason string) {
+          r.SetStatus("reject")
+          r.SetReason(reason)
+        },
+      }
 
-    func (r *RequestResignationInstructor) ApplyStatus(action, reason string) error {
-        switch action {
-        case "approve":
-            r.Status = action
-        case "reject":
-            r.Status = action
-            r.Reason = reason
-        default:
-            return fmt.Errorf("invalid action: %q", action)
+      // ApplyStatus updates the status on any RequestStatus using the common map.
+      func ApplyStatus(r RequestStatus, action Action, reason string) error {
+        if handler, ok := commonActionHandlers[action]; ok {
+          handler(r, reason)
+          return nil
         }
-        return nil
-    }
-    ```
+        return fmt.Errorf("invalid action: %v", action)
+      }
+    ``` 
 
     - When new types of requests are added that share common fields, they can embed the base struct, keeping instantiation logic and field consistent.
 
@@ -258,6 +266,9 @@
 
 ### Issues
 
-- Who can implement function inside core module?
-- What is the criteria for the function to be inside core module?
-- Should there be a documentation for every core module implementation?
+- Common CLI import instructor does not work.
+
+### Questions
+
+- 
+- Is it correct to create a adapter for menu to execute the command using flags?

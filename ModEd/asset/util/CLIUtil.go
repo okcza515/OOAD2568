@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"reflect"
 	"runtime"
+	"strconv"
 )
 
 func ClearScreen() {
@@ -135,4 +136,45 @@ func GetStringInput(prompt string) string {
 	fmt.Print(prompt)
 	fmt.Scanln(&input)
 	return input
+}
+
+func GetOptionalStringInput(prompt, current string) string {
+	input := GetStringInput(fmt.Sprintf("%s (Current: %s): ", prompt, current))
+	if input == "" {
+		return current
+	}
+	return input
+}
+
+func GetOptionalUintInput(prompt string, current uint) uint {
+	input := GetStringInput(fmt.Sprintf("%s (Current: %d): ", prompt, current))
+	if input == "" {
+		return current
+	}
+	value, err := strconv.ParseUint(input, 10, 32)
+	if err != nil {
+		fmt.Println("Invalid number. Keeping the current value.")
+		return current
+	}
+	return uint(value)
+}
+
+func GetOptionalFloatInput(prompt string, current float64) float64 {
+	input := GetStringInput(fmt.Sprintf("%s (Current: %.2f): ", prompt, current))
+	if input == "" {
+		return current
+	}
+	value, err := strconv.ParseFloat(input, 64)
+	if err != nil {
+		fmt.Println("Invalid number. Keeping the current value.")
+		return current
+	}
+	return value
+}
+
+func DereferenceString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }

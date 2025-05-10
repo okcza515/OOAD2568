@@ -1,183 +1,81 @@
 package controller
 
 import (
-	commonModel "ModEd/common/model"
+	"ModEd/core"
 
 	evalModel "ModEd/eval/model"
-
-	"fmt"
-
-	"time"
 
 	"gorm.io/gorm"
 )
 
-type ProgressSearchStrategy interface {
-	Search(db *gorm.DB) ([]Progress, error)
-}
-
-type BaseProgressSearchStrategy struct {
-	AssessmentId uint
-	Type         evalModel.AssessmentType
-}
-
-type GetAllStudentProgressStrategy struct {
-	BaseProgressSearchStrategy
-}
-
-type GetProgressByStudentCodeStrategy struct {
-	BaseProgressSearchStrategy
-	StudentCode string
-}
-
-type GetProgressByStatusStrategy struct {
-	BaseProgressSearchStrategy
-	Status evalModel.AssessmentStatus
-}
-
-type Progress struct {
-	gorm.Model
-	StudentCode    string
-	Student        commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
-	AssessmentId   uint
-	Assessment     evalModel.Assessment `gorm:"foreignKey:AssessmentId"`
-	Type           evalModel.AssessmentType
-	Status         evalModel.AssessmentStatus
-	LastUpdate     time.Time `gorm:"autoUpdateTime"`
-	TotalSubmit    uint
-	Score          float64
-	SubmissionDate *time.Time
-}
-
 type ProgressController struct {
+	*core.BaseController[evalModel.Progress]
 	db *gorm.DB
 }
 
 func NewProgressController(db *gorm.DB) *ProgressController {
-	return &ProgressController{db: db}
+	return &ProgressController{
+		db:             db,
+		BaseController: core.NewBaseController[evalModel.Progress](db),
+	}
 }
 
-func (controller *ProgressController) GetAssessmentsByType(assessmentType evalModel.AssessmentType) ([]evalModel.Assessment, error) {
-	var assessments []evalModel.Assessment
-	if err := controller.db.Where("type = ?", assessmentType).Find(&assessments).Error; err != nil {
-		return nil, fmt.Errorf("error getting %s list: %v", assessmentType, err)
-	}
-	return assessments, nil
-}
+func (controller *ProgressController) List(filters map[string]interface{}) ([]evalModel.Progress, error) {
+	var progressList []evalModel.Progress
 
-func (strategy *GetAllStudentProgressStrategy) Search(db *gorm.DB) ([]Progress, error) {
-	var progressList []Progress
-	query := db.Model(&Progress{})
-
-	if strategy.AssessmentId != 0 {
-		query = query.Where("assessment_id = ?", strategy.AssessmentId)
-	}
-
-	if strategy.Type != "" {
-		query = query.Where("type = ?", strategy.Type)
-	}
-
-	if err := query.Preload("Student").
-		Preload("Assessment").
-		Find(&progressList).Error; err != nil {
-		return nil, err
-	}
-	return progressList, nil
-}
-
-func (strategy *GetProgressByStudentCodeStrategy) Search(db *gorm.DB) ([]Progress, error) {
-	var progressList []Progress
-	query := db.Model(&Progress{})
-
-	if strategy.AssessmentId != 0 {
-		query = query.Where("assessment_id = ?", strategy.AssessmentId)
-	}
-
-	if strategy.Type != "" {
-		query = query.Where("type = ?", strategy.Type)
-	}
-
-	if err := query.Where("student_code = ?", strategy.StudentCode).
+	query := controller.db.Model(&evalModel.Progress{}).
 		Preload("Student").
-		Preload("Assessment").
-		Find(&progressList).Error; err != nil {
+		Preload("Assessment")
+
+	if filters != nil {
+		if assessmentId, exists := filters["assessment_id"]; exists {
+			query = query.Where("assessment_id = ?", assessmentId)
+		}
+		if studentCode, exists := filters["student_code"]; exists {
+			query = query.Where("student_code = ?", studentCode)
+		}
+		if submitted, exists := filters["submitted"]; exists {
+			query = query.Where("submitted = ?", submitted)
+		}
+	}
+
+	if err := query.Find(&progressList).Error; err != nil {
 		return nil, err
 	}
+
 	return progressList, nil
 }
 
-func (strategy *GetProgressByStatusStrategy) Search(db *gorm.DB) ([]Progress, error) {
-	var progressList []Progress
-	query := db.Model(&Progress{})
+func (controller *ProgressController) GetAllProgress() ([]evalModel.Progress, error) {
+	return controller.List(nil)
+}
 
-	if strategy.AssessmentId != 0 {
-		query = query.Where("assessment_id = ?", strategy.AssessmentId)
-	}
+func (controller *ProgressController) GetProgressByStudentCode(assessmentId uint, studentCode string) ([]evalModel.Progress, error) {
+	return controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+		"student_code":  studentCode,
+	})
+}
 
-	if strategy.Type != "" {
-		query = query.Where("type = ?", strategy.Type)
-	}
+func (controller *ProgressController) GetProgressByStatus(assessmentId uint, submitted bool) ([]evalModel.Progress, error) {
+	return controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+		"submitted":     submitted,
+	})
+}
 
-	if err := query.Where("status = ?", strategy.Status).
-		Preload("Student").
-		Preload("Assessment").
-		Find(&progressList).Error; err != nil {
+func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint) (map[bool]int, error) {
+	progressList, err := controller.List(map[string]interface{}{
+		"assessment_id": assessmentId,
+	})
+	if err != nil {
 		return nil, err
 	}
-	return progressList, nil
-}
 
-func (controller *ProgressController) GetProgressByType(assessmentType evalModel.AssessmentType, assessmentId uint) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
+	statusCount := make(map[bool]int)
+	for _, progress := range progressList {
+		statusCount[progress.Submitted.Submitted]++
 	}
 
-	strategy := &GetAllStudentProgressStrategy{
-		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
-		},
-	}
-	return strategy.Search(controller.db)
-}
-
-func (controller *ProgressController) GetProgressByTypeAndStudent(assessmentType evalModel.AssessmentType, assessmentId uint, studentCode string) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
-	}
-
-	strategy := &GetProgressByStudentCodeStrategy{
-		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
-		},
-		StudentCode: studentCode,
-	}
-	return strategy.Search(controller.db)
-}
-
-// GetProgressByTypeAndStatus gets progress for a specific type, assessment ID and status
-func (controller *ProgressController) GetProgressByTypeAndStatus(assessmentType evalModel.AssessmentType, assessmentId uint, status evalModel.AssessmentStatus) ([]Progress, error) {
-	if assessmentType != evalModel.QuizType && assessmentType != evalModel.AssignmentType {
-		return nil, fmt.Errorf("invalid assessment type: %s", assessmentType)
-	}
-
-	strategy := &GetProgressByStatusStrategy{
-		BaseProgressSearchStrategy: BaseProgressSearchStrategy{
-			AssessmentId: assessmentId,
-			Type:         assessmentType,
-		},
-		Status: status,
-	}
-	return strategy.Search(controller.db)
-}
-
-func (controller *ProgressController) GetSubmitCount(assessmentId uint) (uint, error) {
-	var count int64
-	if err := controller.db.Model(&evalModel.AssessmentSubmission{}).
-		Where("assessment_id = ? AND submitted = ?", assessmentId, true).
-		Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return uint(count), nil
+	return statusCount, nil
 }

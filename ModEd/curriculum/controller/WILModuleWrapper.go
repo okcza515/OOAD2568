@@ -10,6 +10,7 @@ type WILModuleWrapper struct {
 	WILProjectApplicationController *WILProjectApplicationController
 	WILProjectCurriculumController  *WILProjectCurriculumFacadeController
 	IndependentStudyController      *IndependentStudyController
+	WILProjectApplicationToSeniorProjectController *WILProjectApplicationToSeniorProjectController
 }
 
 func NewWILModuleWrapper(
@@ -22,5 +23,6 @@ func NewWILModuleWrapper(
 		WILProjectApplicationController: NewWILProjectApplicationController(db),
 		WILProjectCurriculumController:  NewWILProjectCurriculumFacadeController(db, courseController, classController),
 		IndependentStudyController:      NewIndependentStudyController(db),
+		WILProjectApplicationToSeniorProjectController: NewWILToSeniorProjectController(db),
 	}
 }

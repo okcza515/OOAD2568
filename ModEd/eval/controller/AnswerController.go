@@ -1,20 +1,15 @@
-// MEP-1007
 package controller
 
 import (
 	"ModEd/eval/model"
-	"errors"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type IAnswerController interface {
-	SubmitAnswer(questionID, studentID uint, answerText string) error
-	GetAnswersByQuestion(questionID uint) ([]model.Answer, error)
-	// GetAnswersByStudent(studentID uint) ([]model.Answer, error)
-	GetAnswerByQuestionAndStudent(questionID uint, studentID uint) (*model.Answer, error)
-	UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error
-	DeleteAnswerByID(answerID uint) error
+	SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error)
 }
 
 type AnswerController struct {
@@ -25,60 +20,68 @@ func NewAnswerController(db *gorm.DB) *AnswerController {
 	return &AnswerController{db: db}
 }
 
-func (c *AnswerController) SubmitAnswer(questionID, studentID uint, answerText string) error {
-	var existingAnswer model.Answer
+func (ac *AnswerController) SubmitAnswers(factories []model.AnswerFactory, questionIDs []uint, studentID uint, examID uint) ([]model.AnswerProductInterface, error) {
+	var results []model.AnswerProductInterface
 
-	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).First(&existingAnswer).Error; err == nil {
-		return errors.New("answer already submitted")
+	submissionTime := time.Now()
+
+	if len(questionIDs) != len(factories) {
+		return nil, fmt.Errorf("number of question IDs doesn't match the number of answer factories")
 	}
 
-	newAnswer := model.Answer{
-		QuestionID: questionID,
-		StudentID:  studentID,
-		Answer:     answerText,
+	var exam model.Examination
+	if err := ac.db.First(&exam, examID).Error; err != nil {
+		return nil, fmt.Errorf("exam not found")
 	}
 
-	if err := c.db.Create(&newAnswer).Error; err != nil {
-		return err
+	var count int64
+	ac.db.Model(&model.Answer{}).Where("student_id = ? AND exam_id = ?", studentID, examID).Count(&count)
+
+	if int(count) >= exam.Attempt {
+		return nil, fmt.Errorf("submission limit reached: allowed %d times", exam.Attempt)
 	}
 
-	return nil
+	for i, factory := range factories {
+		answer := factory.NewAnswer(questionIDs[i], studentID)
+		results = append(results, answer)
+	}
+
+	submission := model.Answer{
+		StudentID:   studentID,
+		ExamID:      examID,
+		SubmittedAt: submissionTime,
+	}
+
+	if err := ac.db.Create(&submission).Error; err != nil {
+		return nil, fmt.Errorf("failed to save submission: %v", err)
+	}
+
+	return results, nil
 }
 
-func (c *AnswerController) GetAnswersByQuestion(questionID uint) ([]model.Answer, error) {
-	var answers []model.Answer
-	if err := c.db.Where("question_id = ?", questionID).Preload("Question").Preload("Student").Find(&answers).Error; err != nil {
-		return nil, err
+func (ac *AnswerController) StartExam(studentID uint, examID uint) error {
+	startTime := time.Now()
+
+	answer := model.Answer{
+		StudentID: studentID,
+		ExamID:    examID,
+		StartTime: startTime,
 	}
-	return answers, nil
+
+	return ac.db.Create(&answer).Error
 }
 
-func (c *AnswerController) GetAnswerByQuestionAndStudent(questionID uint, studentID uint) (*model.Answer, error) {
+func (ac *AnswerController) GetDuration(submissionID uint) (time.Duration, error) {
 	var answer model.Answer
-	if err := c.db.Where("question_id = ? AND student_id = ?", questionID, studentID).
-		Preload("Question").
-		Preload("Student").
-		First(&answer).Error; err != nil {
-		return nil, err
-	}
-	return &answer, nil
-}
 
-func (c *AnswerController) UpdateAnswerByID(answerID uint, updatedData map[string]interface{}) error {
-	var existingAnswer model.Answer
-	if err := c.db.Where("id = ?", answerID).First(&existingAnswer).Error; err != nil {
-		return errors.New("answer not found")
+	if err := ac.db.First(&answer, submissionID).Error; err != nil {
+		return 0, fmt.Errorf("submission not found: %v", err)
 	}
 
-	if err := c.db.Model(&existingAnswer).Updates(updatedData).Error; err != nil {
-		return err
+	if answer.StartTime.IsZero() || answer.SubmittedAt.IsZero() {
+		return 0, fmt.Errorf("submission has incomplete timestamps")
 	}
-	return nil
-}
 
-func (c *AnswerController) DeleteAnswerByID(answerID uint) error {
-	if err := c.db.Delete(&model.Answer{}, answerID).Error; err != nil {
-		return err
-	}
-	return nil
+	duration := answer.SubmittedAt.Sub(answer.StartTime)
+	return duration, nil
 }

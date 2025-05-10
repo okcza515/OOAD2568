@@ -21,31 +21,11 @@ func NewAssessmentCriteriaController(db *gorm.DB) *AssessmentCriteriaController 
 	}
 }
 
-func (c *AssessmentCriteriaController) ListAllAssessmentCriterias() ([]*model.AssessmentCriteria, error) {
-	assessmentCriterias, err := c.List(map[string]interface{}{})
-	if err != nil {
-		return nil, err
-	}
-	return assessmentCriterias, nil
-}
-
-func (c *AssessmentCriteriaController) RetrieveAssessmentCriteria(id uint) (*model.AssessmentCriteria, error) {
-	assessmentCriteria, err := c.RetrieveByID(id)
-	if err != nil {
-		return nil, err
-	}
-	return assessmentCriteria, nil
-}
-
 func (c *AssessmentCriteriaController) InsertAssessmentCriteria(criteriaName string) error {
 	assessmentCriteria := model.AssessmentCriteria{
 		CriteriaName: criteriaName,
 	}
 	return c.Insert(&assessmentCriteria)
-}
-
-func (c *AssessmentCriteriaController) UpdateAssessmentCriteria(id uint, assessmentCriteria *model.AssessmentCriteria) error {
-	return c.UpdateByID(assessmentCriteria)
 }
 
 func (c *AssessmentCriteriaController) DeleteAssessmentCriteria(id uint) error {

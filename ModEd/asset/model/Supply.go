@@ -13,8 +13,7 @@ type Supply struct {
 	Description *string
 	Location    *string
 	CategoryID  *uint
-	Quantity    int         `gorm:"not null"`
-	SupplyLog   []SupplyLog `gorm:"foreignKey:ID;references:ID"`
+	Quantity    int `gorm:"not null"`
 }
 
 func (supp Supply) ToString() string {

@@ -10,15 +10,15 @@ import (
 
 type WILProjectApplication struct {
 	core.BaseModel
-	ProjectName       string                 `gorm:"not null" validation:"required"`
-	ProjectDetail     string                 `gorm:"not null" validation:"required"`
-	Semester          string                 `gorm:"not null" validation:"required"`
-	CompanyId         uint                   `gorm:"not null" validation:"required,uint"`
-	Mentor            string                 `gorm:"not null" validation:"required"`
+	ProjectName       string                 `gorm:"not null"`
+	ProjectDetail     string                 `gorm:"not null"`
+	Semester          string                 `gorm:"not null"`
+	CompanyId         uint                   `gorm:"not null"`
+	Mentor            string                 `gorm:"not null"`
 	Students          []WILProjectMember     `gorm:"foreignKey:WILProjectApplicationId"`
-	AdvisorId         uint                   `json:"AdvisorId" validation:"required,uint"`
+	AdvisorId         uint                   `json:"AdvisorId"`
 	Advisor           commonModel.Instructor `json:"Advisor" gorm:"foreignKey:AdvisorId;references:InstructorCode"`
-	ApplicationStatus string                 `gorm:"not null" validation:"required"`
+	ApplicationStatus string                 `gorm:"not null"`
 	TurninDate        *time.Time             `gorm:"default:null" json:"TurninDate"`
 }
 

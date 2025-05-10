@@ -13,15 +13,8 @@ import (
 var ErrExitAdminMenu = fmt.Errorf("exit admin menu")
 
 type AdminMenuState struct {
-	manager                            *cli.CLIMenuStateManager
-	username                           string
-	applicantController                *controller.ApplicantController
-	adminShowApplicationReportsService AdminShowApplicationReportsService
-	adminScheduleInterviewService      AdminScheduleInterviewService
-	adminDeleteInterviewService        AdminInterviewService
-	reportMenu                         cli.MenuState
-	scheduleMenu                       cli.MenuState
-	deleteMenu                         cli.MenuState
+	manager  *cli.CLIMenuStateManager
+	username string
 }
 
 func NewAdminMenuState(
@@ -32,50 +25,36 @@ func NewAdminMenuState(
 	scheduleInterviewService AdminScheduleInterviewService,
 	deleteInterviewService AdminInterviewService,
 ) *AdminMenuState {
-	menu := &AdminMenuState{
-		manager:                            manager,
-		username:                           username,
-		applicantController:                applicantController,
-		adminShowApplicationReportsService: reportService,
-		adminScheduleInterviewService:      scheduleInterviewService,
-		adminDeleteInterviewService:        deleteInterviewService,
-	}
-	menu.reportMenu = NewAdminShowApplicationReportMenuState(manager, reportService, menu)
-	menu.scheduleMenu = NewAdminScheduleInterviewMenuState(manager, scheduleInterviewService, menu)
-	menu.deleteMenu = NewAdminDeleteInterviewMenuState(manager, deleteInterviewService, menu)
 
-	return menu
+	adminMenu := &AdminMenuState{
+		manager:  manager,
+		username: username,
+	}
+
+	manager.AddMenu("1", NewAdminShowApplicationReportMenuState(manager, reportService, adminMenu))
+	manager.AddMenu("2", NewAdminScheduleInterviewMenuState(manager, scheduleInterviewService, adminMenu))
+	manager.AddMenu("3", NewAdminDeleteInterviewMenuState(manager, deleteInterviewService, adminMenu))
+	manager.AddMenu("4", nil)
+	return adminMenu
 }
 
 func (a *AdminMenuState) Render() {
 	util.ClearScreen()
 	fmt.Println("\n\033[1;35m╔════════════════════════════════╗")
-	fmt.Printf("║ Welcome, Admin: %-16s ║\n", a.username)
+	fmt.Printf("║ Welcome, Admin: %-14s ║\n", a.username)
 	fmt.Println("╚════════════════════════════════╝\033[0m")
 
-	fmt.Println("\n\033[1;36m[1]\033[0m Manage Applicants")
-	fmt.Println("\033[1;36m[2]\033[0m View Application Reports")
-	fmt.Println("\033[1;36m[3]\033[0m Schedule Interview")
-	fmt.Println("\033[1;36m[4]\033[0m Delete Interview")
-	fmt.Println("\033[1;36m[5]\033[0m Back")
+	fmt.Println("\033[1;36m[1]\033[0m View Application Reports")
+	fmt.Println("\033[1;36m[2]\033[0m Schedule Interview")
+	fmt.Println("\033[1;36m[3]\033[0m Delete Interview")
+	fmt.Println("\033[1;36m[4]\033[0m Back")
 	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 }
 
 func (a *AdminMenuState) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		ManageApplicants(a.applicantController)
-		//util.WaitForEnter()
-	case "2":
-		a.manager.SetState(a.reportMenu)
-	case "3":
-		a.manager.SetState(a.scheduleMenu)
-	case "4":
-		a.manager.SetState(a.deleteMenu)
-	case "5":
-		return ErrExitAdminMenu
-	default:
-		fmt.Println("Invalid option. Try again.")
+	err := a.manager.GoToMenu(input)
+	if err != nil {
+		fmt.Printf("Invalid option. Try again.")
 	}
 	return nil
 }
@@ -89,7 +68,7 @@ func AdminCLI(dep AdminDependencies) {
 	}
 
 	manager := cli.NewCLIMenuManager()
-	menu := NewAdminMenuState(
+	adminMenu := NewAdminMenuState(
 		manager,
 		username,
 		dep.ApplicantController,
@@ -97,8 +76,7 @@ func AdminCLI(dep AdminDependencies) {
 		dep.AdminScheduleInterviewService,
 		dep.AdminInterviewService,
 	)
-	manager.SetState(menu)
-
+	manager.SetState(adminMenu)
 	for {
 		manager.Render()
 		var input string
@@ -106,9 +84,7 @@ func AdminCLI(dep AdminDependencies) {
 		manager.UserInput = input
 
 		err := manager.HandleUserInput()
-		if err == ErrExitAdminMenu {
-			break
-		} else if err != nil {
+		if err != nil {
 			fmt.Println("Error:", err)
 		}
 	}

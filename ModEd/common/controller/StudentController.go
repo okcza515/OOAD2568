@@ -12,7 +12,7 @@ type StudentController struct {
 	DB *gorm.DB
 }
 
-func CreateStudentController(db *gorm.DB) *StudentController {
+func NewStudentController(db *gorm.DB) *StudentController {
 	db.AutoMigrate(&model.Student{})
 	return &StudentController{DB: db}
 }
@@ -29,6 +29,10 @@ func (c *StudentController) Update(code string, updatedData map[string]any) erro
 	return model.UpdateStudentByCode(c.DB, code, updatedData)
 }
 
+func (c *StudentController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
+	return model.UpdateRecordByField[model.Student](c.DB, field, value, updatedData, model.Student{})
+}
+
 func (c *StudentController) DeleteByCode(code string) error {
 	return model.DeleteStudentByCode(c.DB, code)
 }
@@ -38,7 +42,7 @@ func (c *StudentController) Register(students []*model.Student) error {
 }
 
 func (c *StudentController) Delete(field string, value interface{}) error {
-	return model.DeleteRecordByField[model.Student](c.DB, field, value)
+	return model.DeleteRecordByField[model.Student](c.DB, field, value, model.Student{})
 }
 
 func (c *StudentController) Truncate() error {
@@ -73,20 +77,20 @@ func (c *StudentController) ManualAddStudent() error {
 	fmt.Print("Enter Status: ")
 	var status model.StudentStatus
 	fmt.Scan(&status)
-	
+
 	parseStartDate, _ := time.Parse("02-01-2006", startDate)
 	parseBirthDate, _ := time.Parse("02-01-2006", birthDate)
 
 	student := &model.Student{
-		StudentCode: studentCode, 
-		FirstName: firstname, 
-		LastName: lastname, 
-		Email: email, 
-		StartDate: parseStartDate, 
-		BirthDate: parseBirthDate, 
-		Program: program, 
-		Department: department, 
-		Status: &status,
-	}	
+		StudentCode: studentCode,
+		FirstName:   firstname,
+		LastName:    lastname,
+		Email:       email,
+		StartDate:   parseStartDate,
+		BirthDate:   parseBirthDate,
+		Program:     program,
+		Department:  department,
+		Status:      &status,
+	}
 	return model.ManualAddStudent(c.DB, student)
 }

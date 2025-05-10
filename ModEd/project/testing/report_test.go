@@ -57,7 +57,7 @@ func TestRetrieveReport(t *testing.T) {
 		t.Fatalf("Failed to create report: %v", err)
 	}
 
-	res, err := reportCtrl.RetrieveReport(report.ID)
+	res, err := reportCtrl.RetrieveByID(report.ID)
 	if err != nil || res == nil {
 		t.Errorf("Failed to retrieve report: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestListAllReports(t *testing.T) {
 		t.Fatalf("Failed to create report: %v", err)
 	}
 
-	reports, err := reportCtrl.ListAllReports()
+	reports, err := reportCtrl.List(map[string]interface{}{})
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
 	}
@@ -113,7 +113,7 @@ func TestUpdateReport(t *testing.T) {
 	}
 
 	report.ReportType = "Final"
-	err := reportCtrl.UpdateReport(&report)
+	err := reportCtrl.UpdateByID(&report)
 	if err != nil {
 		t.Errorf("Failed to update report: %v", err)
 	}
@@ -148,7 +148,7 @@ func TestDeleteReport(t *testing.T) {
 		t.Fatalf("Failed to create report: %v", err)
 	}
 
-	err := reportCtrl.DeleteReport(report.ID)
+	err := reportCtrl.DeleteByID(report.ID)
 	if err != nil {
 		t.Errorf("Failed to delete report: %v", err)
 	}

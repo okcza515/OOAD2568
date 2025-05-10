@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ModEd/project/cli/menu"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -35,29 +36,12 @@ func main() {
 			{
 				Title: "Senior Project Setup",
 				Children: []*utils.MenuItem{
-					{
-						Title: "Create Senior Project",
-						Action: func(io *utils.MenuIO) {
-							io.Print("Enter the group name (-1 to cancel): ")
-							groupNameStr, err := io.ReadInput()
-							if err != nil || groupNameStr == "-1" {
-								io.Println("Cancelled.")
-								return
-							}
-
-							if err := seniorProjectController.InsertSeniorProject(model.SeniorProject{
-								GroupName: groupNameStr,
-							}); err != nil {
-								io.Println(err.Error())
-								return
-							}
-						},
-					},
+					menu.BuildSeniorProjectMenu(seniorProjectController),
 					{
 						Title: "Assign Groups, Advisors, and Committees",
 						Children: []*utils.MenuItem{
-							BuildAdvisorMenu(advisorController),
-							BuildCommitteeMenu(committeeController),
+							menu.BuildAdvisorMenu(advisorController),
+							menu.BuildCommitteeMenu(committeeController),
 						},
 					},
 				},
@@ -65,29 +49,29 @@ func main() {
 			{
 				Title: "Project Execution and Monitoring",
 				Children: []*utils.MenuItem{
-					BuildReportMenu(reportController),
-					BuildProgressMenu(progressController),
+					menu.BuildReportMenu(reportController),
+					menu.BuildProgressMenu(progressController),
 				},
 			},
 			{
 				Title: "Evaluation & Assessment",
 				Children: []*utils.MenuItem{
-					BuildEvaluateAssignmentMenu(
+					menu.BuildEvaluateAssignmentMenu(
 						scoreAssignmentAdvisorController,
 						scoreAssignmentCommitteeController,
 					),
-					BuildEvaluateReportMenu(
+					menu.BuildEvaluateReportMenu(
 						scoreReportAdvisorController,
 						scoreReportCommitteeController,
 					),
-					BuildEvaluatePresentationMenu(
+					menu.BuildEvaluatePresentationMenu(
 						scorePresentationAdvisorController,
 						scorePresentationCommitteeController,
 					),
 					{
 						Title: "Assessment Manager",
 						Action: func(io *utils.MenuIO) {
-							BuildAssessmentManagerMenu(
+							menu.BuildAssessmentManagerMenu(
 								assessmentCriteriaController,
 								assessmentController,
 								assessmentCriteriaLinkController,
@@ -100,6 +84,11 @@ func main() {
 			},
 		},
 	}, nil, nil)
+
+	builder.AddMenuChild([]string{"Main Menu"}, &utils.MenuItem{
+		Title:  "Example",
+		Action: func(io *utils.MenuIO) {},
+	})
 
 	builder.Show()
 }

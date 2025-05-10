@@ -16,6 +16,8 @@ type ProcurementControllerFacade struct {
 	SupplierSelectionController SupplierSelectionController
 	BudgetApproval              BudgetApprovalController
 	Procurement                 ProcurementController
+	TOR                         TORController
+	Acceptance                  AcceptanceApprovalController
 	// BudgetAllocation            BudgetAllocationController
 	//ProcurementApproval ProcurementApprovalController
 }
@@ -35,6 +37,8 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	facade.SupplierSelectionController = SupplierSelectionController{db: db}
 	facade.BudgetApproval = BudgetApprovalController{db: db}
 	facade.Procurement = ProcurementController{db: db}
+	facade.TOR = TORController{db: db}
+	facade.Acceptance = AcceptanceApprovalController{db: db}
 	// facade.BudgetAllocation = BudgetAllocationController{db: db}
 
 	// fmt.Println("I'm In Facade yippie!")
@@ -44,4 +48,8 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	}
 
 	return &facade, nil
+}
+
+func (f *ProcurementControllerFacade) GetDB() *gorm.DB {
+	return f.db
 }

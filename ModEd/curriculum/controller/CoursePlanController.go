@@ -10,12 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type CoursePlanInterface interface {
+type CoursePlanControllerInterface interface {
 	CreateCoursePlan(CoursePlan model.CoursePlan) error
+	RetrieveByID(id uint, preloads ...string) (*model.CoursePlan, error)
 	UpdateByID(data model.CoursePlan) error
 	DeleteByID(id uint) error
 	ListAllCoursePlans() ([]model.CoursePlan, error)
-	RetrieveByID(id uint, preloads ...string) (*model.CoursePlan, error)
 	ListUpcomingPlan() ([]model.CoursePlan, error)
 }
 

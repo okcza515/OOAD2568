@@ -60,7 +60,7 @@ func (m *InstructorEvaluateApplicantMenuState) HandleUserInput(input string) err
 		return nil
 	}
 
-	report, err := m.reportService.GetFullApplicationReportByApplicationID(applicationReportID)
+	report, err := m.reportService.GetApplicationReport(applicationReportID)
 	if err != nil {
 		fmt.Println("Failed to fetch application report:", err)
 		recruitUtil.WaitForEnter()

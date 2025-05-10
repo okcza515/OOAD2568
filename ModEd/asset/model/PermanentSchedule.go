@@ -52,23 +52,51 @@ func (ps PermanentSchedule) ToString() string {
 		strings.Repeat("-", classWidth+2) + "+"
 
 	headerRow := fmt.Sprintf("| %-*s | %-*s | %-*s | %-*s | %-*s | %-*s | %-*s |",
-		idWidth, "ID", timetableWidth, "TimeTable", facultyWidth, "Faculty", departmentWidth, "Department",
-		programWidth, "Program", courseWidth, "Course", classWidth, "Section")
+		idWidth, "ID", timetableWidth, "TimeTable", facultyWidth, "Faculty",
+		departmentWidth, "Department", programWidth, "Program",
+		courseWidth, "Course", classWidth, "Section")
+
+	// Faculty
+	faculty := fmt.Sprintf("%d", ps.FacultyID)
+	if ps.Faculty.Name != "" {
+		faculty = ps.Faculty.Name
+	}
+
+	// Department
+	department := fmt.Sprintf("%d", ps.DepartmentID)
+	if ps.Department.Name != "" {
+		department = ps.Department.Name
+	}
+
+	// Program type
+	programType := "Unknown"
+	if ps.ProgramtypeID == 0 {
+		programType = "Regular"
+	} else if ps.ProgramtypeID == 1 {
+		programType = "International"
+	}
+
+	// Course
+	course := fmt.Sprintf("%d", ps.CourseId)
+	if ps.Course.Name != "" {
+		course = ps.Course.Name
+	}
+
+	// Section
+	section := ps.ClassId
+	// if ps.Class.Name != "" {
+	// 	section = ps.Class.Name
+	// }
 
 	dataRow := fmt.Sprintf("| %-*d | %-*d | %-*s | %-*s | %-*s | %-*s | %-*d |",
 		idWidth, ps.ID,
 		timetableWidth, ps.TimeTableID,
-		facultyWidth, truncate(ps.Faculty.Name, facultyWidth),
-		departmentWidth, truncate(ps.Department.Name, departmentWidth),
-		programWidth, truncate(ps.Programtype.String(), programWidth),
-		courseWidth, truncate(ps.Course.Name, courseWidth),
-		classWidth, ps.Class.Section)
+		facultyWidth, truncate(faculty, facultyWidth),
+		departmentWidth, truncate(department, departmentWidth),
+		programWidth, truncate(programType, programWidth),
+		courseWidth, truncate(course, courseWidth),
+		classWidth, section)
 
-	result := headerBorder + "\n"
-	result += headerRow + "\n"
-	result += headerBorder + "\n"
-	result += dataRow + "\n"
-	result += headerBorder + "\n"
-
-	return result
+	return fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
+		headerBorder, headerRow, headerBorder, dataRow, headerBorder)
 }

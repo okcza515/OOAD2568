@@ -100,13 +100,28 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 	}
 
 	// Apply additional form strategy if needed
-	strategy, err := controller.GetFormStrategy(round.RoundName)
-	if err == nil && strategy != nil {
-		if err := strategy.ApplyForm(&applicant); err != nil {
-			fmt.Println("Error applying additional form:", err)
-			return
-		}
+	if !s.handleRoundFormData(round, &applicant) {
+		return
 	}
+	// strategy, err := controller.GetFormStrategy(round.RoundName)
+	// if err != nil && strategy == nil {
+	// 	println("failed to get evaluation strategy: %w", err)
+	// 	return
+	// }
+	// roundData := make(map[string]string)
+	// for _, roundField := range strategy.GetForm() {
+	// 	fmt.Printf("Enter %s: ", roundField)
+	// 	scanner := bufio.NewScanner(os.Stdin)
+	// 	scanner.Scan()
+	// 	data := scanner.Text()
+	// 	roundData[roundField] = data
+	// }
+	
+	// err = strategy.Validate(roundData)
+	// if err != nil {
+	// 	fmt.Printf("Error validating form data: %v\n", err)
+	// 	return 
+	// }
 
 	// Register the applicant
 	if err := s.applicantCtrl.RegisterApplicant(&applicant); err != nil {
@@ -163,13 +178,17 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 		}
 
 		// Apply additional form strategy if needed
-		strategy, err := controller.GetFormStrategy(round.RoundName)
-		if err == nil && strategy != nil {
-			if err := strategy.ApplyForm(&a); err != nil {
-				fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, err)
-				continue
-			}
+		if !s.handleRoundFormData(round, &a) {
+			fmt.Printf("Skipping %s %s due to invalid form data.\n", a.FirstName, a.LastName)
+			continue
 		}
+		// strategy, err := controller.GetFormStrategy(round.RoundName)
+		// if err == nil && strategy != nil {
+		// 	if err := strategy.ApplyForm(&a); err != nil {
+		// 		fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, err)
+		// 		continue
+		// 	}
+		// }
 
 		// Register the applicant
 		if err := s.applicantCtrl.RegisterApplicant(&a); err != nil {
@@ -284,3 +303,30 @@ func (s *applicantRegistrationService) SaveReportForApplicant(applicantID uint, 
 
 	time.Sleep(2 * time.Second)
 }
+
+func (s *applicantRegistrationService) handleRoundFormData(round *model.ApplicationRound, a *model.Applicant) bool {
+	strategy, err := controller.GetFormStrategy(round.RoundName)
+	if err != nil || strategy == nil {
+		fmt.Printf("Failed to get form strategy: %v\n", err)
+		return false
+	}
+
+	bufio.NewReader(os.Stdin).ReadString('\n')
+	roundData := make(map[string]string)
+	scanner := bufio.NewScanner(os.Stdin)
+	for _, roundField := range strategy.GetForm() {
+		fmt.Printf("Enter %s: ", roundField)
+		
+		scanner.Scan()
+		data := scanner.Text()
+		roundData[roundField] = data
+	}
+
+	// if err := strategy.Validate(roundData); err != nil {
+	// 	fmt.Printf("Error validating form data: %v\n", err)
+	// 	return false
+	// }
+	a.SetRoundInfo(roundData)
+	return true
+}
+

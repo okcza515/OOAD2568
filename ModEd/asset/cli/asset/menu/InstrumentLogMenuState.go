@@ -12,22 +12,27 @@ import (
 )
 
 type InstrumentLogMenuState struct {
-	manager *cli.CLIMenuStateManager
-
-	insertHandlerStrategy       *handler.InsertHandlerStrategy[model.InstrumentLog]
-	listHandlerStrategy         *handler.ListHandlerStrategy[model.InstrumentLog]
-	retrieveByIDHandlerStrategy *handler.RetrieveByIDHandlerStrategy[model.InstrumentLog]
+	manager        *cli.CLIMenuStateManager
+	handlerContext *handler.HandlerContext
 }
 
 func NewInstrumentLogMenuState(
 	manager *cli.CLIMenuStateManager,
 ) *InstrumentLogMenuState {
 	controllerInstance := controller.GetAssetInstance().InstrumentLog
+	handlerContext := handler.NewHandlerContext()
+
+	listHandler := handler.NewListHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument")
+	retrieveByIDHandler := handler.NewRetrieveByIDHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument")
+	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
+
+	handlerContext.AddHandler("1", "List all Instrument Log", listHandler)
+	handlerContext.AddHandler("2", "Get detail of an Instrument Log", retrieveByIDHandler)
+	handlerContext.AddHandler("back", "Back to main menu", backHandler)
+
 	return &InstrumentLogMenuState{
-		manager:                     manager,
-		insertHandlerStrategy:       handler.NewInsertHandlerStrategy[model.InstrumentLog](controllerInstance),
-		listHandlerStrategy:         handler.NewListHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
-		retrieveByIDHandlerStrategy: handler.NewRetrieveByIDHandlerStrategy[model.InstrumentLog](controllerInstance, "Instrument"),
+		manager:        manager,
+		handlerContext: handlerContext,
 	}
 }
 
@@ -37,53 +42,20 @@ func (menu *InstrumentLogMenuState) Render() {
 	fmt.Println()
 	fmt.Println("Instrument Log Management")
 	fmt.Println("Your options are...")
-	fmt.Println()
-	fmt.Println("   1:\tList all Instrument Log")
-	fmt.Println("   2:\tGet detail of an Instrument Log")
-	fmt.Println("  back:\tBack to main menu")
+	menu.handlerContext.ShowMenu()
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
 
 func (menu *InstrumentLogMenuState) HandleUserInput(input string) error {
-	//err := menu.handlerContext.HandleInput(input)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//
-	//if input != "back" {
-	//	util.PressEnterToContinue()
-	//}
-	//
-	//return nil
-
-	//context := &handler.HandlerContext{}
-
-	switch input {
-	case "1":
-		fmt.Println("List all Instrument Log")
-		//context.SetStrategy(menu.listHandlerStrategy)
-	case "2":
-		fmt.Println("Get detail of an Instrument Log")
-		//context.SetStrategy(menu.retrieveByIDHandlerStrategy)
-	case "back":
-		err := menu.manager.GoToMenu(string(MENU_ASSET))
-		if err != nil {
-			return err
-		}
-
-		return nil
-	case "exit":
-		return nil
+	err := menu.handlerContext.HandleInput(input)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	//err := context.HandleInput()
-	//
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-
-	util.PressEnterToContinue()
+	if input != "back" {
+		util.PressEnterToContinue()
+	}
 
 	return nil
 }

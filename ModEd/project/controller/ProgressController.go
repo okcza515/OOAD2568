@@ -20,39 +20,28 @@ func NewProgressController(db *gorm.DB) *ProgressController {
 	}
 }
 
-func (c *ProgressController) ListAllProgress() ([]model.Progress, error) {
-	progressPtrs, err := c.List(nil)
+func (c *ProgressController) AddNewProgress(assignmentID uint, name string) error {
+	progress := model.Progress{
+		AssignmentId: assignmentID,
+		Name:         name,
+		IsCompleted:  false,
+	}
+
+	return c.Insert(&progress)
+}
+
+func (c *ProgressController) UpdateProgressName(progressID uint, newName string) error {
+	progress, err := c.RetrieveByID(progressID)
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("progress not found: %w", err)
 	}
 
-	progresses := make([]model.Progress, len(progressPtrs))
-	for i, pPtr := range progressPtrs {
-		progresses[i] = *pPtr
-	}
-
-	return progresses, nil
-}
-
-func (c *ProgressController) RetrieveProgress(id uint) (*model.Progress, error) {
-	return c.RetrieveByID(id)
-}
-
-func (c *ProgressController) InsertProgress(progress model.Progress) error {
-	progressCopy := progress
-	return c.Insert(&progressCopy)
-}
-
-func (c *ProgressController) UpdateProgress(progress *model.Progress) error {
+	progress.Name = newName
 	return c.UpdateByID(progress)
 }
 
-func (c *ProgressController) DeleteProgress(id uint) error {
-	return c.DeleteByID(id)
-}
-
 func (c *ProgressController) GetFormattedProgressList() ([]string, error) {
-	progressList, err := c.ListAllProgress()
+	progressList, err := c.List(map[string]interface{}{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve progress list: %w", err)
 	}
@@ -69,11 +58,21 @@ func (c *ProgressController) GetFormattedProgressList() ([]string, error) {
 }
 
 func (c *ProgressController) MarkAsCompleted(id uint) error {
-	progress, err := c.RetrieveProgress(id)
+	progress, err := c.RetrieveByID(id)
 	if err != nil {
 		return fmt.Errorf("progress not found: %w", err)
 	}
 
 	progress.IsCompleted = true
-	return c.UpdateProgress(progress)
+	return c.UpdateByID(progress)
+}
+
+func (c *ProgressController) MarkProgressAsIncomplete(progressID uint) error {
+	progress, err := c.RetrieveByID(progressID)
+	if err != nil {
+		return fmt.Errorf("progress not found: %w", err)
+	}
+
+	progress.IsCompleted = false
+	return c.UpdateByID(progress)
 }

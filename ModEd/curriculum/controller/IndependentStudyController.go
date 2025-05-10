@@ -3,6 +3,7 @@ package controller
 
 import (
 	"ModEd/core"
+	"ModEd/core/validation"
 	model "ModEd/curriculum/model"
 
 	"time"
@@ -32,6 +33,12 @@ func NewIndependentStudyController(connector *gorm.DB) *IndependentStudyControll
 }
 
 func (controller IndependentStudyController) CreateIndependentStudy(independentStudy *model.IndependentStudy, turnInDate string) error {
+	validator := validation.NewModelValidator()
+	err := validator.ModelValidate(independentStudy)
+
+	if err != nil {
+		return err
+	}
 
 	if turnInDate != "" {
 		t, err := time.Parse("2006-01-02 15:04:05", turnInDate)
@@ -44,6 +51,45 @@ func (controller IndependentStudyController) CreateIndependentStudy(independentS
 	independentStudy.CreatedAt = time.Now()
 	independentStudy.UpdatedAt = time.Now()
 	if err := controller.BaseController.Insert(*independentStudy); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (controller IndependentStudyController) ListAllIndependentStudy() ([]model.IndependentStudy, error) {
+	var independentStudies []model.IndependentStudy
+	result := controller.Connector.
+		Preload("WILProject").
+		Find(&independentStudies)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return independentStudies, nil
+}
+
+func (controller IndependentStudyController) UpdateIndependentStudy(is model.IndependentStudy, turnInDate string) error {
+	/*
+		for implement more complex business logic
+	*/
+	if turnInDate != "" {
+		t, err := time.Parse("2006-01-02 15:04:05", turnInDate)
+		if err != nil {
+			return err
+		}
+		is.TurnInDate = &t
+	}
+	is.UpdatedAt = time.Now()
+	if err := controller.BaseController.UpdateByID(is); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (controller IndependentStudyController) DeleteIndependentStudiesByID(id uint) error {
+	/*
+		for implement more complex business logic
+	*/
+	if err := controller.BaseController.DeleteByID(id); err != nil {
 		return err
 	}
 	return nil

@@ -3,6 +3,7 @@ package controller
 
 import (
 	"ModEd/core"
+	"ModEd/core/validation"
 	"ModEd/curriculum/model"
 
 	"gorm.io/gorm"
@@ -32,6 +33,13 @@ func NewWILProjectCurriculumFacadeController(
 }
 
 func (controller WILProjectCurriculumFacadeController) CreateNewWILCourse(course *model.Course, semester string) (uint, error) {
+	validator := validation.NewModelValidator()
+
+	err := validator.ModelValidate(course)
+	if err != nil {
+		return 0, err
+	}
+
 	courseId, err := controller.courseController.CreateCourse(course)
 	if err != nil {
 		return 0, err
@@ -50,6 +58,13 @@ func (controller WILProjectCurriculumFacadeController) CreateNewWILCourse(course
 }
 
 func (controller WILProjectCurriculumFacadeController) CreateNewWILClass(class *model.Class) (uint, error) {
+	validator := validation.NewModelValidator()
+
+	err := validator.ModelValidate(class)
+	if err != nil {
+		return 0, err
+	}
+
 	classId, err := controller.classController.CreateClass(class)
 	if err != nil {
 		return 0, err

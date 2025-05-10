@@ -9,9 +9,7 @@ import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"fmt"
-	// "strconv"
 	"strings"
-	// "time"
 
 	"gorm.io/gorm"
 )
@@ -54,7 +52,7 @@ func (menu *BookingMenuState) HandleUserInput(input string) error {
 // func (h *CreateBookingHandler) Execute() error {
 // 	fmt.Println("===== Create New Booking =====")
 
-	
+
 // 	var booking model.Booking
 	
 // 	fmt.Print("Enter TimeTable ID: ")

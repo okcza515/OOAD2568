@@ -1,6 +1,5 @@
-id,created_at,updated_at,deleted_at,ref_user_id,staff_user_id,action,supply_id,description,quantity
-1,2025-04-01T10:00:00Z,2025-04-01T10:00:00Z,,101,201,ADD,301,"Initial stock added",50
-2,2025-04-02T12:30:00Z,2025-04-02T12:30:00Z,,NULL,202,REMOVE,302,"Used for repairs",10
-3,2025-04-03T15:45:00Z,2025-04-03T15:45:00Z,,102,203,ADD,303,"New shipment arrived",100
-4,2025-04-04T09:20:00Z,2025-04-04T09:20:00Z,,NULL,204,REMOVE,304,"Damaged items removed",5
-5,2025-04-05T14:10:00Z,2025-04-05T14:10:00Z,,103,205,ADD,305,,20
+ID,CreatedAt,UpdatedAt,DeletedAt,RefUserID,StaffUserID,Action,SupplyID,Description,Quantity
+1,2025-04-01T10:00:00Z,2025-04-01T10:00:00Z,,101,201,AddNew,1,"Initial stock added",50
+2,2025-04-02T12:30:00Z,2025-04-02T12:30:00Z,,,202,AddNew,2,"Used for repairs",10
+3,2025-04-03T15:45:00Z,2025-04-03T15:45:00Z,,102,203,AddNew,3,"New shipment arrived",100
+4,2025-04-04T09:20:00Z,2025-04-04T09:20:00Z,,,204,AddNew,4,"Damaged items removed",5

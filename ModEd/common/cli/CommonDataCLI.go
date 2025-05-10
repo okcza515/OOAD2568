@@ -1,28 +1,84 @@
 package main
 
 import (
-	controller "ModEd/common/controller"
-
-	"errors"
+	"ModEd/core/cli"
 	"flag"
 	"fmt"
-	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-type MenusChoices int
+type MenuItemHandler interface {
+	ExecuteItem(parameters []string)
+}
 
-const (
-	READFILE MenusChoices = iota
-	REGISTER
-	RETRIEVE
-	DELETE
-	CLEAR_DB
-	EXIT
-	TEST
-)
+type MenuHandler struct {
+	defaultHandler MenuItemHandler
+	backHandler    MenuItemHandler
+	itemHandlerMap map[string]MenuItemHandler
+	itemLabelMap   map[string]string
+	items          []string
+}
+
+func NewMenuHandler() *MenuHandler {
+	return &MenuHandler{
+		itemHandlerMap: make(map[string]MenuItemHandler),
+		itemLabelMap:   make(map[string]string),
+		items:          []string{},
+	}
+}
+
+func (handler *MenuHandler) AppendItem(key string, label string, itemHandler MenuItemHandler) {
+	handler.itemHandlerMap[key] = itemHandler
+	handler.itemLabelMap[key] = label
+	handler.items = append(handler.items, key)
+}
+
+func (handler *MenuHandler) SetBackHandler(itemHandler MenuItemHandler) {
+	handler.backHandler = itemHandler
+}
+
+func (handler *MenuHandler) SetDefaultHandler(itemHandler MenuItemHandler) {
+	handler.defaultHandler = itemHandler
+}
+
+func (handler *MenuHandler) Execute(selectedMenu string, parameters []string) {
+	if selectedMenu == "back" && handler.backHandler != nil {
+		handler.backHandler.ExecuteItem(parameters)
+		return
+	}
+
+	if itemHandler, exists := handler.itemHandlerMap[selectedMenu]; exists {
+		itemHandler.ExecuteItem(parameters)
+		return
+	}
+
+	if handler.defaultHandler != nil {
+		handler.defaultHandler.ExecuteItem(parameters)
+	} else {
+		fmt.Println("Invalid choice. Please select a valid option.")
+	}
+}
+
+func (handler *MenuHandler) DisplayMenu() {
+	fmt.Println("\nSelect an option:")
+	for i, key := range handler.items {
+		fmt.Printf("%d. %s\n", i, handler.itemLabelMap[key])
+	}
+	fmt.Print("choice: ")
+}
+
+func (handler *MenuHandler) GetMenuChoice() string {
+	var choiceIndex int
+	fmt.Scan(&choiceIndex)
+
+	if choiceIndex >= 0 && choiceIndex < len(handler.items) {
+		return handler.items[choiceIndex]
+	}
+
+	return ""
+}
 
 func main() {
 	var (
@@ -38,76 +94,26 @@ func main() {
 
 	db := ConnectDB()
 
-	for {
-		choice := Menus()
-	
-		switch choice {
-		case READFILE:
-			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-				fmt.Printf("*** Error: %s does not exist.\n", path)
-				return
-			} else {
-				fmt.Printf("*** File %s is readable\n", path)
-			}
-	
-		case REGISTER:
-			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-				fmt.Printf("*** Error: %s does not exist.\n", path)
-				return
-			}
-	
-			var registerChoice int
-			fmt.Print("\nSelect model:\n0. Exit\n1. Student\n2. Instuctor\n3. Department\n4. Faculty\nchoice: ")
-			fmt.Scan(&registerChoice)
-	
-			controller.GenericRegister(registerChoice, db, path)
-	
-		case RETRIEVE:
-			var retrieveChoice int
-			fmt.Print("\nSelect model:\n0. Exit\n1. Student\n2. Instuctor\n3. Department\n4. Faculty\nchoice: ")
-			fmt.Scan(&retrieveChoice)
+	authenticationCLI := cli.NewAuthenticationCLI()
+	authenticationCLI.SetDB(db)
+	authenticationCLI.ExecuteItem(args)
 
-			controller.GenericRetrieve(retrieveChoice, db)
-	
-		case DELETE:
-			var deleteChoice int
-			fmt.Print("\nSelect model:\n0. Exit\n1. Student\n2. Instuctor\n3. Department\n4. Faculty\nchoice: ")
-			fmt.Scan(&deleteChoice)
-	
-			controller.GenericDelete(deleteChoice, db)
-	
-		case CLEAR_DB:
-			if confirmAction("Are you sure you want to clear all tables? This action cannot be undone (y/n): ") {
-				studentController := controller.CreateStudentController(db)
-				instructorController := controller.CreateInstructorController(db)
-				departmentController := controller.CreateDepartmentController(db)
-				facultyController := controller.CreateFacultyController(db)
-	
-				studentController.Truncate()
-				instructorController.Truncate()
-				departmentController.Truncate()
-				facultyController.Truncate()
-	
-				fmt.Println("All tables have been cleared.")
-			} else {
-				fmt.Println("Operation cancelled.")
-			}
-	
-		case EXIT:
-			fmt.Println("Goodbye!")
-			return
-	
-		case TEST:
-			//fmt.Println("This function has been disabled.")
-			instructorController := controller.CreateInstructorController(db)
-			instructorController.ManualAddInstructor()
-	
-		default:
-			fmt.Println("Invalid choice. Please select a valid option.")
-		}
+	menu := NewMenuHandler()
+	menu.AppendItem("readfile", "Read file", &ReadFileHandler{path: path})
+	menu.AppendItem("register", "Register", &RegisterHandler{db: db, path: path})
+	menu.AppendItem("retrieve", "Retrieve", &RetrieveHandler{db: db})
+	menu.AppendItem("delete", "Delete", &DeleteHandler{db: db})
+	menu.AppendItem("cleardb", "Clear DB", &ClearDBHandler{db: db})
+	menu.AppendItem("exit", "Exit", &ExitHandler{})
+	menu.AppendItem("test", "Test", &TestHandler{db: db})
+	menu.SetDefaultHandler(&DefaultHandler{})
+
+	for {
+		menu.DisplayMenu()
+		choice := menu.GetMenuChoice()
+		menu.Execute(choice, args)
 	}
 }
-
 
 func ConnectDB() *gorm.DB {
 	connector, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{})
@@ -115,13 +121,6 @@ func ConnectDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	return connector
-}
-
-func Menus() MenusChoices {
-	var choice MenusChoices
-	fmt.Print("Select an option:\n0. Read file\n1. Register\n2. Retrieve\n3. Delete\n4. Clear DB\n5. Exit\nchoice: ")
-	fmt.Scan(&choice)
-	return choice
 }
 
 func confirmAction(prompt string) bool {

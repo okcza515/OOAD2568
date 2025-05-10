@@ -124,7 +124,7 @@ func (c *StudentHRController) DeleteStudent(studentID string) error {
 	tm := &util.TransactionManager{DB: c.db}
 
 	err := tm.Execute(func(tx *gorm.DB) error {
-		commonStudentController := commonController.CreateStudentController(tx)
+		commonStudentController := commonController.NewStudentController(tx)
 		if err := commonStudentController.DeleteByCode(studentID); err != nil {
 			return fmt.Errorf("failed to delete student from common data: %w", err)
 		}
@@ -151,18 +151,13 @@ func (c *StudentHRController) UpdateStudentInfo(
 			return fmt.Errorf("error retrieving student with ID %s: %v", studentCode, err)
 		}
 
-		updatedStudent := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
-
 		studentData := map[string]any{
-			"FirstName":  updatedStudent.FirstName,
-			"LastName":   updatedStudent.LastName,
-			"Email":      updatedStudent.Email,
-			"Program":    updatedStudent.Program,
-			"Department": updatedStudent.Department,
-			"Status":     updatedStudent.Status,
+			"FirstName": firstName,
+			"LastName":  lastName,
+			"Email":     email,
 		}
 
-		commonStudentController := commonController.CreateStudentController(tx)
+		commonStudentController := commonController.NewStudentController(tx)
 		if err := commonStudentController.Update(studentCode, studentData); err != nil {
 			return fmt.Errorf("failed to update common student data: %v", err)
 		}

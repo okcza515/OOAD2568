@@ -1,38 +1,22 @@
+// MEP-1006
 package model
 
 import (
 	"time"
-
-	commonModel "ModEd/common/model"
-
-	curriculumModel "ModEd/curriculum/model"
 
 	"gorm.io/gorm"
 )
 
 type Quiz struct {
 	gorm.Model
-	InstructorCode commonModel.Instructor
-	FirstName      commonModel.Instructor
-	LastName       commonModel.Instructor
-	CourseId       curriculumModel.Course
-	QuizId         uint
-	Title          string
-	Description    string
-	Released       bool
-	QuizStart      time.Time
-	QuizEnd        time.Time
-	Status         string
-	Submission     []QuizSubmission
-}
-
-type QuizSubmission struct {
-	gorm.Model
-	StudentCode commonModel.Student
-	FirstName   commonModel.Student
-	LastName    commonModel.Student
-	Email       commonModel.Student
-	Answers     string
-	Submitted   bool
-	SubmittedAt time.Time
+	Title        string         `json:"title"`
+	Description  string         `json:"description"`
+	Status       string         `json:"status" gorm:"default:'draft'"`
+	StartDate    time.Time      `json:"start_date"`
+	EndDate      time.Time      `json:"end_date"`
+	CourseID     uint           `json:"course_id" gorm:"not null"`
+	InstructorID uint           `json:"instructor_id" gorm:"not null"`
+	Attempts     uint           `json:"attempts" gorm:"default:1"`
+	TotalScore   float64        `json:"total_score"`
+	Questions    []QuizQuestion `json:"questions" gorm:"foreignKey:QuizID"`
 }

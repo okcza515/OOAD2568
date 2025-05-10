@@ -12,7 +12,6 @@ type RaiseHRController struct {
 	db *gorm.DB
 }
 
-
 func NewRaiseHRController(db *gorm.DB) *RaiseHRController {
 	db.AutoMigrate(&model.RequestRaiseInstructor{})
 	return &RaiseHRController{db: db}
@@ -44,7 +43,7 @@ func (c *RaiseHRController) getAll() ([]model.RequestRaiseInstructor, error) {
 }
 func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.RequestRaiseInstructor, error) {
 	var requests []model.RequestRaiseInstructor
-	err := c.db.Where("instructor_id = ?", instructorID).Find(&requests).Error
+	err := c.db.Where("instructor_code = ?", instructorID).Find(&requests).Error
 	if err != nil {
 		return nil, err
 	}
@@ -57,22 +56,25 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 	return tm.Execute(func(tx *gorm.DB) error {
 		raiseController := NewRaiseHRController(tx)
 
-		factory, err := model.GetFactory("instructor")
-		if err != nil {
-			return fmt.Errorf("failed to get factory: %v", err)
+		requestFactory := model.RequestFactory{}
+
+		params := model.CreateRequestParams{
+			ID:           instructorID,
+			Reason:       reason,
+			TargetSalary: amount,
 		}
 
-		requestObj, err := factory.CreateRaise(instructorID, reason, amount)
+		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeLeave, params)
 		if err != nil {
-			return fmt.Errorf("failed to create raise request using factory: %v", err)
+			return fmt.Errorf("failed to create raise request: %v", err)
 		}
 
-		request, ok := requestObj.(*model.RequestRaiseInstructor)
+		req, ok := reqInterface.(*model.RequestRaiseInstructor)
 		if !ok {
-			return fmt.Errorf("factory returned unexpected type for raise request")
+			return fmt.Errorf("failed to cast request to RequestRaiseInstructor")
 		}
 
-		if err := raiseController.insert(request); err != nil {
+		if err := raiseController.insert(req); err != nil {
 			return fmt.Errorf("failed to submit raise request: %v", err)
 		}
 		return nil
@@ -80,21 +82,20 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 }
 
 func (c *RaiseHRController) ReviewInstructorRaiseRequest(
-    tx *gorm.DB,
-    requestID, action, reason string,
+	tx *gorm.DB,
+	requestID, action, reason string,
 ) error {
-    return ReviewRequest(
-        requestID,
-        action,
-        reason,
-        // fetch
-        func(id uint) (Reviewable, error) {
-            return c.getByID(id)
-        },
-        // save
-        func(r Reviewable) error {
-            return tx.Save(r).Error
-        },
-    )
+	return ReviewRequest(
+		requestID,
+		action,
+		reason,
+		// fetch
+		func(id uint) (Reviewable, error) {
+			return c.getByID(id)
+		},
+		// save
+		func(r Reviewable) error {
+			return tx.Save(r).Error
+		},
+	)
 }
-

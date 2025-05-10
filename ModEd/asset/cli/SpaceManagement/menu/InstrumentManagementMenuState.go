@@ -13,8 +13,8 @@ import (
 )
 
 type InstrumentManagementMenuState struct{
-	manager			*cli.CLIMenuStateManager //changing the state(handler)
-	handlerContext	*handler.HandlerContext //selecting the func(strategy)
+	manager			*cli.CLIMenuStateManager //changing the state(handler), encapsulate menu transition
+	handlerContext	*handler.HandlerContext //selecting the func(strategy), hold command handlers
 }
 
 func (menu *InstrumentManagementMenuState) Render() {
@@ -26,6 +26,7 @@ func (menu *InstrumentManagementMenuState) Render() {
 	fmt.Println("4. Create new Instrument Management")
 	fmt.Println("5. Update the Instrument Management")
 	fmt.Println("6. Delete the Instrument Management")
+	fmt.Println("7. Seed Instrument Managements data")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("========================================")
 }
@@ -72,11 +73,13 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 
   handlerContext := handler.NewHandlerContext()
 
+  	//handler strategy select each handler function
   	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.InstrumentManagement](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
+  	insertManyhandler := handler.NewInsertHandlerStrategy[model.InstrumentManagement](controllerInstance)
 
   	//Custom Handlers
 	updateHandler := spaceManagementHandler.NewUpdateInstrumentManagementStrategy(controllerInstance)
@@ -89,6 +92,7 @@ func NewInstrumentMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, space
 	handlerContext.AddHandler("4", "Create an Instrument Management", insertHandler)
 	handlerContext.AddHandler("5", "Update an Instrument Management", updateHandler)
 	handlerContext.AddHandler("6", "Delete an Instrument Management", deleteHandler)
+	handlerContext.AddHandler("7", "Seed Instrument Managements data", insertManyhandler)
 	handlerContext.AddHandler("back", "Back to main menu", backHandler)
 
 

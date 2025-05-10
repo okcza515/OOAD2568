@@ -1,13 +1,13 @@
 package handler
 
 import (
-	procurement "ModEd/asset/controller"
+	"ModEd/asset/controller"
 	model "ModEd/asset/model"
 	util "ModEd/asset/util"
 	"fmt"
 )
 
-func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
+func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 	inputBuffer := ""
 
 	for inputBuffer != "back" {
@@ -20,10 +20,10 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			fmt.Println("Create New Instrument Request")
 			deptID := util.GetUintInput("Enter Department ID: ")
 
-			newRequest := &model.InstrumentRequest{
-				DepartmentID: deptID,
-				Status:       model.InstrumentRequestStatusPending,
-			}
+			newRequest := controller.NewInstrumentRequestBuilder().
+				WithDepartmentID(deptID).
+				WithStatus(model.InstrumentRequestStatusPending).
+				Build()
 
 			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)
 			if err != nil {
@@ -34,10 +34,11 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 
 			fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
 
-			newBudgetApproval := &model.BudgetApproval{
-				InstrumentRequestID: newRequest.InstrumentRequestID,
-				Status:              model.BudgetStatusPending,
-			}
+			newBudgetApproval := controller.NewBudgetApprovalBuilder().
+				WithInstrumentRequestID(newRequest.InstrumentRequestID).
+				WithStatus(model.BudgetStatusPending).
+				Build()
+
 			err1 := facade.BudgetApproval.CreateBudgetRequest(newBudgetApproval)
 			if err1 != nil {
 				fmt.Println("Failed to create budget approval:", err1)
@@ -55,14 +56,14 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
 				quantity := util.GetUintInput("Enter Quantity: ")
 
-				detail := &model.InstrumentDetail{
-					InstrumentLabel:     label,
-					Description:         &desc,
-					CategoryID:          categoryID,
-					EstimatedPrice:      estimatedPrice,
-					Quantity:            int(quantity),
-					InstrumentRequestID: newRequest.InstrumentRequestID,
-				}
+				detail := controller.NewInstrumentDetailBuilder().
+					WithLabel(label).
+					WithDescription(desc).
+					WithCategoryID(categoryID).
+					WithEstimatedPrice(estimatedPrice).
+					WithQuantity(quantity).
+					WithRequestID(newRequest.InstrumentRequestID).
+					Build()
 
 				err := facade.RequestedItem.AddInstrumentToRequest(newRequest.InstrumentRequestID, detail)
 				if err != nil {
@@ -99,14 +100,14 @@ func InstrumentRequestHandler(facade *procurement.ProcurementControllerFacade) {
 			estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
 			quantity := util.GetUintInput("Enter Quantity: ")
 
-			detail := &model.InstrumentDetail{
-				InstrumentLabel:     label,
-				Description:         &desc,
-				CategoryID:          categoryID,
-				EstimatedPrice:      estimatedPrice,
-				Quantity:            int(quantity),
-				InstrumentRequestID: requestID,
-			}
+			detail := controller.NewInstrumentDetailBuilder().
+				WithLabel(label).
+				WithDescription(desc).
+				WithCategoryID(categoryID).
+				WithEstimatedPrice(estimatedPrice).
+				WithQuantity(quantity).
+				WithRequestID(requestID).
+				Build()
 
 			err = facade.RequestedItem.AddInstrumentToRequest(requestID, detail)
 			if err != nil {
@@ -278,28 +279,14 @@ func deref(s *string) string {
 	return *s
 }
 
-// func ListAllInstrumentRequest(facade *procurement.ProcurementControllerFacade) {
-// 	requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-// 	if err != nil {
-// 		fmt.Println("Failed to list requests:", err)
-// 	} else {
-// 		fmt.Println("Instrument Requests List:")
-// 		for _, request := range *requests {
-// 			fmt.Printf("ID: %d, DepartmentID: %d, Status: %s\n", request.InstrumentRequestID, request.DepartmentID, request.Status)
-// 		}
-// 	}
-// }
-
 func showAvailableRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
 		fmt.Println("Failed to retrieve requests:", err)
-		WaitForEnter()
 		return false
 	}
 
 	if len(*requests) == 0 {
 		fmt.Println("No instrument requests available.")
-		WaitForEnter()
 		return false
 	}
 

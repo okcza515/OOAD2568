@@ -58,7 +58,7 @@ func Init() (*gorm.DB, string) {
 }
 
 func cleanup(db *gorm.DB, dbName string) {
-	os.Remove(dbName)
+	// os.Remove(dbName)
 }
 
 func TestInsert(t *testing.T) {
@@ -271,4 +271,33 @@ func TestListWithPreloads(t *testing.T) {
 			t.Errorf("Unexpected parent name: %s", parent.Name)
 		}
 	}
+}
+
+func TestFromCSV(t *testing.T) {
+	db, dbName := Init()
+	defer cleanup(db, dbName)
+
+	// Prepare CSV content
+	csvContent := `Name
+CSVTest1
+CSVTest2
+CSVTest3
+`
+	// Write it to a temporary file
+	csvFile := "data.csv"
+	err := os.WriteFile(csvFile, []byte(csvContent), 0644)
+	assert.NoError(t, err)
+	defer os.Remove(csvFile)
+
+	// Create controller and run FromCSV
+	controller := core.NewBaseController[*TestModel](db)
+	controller.FromCSV(csvFile)
+
+	// Verify data
+	var results []TestModel
+	db.Find(&results)
+	assert.Len(t, results, 3)
+	assert.Equal(t, "CSVTest1", results[0].Name)
+	assert.Equal(t, "CSVTest2", results[1].Name)
+	assert.Equal(t, "CSVTest3", results[2].Name)
 }

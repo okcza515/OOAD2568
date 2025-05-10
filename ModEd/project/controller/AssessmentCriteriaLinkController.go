@@ -10,7 +10,8 @@ import (
 
 type AssessmentCriteriaLinkController struct {
 	*core.BaseController[*model.AssessmentCriteriaLink]
-	DB *gorm.DB
+	AssessmentBaseController *core.BaseController[*model.Assessment]
+	DB                       *gorm.DB
 }
 
 func NewAssessmentCriteriaLinkController(db *gorm.DB) *AssessmentCriteriaLinkController {
@@ -20,19 +21,10 @@ func NewAssessmentCriteriaLinkController(db *gorm.DB) *AssessmentCriteriaLinkCon
 	}
 }
 
-func (c *AssessmentCriteriaLinkController) ListAllAssessmentCriteriaLinks() ([]*model.AssessmentCriteriaLink, error) {
-	assessmentCriteriaLinks, err := c.List(map[string]interface{}{})
-	if assessmentCriteriaLinks != nil {
-		return nil, err
-	}
-	return assessmentCriteriaLinks, nil
-}
-
 func (c *AssessmentCriteriaLinkController) ListProjectAssessmentCriteriaLinks(seniorProjectId uint) ([]*model.AssessmentCriteriaLink, error) {
-	var assessment model.Assessment
-	if err := c.DB.First(&assessment, "senior_project_id = ?", seniorProjectId).Error; err != nil {
-		return nil, err
-	}
+	assessment, err := c.AssessmentBaseController.RetrieveByCondition(map[string]interface{}{
+		"senior_project_id": seniorProjectId,
+	})
 
 	assessmentCriteriaLink, err := c.List(map[string]interface{}{"assessment_id": assessment.ID})
 	if err != nil {
@@ -66,10 +58,6 @@ func (c *AssessmentCriteriaLinkController) InsertAssessmentCriteriaLink(assessme
 		AssessmentCriteriaId: assessmentCriteriaId,
 	}
 	return &assessmentCriteriaLink, c.Insert(&assessmentCriteriaLink)
-}
-
-func (c *AssessmentCriteriaLinkController) UpdateAssessmentCriteriaLink(id uint, assessmentCriteriaLink *model.AssessmentCriteriaLink) error {
-	return c.UpdateByID(assessmentCriteriaLink)
 }
 
 func (c *AssessmentCriteriaLinkController) DeleteAssessmentCriteriaLink(assessmentID uint, criteriaID uint) error {

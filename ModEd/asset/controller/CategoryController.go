@@ -16,7 +16,6 @@ type CategoryController struct {
 }
 
 type CategoryControllerInterface interface {
-	ListAll() ([]string, error)
 	List(condition map[string]interface{}, preloads ...string) ([]model.Category, error)
 	RetrieveByID(id uint, preloads ...string) (model.Category, error)
 	Insert(data model.Category) error

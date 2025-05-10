@@ -41,10 +41,10 @@ func newMigrationManager() *MigrationManager {
 	migrationMap[core.MODULE_INSTRUCTOR] = &InstructorWorkloadMigrationStrategy{}
 	migrationMap[core.MODULE_INTERNSHIP] = &InternshipMigrationStrategy{}
 	migrationMap[core.MODULE_WILPROJECT] = &WILProjectMigrationStrategy{}
-	migrationMap[core.MODULE_QUIZ] = nil
+	migrationMap[core.MODULE_QUIZ] = &QuizStrategy{}
 	migrationMap[core.MODULE_EVAL] = nil
 	migrationMap[core.MODULE_HR] = &HRMigrationStrategy{}
-	migrationMap[core.MODULE_PROJECT] = nil
+	migrationMap[core.MODULE_PROJECT] = &ProjectMigrationStrategy{}
 	migrationMap[core.MODULE_RECRUIT] = nil
 
 	return &MigrationManager{
@@ -138,10 +138,15 @@ func (m *MigrationManager) LoadSeedData() error {
 			return err
 		}
 
+		// Print fd
+		fmt.Println(fd)
+
 		err = fd.Deserialize(md)
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(md)
 
 		result := m.DB.Create(md)
 		if result.Error != nil {

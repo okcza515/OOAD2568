@@ -20,24 +20,6 @@ func NewAssessmentController(db *gorm.DB) *AssessmentController {
 	}
 }
 
-func (c *AssessmentController) ListAllAssessments() ([]*model.Assessment, error) {
-	assessments, err := c.List(map[string]interface{}{})
-	if assessments != nil {
-		return nil, err
-	}
-
-	return assessments, nil
-}
-
-func (c *AssessmentController) RetrieveAssessment(id uint) (*model.Assessment, error) {
-	assessment, err := c.RetrieveByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return assessment, nil
-}
-
 func (c *AssessmentController) RetrieveAssessmentBySeniorProjectId(seniorProjectId uint) (*model.Assessment, error) {
 	assessment, err := c.RetrieveByCondition(map[string]interface{}{"senior_project_id": seniorProjectId})
 	if err != nil {
@@ -61,12 +43,4 @@ func (c *AssessmentController) InsertAssessment(seniorProjectId uint) (*model.As
 	}
 
 	return &assessment, c.Insert(&assessment)
-}
-
-func (c *AssessmentController) UpdateAssessment(id uint, assessment *model.Assessment) error {
-	return c.UpdateByID(assessment)
-}
-
-func (c *AssessmentController) DeleteAssessment(id uint) error {
-	return c.DeleteByID(id)
 }

@@ -4,7 +4,6 @@ package menu
 
 import (
 	"ModEd/asset/controller"
-	"ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -12,25 +11,32 @@ import (
 )
 
 type SupplyMenuState struct {
-	manager *cli.CLIMenuStateManager
-
-	insertHandlerStrategy *handler.InsertHandlerStrategy[model.Supply]
-	listHandlerStrategy   *handler.ListHandlerStrategy[model.Supply]
-	deleteHandlerStrategy *handler.DeleteHandlerStrategy[model.Supply]
-	updateHandlerStrategy *handler.UpdateHandlerStrategy[model.Supply]
+	manager        *cli.CLIMenuStateManager
+	handlerContext *handler.HandlerContext
 }
 
 func NewSupplyMenuState(
 	manager *cli.CLIMenuStateManager,
 ) *SupplyMenuState {
 	controllerInstance := controller.GetAssetInstance().Supply
+	handlerContext := handler.NewHandlerContext()
+
+	insertHandler := handler.NewInsertHandlerStrategy(controllerInstance)
+	listHandler := handler.NewListHandlerStrategy(controllerInstance)
+	updateHandler := handler.NewUpdateHandlerStrategy(controllerInstance)
+	deleteHandler := handler.NewDeleteHandlerStrategy(controllerInstance)
+	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
+
+	handlerContext.AddHandler("1", "Add New Supply", insertHandler)
+	handlerContext.AddHandler("2", "List all Supply", listHandler)
+	handlerContext.AddHandler("3", "Get detail of an Supply", insertHandler)
+	handlerContext.AddHandler("4", "Update an Supply", updateHandler)
+	handlerContext.AddHandler("5", "Delete an Supply", deleteHandler)
+	handlerContext.AddHandler("back", "Go brrr", backHandler)
 
 	return &SupplyMenuState{
-		manager:               manager,
-		insertHandlerStrategy: handler.NewInsertHandlerStrategy(controllerInstance),
-		listHandlerStrategy:   handler.NewListHandlerStrategy(controllerInstance),
-		deleteHandlerStrategy: handler.NewDeleteHandlerStrategy(controllerInstance),
-		updateHandlerStrategy: handler.NewUpdateHandlerStrategy(controllerInstance),
+		manager:        manager,
+		handlerContext: handlerContext,
 	}
 }
 
@@ -40,52 +46,20 @@ func (menu *SupplyMenuState) Render() {
 	fmt.Println()
 	fmt.Println("Supply Management")
 	fmt.Println("Your options are...")
-	fmt.Println()
-	fmt.Println("  1:\tAdd new Supply")
-	fmt.Println("  2:\tList all Supply")
-	fmt.Println("  3:\tGet detail of an Supply")
-	fmt.Println("  4:\tUpdate an Supply")
-	fmt.Println("  5:\tDelete an Supply")
-	fmt.Println("  back:\tBack to main menu")
+	menu.handlerContext.ShowMenu()
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
 
 func (menu *SupplyMenuState) HandleUserInput(input string) error {
-	//context := &handler.HandlerContext{}
-
-	switch input {
-	case "1":
-		fmt.Println("Add New Supply")
-		//context.SetStrategy(menu.insertHandlerStrategy)
-	case "2":
-		fmt.Println("List all Supply")
-		//context.SetStrategy(menu.listHandlerStrategy)
-	case "3":
-		fmt.Println("Get detail of an Supply")
-	case "4":
-		fmt.Println("Update an Supply")
-		//context.SetStrategy(menu.updateHandlerStrategy)
-	case "5":
-		fmt.Println("Delete an Supply")
-		//context.SetStrategy(menu.deleteHandlerStrategy)
-	case "back":
-		err := menu.manager.GoToMenu(string(MENU_ASSET))
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		//context.SetStrategy(handler.DoNothingHandlerStrategy{})
-		fmt.Println("Invalid Command")
+	err := menu.handlerContext.HandleInput(input)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	//err := context.HandleInput()
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-
-	util.PressEnterToContinue()
+	if input != "back" {
+		util.PressEnterToContinue()
+	}
 
 	return nil
 }

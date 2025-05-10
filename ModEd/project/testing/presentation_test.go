@@ -20,7 +20,7 @@ func TestInsertPresentation(t *testing.T) {
 		Date:             time.Now(),
 		SeniorProjectId:  seniorProject.ID,
 	}
-	err := presentationCtrl.InsertPresentation(&presentation)
+	err := presentationCtrl.Insert(&presentation)
 	if err != nil {
 		t.Errorf("Failed to insert presentation: %v", err)
 	}
@@ -45,7 +45,7 @@ func TestListAllPresentations(t *testing.T) {
 		return
 	}
 
-	presentations, err := presentationCtrl.ListAllPresentations()
+	presentations, err := presentationCtrl.List(map[string]interface{}{})
 	if err != nil || len(presentations) == 0 {
 		t.Errorf("Expected presentations, got error: %v", err)
 	}
@@ -69,7 +69,7 @@ func TestRetrievePresentation(t *testing.T) {
 		t.Fatalf("Failed to create presentation: %v", err)
 	}
 
-	res, err := presentationCtrl.RetrievePresentation(presentation.ID)
+	res, err := presentationCtrl.RetrieveByID(presentation.ID)
 	if err != nil || res == nil {
 		t.Errorf("Failed to retrieve presentation: %v", err)
 	}
@@ -93,7 +93,7 @@ func TestDeletePresentation(t *testing.T) {
 		t.Fatalf("Failed to create presentation: %v", err)
 	}
 
-	err := presentationCtrl.DeletePresentation(presentation.ID)
+	err := presentationCtrl.DeleteByID(presentation.ID)
 	if err != nil {
 		t.Errorf("Failed to delete presentation: %v", err)
 	}

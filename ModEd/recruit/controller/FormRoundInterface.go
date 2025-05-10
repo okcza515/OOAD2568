@@ -2,16 +2,18 @@
 package controller
 
 import (
-	"ModEd/recruit/model"
 	"fmt"
 )
 
 type FormRound interface {
-	ApplyForm(applicant *model.Applicant) error
+	GetForm() []string
+	Validate(data map[string]string) (error)
 }
 
 var strategyRegistry = map[string]FormRound{
 	"Portfolio":   &PortfolioStrategy{},
+	"Quota":       &QuotaStrategy{},
+	"Admission":   &AdmissionStrategy{},
 	"Scholarship": &ScholarshipStrategy{},
 }
 
