@@ -61,20 +61,24 @@ func (c *AssessmentController) DeleteAssessment(id uint) error {
 	return c.db.Delete(&assessmentModel.Assessment{}, id).Error
 }
 
+// อาจจะไม่มี
 func (c *AssessmentController) CreateSubmission(submission *assessmentModel.AssessmentSubmission) error {
 	return c.db.Create(submission).Error
 }
 
+// อาจจะไม่มี
 func (c *AssessmentController) GetSubmissionsByAssessmentID(assessmentID uint) ([]assessmentModel.AssessmentSubmission, error) {
 	var submissions []assessmentModel.AssessmentSubmission
 	err := c.db.Where("assessment_id = ?", assessmentID).Find(&submissions).Error
 	return submissions, err
 }
 
+// อาจจะไม่มี
 func (c *AssessmentController) UpdateSubmission(submission *assessmentModel.AssessmentSubmission) error {
 	return c.db.Save(submission).Error
 }
 
+// อาจจะไม่มี
 func (c *AssessmentController) SubmitAssessment(assessmentID uint, submission *assessmentModel.AssessmentSubmission) error {
 	assessment, err := c.RetrieveByID(assessmentID)
 	if err != nil {
@@ -95,6 +99,7 @@ func (c *AssessmentController) SubmitAssessment(assessmentID uint, submission *a
 	return c.db.Save(submission).Error
 }
 
+// อาจจะไม่มี
 func (c *AssessmentController) SavePathFile(submissionID uint, pathFile *assessmentModel.PathFile) error {
 	var submission assessmentModel.AssessmentSubmission
 	err := c.db.First(&submission, submissionID).Error
