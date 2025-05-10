@@ -34,7 +34,7 @@ func (c *ExamController) UpdateExam(updatedExam *model.Exam) (exam *model.Exam, 
 	}
 	exam.ExamName = updatedExam.ExamName
 	exam.InstructorID = updatedExam.InstructorID
-	exam.CourseID = updatedExam.CourseID
+	exam.ClassID = updatedExam.ClassID
 	exam.ExamStatus = updatedExam.ExamStatus
 	exam.Description = updatedExam.Description
 	exam.Attempt = updatedExam.Attempt
