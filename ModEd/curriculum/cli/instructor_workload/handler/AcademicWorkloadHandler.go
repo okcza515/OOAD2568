@@ -4,6 +4,7 @@ package handler
 import (
 	controller "ModEd/curriculum/controller"
 	model "ModEd/curriculum/model"
+	commonModel "ModEd/common/model"
 	utils "ModEd/curriculum/utils"
 	"fmt"
 
@@ -34,7 +35,7 @@ func (u UnknownCommand) Execute() {
 
 func (c AcademicWorkloadHandler) Execute() {
 	academicMenu := NewMenuHandler("Academic Workload Menu", true)
-	academicMenu.Add("Curriculum", nil)
+	academicMenu.Add("Curriculum", NewCurriculumHandler(c.db))
 	academicMenu.Add("Course", nil)
 	academicMenu.Add("Class", nil)
 	academicMenu.Add("Class Material", NewClassMaterialHandler(c.db))
@@ -43,6 +44,131 @@ func (c AcademicWorkloadHandler) Execute() {
 	academicMenu.SetDefaultHandler(UnknownCommand{})
 	academicMenu.Execute()
 }
+// Curriculum Menu
+
+func (h *CurriculumHandler) Execute() {
+	menu := NewMenuHandler("Curriculum Menu", true)
+
+	menu.Add("Insert", CreateCurriculum{db: h.db})
+	menu.Add("Retrieve", RetrieveCurriculum{db: h.db})
+	menu.Add("Update", UpdateCurriculum{db: h.db})
+	menu.Add("Delete", DeleteCurriculum{db: h.db})
+	menu.Add("List All", ListCurriculums{db: h.db})
+
+	menu.SetBackHandler(Back{})
+	menu.SetDefaultHandler(UnknownCommand{})
+	menu.Execute()
+}
+
+type CurriculumHandler struct {
+	db *gorm.DB
+}
+
+func NewCurriculumHandler(db *gorm.DB) *CurriculumHandler {
+	return &CurriculumHandler{db: db}
+}
+
+type CreateCurriculum struct {
+	db *gorm.DB
+}
+type RetrieveCurriculum struct {
+	db *gorm.DB
+}
+type UpdateCurriculum struct {
+	db *gorm.DB
+}
+type DeleteCurriculum struct {
+	db *gorm.
+		DB
+}
+type ListCurriculums struct {
+	db *gorm.DB
+}
+func (c CreateCurriculum) Execute() {
+	CurriculumController := controller.NewCurriculumController(c.db)
+	mockCurriculum := &model.Curriculum{
+		CurriculumId:  1,
+		Name:"Example Curriculum",
+		StartYear:     2023,
+		EndYear:       2025,
+		DepartmentId:  1,
+		ProgramType:  commonModel.REGULAR,
+	}
+	if _, err := CurriculumController.CreateCurriculum(mockCurriculum); err != nil {
+		fmt.Println("Error creating Curriculum:", err)
+		return
+	}
+
+	fmt.Println("Curriculum created successfully!")
+}
+func (r RetrieveCurriculum) Execute() {
+	id := utils.GetUserInputUint("Enter ID to retrieve: ")
+	CurriculumController := controller.NewCurriculumController(r.db)
+	curriculum, err := CurriculumController.GetCurriculum(id)
+	if err != nil {
+		fmt.Println("Error retrieving curriculum:", err)
+		return
+	}
+
+	fmt.Println("Retrieved Curriculum:")
+	fmt.Printf("ID: %d\n", curriculum.CurriculumId)
+	fmt.Printf("Name: %s\n", curriculum.Name)
+	fmt.Printf("Startyear: %s\n", curriculum.StartYear)
+	fmt.Printf("Endyear: %s\n", curriculum.EndYear)
+	fmt.Printf("DepartmentId: %s\n", curriculum.DepartmentId)
+	fmt.Printf("ProgramType: %s\n", curriculum.ProgramType)
+}
+
+func (u UpdateCurriculum) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Update: ")
+	CurriculumController := controller.NewCurriculumController(u.db)
+	mockCurriculum := &model.Curriculum{
+		CurriculumId:  id,
+		Name:"Updated Curriculum",
+		StartYear:     2020,
+		EndYear:       2029,
+		DepartmentId:  2,
+		ProgramType:  commonModel.INTERNATIONAL,
+	}
+	_, err := CurriculumController.UpdateCurriculum(mockCurriculum)
+	if err != nil {
+		fmt.Println("Error updating Curriculum:", err)
+		return
+	}
+
+	fmt.Println("Curriculum updated successfully!")
+}
+func (d DeleteCurriculum) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Delete: ")
+	CurriculumController := controller.NewCurriculumController(d.db)
+	_, err := CurriculumController.DeleteCurriculum(id)
+	if err != nil {
+		fmt.Println("Error updating Curriculum:", err)
+		return
+	}
+
+	fmt.Println("Curriculum deleted successfully!")
+}
+func (l ListCurriculums) Execute() {	
+	CurriculumController := controller.NewCurriculumController(l.db)
+	curriculums, err := CurriculumController.GetCurriculums()
+	if err != nil {
+		fmt.Println("Error listing Curriculums:", err)
+		return
+	}
+
+	if len(curriculums) == 0 {
+		fmt.Println("No Curriculums found.")
+		return
+	}
+
+	fmt.Println("List of All Curriculums:")
+	for _, material := range curriculums {
+		fmt.Printf("ID: %d, Name: %s, Start Year: %d, End Year: %d, Department ID: %d, Program Type: %s\n",
+			material.CurriculumId, material.Name, material.StartYear, material.EndYear, material.DepartmentId, material.ProgramType)
+	}
+}
+
 
 // ClassMaterial Menu
 func (h *ClassMaterialHandler) Execute() {
