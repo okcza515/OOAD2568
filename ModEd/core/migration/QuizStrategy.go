@@ -13,5 +13,6 @@ func (s *QuizStrategy) GetModels() []interface{} {
 		&model.Progress{},
 		&model.Evaluation{},
 		&model.Assessment{},
+		&model.AssessmentSubmission{},
 	}
 }
