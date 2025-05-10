@@ -14,40 +14,52 @@ import (
 	"gorm.io/gorm"
 )
 
+// SubmissionPDFController handles operations for assessment submission PDF files
 type SubmissionPDFController struct {
-	db                   *gorm.DB
-	assessmentController *AssessmentController
-	uploadDir            string
+	db        *gorm.DB
+	uploadDir string
 }
 
-func NewSubmissionPDFController(db *gorm.DB, assessmentController *AssessmentController, uploadDir string) *SubmissionPDFController {
+// NewSubmissionPDFController creates a new SubmissionPDFController
+func NewSubmissionPDFController(db *gorm.DB, uploadDir string) *SubmissionPDFController {
 	if uploadDir == "" {
 		uploadDir = "uploads/assessments"
 	}
 
+	// Create directory if it doesn't exist
 	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		// Log error but continue
 	}
 
 	return &SubmissionPDFController{
-		db:                   db,
-		assessmentController: assessmentController,
-		uploadDir:            uploadDir,
+		db:        db,
+		uploadDir: uploadDir,
 	}
 }
 
+// GetUploadDir returns the upload directory
+func (c *SubmissionPDFController) GetUploadDir() string {
+	return c.uploadDir
+}
+
+// SavePDF saves a PDF file for a submission
 func (c *SubmissionPDFController) SavePDF(file *multipart.FileHeader, assessmentID uint, studentCode string) (*model.PathFile, error) {
+	// Validate file
 	if file == nil {
 		return nil, errors.New("no file provided")
 	}
 
+	// Check file size (10MB max)
 	if file.Size > 10*1024*1024 {
 		return nil, errors.New("file size exceeds maximum limit of 10MB")
 	}
 
+	// Check file type
 	if !strings.HasSuffix(strings.ToLower(file.Filename), ".pdf") {
 		return nil, errors.New("only PDF files are accepted")
 	}
 
+	// Generate unique filename using timestamp
 	timestamp := time.Now().Unix()
 	filename := studentCode + "_" + strconv.FormatUint(uint64(assessmentID), 10) + "_" + strconv.FormatInt(timestamp, 10) + ".pdf"
 
@@ -90,7 +102,7 @@ func (c *SubmissionPDFController) SavePDF(file *multipart.FileHeader, assessment
 	return pathFile, nil
 }
 
-// ReadPDF retrieves a PDF file by its path
+// ReadPDF retrieves a PDF file
 func (c *SubmissionPDFController) ReadPDF(filePath string) (*os.File, error) {
 	// Check if file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -106,8 +118,8 @@ func (c *SubmissionPDFController) ReadPDF(filePath string) (*os.File, error) {
 	return file, nil
 }
 
-// UpdatePDF updates an existing PDF file
-func (c *SubmissionPDFController) UpdatePDF(file *multipart.FileHeader, oldFilePath string) (*model.PathFile, error) {
+// UpdatePDF replaces an existing PDF file
+func (c *SubmissionPDFController) UpdatePDF(file *multipart.FileHeader, oldFilePath string, assessmentID uint, studentCode string) (*model.PathFile, error) {
 	// Delete old file if it exists
 	if oldFilePath != "" {
 		if _, err := os.Stat(oldFilePath); !os.IsNotExist(err) {
@@ -117,70 +129,11 @@ func (c *SubmissionPDFController) UpdatePDF(file *multipart.FileHeader, oldFileP
 		}
 	}
 
-	// Validate new file
-	if file == nil {
-		return nil, errors.New("no file provided")
-	}
-
-	// Check file size (10MB max)
-	if file.Size > 10*1024*1024 {
-		return nil, errors.New("file size exceeds maximum limit of 10MB")
-	}
-
-	// Check file type
-	if !strings.HasSuffix(strings.ToLower(file.Filename), ".pdf") {
-		return nil, errors.New("only PDF files are accepted")
-	}
-
-	// Use the same directory as the old file if it exists
-	var dirPath string
-	if oldFilePath != "" {
-		dirPath = filepath.Dir(oldFilePath)
-	} else {
-		// Create a new directory using timestamp
-		timestamp := time.Now().Unix()
-		dirPath = filepath.Join(c.uploadDir, strconv.FormatInt(timestamp, 10))
-		if err := os.MkdirAll(dirPath, 0755); err != nil {
-			return nil, errors.New("failed to create upload directory")
-		}
-	}
-
-	// Generate new filename using timestamp
-	timestamp := time.Now().Unix()
-	filename := "updated_" + strconv.FormatInt(timestamp, 10) + ".pdf"
-	filePath := filepath.Join(dirPath, filename)
-
-	// Open source file
-	src, err := file.Open()
-	if err != nil {
-		return nil, errors.New("failed to open uploaded file")
-	}
-	defer src.Close()
-
-	// Create destination file
-	dst, err := os.Create(filePath)
-	if err != nil {
-		return nil, errors.New("failed to create destination file")
-	}
-	defer dst.Close()
-
-	// Copy file content
-	if _, err = io.Copy(dst, src); err != nil {
-		return nil, errors.New("failed to save file")
-	}
-
-	// Create PathFile object
-	pathFile := &model.PathFile{
-		Path:     filePath,
-		Filename: file.Filename,
-		MimeType: "application/pdf",
-		Size:     file.Size,
-	}
-
-	return pathFile, nil
+	// Save the new file
+	return c.SavePDF(file, assessmentID, studentCode)
 }
 
-// DeletePDF deletes a PDF file
+// DeletePDF removes a PDF file
 func (c *SubmissionPDFController) DeletePDF(filePath string) error {
 	// Check if file exists
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
