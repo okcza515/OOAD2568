@@ -41,7 +41,7 @@ func newMigrationManager() *MigrationManager {
 	migrationMap[core.MODULE_INSTRUCTOR] = &InstructorWorkloadMigrationStrategy{}
 	migrationMap[core.MODULE_INTERNSHIP] = &InternshipMigrationStrategy{}
 	migrationMap[core.MODULE_WILPROJECT] = &WILProjectMigrationStrategy{}
-	migrationMap[core.MODULE_QUIZ] = nil
+	migrationMap[core.MODULE_QUIZ] = &QuizStrategy{}
 	migrationMap[core.MODULE_EVAL] = nil
 	migrationMap[core.MODULE_HR] = &HRMigrationStrategy{}
 	migrationMap[core.MODULE_PROJECT] = &ProjectMigrationStrategy{}
