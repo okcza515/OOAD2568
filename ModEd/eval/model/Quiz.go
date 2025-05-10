@@ -9,7 +9,7 @@ import (
 
 type Quiz struct {
 	gorm.Model
-	Title        string         `json:"title" gorm:"not null"`
+	Title        string         `json:"title"`
 	Description  string         `json:"description"`
 	Status       string         `json:"status" gorm:"default:'draft'"`
 	StartDate    time.Time      `json:"start_date"`
