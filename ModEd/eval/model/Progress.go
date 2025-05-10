@@ -13,9 +13,9 @@ type Progress struct {
 	StudentCode  string
 	Student      commonModel.Student `gorm:"foreignKey:StudentCode;references:StudentCode"`
 	AssessmentId uint
-	Assessment   Assessment       `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
-	Status       AssessmentStatus `gorm:"column:status;not null"`
-	TotalSubmit  uint             `gorm:"column:total_submit;default:0"`
+	Assessment   Assessment           `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
+	Submitted    AssessmentSubmission `gorm:"column:submitted;not null"`
+	TotalSubmit  uint                 `gorm:"column:total_submit;default:0"`
 }
 
 func (p Progress) GetID() uint {
@@ -23,8 +23,8 @@ func (p Progress) GetID() uint {
 }
 
 func (p Progress) ToString() string {
-	return fmt.Sprintf("Progress{ID: %d, StudentCode: %s, AssessmentId: %d, Type: %s, Status: %s, TotalSubmit: %d}",
-		p.ID, p.StudentCode, p.AssessmentId, p.Type, p.Status, p.TotalSubmit)
+	return fmt.Sprintf("Progress{ID: %d, StudentCode: %s, AssessmentId: %d, Submitted: %v, TotalSubmit: %d}",
+		p.ID, p.StudentCode, p.AssessmentId, p.Submitted.Submitted, p.TotalSubmit)
 }
 
 func (p Progress) Validate() error {
@@ -34,18 +34,16 @@ func (p Progress) Validate() error {
 	if p.AssessmentId == 0 {
 		return fmt.Errorf("Assessment ID is required")
 	}
-	if p.Type == "" {
-		return fmt.Errorf("Assessment type is required")
-	}
-	if p.Status == "" {
-		return fmt.Errorf("Status is required")
+
+	if !p.Submitted.Submitted {
+		return fmt.Errorf("Submission status is required")
 	}
 	return nil
 }
 
 func (p Progress) ToCSVRow() string {
-	return fmt.Sprintf("%d, %s, %d, %s, %s, %d",
-		p.ID, p.StudentCode, p.AssessmentId, p.Type, p.Status, p.TotalSubmit)
+	return fmt.Sprintf("%d, %s, %d, %v, %d",
+		p.ID, p.StudentCode, p.AssessmentId, p.Submitted.Submitted, p.TotalSubmit)
 }
 
 func (p Progress) FromCSV(raw string) error {
@@ -54,8 +52,8 @@ func (p Progress) FromCSV(raw string) error {
 }
 
 func (p Progress) ToJSON() string {
-	return fmt.Sprintf(`{"id":%d,"student_code":"%s","assessment_id":%d,"type":"%s","status":"%s", "total_submit":%d}`,
-		p.ID, p.StudentCode, p.AssessmentId, p.Type, p.Status, p.TotalSubmit)
+	return fmt.Sprintf(`{"id":%d,"student_code":"%s","assessment_id":%d,"submitted":%v,"total_submit":%d}`,
+		p.ID, p.StudentCode, p.AssessmentId, p.Submitted.Submitted, p.TotalSubmit)
 }
 
 func (p Progress) FromJSON(raw string) error {

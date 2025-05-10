@@ -34,8 +34,8 @@ func (controller *ProgressController) List(filters map[string]interface{}) ([]ev
 		if studentCode, exists := filters["student_code"]; exists {
 			query = query.Where("student_code = ?", studentCode)
 		}
-		if status, exists := filters["status"]; exists {
-			query = query.Where("status = ?", status)
+		if submitted, exists := filters["submitted"]; exists {
+			query = query.Where("submitted = ?", submitted)
 		}
 	}
 
@@ -57,10 +57,10 @@ func (controller *ProgressController) GetProgressByStudentCode(assessmentId uint
 	})
 }
 
-func (controller *ProgressController) GetProgressByStatus(assessmentId uint, status string) ([]evalModel.Progress, error) {
+func (controller *ProgressController) GetProgressByStatus(assessmentId uint, submitted bool) ([]evalModel.Progress, error) {
 	return controller.List(map[string]interface{}{
 		"assessment_id": assessmentId,
-		"status":        status,
+		"submitted":     submitted,
 	})
 }
 
@@ -74,7 +74,7 @@ func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint
 
 	statusCount := make(map[bool]int)
 	for _, progress := range progressList {
-		statusCount[progress.Status.Submitted]++
+		statusCount[progress.Submitted.Submitted]++
 	}
 
 	return statusCount, nil
