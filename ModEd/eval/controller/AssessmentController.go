@@ -25,9 +25,6 @@ type AssessmentControllerInterface interface {
 	UpdateAssessment(updatedAssessment *model.Assessment) (*model.Assessment, error)
 	DeleteAssessment(assessmentId uint) (assessment *model.Assessment, err error)
 	UpdateAssessmentStatus(assessmentID uint, newStatus model.AssessmentStatus) error
-	// CreateSubmission(assessmentId uint, submission *model.AssessmentSubmission) error
-	// GetSubmissionsByAssessment(assessmentId uint) ([]model.AssessmentSubmission, error)
-	// UpdateSubmission(submission *model.AssessmentSubmission) error
 }
 
 func NewAssessmentController(db *gorm.DB) AssessmentControllerInterface {
@@ -122,27 +119,3 @@ func (c *AssessmentController) UpdateAssessmentStatus(assessmentID uint, newStat
 
 	return assessment.State.HandleStatusChange(assessment, newStatus)
 }
-
-// func (c *AssessmentController) CreateSubmission(assessmentId uint, submission *model.AssessmentSubmission) error {
-// 	// Check if the assessment exists
-// 	_, err := c.GetAssessment(assessmentId, "Submission")
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	submission.UpdatedAt = time.Now()
-
-// 	// Add submission to assessment
-// 	return c.db.Create(submission).Error
-// }
-
-// func (c *AssessmentController) GetSubmissionsByAssessment(assessmentId uint) ([]model.AssessmentSubmission, error) {
-// 	var submissions []model.AssessmentSubmission
-// 	err := c.db.Where("assessment_id = ?", assessmentId).Find(&submissions).Error
-// 	return submissions, err
-// }
-
-// func (c *AssessmentController) UpdateSubmission(submission *model.AssessmentSubmission) error {
-// 	submission.UpdatedAt = time.Now()
-// 	return c.db.Save(submission).Error
-// }
