@@ -17,10 +17,10 @@ type Result struct {
 	gorm.Model
 	ID            uint                `gorm:"primaryKey"`
 	ExaminationID uint                `gorm:"not null"`
-	Examination   Examination         `gorm:"foreignKey:ExaminationID"`
+	Examination   Exam                `gorm:"foreignKey:ExaminationID"`
 	StudentID     uint                `gorm:"not null"`
 	Student       commonModel.Student `gorm:"foreignKey:StudentID"`
-	Status        StatusResult        
-	Feedback      string              
-	Score         float64                
+	Status        StatusResult
+	Feedback      string
+	Score         float64
 }
