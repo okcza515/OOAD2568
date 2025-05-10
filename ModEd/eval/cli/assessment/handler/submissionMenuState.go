@@ -72,7 +72,7 @@ func (s *SubmissionMenuState) listSubmissions() (MenuState, error) {
 
 	// Display all submissions related to this assessment
 	for _, submission := range assessment.Submission {
-		fmt.Printf("Student: %s %s (%s)\n", submission.FirstName, submission.LastName, submission.StudentCode)
+		fmt.Printf("Student ID: %s\n", submission.StudentCode)
 		fmt.Printf("  Submitted: %t  Date: %s\n", submission.Submitted, submission.UpdatedAt.Format("2006-01-02 15:04:05"))
 		fmt.Printf("  Score: %.2f\n", submission.Score)
 		if submission.Feedback != "" {
@@ -243,7 +243,7 @@ func (s *SubmissionMenuState) viewSubmission() (MenuState, error) {
 
 	fmt.Printf("\n===== Submission Details =====\n")
 	fmt.Printf("Assessment: %s (ID: %d)\n", assessment.Title, assessment.AssessmentId)
-	fmt.Printf("Student: %s %s (%s)\n", foundSubmission.FirstName, foundSubmission.LastName, foundSubmission.StudentCode)
+	fmt.Printf("Student ID: %s\n", foundSubmission.StudentCode)
 	fmt.Printf("Submitted: %t  Date: %s\n", foundSubmission.Submitted, foundSubmission.UpdatedAt.Format("2006-01-02 15:04:05"))
 	fmt.Printf("Score: %.2f\n", foundSubmission.Score)
 
