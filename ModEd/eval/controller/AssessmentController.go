@@ -27,7 +27,7 @@ type AssessmentControllerInterface interface {
 	UpdateAssessmentStatus(assessmentID uint, newStatus model.AssessmentStatus) error
 }
 
-func NewAssessmentController(db *gorm.DB) AssessmentControllerInterface {
+func NewAssessmentController(db *gorm.DB) *AssessmentController {
 	return &AssessmentController{
 		db:   db,
 		core: core.NewBaseController[*model.Assessment](db),
