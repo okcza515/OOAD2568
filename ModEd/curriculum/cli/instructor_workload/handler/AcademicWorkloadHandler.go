@@ -37,7 +37,7 @@ func (c AcademicWorkloadHandler) Execute() {
 	academicMenu := NewMenuHandler("Academic Workload Menu", true)
 	academicMenu.Add("Curriculum", NewCurriculumHandler(c.db))
 	academicMenu.Add("Course", NewCourseHandler(c.db))
-	academicMenu.Add("Class", nil)
+	academicMenu.Add("Class", NewClassHandler(c.db))
 	academicMenu.Add("Class Material", NewClassMaterialHandler(c.db))
 	academicMenu.Add("Course Plan", NewCoursePlanHandler(c.db))
 	academicMenu.SetBackHandler(Back{})
@@ -285,6 +285,117 @@ func (l ListCourses) Execute() {
 		fmt.Printf("ID: %d, Name: %s, Description: %s, Curriculum ID: %d, Optional: %t, Status: %s\n",
 			course.CourseId, course.Name, course.Description, course.CurriculumId, course.Optional, model.CourseStatusLabel[course.CourseStatus])
 	}
+}
+
+// Class Menu
+func (h *ClassHandler) Execute() {
+	menu := NewMenuHandler("Class Menu", true)
+
+	menu.Add("Insert", CreateClass{db: h.db})
+	menu.Add("Retrieve", RetrieveClass{db: h.db})
+	menu.Add("Update", UpdateClass{db: h.db})
+	menu.Add("Delete", DeleteClass{db: h.db})
+	menu.Add("List All", ListClasses{db: h.db})
+
+	menu.SetBackHandler(Back{})
+	menu.SetDefaultHandler(UnknownCommand{})
+	menu.Execute()
+}
+type ClassHandler struct {
+	db *gorm.DB
+}
+func NewClassHandler(db *gorm.DB) *ClassHandler {
+	return &ClassHandler{db: db}
+}
+type CreateClass struct {
+	db *gorm.DB
+}
+type RetrieveClass struct {
+	db *gorm.DB
+}
+type UpdateClass struct {
+	db *gorm.DB
+}
+type DeleteClass struct {
+	db *gorm.DB
+}
+type ListClasses struct {
+	db *gorm.DB
+}
+func (c CreateClass) Execute() {
+	ClassController := controller.NewClassController(c.db)
+	mockClass := &model.Class{
+		ClassId:  1,
+		CourseId: 1,
+		Section: 1,
+		Schedule: time.Now(),
+	}
+	if _, err := ClassController.CreateClass(mockClass); err != nil {
+		fmt.Println("Error creating Class:", err)
+		return
+	}
+
+	fmt.Println("Class created successfully!")
+}
+func (r RetrieveClass) Execute() {
+	id := utils.GetUserInputUint("Enter ID to retrieve: ")
+	ClassController := controller.NewClassController(r.db)
+	class, err := ClassController.GetClass(id)
+	if err != nil {
+		fmt.Println("Error retrieving Class:", err)
+		return
+	}
+
+	fmt.Println("Retrieved Class:")
+	fmt.Printf("ID: %d\n", class.ClassId)
+	fmt.Printf("Course ID: %d\n", class.CourseId)
+	fmt.Printf("Section: %d\n", class.Section)
+	fmt.Printf("Schedule: %s\n", class.Schedule.Format(time.RFC3339))
+}
+func (u UpdateClass) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Update: ")
+	ClassController := controller.NewClassController(u.db)
+	mockClass := &model.Class{
+		ClassId:  id,
+		CourseId: 2,
+		Section: 2,
+		Schedule: time.Now(),
+	}
+	if _, err := ClassController.UpdateClass(mockClass); err != nil {
+		fmt.Println("Error updating Class:", err)
+		return
+	}
+
+	fmt.Println("Class updated successfully!")
+}
+func (d DeleteClass) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Delete: ")
+	ClassController := controller.NewClassController(d.db)
+	if _, err := ClassController.DeleteClass(id); err != nil {
+		fmt.Println("Error deleting Class:", err)
+		return
+	}
+
+	fmt.Println("Class deleted successfully!")
+}
+func (l ListClasses) Execute() {
+	ClassController := controller.NewClassController(l.db)
+
+	classes, err := ClassController.GetClasses()
+	if err != nil {
+		fmt.Println("Error listing Classes:", err)
+		return
+	}
+
+	if len(classes) == 0 {
+		fmt.Println("No Classes found.")
+		return
+	}
+
+	fmt.Println("List of All Classes:")
+	for _, class := range classes {
+		fmt.Printf("ID: %d, Course ID: %d, Section: %d, Schedule: %s\n",
+			class.ClassId, class.CourseId, class.Section, class.Schedule.Format(time.RFC3339))}
 }
 
 // ClassMaterial Menu
