@@ -57,7 +57,7 @@ func (menu *ProgressMenuStateHandler) HandleUserInput(input string) error {
 }
 
 func (menu *ProgressMenuStateHandler) getAllProgressTableHeader() {
-	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "ID", "Assessment ID", "Student Code", "Type", "Status")
+	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "ID", "Assessment ID", "Student Code", "Status")
 	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "---", "------------", "-----------", "------", "------")
 }
 
@@ -73,7 +73,6 @@ func (menu *ProgressMenuStateHandler) printProgressTable(progressList []model.Pr
 			progress.ID,
 			progress.AssessmentId,
 			progress.StudentCode,
-			progress.Type,
 			progress.Status)
 	}
 	fmt.Println()
@@ -158,9 +157,9 @@ func (menu *ProgressMenuStateHandler) GetAssessmentSubmitCount() error {
 		return errors.New("Failed to retrieve progress list.")
 	}
 
-	statusCount := make(map[model.AssessmentStatus]int)
+	statusCount := make(map[bool]int)
 	for _, progress := range progressList {
-		statusCount[progress.Status]++
+		statusCount[progress.Status.Submitted]++
 	}
 
 	fmt.Printf("\nAssessment %d Submission Count:", assessmentId)

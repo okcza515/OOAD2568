@@ -18,7 +18,7 @@ func NewEvalModuleWrapper(db *gorm.DB) *EvalModuleWrapper {
 
 	return &EvalModuleWrapper{
 		ProgressController:   NewProgressController(db),
-		AssessmentController: NewAssessmentController(),
+		AssessmentController: NewAssessmentController(db),
 		EvaluationController: NewEvaluationController(evaluations, csvPath),
 	}
 }

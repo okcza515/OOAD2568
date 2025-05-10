@@ -64,7 +64,7 @@ func (controller *ProgressController) GetProgressByStatus(assessmentId uint, sta
 	})
 }
 
-func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint) (map[evalModel.AssessmentStatus]int, error) {
+func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint) (map[bool]int, error) {
 	progressList, err := controller.List(map[string]interface{}{
 		"assessment_id": assessmentId,
 	})
@@ -72,9 +72,9 @@ func (controller *ProgressController) GetAssessmentSubmitCount(assessmentId uint
 		return nil, err
 	}
 
-	statusCount := make(map[evalModel.AssessmentStatus]int)
+	statusCount := make(map[bool]int)
 	for _, progress := range progressList {
-		statusCount[progress.Status]++
+		statusCount[progress.Status.Submitted]++
 	}
 
 	return statusCount, nil

@@ -2,13 +2,16 @@ package main
 
 import (
 	"ModEd/core"
-	"ModEd/core/migration"
-	"ModEd/eval/cli/assessment"
-	"ModEd/eval/cli/examination"
-	"fmt"
-	"os"
 
-	"ModEd/eval/controller"
+	"ModEd/core/migration"
+
+	evaluation "ModEd/eval/cli/evaluation"
+
+	"ModEd/eval/model"
+
+	"fmt"
+
+	controller "ModEd/eval/controller"
 
 	"gorm.io/gorm"
 )
@@ -21,46 +24,18 @@ type Command interface {
 	Execute() error
 }
 
-// AssessmentCommand
-type AssessmentCommand struct {
-	db *gorm.DB
+type EvaluationCommand struct {
+	db                   *gorm.DB
+	evaluationController *controller.EvaluationController
+	progressController   *controller.ProgressController
+	assessmentController *controller.AssessmentController
 }
 
-func (c *AssessmentCommand) Execute() error {
-	assessment.RunAssessmentModuleCLI(c.db)
+func (e *EvaluationCommand) Execute() error {
+	evaluation.RunEvalModuleCLI(e.db, e.evaluationController, e.progressController, e.assessmentController)
 	return nil
 }
 
-// QuizCommand
-type QuizCommand struct {
-	db *gorm.DB
-}
-
-// ExaminationCommand
-type ExaminationCommand struct {
-	db *gorm.DB
-}
-
-func (e *ExaminationCommand) Execute() error {
-	params := &examination.ExaminationCLIParams{
-		ExaminationController: controller.NewExaminationController(e.db),
-		SectionController:     controller.NewExamSectionController(e.db),
-	}
-	examination.RunExaminationCLI(params)
-	return nil
-}
-
-// QuestionCommand
-type QuestionCommand struct {
-	db *gorm.DB
-}
-
-func (q *QuestionCommand) Execute() error {
-	fmt.Println("Question module not implemented yet")
-	return nil
-}
-
-// ResetDBCommand
 type ResetDBCommand struct{}
 
 func (r *ResetDBCommand) Execute() error {
@@ -83,7 +58,7 @@ func (ce *CommandExecutor) ExecuteCommand(name string) error {
 	if command, exists := ce.commands[name]; exists {
 		return command.Execute()
 	}
-	return fmt.Errorf("invalid command: %s", name)
+	return fmt.Errorf("Command not found: %s", name)
 }
 
 func main() {
@@ -94,43 +69,39 @@ func main() {
 		BuildDB()
 
 	if err != nil {
-		fmt.Printf("Error initializing database: %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 
-	commandExecutor := NewCommandExecutor()
-	commandExecutor.RegisterCommand("1", &AssessmentCommand{db})
-	//commandExecutor.RegisterCommand("2", &QuizCommand{db})
-	commandExecutor.RegisterCommand("3", &ExaminationCommand{db})
-	commandExecutor.RegisterCommand("4", &QuestionCommand{db})
-	commandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
+	evaluationController := controller.NewEvaluationController([]*model.Evaluation{}, defaultDBPath)
+	progressController := controller.NewProgressController(db)
+	assessmentController := controller.NewAssessmentController(db)
+
+	CommandExecutor := NewCommandExecutor()
+	CommandExecutor.RegisterCommand("1", &EvaluationCommand{db, evaluationController, progressController, assessmentController})
 
 	for {
-		displayMainMenu()
-		choice := getUserChoice()
+		DisplayMainMenu()
+		choice := GetUserChoice()
 
 		if choice == "0" {
 			fmt.Println("Exiting...")
 			return
 		}
 
-		if err := commandExecutor.ExecuteCommand(choice); err != nil {
-			fmt.Printf("Error: %v\n", err)
+		if err := CommandExecutor.ExecuteCommand(choice); err != nil {
+			fmt.Println("Error executing command:", err)
 		}
 	}
 }
 
-func displayMainMenu() {
-	fmt.Println("\nEvaluation Module CLI Menu")
-	fmt.Println("1. Assessment Management")
-	//fmt.Println("2. Quiz Management")
-	fmt.Println("3. Examination Management")
-	fmt.Println("4. Question Management")
-	fmt.Println("0. Exit")
-	fmt.Println("'resetdb' to re-initialize database")
+func DisplayMainMenu() {
+	fmt.Println("\nEvaluation Module Menu:")
+	fmt.Println("1. Evaluation Assignment & Quiz")
+	fmt.Println("2. Evaluation Examination")
+	fmt.Println("'resetdb' to re-initialize the database")
 }
 
-func getUserChoice() string {
+func GetUserChoice() string {
 	var choice string
 	fmt.Print("Enter your choice: ")
 	fmt.Scanln(&choice)
@@ -152,6 +123,5 @@ func resetDB() error {
 		return err
 	}
 
-	fmt.Println("Database reset successfully")
 	return nil
 }
