@@ -23,20 +23,20 @@ func NewAssessmentController(db *gorm.DB) *AssessmentController {
 
 // CreateAssessment creates a new assessment
 func (c *AssessmentController) CreateAssessment(assessment *assessmentModel.Assessment) error {
-	return c.DB.Create(assessment).Error
+	return c.db.Create(assessment).Error
 }
 
 // GetAssessments retrieves all assessments
 func (c *AssessmentController) GetAssessments() ([]assessmentModel.Assessment, error) {
 	var assessments []assessmentModel.Assessment
-	err := c.DB.Find(&assessments).Error
+	err := c.db.Find(&assessments).Error
 	return assessments, err
 }
 
 // GetAssessmentByID retrieves an assessment by its ID
 func (c *AssessmentController) GetAssessmentByID(id uint) (*assessmentModel.Assessment, error) {
 	var assessment assessmentModel.Assessment
-	err := c.DB.First(&assessment, id).Error
+	err := c.db.First(&assessment, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *AssessmentController) GetAssessmentByID(id uint) (*assessmentModel.Asse
 
 // UpdateAssessment updates an existing assessment
 func (c *AssessmentController) UpdateAssessment(assessment *assessmentModel.Assessment) error {
-	return c.DB.Save(assessment).Error
+	return c.db.Save(assessment).Error
 }
 
 // UpdateAssessmentStatus changes the status of an assessment
@@ -64,7 +64,7 @@ func (c *AssessmentController) UpdateAssessmentStatus(assessmentID uint, newStat
 
 // DeleteAssessment deletes an assessment by its ID
 func (c *AssessmentController) DeleteAssessment(id uint) error {
-	return c.DB.Delete(&assessmentModel.Assessment{}, id).Error
+	return c.db.Delete(&assessmentModel.Assessment{}, id).Error
 }
 
 // CreateSubmission creates a new assessment submission
@@ -123,7 +123,7 @@ func (c *AssessmentController) SavePathFile(submissionID uint, pathFile *assessm
 // // ScoreSubmission updates the score and feedback for a submission
 // func (c *AssessmentController) ScoreSubmission(submissionID uint, score float64, feedback string) error {
 // 	var submission assessmentModel.AssessmentSubmission
-// 	err := c.DB.First(&submission, submissionID).Error
+// 	err := c.db.First(&submission, submissionID).Error
 // 	if err != nil {
 // 		return err
 // 	}
