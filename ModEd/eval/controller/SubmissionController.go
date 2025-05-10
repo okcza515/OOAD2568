@@ -9,13 +9,13 @@ import (
 )
 
 type SubmissionController struct {
-	db                    *gorm.DB
-	core                  *core.BaseController[*model.AnswerSubmission]
-	McAnsSubController    *MultipleChoiceAnswerSubmissionController
-	TfAnsSubController    *TrueFalseAnswerSubmissionController
-	ShortAnsSubController *ShortAnswerSubmissionController
-	TfAnswerController    *TrueFalseAnswerController
-	ShortAnswerController *ShortAnswerController
+	db 						*gorm.DB
+	core 					*core.BaseController[*model.AnswerSubmission]
+	McAnsSubController 		*MultipleChoiceAnswerSubmissionController
+	TfAnsSubController 		*TrueFalseAnswerSubmissionController
+	ShortAnsSubController	*ShortAnswerSubmissionController
+	TfAnswerController		*TrueFalseAnswerController
+	ShortAnswerController	*ShortAnswerController
 }
 
 type ISubmission interface {
@@ -29,12 +29,12 @@ type ISubmission interface {
 
 func NewSubmissionController(db *gorm.DB) *SubmissionController {
 	return &SubmissionController{
-		db:                    db,
-		core:                  core.NewBaseController[*model.AnswerSubmission](db),
-		McAnsSubController:    NewMultipleChoiceAnswerSubmissionController(db),
-		TfAnsSubController:    NewTrueFalseAnswerSubmissionController(db),
+		db: db,
+		core: core.NewBaseController[*model.AnswerSubmission](db),
+		McAnsSubController: NewMultipleChoiceAnswerSubmissionController(db),
+		TfAnsSubController: NewTrueFalseAnswerSubmissionController(db),
 		ShortAnsSubController: NewShortAnswerSubmissionController(db),
-		TfAnswerController:    NewTrueFalseAnswerController(db),
+		TfAnswerController: NewTrueFalseAnswerController(db),
 		ShortAnswerController: NewShortAnswerController(db),
 	}
 }
@@ -47,7 +47,7 @@ func (c *SubmissionController) CreateSubmission(submission *model.AnswerSubmissi
 }
 
 func (c *SubmissionController) GetAllSubmissions(preloads ...string) (submissions []*model.AnswerSubmission, err error) {
-	submissions, err = c.core.List(nil, preloads...)
+	submissions,err = c.core.List(nil,preloads...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *SubmissionController) GetSubmission(submissionId uint, preload ...strin
 	return submission, nil
 }
 
-func (c *SubmissionController) UpdateSubmission(updatedSubmission *model.AnswerSubmission) (submission *model.AnswerSubmission, err error) {
+func (c *SubmissionController) UpdateSubmission(updatedSubmission *model.AnswerSubmission) (submission *model.AnswerSubmission, err error){
 	submission, err = c.core.RetrieveByCondition(map[string]interface{}{"id": updatedSubmission.ID})
 	if err != nil {
 		return nil, err
@@ -70,11 +70,11 @@ func (c *SubmissionController) UpdateSubmission(updatedSubmission *model.AnswerS
 	submission.StudentID = updatedSubmission.StudentID
 	submission.ExamID = updatedSubmission.ExamID
 	submission.Score = updatedSubmission.Score
-	if err := c.core.UpdateByCondition(map[string]interface{}{"id": updatedSubmission.ID}, submission); err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"id": updatedSubmission.ID}, submission); err != nil{
 		return nil, err
 	}
 	return submission, nil
-}
+} 
 
 func (c *SubmissionController) GradingSubmission(submissionId uint) (submission *model.AnswerSubmission, err error) {
 	var score = 0.0
@@ -124,7 +124,7 @@ func (c *SubmissionController) GradingSubmission(submissionId uint) (submission 
 		return nil, err
 	}
 	submission.Score = score
-	if err := c.core.UpdateByCondition(map[string]interface{}{"id": submissionId}, submission); err != nil {
+	if err := c.core.UpdateByCondition(map[string]interface{}{"id": submissionId}, submission); err != nil{
 		return nil, err
 	}
 	return submission, nil
