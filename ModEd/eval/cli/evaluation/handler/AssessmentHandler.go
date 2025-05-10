@@ -133,7 +133,6 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 		State:       &controller.DraftState{},
 	}
 
-	// We need to fetch and set the actual Class and Instructor objects
 	var classObj curriculumModel.Class
 	classObj.ClassId = uint(classIdUint)
 	assessment.ClassId = classObj
