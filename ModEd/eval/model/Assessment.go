@@ -6,8 +6,6 @@ import (
 	commonModel "ModEd/common/model"
 	"ModEd/core"
 	curriculumModel "ModEd/curriculum/model"
-
-	"gorm.io/gorm"
 )
 
 type AssessmentStatus string
@@ -38,7 +36,7 @@ type AssessmentState interface {
 }
 
 type AssessmentSubmission struct {
-	gorm.Model
+	core.BaseModel
 	StudentCode string `gorm:"foreignKey:StudentCode;references:StudentCode"`
 	FirstName   string `gorm:"foreignKey:StudentCode;references:FirstName"`
 	LastName    string `gorm:"foreignKey:StudentCode;references:LastName"`
