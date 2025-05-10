@@ -3,9 +3,10 @@ package handler
 import "ModEd/eval/controller"
 
 type AssessmentCLIParams struct {
-	AssessmentController controller.AssessmentController
-	SubmissionController controller.SubmissionController
-	ResultController     controller.ResultController
+	AssessmentController    controller.AssessmentController
+	SubmissionController    controller.SubmissionController
+	ResultController        controller.ResultController
+	SubmissionPDFController *controller.SubmissionPDFController
 }
 
 type MainMenuState struct {
