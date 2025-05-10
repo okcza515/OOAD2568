@@ -36,7 +36,7 @@ func (u UnknownCommand) Execute() {
 func (c AcademicWorkloadHandler) Execute() {
 	academicMenu := NewMenuHandler("Academic Workload Menu", true)
 	academicMenu.Add("Curriculum", NewCurriculumHandler(c.db))
-	academicMenu.Add("Course", nil)
+	academicMenu.Add("Course", NewCourseHandler(c.db))
 	academicMenu.Add("Class", nil)
 	academicMenu.Add("Class Material", NewClassMaterialHandler(c.db))
 	academicMenu.Add("Course Plan", NewCoursePlanHandler(c.db))
@@ -44,8 +44,8 @@ func (c AcademicWorkloadHandler) Execute() {
 	academicMenu.SetDefaultHandler(UnknownCommand{})
 	academicMenu.Execute()
 }
-// Curriculum Menu
 
+// Curriculum Menu
 func (h *CurriculumHandler) Execute() {
 	menu := NewMenuHandler("Curriculum Menu", true)
 
@@ -169,6 +169,123 @@ func (l ListCurriculums) Execute() {
 	}
 }
 
+// Course Menu
+func (h *CourseHandler) Execute() {
+	menu := NewMenuHandler("Course Menu", true)
+
+	menu.Add("Insert", CreateCourse{db: h.db})
+	menu.Add("Retrieve", RetrieveCourse{db: h.db})
+	menu.Add("Update", UpdateCourse{db: h.db})
+	menu.Add("Delete", DeleteCourse{db: h.db})
+	menu.Add("List All", ListCourses{db: h.db})
+
+	menu.SetBackHandler(Back{})
+	menu.SetDefaultHandler(UnknownCommand{})
+	menu.Execute()
+}
+type CourseHandler struct {
+	db *gorm.DB
+}
+func NewCourseHandler(db *gorm.DB) *CourseHandler {
+	return &CourseHandler{db: db}
+}
+type CreateCourse struct {
+	db *gorm.DB
+}
+type RetrieveCourse struct {
+	db *gorm.DB
+}
+type UpdateCourse struct {
+	db *gorm.DB
+}
+type DeleteCourse struct {
+	db *gorm.DB
+}
+type ListCourses struct {
+	db *gorm.DB
+}
+func (c CreateCourse) Execute() {
+	CourseController := controller.NewCourseController(c.db)
+	mockCourse := &model.Course{
+		CourseId:  1,
+		Name:      "Example Course",
+		Description: "This is an example course",
+		CurriculumId: 1,
+		Optional:  false,
+		CourseStatus: model.ACTIVE,
+	}
+	if _, err := CourseController.CreateCourse(mockCourse); err != nil {
+		fmt.Println("Error creating Course:", err)
+		return
+	}
+
+	fmt.Println("Course created successfully!")
+}
+func (r RetrieveCourse) Execute() {
+	id := utils.GetUserInputUint("Enter ID to retrieve: ")
+	CourseController := controller.NewCourseController(r.db)
+	course, err := CourseController.GetCourse(id)
+	if err != nil {
+		fmt.Println("Error retrieving Course:", err)
+		return
+	}
+
+	fmt.Println("Retrieved Course:")
+	fmt.Printf("ID: %d\n", course.CourseId)
+	fmt.Printf("Name: %s\n", course.Name)
+	fmt.Printf("Description: %s\n", course.Description)
+	fmt.Printf("CurriculumId: %d\n", course.CurriculumId)
+	fmt.Printf("Optional: %t\n", course.Optional)
+	fmt.Printf("Status: %s\n", model.CourseStatusLabel[course.CourseStatus])
+}
+func (u UpdateCourse) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Update: ")
+	CourseController := controller.NewCourseController(u.db)
+	mockCourse := &model.Course{
+		CourseId:  id,
+		Name:      "Updated Course",
+		Description: "This is an updated example course",
+		CurriculumId: 2,
+		Optional:  true,
+		CourseStatus: model.INACTIVE,
+	}
+	if _, err := CourseController.UpdateCourse(mockCourse); err != nil {
+		fmt.Println("Error updating Course:", err)
+		return
+	}
+
+	fmt.Println("Course updated successfully!")
+}
+func (d DeleteCourse) Execute() {
+	id := utils.GetUserInputUint("Enter ID to Delete: ")
+	CourseController := controller.NewCourseController(d.db)
+	_, err := CourseController.DeleteCourse(id)
+	if err != nil {
+		fmt.Println("Error deleting Course:", err)
+		return
+	}
+
+	fmt.Println("Course deleted successfully!")
+}
+func (l ListCourses) Execute() {
+	CourseController := controller.NewCourseController(l.db)
+	courses, err := CourseController.GetCourses()
+	if err != nil {
+		fmt.Println("Error listing Courses:", err)
+		return
+	}
+
+	if len(courses) == 0 {
+		fmt.Println("No Courses found.")
+		return
+	}
+
+	fmt.Println("List of All Courses:")
+	for _, course := range courses {
+		fmt.Printf("ID: %d, Name: %s, Description: %s, Curriculum ID: %d, Optional: %t, Status: %s\n",
+			course.CourseId, course.Name, course.Description, course.CurriculumId, course.Optional, model.CourseStatusLabel[course.CourseStatus])
+	}
+}
 
 // ClassMaterial Menu
 func (h *ClassMaterialHandler) Execute() {
@@ -285,6 +402,7 @@ func (l ListClassMaterials) Execute() {
 	}
 }
 
+// CoursePlan Menu
 type CoursePlanHandler struct {
 	db *gorm.DB
 }
