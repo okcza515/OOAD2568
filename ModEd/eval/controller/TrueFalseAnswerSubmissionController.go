@@ -19,3 +19,16 @@ func NewTrueFalseAnswerSubmissionController(db *gorm.DB) *TrueFalseAnswerSubmiss
 		BaseController: core.NewBaseController[*model.TrueFalseAnswerSubmission](db),
 	}
 }
+
+func (c *TrueFalseAnswerSubmissionController) GetTrueFalseAnswerSubmissionsBySubmissionID(submissionID uint) (tfAnsSubs []*model.TrueFalseAnswerSubmission, err error) {
+	err = c.db.
+		Where("submission_id = ?", submissionID).
+		Preload("Question").
+		Find(&tfAnsSubs).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tfAnsSubs, err
+}

@@ -19,3 +19,15 @@ func NewTrueFalseAnswerController(db *gorm.DB) *TrueFalseAnswerController {
 		BaseController: core.NewBaseController[*model.TrueFalseAnswer](db),
 	}
 }
+
+func (c *TrueFalseAnswerController) GetTrueFalseAnswerByQuestionID(questionID uint) (tfAnswer *model.TrueFalseAnswer, err error) {
+	err = c.db.
+		Where("question_id = ?", questionID).
+		Find(&tfAnswer).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tfAnswer, err
+}
