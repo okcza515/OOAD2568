@@ -4,18 +4,11 @@ package cli
 import (
 	"ModEd/core/cli"
 	"ModEd/recruit/util"
-	"errors"
 	"fmt"
 )
 
-var ErrExitUserMenu = errors.New("exit user menu")
-
 type UserMenuState struct {
-	manager          *cli.CLIMenuStateManager
-	applicantService ApplicantRegistrationService
-	reportService    ApplicantReportService
-	registrationMenu cli.MenuState
-	reportMenu       cli.MenuState
+	manager *cli.CLIMenuStateManager
 }
 
 func NewUserMenuState(
@@ -23,15 +16,14 @@ func NewUserMenuState(
 	applicantService ApplicantRegistrationService,
 	reportService ApplicantReportService,
 ) *UserMenuState {
-	menu := &UserMenuState{
-		manager:          manager,
-		applicantService: applicantService,
-		reportService:    reportService,
+	userMenu := &UserMenuState{
+		manager: manager,
 	}
-	menu.registrationMenu = NewApplicantRegistrationMenuState(manager, applicantService, menu)
-	menu.reportMenu = NewApplicantReportMenuState(manager, reportService, menu)
+	manager.AddMenu("1", NewApplicantRegistrationMenuState(manager, applicantService, userMenu))
+	manager.AddMenu("2", NewApplicantReportMenuState(manager, reportService, userMenu))
+	//manager.AddMenu("3", nil)
 
-	return menu
+	return userMenu
 
 }
 
@@ -48,22 +40,19 @@ func (menu *UserMenuState) Render() {
 	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 }
 
-func (menu *UserMenuState) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		menu.manager.SetState(menu.registrationMenu)
-	case "2":
-		menu.manager.SetState(menu.reportMenu)
-	case "3":
-		fmt.Println("Exiting...")
-		return ErrExitUserMenu
-	default:
-		fmt.Println("Invalid option.")
+func (u *UserMenuState) HandleUserInput(input string) error {
+	if input == "3" {
+		return ErrExitMenu
 	}
+
+	err := u.manager.GoToMenu(input)
+	if err != nil {
+		fmt.Println("Invalid option. Try again.")
+	}
+	return nil
 
 	// fmt.Println("\nPress Enter to continue...")
 	// bufio.NewReader(os.Stdin).ReadBytes('\n')
-	return nil
 }
 
 func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService) {
@@ -80,8 +69,8 @@ func UserCLI(applicantRegistrationService ApplicantRegistrationService, applican
 		manager.UserInput = input
 
 		err := manager.HandleUserInput()
-		if err == ErrExitUserMenu {
-			return
+		if err == ErrExitMenu {
+			break
 		} else if err != nil {
 			fmt.Println("Error:", err)
 		}

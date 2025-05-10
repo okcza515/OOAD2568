@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var ErrExitAdminMenu = fmt.Errorf("exit admin menu")
+var ErrExitMenu = fmt.Errorf("exit menu")
 
 type AdminMenuState struct {
 	manager  *cli.CLIMenuStateManager
@@ -34,7 +34,7 @@ func NewAdminMenuState(
 	manager.AddMenu("1", NewAdminShowApplicationReportMenuState(manager, reportService, adminMenu))
 	manager.AddMenu("2", NewAdminScheduleInterviewMenuState(manager, scheduleInterviewService, adminMenu))
 	manager.AddMenu("3", NewAdminDeleteInterviewMenuState(manager, deleteInterviewService, adminMenu))
-	manager.AddMenu("4", nil)
+	//manager.AddMenu("4", nil)
 	return adminMenu
 }
 
@@ -52,6 +52,10 @@ func (a *AdminMenuState) Render() {
 }
 
 func (a *AdminMenuState) HandleUserInput(input string) error {
+	if input == "4" {
+		return ErrExitMenu
+	}
+
 	err := a.manager.GoToMenu(input)
 	if err != nil {
 		fmt.Printf("Invalid option. Try again.")
@@ -84,7 +88,9 @@ func AdminCLI(dep AdminDependencies) {
 		manager.UserInput = input
 
 		err := manager.HandleUserInput()
-		if err != nil {
+		if err == ErrExitMenu {
+			break
+		} else if err != nil {
 			fmt.Println("Error:", err)
 		}
 	}

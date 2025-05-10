@@ -12,16 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrExitInstructorMenu = fmt.Errorf("exit instructor menu")
-
 type InstructorMenuState struct {
 	manager                  *cli.CLIMenuStateManager
 	instructorID             uint
 	viewInterviewService     InstructorViewInterviewDetailsService
 	evaluateApplicantService InstructorEvaluateApplicantService
 	applicantReportService   ApplicantReportService
-	viewInterviewMenu        cli.MenuState
-	evaluateApplicantMenu    cli.MenuState
 	interviewController      *controller.InterviewController
 }
 
@@ -33,7 +29,7 @@ func NewInstructorMenuState(
 	applicantReportService ApplicantReportService,
 	interviewController *controller.InterviewController,
 ) *InstructorMenuState {
-	return &InstructorMenuState{
+	instructorMenu := &InstructorMenuState{
 		manager:                  manager,
 		instructorID:             instructorID,
 		viewInterviewService:     viewInterviewService,
@@ -41,6 +37,13 @@ func NewInstructorMenuState(
 		applicantReportService:   applicantReportService,
 		interviewController:      interviewController,
 	}
+	manager.AddMenu("1", NewInstructorViewInterviewDetailsMenuState(manager, instructorID, "all", viewInterviewService, instructorMenu, interviewController))
+	manager.AddMenu("2", NewInstructorViewInterviewDetailsMenuState(manager, instructorID, "Pending", viewInterviewService, instructorMenu, interviewController))
+	manager.AddMenu("3", NewInstructorViewInterviewDetailsMenuState(manager, instructorID, "Evaluated", viewInterviewService, instructorMenu, interviewController))
+	manager.AddMenu("4", NewInstructorEvaluateApplicantMenuState(manager, instructorID, evaluateApplicantService, applicantReportService, instructorMenu))
+	//manager.AddMenu("5", nil)
+
+	return instructorMenu
 }
 
 func (m *InstructorMenuState) Render() {
@@ -58,29 +61,15 @@ func (m *InstructorMenuState) Render() {
 }
 
 func (m *InstructorMenuState) HandleUserInput(input string) error {
-	switch input {
-	case "1":
-		menu := NewInstructorViewInterviewDetailsMenuState(
-			m.manager, m.instructorID, "all", m.viewInterviewService, m, m.interviewController)
-		m.manager.SetState(menu)
-	case "2":
-		menu := NewInstructorViewInterviewDetailsMenuState(
-			m.manager, m.instructorID, "Pending", m.viewInterviewService, m, m.interviewController)
-		m.manager.SetState(menu)
-	case "3":
-		menu := NewInstructorViewInterviewDetailsMenuState(
-			m.manager, m.instructorID, "Evaluated", m.viewInterviewService, m, m.interviewController)
-		m.manager.SetState(menu)
-	case "4":
-		menu := NewInstructorEvaluateApplicantMenuState(
-			m.manager, m.instructorID, m.evaluateApplicantService, m.applicantReportService, m)
-		m.manager.SetState(menu)
-	case "5":
-		return ErrExitInstructorMenu
-	default:
+	if input == "5" {
+		return ErrExitMenu
+	}
+
+	err := m.manager.GoToMenu(input)
+	if err != nil {
 		fmt.Println("Invalid option. Try again.")
 	}
-	return nil
+	return err
 }
 
 func InstructorCLI(
@@ -117,14 +106,15 @@ func InstructorCLI(
 	manager.SetState(menu)
 
 	for {
+
 		manager.Render()
 		var input string
 		fmt.Scanln(&input)
 		manager.UserInput = input
 
 		err := manager.HandleUserInput()
-		if err == ErrExitInstructorMenu {
-			return
+		if err == ErrExitMenu {
+			break
 		} else if err != nil {
 			fmt.Println("Error:", err)
 		}
