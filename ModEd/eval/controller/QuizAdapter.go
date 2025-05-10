@@ -1,8 +1,7 @@
 // MEP-1006
-package adapter
+package controller
 
 import (
-	"ModEd/eval/controller"
 	"ModEd/eval/model"
 
 	"gorm.io/gorm"
@@ -16,8 +15,8 @@ func NewQuizAdapter(quiz *model.Quiz) *QuizAdapter {
 	return &QuizAdapter{quiz: quiz}
 }
 
-func (a *QuizAdapter) ToExamination() *model.Examination {
-	return &model.Examination{
+func (a *QuizAdapter) ToExamination() *model.Exam {
+	return &model.Exam{
 		ExamName:     a.quiz.Title,
 		Description:  a.quiz.Description,
 		ExamStatus:   model.ExamStatus(a.quiz.Status),
@@ -29,7 +28,7 @@ func (a *QuizAdapter) ToExamination() *model.Examination {
 	}
 }
 
-func (a *QuizAdapter) FromExamination(exam *model.Examination) {
+func (a *QuizAdapter) FromExamination(exam *model.Exam) {
 	a.quiz.Title = exam.ExamName
 	a.quiz.Description = exam.Description
 	a.quiz.Status = string(exam.ExamStatus)
@@ -45,19 +44,19 @@ func (a *QuizAdapter) GetQuiz() *model.Quiz {
 }
 
 type QuizControllerAdapter struct {
-	examController     *controller.ExaminationController
-	questionController *controller.QuestionController
+	examController     *ExaminationController
+	questionController *QuestionController
 }
 
 func NewQuizControllerAdapter(db *gorm.DB) *QuizControllerAdapter {
 	return &QuizControllerAdapter{
-		examController:     controller.NewExaminationController(db),
-		questionController: controller.NewQuestionController(db),
+		examController:     NewExaminationController(db),
+		questionController: NewQuestionController(db),
 	}
 }
 
 func (a *QuizControllerAdapter) CreateQuiz(quiz *model.Quiz) (*model.Quiz, error) {
-	exam := &model.Examination{
+	exam := &model.Exam{
 		ExamName:     quiz.Title,
 		Description:  quiz.Description,
 		ExamStatus:   model.ExamStatus(quiz.Status),
@@ -68,17 +67,17 @@ func (a *QuizControllerAdapter) CreateQuiz(quiz *model.Quiz) (*model.Quiz, error
 		Attempt:      uint(quiz.Attempts),
 	}
 
-	examID, err := a.examController.CreateExam(exam)
+	err := a.examController.Insert(exam)
 	if err != nil {
 		return nil, err
 	}
 
-	quiz.ID = examID
+	quiz.ID = exam.ID
 	return quiz, nil
 }
 
 func (a *QuizControllerAdapter) UpdateQuiz(quiz *model.Quiz) (*model.Quiz, error) {
-	exam := &model.Examination{
+	exam := &model.Exam{
 		ExamName:     quiz.Title,
 		Description:  quiz.Description,
 		ExamStatus:   model.ExamStatus(quiz.Status),
@@ -89,25 +88,24 @@ func (a *QuizControllerAdapter) UpdateQuiz(quiz *model.Quiz) (*model.Quiz, error
 		Attempt:      uint(quiz.Attempts),
 	}
 
-	updatedExam, err := a.examController.UpdateExam(exam)
+	err := a.examController.UpdateByID(exam)
 	if err != nil {
 		return nil, err
 	}
 
-	quiz.ID = updatedExam.ID
+	quiz.ID = exam.ID
 	return quiz, nil
 }
 
 func (a *QuizControllerAdapter) DeleteQuiz(id uint) error {
-	exam := &model.Examination{
+	exam := &model.Exam{
 		ExamStatus: model.Hidden,
 	}
-	_, err := a.examController.UpdateExam(exam)
-	return err
+	return a.examController.UpdateByID(exam)
 }
 
 func (a *QuizControllerAdapter) GetQuiz(id uint) (*model.Quiz, error) {
-	exam, err := a.examController.GetExam(id)
+	exam, err := a.examController.RetrieveByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +125,7 @@ func (a *QuizControllerAdapter) GetQuiz(id uint) (*model.Quiz, error) {
 }
 
 func (a *QuizControllerAdapter) GetAllQuizzes() ([]*model.Quiz, error) {
-	exams, err := a.examController.GetAllExams()
+	exams, err := a.examController.List(nil)
 	if err != nil {
 		return nil, err
 	}
