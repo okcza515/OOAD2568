@@ -8,8 +8,6 @@ import (
 	"ModEd/recruit/util"
 	"fmt"
 	"strconv"
-
-	"gorm.io/gorm"
 )
 
 type InstructorMenuState struct {
@@ -73,11 +71,7 @@ func (m *InstructorMenuState) HandleUserInput(input string) error {
 }
 
 func InstructorCLI(
-	viewInterviewService InstructorViewInterviewDetailsService,
-	evaluateApplicantService InstructorEvaluateApplicantService,
-	applicantReportService ApplicantReportService,
-	loginCtrl *controller.LoginController,
-	db *gorm.DB,
+	instructorDeps InstructorDependencies,
 ) {
 	instructorID, err := promptInstructorCredentials()
 	if err != nil {
@@ -94,15 +88,15 @@ func InstructorCLI(
 
 	req := controller.LoginRequest{ID: instructorID}
 	var instructor model.Instructor
-	isValid, err := loginCtrl.ExecuteLogin(req, &instructor)
+	isValid, err := instructorDeps.LoginCtrl.ExecuteLogin(req, &instructor)
 	if err != nil || !isValid {
 		fmt.Println("Login failed:", err)
 		return
 	}
 
 	manager := cli.NewCLIMenuManager()
-	interviewCtrl := controller.NewInterviewController(db)
-	menu := NewInstructorMenuState(manager, instructorIDUint, viewInterviewService, evaluateApplicantService, applicantReportService, interviewCtrl)
+	interviewCtrl := controller.NewInterviewController(instructorDeps.DB)
+	menu := NewInstructorMenuState(manager, instructorIDUint, instructorDeps.ViewInterviewService, instructorDeps.EvaluateApplicantService, instructorDeps.ApplicantReportService, interviewCtrl)
 	manager.SetState(menu)
 
 	for {

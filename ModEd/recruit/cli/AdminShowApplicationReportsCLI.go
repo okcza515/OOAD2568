@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -34,30 +35,6 @@ func (menu *AdminShowApplicationReportMenuState) Render() {
 	fmt.Print("\nSelect an option: ")
 }
 
-// func (menu *AdminShowApplicationReportMenuState) Render() {
-// 	util.ClearScreen()
-// 	fmt.Print("Enter Applicantion Report ID to view the report: ")
-// }
-
-// func (menu *AdminShowApplicationReportMenuState) HandleUserInput(input string) error {
-// 	applicantReportID, err := strconv.ParseUint(input, 10, 32)
-// 	if err != nil {
-// 		fmt.Println("Invalid Applicantion Report ID :", err)
-// 	} else {
-// 		report, err := menu.service.GetApplicationReport(uint(applicantReportID))
-// 		if err != nil {
-// 			fmt.Println("Error retrieving report:", err)
-// 		} else {
-// 			fmt.Println("\n===== Applicant Report =====")
-// 			menu.service.DisplayReport([]*model.ApplicationReport{report})
-// 		}
-// 	}
-
-//		fmt.Println("\nPress Enter to return...")
-//		bufio.NewReader(os.Stdin).ReadBytes('\n')
-//		menu.manager.SetState(menu.parent)
-//		return nil
-//	}
 func (menu *AdminShowApplicationReportMenuState) HandleUserInput(input string) error {
 	switch input {
 	case "1":

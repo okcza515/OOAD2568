@@ -6,9 +6,6 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
-
-	// "strconv"
-	"time"
 )
 
 type InternshipApplicationHandler struct {
@@ -25,63 +22,10 @@ func NewInternshipApplicationHandler(manager *cli.CLIMenuStateManager, wrapper *
 	}
 }
 
-func (handler *InternshipApplicationHandler) handleCreateInternshipApplication() error {
-
-	studentCode := utils.GetUserInput("Enter Student Code: ")
-	if len(studentCode) != 11 {
-		fmt.Println("Student Code cannot be empty.")
-		return fmt.Errorf("invalid input: student code is empty")
-	}
-
-	companyName := utils.GetUserInput("Enter Company Name: ")
-	if companyName == "" {
-		fmt.Println("Company Name cannot be empty.")
-		return fmt.Errorf("invalid input: company name is empty")
-	}
-
-	company, err := handler.wrapper.Company.GetCompanyByName(companyName)
-	if err != nil {
-		fmt.Printf("Error finding company with name '%s': %v\n", companyName, err)
-		return fmt.Errorf("failed to find company: %w", err)
-	}
-
-	// advisorCodeStr := utils.GetUserInput("Enter Advisor Code: ")
-	// advisorCode, err := strconv.Atoi(advisorCodeStr)
-	// if err != nil || advisorCode <= 0 {
-	// 	fmt.Println("Invalid Advisor Code. Please enter a positive integer.")
-	// 	return fmt.Errorf("invalid input: advisor code must be a positive integer")
-	// }
-
-	application := &model.InternshipApplication{
-		TurninDate:            time.Now(),
-		ApprovalAdvisorStatus: model.WAIT,
-		ApprovalCompanyStatus: model.WAIT,
-		// AdvisorCode:           uint(advisorCode),
-		CompanyId:   company.ID,
-		StudentCode: studentCode,
-	}
-
-	err = handler.wrapper.InternshipApplication.RegisterInternshipApplications([]*model.InternshipApplication{application})
-	if err != nil {
-		fmt.Println("Error creating internship application:", err)
-		return fmt.Errorf("failed to register internship application: %w", err)
-	}
-
-	fmt.Println("Internship application created successfully!")
-	return nil
-}
-
-func (handler *InternshipApplicationHandler) ListApplications() error {
-	applications, err := handler.wrapper.InternshipApplication.GetAllInternshipApplications()
-	if err != nil {
-		return fmt.Errorf("failed to retrieve internship applications: %w", err)
-	}
-
-	fmt.Println("Internship Applications:")
-	for _, app := range applications {
-		fmt.Printf("ID: %d, StudentCode: %s, AdvisorStatus: %s, CompanyStatus: %s\n",
-			app.ID, app.StudentCode, app.ApprovalAdvisorStatus, app.ApprovalCompanyStatus)
-	}
+func (handler *InternshipApplicationHandler) handleApplicationByRole() error {
+	application := &model.InternshipApplication{}
+	role := utils.GetUserInput("Role: (student/university/company) :")
+	controller.SubmitApplication(application, role)
 	return nil
 }
 
@@ -112,14 +56,12 @@ func (handler *InternshipApplicationHandler) DeleteApplication() error {
 func (handler *InternshipApplicationHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
-		return handler.handleCreateInternshipApplication()
+		return handler.handleApplicationByRole()
 	case "2":
-		return handler.ListApplications()
-	case "3":
 		return handler.GetApplicationStatus()
-	case "4":
+	case "3":
 		return handler.DeleteApplication()
-	case "back":
+	case "0":
 		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
@@ -131,9 +73,8 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 func (handler *InternshipApplicationHandler) Render() {
 	fmt.Println("\n==== Internship Application Menu ====")
 	fmt.Println("1. Create Internship Application")
-	fmt.Println("2. List All Internship Applications")
-	fmt.Println("3. Get Application Status")
-	fmt.Println("4. Delete Internship Application")
-	fmt.Println("Type 'back' to return to the previous menu")
+	fmt.Println("2. Get Application Status")
+	fmt.Println("3. Delete Internship Application")
+	fmt.Println("0. return to the previous menu")
 	fmt.Print("Enter your choice: ")
 }

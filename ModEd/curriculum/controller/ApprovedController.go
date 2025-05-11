@@ -22,7 +22,7 @@ func NewApprovedController(connector *gorm.DB) *ApprovedController {
 }
 
 func isValidStatus(status model.ApprovedStatus) bool {
-	return status == model.APPROVED || status == model.REJECT
+	return status == model.INTERN_APP_APPROVED || status == model.INTERN_APP_REJECT
 }
 
 func (c *ApprovedController) UpdateAdvisorApprovalStatus(applicationID uint, status model.ApprovedStatus) error {
@@ -56,21 +56,21 @@ func (c *ApprovedController) UpdateCompanyApprovalStatus(applicationID uint, sta
 	return nil
 }
 
-func (ac *ApprovedController) UpdateApprovalStatuses(studentCode string, advisorStatus model.ApprovedStatus, companyStatus model.ApprovedStatus) error {
+func (ac *ApprovedController) UpdateApprovalStatuses(studentCode string, universityStatus model.ApprovedStatus, companyStatus model.ApprovedStatus) error {
 	var application model.InternshipApplication
 
 	if err := ac.Connector.Where("student_code = ?", studentCode).Last(&application).Error; err != nil {
 		return fmt.Errorf("internship application for student '%s' not found", studentCode)
 	}
 
-	application.ApprovalAdvisorStatus = advisorStatus
+	application.ApprovalUniversityStatus = universityStatus
 	application.ApprovalCompanyStatus = companyStatus
 
 	if err := ac.Connector.Save(&application).Error; err != nil {
 		return fmt.Errorf("failed to update application statuses: %w", err)
 	}
 
-	if advisorStatus == model.APPROVED && companyStatus == model.APPROVED {
+	if universityStatus == model.INTERN_APP_APPROVED && companyStatus == model.INTERN_APP_APPROVED {
 		var student model.InternStudent
 		if err := ac.Connector.Where("student_code = ?", studentCode).First(&student).Error; err != nil {
 			return fmt.Errorf("failed to find student: %w", err)

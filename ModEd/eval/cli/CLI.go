@@ -115,6 +115,8 @@ func resetDB() error {
 	_, err = migration.GetInstance().
 		SetPathDB(defaultDBPath).
 		MigrateModule(core.MODULE_QUIZ).
+		MigrateModule(core.MODULE_COMMON).
+		MigrateModule(core.MODULE_INSTRUCTOR).
 		BuildDB()
 
 	if err != nil {

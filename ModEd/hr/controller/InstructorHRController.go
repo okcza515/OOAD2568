@@ -51,7 +51,7 @@ func (c *InstructorHRController) delete(id string) error {
 
 func (c *InstructorHRController) AddInstructor(
 	instructorCode string, firstName string, lastName string, email string, startDate string, department string,
-	gender string, citizenID string, phoneNumber string, salary int, academicPos string, departmentPos string,
+	gender string, citizenID string, phoneNumber string, salary float64, academicPos string, departmentPos string,
 ) error {
 	tm := &util.TransactionManager{DB: c.db}
 	err := tm.Execute(func(tx *gorm.DB) error {

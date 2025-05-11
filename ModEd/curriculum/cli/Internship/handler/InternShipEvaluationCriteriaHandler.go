@@ -77,7 +77,7 @@ func (handler *InternShipEvaluationCriteriaHandler) createEvaluationCriteria() e
 		return nil
 	}
 
-	criteria := &model.InternshipEvaluationCriteria{
+	criteria := &model.InternshipCriteria{
 		Title:                   title,
 		Description:             description,
 		Score:                   score,

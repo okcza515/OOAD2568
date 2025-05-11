@@ -2,7 +2,9 @@
 package curriculum
 
 import (
-	"ModEd/curriculum/cli/curriculum/handler"
+	"ModEd/asset/util"
+	"ModEd/core/cli"
+	"ModEd/curriculum/cli/curriculum/menu"
 	"ModEd/curriculum/controller"
 	"fmt"
 )
@@ -14,19 +16,35 @@ type CurriculumCLIParams struct {
 }
 
 func RunCurriculumModuleCLI(params *CurriculumCLIParams) {
-	handlerParams := &handler.CurriculumCLIParams{
+	manager := cli.NewCLIMenuManager()
+
+	mainMenuParams := &menu.MainMenuParams{
 		CurriculumController: params.CurriculumController,
 		CourseController:     params.CourseController,
 		ClassController:      params.ClassController,
 	}
+	mainMenuState := menu.NewMainMenuState(manager, mainMenuParams)
 
-	mainState := handler.NewMainMenuState(handlerParams)
+	// Set the initial state to the main menu
+	manager.SetState(mainMenuState)
 
-	stateManager := handler.NewMenuStateManager(mainState)
+	// Run the menu loop
+	for {
+		// Display the current menu
+		manager.Render()
 
-	// Run menu state manager
-	err := stateManager.Run()
-	if err != nil {
-		fmt.Println("Error:", err)
+		// Get user input and set in manager
+		manager.UserInput = util.GetCommandInput()
+
+		if manager.UserInput == "exit" {
+			break
+		}
+
+		// Handle the input
+		err := manager.HandleUserInput()
+		if err != nil {
+			fmt.Println("Error:", err)
+			util.PressEnterToContinue()
+		}
 	}
 }
