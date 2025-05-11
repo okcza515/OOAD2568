@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type ApplicantReportMenuState struct {
@@ -44,6 +45,31 @@ func (menu *ApplicantReportMenuState) HandleUserInput(input string) error {
 			fmt.Println("Error retrieving report:", err)
 		} else {
 			menu.reportService.DisplayReport([]*model.ApplicationReport{report})
+
+			if report.ApplicationStatuses == "Accepted" {
+				fmt.Print("\nThis applicant has been accepted. Do you want to confirm acceptance? [y/n]: ")
+				reader := bufio.NewReader(os.Stdin)
+				confirmInput, _ := reader.ReadString('\n')
+				confirmInput = strings.TrimSpace(confirmInput)
+
+				if confirmInput == "y" || confirmInput == "Y" {
+					err := menu.reportService.ConfirmAcceptance(report.ApplicationReportID, model.Confirmed)
+					if err != nil {
+						fmt.Println("Could not confirm acceptance:", err)
+					} else {
+						fmt.Println("Acceptance confirmed successfully.")
+					}
+				} else if confirmInput == "n" || confirmInput == "N" {
+					err = menu.reportService.ConfirmAcceptance(report.ApplicationReportID, model.Withdrawn)
+					if err != nil {
+						fmt.Println("Could not cancel acceptance:", err)
+					} else {
+						fmt.Println("Acceptance cancelled successfully.")
+					}
+				} else {
+					fmt.Println("Invalid input. Please enter 'y' or 'n'.")
+				}
+			}
 		}
 	}
 

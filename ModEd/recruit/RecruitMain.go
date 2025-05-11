@@ -54,6 +54,7 @@ func main() {
 
 	facultyCtrl := common.NewFacultyController(db.DB)
 	departmentCtrl := common.NewDepartmentController(db.DB)
+	studentCtrl := common.NewStudentController(db.DB)
 	interviewCriteriaCtrl := controller.NewInterviewCriteriaCtrl(db.DB)
 
 	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB, interviewController)
@@ -93,6 +94,7 @@ func main() {
 		AdminInterviewService:              cli.NewAdminInterviewService(interviewController),
 		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl, interviewController),
 		AdminScheduleInterviewService:      cli.NewAdminScheduleInterviewService(interviewController, applicationReportCtrl),
+		ConfirmedApplicantToStudentService: cli.NewConfirmedApplicantToStudentService(applicationReportCtrl, studentCtrl),
 	}
 
 	for {

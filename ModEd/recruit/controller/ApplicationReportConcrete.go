@@ -20,10 +20,12 @@ func (r *ApplicationReport) DisplayReport(filteredReport []model.ApplicationRepo
 		fmt.Printf("Applicant ID: %d\n", report.Applicant.ApplicantID)
 		fmt.Printf("Full Name: %s %s\n", report.Applicant.FirstName, report.Applicant.LastName)
 		fmt.Printf("Email: %s\n", report.Applicant.Email)
+		fmt.Printf("Birth Date: %s\n", report.Applicant.BirthDate.Format("2006-01-02"))
 		fmt.Printf("Phone: %s\n", report.Applicant.Phonenumber)
 		fmt.Printf("GPA: %.2f\n", report.Applicant.GPAX)
 
 		fmt.Println("\n==== Application Info ====")
+		fmt.Printf("Program: %s\n", report.Program.String())
 		fmt.Printf("Round: %s\n", report.ApplicationRound.RoundName)
 		roundData, err := report.Applicant.GetRoundInfo()
 		if err != nil {
@@ -53,6 +55,10 @@ func printStatus(status model.ApplicationStatus) {
 		fmt.Printf("\033[1;32mStatus: %s\033[0m\n", status)
 	case model.Rejected:
 		fmt.Printf("\033[1;31mStatus: %s\033[0m\n", status)
+	case model.Confirmed:
+		fmt.Printf("\033[1;35mStatus: %s\033[0m\n", status)
+	case model.Withdrawn:
+		fmt.Printf("\033[0;37mStatus: %s\033[0m\n", status)
 	default:
 		fmt.Printf("Status: %s\n", status)
 	}

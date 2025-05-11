@@ -26,7 +26,7 @@ func NewAdminShowApplicationReportMenuState(
 
 func (menu *AdminShowApplicationReportMenuState) Render() {
 	util.ClearScreen()
-	fmt.Println("\033[1;36mReport Menu\033[0m \n")
+	fmt.Print("\033[1;36mReport Menu\033[0m \n")
 	fmt.Println("[1] View All Application Reports")
 	fmt.Println("[2] View All Interview Reports")
 	fmt.Println("[3] View Application Reports by Status")
