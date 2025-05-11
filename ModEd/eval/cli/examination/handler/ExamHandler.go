@@ -37,7 +37,11 @@ func (u UnknownCommand) Execute() {
 
 func (e ExamHandler) Execute() {
 	menu := NewMenuHandler("Exam Options", true)
-	menu.Add("List Exams", ListExamsCommand{ExamCtrl: e.ExamCtrl})
+	menu.Add("List Published Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Publish"})
+	menu.Add("List Draft Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Draft"})
+	menu.Add("List Closed Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Hidden"})
+	menu.Add("Publish Exam", &PublishExamCommand{ExamCtrl: e.ExamCtrl})
+	menu.Add("Hidden Exam", &HiddenExamCommand{ExamCtrl: e.ExamCtrl})
 	menu.Add("Retrieve Exam", RetrieveExamCommand{ExamCtrl: e.ExamCtrl})
 	menu.Add("Create Exam", CreateExamCommand{ExamCtrl: e.ExamCtrl})
 	menu.Add("Update Exam", &UpdateExamCommand{ExamCtrl: e.ExamCtrl})
@@ -48,26 +52,24 @@ func (e ExamHandler) Execute() {
 	menu.Execute()
 }
 
-type ExamSectionMenuHandler struct {
-	ExamSectionCtrl *controller.ExamSectionController
-}
-
 // Exam Commands
 
-type ListExamsCommand struct {
+type ListExamByStatusCommand struct {
 	ExamCtrl *controller.ExamController
+	status   model.ExamStatus
 }
 
-func (c ListExamsCommand) Execute() {
-	exams, err := c.ExamCtrl.List(nil)
+func (c *ListExamByStatusCommand) Execute() {
+	exams, err := c.ExamCtrl.List(map[string]interface{}{"exam_status": c.status})
 	if err != nil {
-		println("Error listing exams:", err.Error())
+		fmt.Println("Error retrieving exams:", err)
 		return
 	}
 	for _, exam := range exams {
-		println("Exam:", exam.ExamName)
+		fmt.Printf("ID: %d, Name: %s, Status: %s\n", exam.ID, exam.ExamName, exam.ExamStatus)
 	}
 }
+
 
 type RetrieveExamCommand struct {
 	ExamCtrl *controller.ExamController
@@ -183,4 +185,70 @@ func (c *DeleteExamCommand) Execute(){
 		return
 	}
 	fmt.Println("Exam deleted successfully.")
+}
+
+type PublishExamCommand struct {
+	ExamCtrl *controller.ExamController
+}
+
+func (c *PublishExamCommand) Execute() {
+	examID, err := util.PromptUint("Enter Exam ID to publish: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	exam, err := c.ExamCtrl.RetrieveByID(uint(examID))
+	if err != nil {
+		fmt.Println("Error retrieving exam:", err)
+		return
+	}
+	
+	if exam.ExamStatus != "Draft" {
+		fmt.Println("Exam is not in Draft status, cannot publish.")
+		return
+	}
+	if exam.StartDate.IsZero() || exam.EndDate.IsZero() || exam.Attempt == 0 {
+		fmt.Println("Cannot publish: Please set start/end date and attempt > 0.")
+		return
+	}
+	if exam.StartDate.After(exam.EndDate) {
+		fmt.Println("Cannot publish: start date is after end date.")
+		return
+	}
+
+	// อัปเดตสถานะ
+	exam.ExamStatus = model.ExamStatus("Publish")
+
+	err = c.ExamCtrl.UpdateByID(exam)
+	if err != nil {
+		fmt.Println("Error publishing exam:", err)
+		return
+	}
+	fmt.Println("Exam published successfully.")
+}
+
+type HiddenExamCommand struct {
+	ExamCtrl *controller.ExamController
+}
+
+func (c *HiddenExamCommand) Execute() {
+	examID, err := util.PromptUint("Enter Exam ID to hide: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	exam, err := c.ExamCtrl.RetrieveByID(uint(examID))
+	if err != nil {
+		fmt.Println("Error retrieving exam:", err)
+		return
+	}
+
+	exam.ExamStatus = model.ExamStatus("Hidden")
+
+	err = c.ExamCtrl.UpdateByID(exam)
+	if err != nil {
+		fmt.Println("Error hiding exam:", err)
+		return
+	}
+	fmt.Println("Exam hidden successfully.")
 }
