@@ -40,11 +40,14 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controlle
 	manager.AddMenu(string(MENU_HR), state)
 	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl))
 	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager))
+	manager.AddMenu(string(MENU_DATABASE), nil)
 
 	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))
 	instructorHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUCTOR)))
+	databaseHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_DATABASE)))
 
 	handlerContext.AddHandler("1", "Student Menu", studentHandler)
 	handlerContext.AddHandler("2", "Instructor Menu", instructorHandler)
+	handlerContext.AddHandler("3", "Database Menu", databaseHandler)
 	return state
 }

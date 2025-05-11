@@ -1,0 +1,44 @@
+package menu
+
+import (
+	"ModEd/core/cli"
+	"ModEd/core/handler"
+	"fmt"
+)
+
+type DatabaseMenuState struct {
+	manager        *cli.CLIMenuStateManager
+	handlerContext *handler.HandlerContext
+}
+
+func (a *DatabaseMenuState) HandleUserInput(input string) error {
+	err := a.handlerContext.HandleInput(input)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *DatabaseMenuState) Render() {
+	fmt.Println("=== Database Menu ===")
+	a.handlerContext.ShowMenu()
+	fmt.Println("back:\tBack to main menu")
+	fmt.Println("exit:\tExit the program.")
+}
+
+func NewDatabaseMenuState(manager *cli.CLIMenuStateManager) *DatabaseMenuState {
+	handlerContext := handler.NewHandlerContext()
+
+	handlerContext.AddHandler("1", "Migrate database", nil)
+	handlerContext.AddHandler("2", "Pull student data", nil)
+	handlerContext.AddHandler("3", "Pull instructor data", nil)
+
+	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_HR)))
+	handlerContext.AddHandler("0", "Back to main menu", backHandler)
+
+	return &DatabaseMenuState{
+		manager:        manager,
+		handlerContext: handlerContext,
+	}
+}
