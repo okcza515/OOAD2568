@@ -38,9 +38,13 @@ func NewDatabaseMenuState(manager *cli.CLIMenuStateManager, studentCtrl *control
 
 	pullStudentHandler := hrHandler.NewPullStudentHandlerStrategy(studentCtrl)
 	pullInstructorHandler := hrHandler.NewPullInstructorHandlerStrategy(instructorCtrl)
+	importStudentHandler := hrHandler.NewImportHandlerStrategy(studentCtrl.ImportStudents)
+	importInstructorHandler := hrHandler.NewImportHandlerStrategy(instructorCtrl.ImportInstructors)
 
 	handlerContext.AddHandler("1", "Pull student data", pullStudentHandler)
 	handlerContext.AddHandler("2", "Pull instructor data", pullInstructorHandler)
+	handlerContext.AddHandler("3", "Import student data", importStudentHandler)
+	handlerContext.AddHandler("4", "Import instructor data", importInstructorHandler)
 
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_HR)))
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)
