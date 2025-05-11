@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 // Wrote by MEP-1012, MEP-1010
@@ -70,7 +71,15 @@ func (c *HandlerContext) ShowMenu() {
 	for key := range c.menu {
 		keys = append(keys, key)
 	}
-	sort.Strings(keys)
+
+	sort.Slice(keys, func(i, j int) bool {
+		iInt, errI := strconv.Atoi(keys[i])
+		jInt, errJ := strconv.Atoi(keys[j])
+		if errI == nil && errJ == nil {
+			return iInt < jInt
+		}
+		return keys[i] < keys[j]
+	})
 
 	for _, key := range keys {
 		menu := c.menu[key]
