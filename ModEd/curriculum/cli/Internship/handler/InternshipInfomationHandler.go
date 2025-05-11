@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
@@ -8,11 +9,14 @@ import (
 )
 
 type InternshipInformationHandler struct {
+	manager    *cli.CLIMenuStateManager
 	controller *controller.InternshipInformationController
 }
 
-func NewInternshipInformationHandler(controller *controller.InternshipInformationController) *InternshipInformationHandler {
-	return &InternshipInformationHandler{controller: controller}
+func NewInternshipInformationHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipInformationController) *InternshipInformationHandler {
+	return &InternshipInformationHandler{
+		manager:    manager,
+		controller: controller}
 }
 
 func (handler *InternshipInformationHandler) Render() {

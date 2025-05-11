@@ -6,12 +6,16 @@ import (
 )
 
 type InternshipModuleWrapper struct {
-	CurriculumController  *CurriculumController
-	InternshipApplication *InternshipApplicationController
-	Approved              *ApprovedController
-	Company               *CompanyController
-	InternStudent         *InternStudentController
-	GenericImport         *GenericImportController
+	CurriculumController                 *CurriculumController
+	InternshipApplication                *InternshipApplicationController
+	Approved                             *ApprovedController
+	Company                              *CompanyController
+	InternStudent                        *InternStudentController
+	GenericImport                        *GenericImportController
+	InformationController                *InternshipInformationController
+	InternshipMentorController           *InternshipMentorController
+	InternshipResultEvaluationController *InternshipResultEvaluationController
+	InternshipCriteriaController         *InternshipCriteriaController
 }
 
 func NewInternshipModuleWrapper(
@@ -19,10 +23,14 @@ func NewInternshipModuleWrapper(
 	curriculumController CurriculumControllerInterface,
 ) *InternshipModuleWrapper {
 	return &InternshipModuleWrapper{
-		InternshipApplication: NewInternshipApplicationController(db),
-		Approved:              NewApprovedController(db),
-		Company:               NewCompanyController(db),
-		InternStudent:         NewInternStudentController(db),
-		GenericImport:         CreateGenericImportController(db),
+		InternshipApplication:                NewInternshipApplicationController(db),
+		Approved:                             NewApprovedController(db),
+		Company:                              NewCompanyController(db),
+		InternStudent:                        NewInternStudentController(db),
+		GenericImport:                        CreateGenericImportController(db),
+		InformationController:                NewInternshipInformationController(db),
+		InternshipMentorController:           NewInternshipMentorController(db),
+		InternshipResultEvaluationController: NewInternshipResultEvaluationController(db),
+		InternshipCriteriaController:         NewInternshipCriteriaController(db),
 	}
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
@@ -9,14 +10,17 @@ import (
 )
 
 type InternshipResultEvaluationHandler struct {
+	manager                    *cli.CLIMenuStateManager
 	controller                 *controller.InternshipResultEvaluationController
 	InternshipInformation      *controller.InternshipInformationController
 	InternshipCriteria         *controller.InternshipCriteriaController
 	InternshipResultEvaluation *controller.InternshipResultEvaluationController
 }
 
-func NewInternshipResultEvaluationHandler(controller *controller.InternshipResultEvaluationController) *InternshipResultEvaluationHandler {
-	return &InternshipResultEvaluationHandler{controller: controller}
+func NewInternshipResultEvaluationHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipResultEvaluationController) *InternshipResultEvaluationHandler {
+	return &InternshipResultEvaluationHandler{
+		manager:    manager,
+		controller: controller}
 }
 
 func (handler *InternshipResultEvaluationHandler) Render() {
@@ -128,15 +132,41 @@ func (handler *InternshipResultEvaluationHandler) listAllResultEvaluations() err
 }
 
 func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() error {
-	facade := controller.NewInternshipEvaluationFacade(*handler.InternshipInformation, *handler.InternshipCriteria, *handler.InternshipResultEvaluation)
-
-	err := facade.EvaluateInternship("65070501070", map[uint]uint{
-		1: 5,
-		2: 4,
-		3: 5,
-	}, "Great performance overall.")
+	studentCode := utils.GetUserInput("Enter Student Code: ")
+	if studentCode == "" {
+		fmt.Println("Error: Student Code cannot be empty.")
+		return nil
+	}
+	criteriaScores := map[uint]uint{}
+	fmt.Println("Enter Criteria Scores (Enter 0 for Criteria ID to finish):")
+	for {
+		criteriaID := utils.GetUserInputUint("Enter Criteria ID: ")
+		if criteriaID == 0 {
+			break
+		}
+		score := utils.GetUserInputUint("Enter Score for Criteria (1-5): ")
+		if score < 1 || score > 5 {
+			fmt.Println("Invalid score. Please enter a value between 1 and 5.")
+			continue
+		}
+		criteriaScores[criteriaID] = score
+	}
+	comment := utils.GetUserInput("Enter Evaluation Comment: ")
+	if comment == "" {
+		fmt.Println("Error: Comment cannot be empty.")
+		return nil
+	}
+	facade := controller.NewInternshipEvaluationFacade(
+		*handler.InternshipInformation,
+		*handler.InternshipCriteria,
+		*handler.InternshipResultEvaluation,
+	)
+	err := facade.EvaluateInternship(studentCode, criteriaScores, comment)
 	if err != nil {
 		log.Println("Evaluation failed:", err)
+		return err
 	}
+
+	fmt.Println("Evaluation completed successfully!")
 	return nil
 }
