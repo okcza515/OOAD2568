@@ -2,8 +2,10 @@
 package controller
 
 import (
-	"time"
 	model "ModEd/asset/model"
+	"fmt"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -64,8 +66,8 @@ func (c *AcceptanceApprovalController) OnApproved(id uint, approverID uint) erro
 		if err := tx.Model(&model.AcceptanceApproval{}).
 			Where("acceptance_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":       model.AcceptanceStatusApproved,
-				"approver_id":  approverID,
+				"status":        model.AcceptanceStatusApproved,
+				"approver_id":   approverID,
 				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
@@ -91,8 +93,8 @@ func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) erro
 		if err := tx.Model(&model.AcceptanceApproval{}).
 			Where("acceptance_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":       model.AcceptanceStatusRejected,
-				"approver_id":  approverID,
+				"status":        model.AcceptanceStatusRejected,
+				"approver_id":   approverID,
 				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
@@ -111,4 +113,54 @@ func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) erro
 
 		return nil
 	})
+}
+
+func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurementID uint) ([]model.QuotationDetail, error) {
+	var procurement model.Procurement
+	if err := c.db.First(&procurement, procurementID).Error; err != nil {
+		return nil, fmt.Errorf("failed to find procurement: %w", err)
+	}
+
+	var quotations []model.Quotation
+	err := c.db.Preload("Details").
+		Where("tor_id = ?", procurement.TORID).
+		Find(&quotations).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to get quotations: %w", err)
+	}
+
+	var details []model.QuotationDetail
+	for _, quotation := range quotations {
+		details = append(details, quotation.Details...)
+	}
+
+	return details, nil
+}
+
+func (c *AcceptanceApprovalController) PrintQuotationDetailsByProcurement(procurementID uint) {
+	details, err := c.GetQuotationDetailsByProcurement(procurementID)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	if len(details) == 0 {
+		fmt.Println("No quotation details found for Procurement ID:", procurementID)
+		return
+	}
+
+	fmt.Println("Quotation Details for Procurement ID:", procurementID)
+	for _, detail := range details {
+		fmt.Printf("QuotationDetailID: %d\n", detail.QuotationDetailID)
+		fmt.Printf("InstrumentLabel: %s\n", detail.InstrumentLabel)
+		if detail.Description != nil {
+			fmt.Printf("Description: %s\n", *detail.Description)
+		} else {
+			fmt.Println("Description: (none)")
+		}
+		fmt.Printf("CategoryID: %d\n", detail.CategoryID)
+		fmt.Printf("Quantity: %d\n", detail.Quantity)
+		fmt.Printf("Offered Price: %.2f\n", detail.OfferedPrice)
+		fmt.Println("------")
+	}
 }
