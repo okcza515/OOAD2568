@@ -54,6 +54,28 @@ authProvider := authentication.NewDBAuthProvider(db, 24*time.Hour)
 authMiddleware := authentication.NewMiddleware(authProvider)
 ```
 
+### Role-Based Access Control
+
+The package supports configurable role-based access control. You can specify which roles are allowed to access your application:
+
+```go
+// Create authentication CLI
+authCLI := authentication.NewAuthenticationCLI()
+authCLI.SetDB(db)
+
+// Configure allowed roles
+// Only admin users can access the application
+authCLI.SetAllowedRoles([]string{"admin"})
+
+// Or allow multiple roles
+authCLI.SetAllowedRoles([]string{"admin", "user"})
+```
+
+When a user tries to log in:
+- If their role is in the allowed roles list, they can access the application
+- If their role is not allowed, they will receive an "Access denied" message
+- The program will stay at the authentication menu, allowing them to try again or exit
+
 ### User Authentication
 
 ```go
@@ -155,16 +177,18 @@ The package defines several error types:
 - `ErrUserNotFound`: User not found
 - `ErrUserExists`: User already exists
 - `ErrUnauthorized`: User does not have required privileges
+- `ErrRoleNotAllowed`: User's role is not allowed to access the program
 
 ## Security Notes
 
 1. Passwords are hashed using bcrypt before storage
 2. User sessions expire after the configured token expiry age
-3. Role-based access control is implemented through the `RequireAdmin` function
+3. Role-based access control is implemented through the `RequireAdmin` function and configurable role restrictions
 4. User deletion and role updates should be restricted to administrators
 
 ## Implementation Details
 
 - The `DBAuthProvider` uses GORM to interact with the database
 - User records are stored in the `DBUser` table with bcrypt-hashed passwords
-- The authentication menu provides a simple CLI for common user operations 
+- The authentication menu provides a simple CLI for common user operations
+- Role-based access control can be configured per application instance 

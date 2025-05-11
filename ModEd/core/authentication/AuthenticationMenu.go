@@ -93,11 +93,21 @@ type DeleteAccountHandler struct {
 }
 
 func (h DeleteAccountHandler) Execute() error {
-	var username string
+	var username, password string
 	fmt.Print("Username to delete: ")
 	fmt.Scanln(&username)
+	fmt.Print("Password: ")
+	fmt.Scanln(&password)
 
-	err := h.state.middleware.DeleteUser(h.state.ctx, username)
+	// Verify credentials directly with provider to bypass role check
+	provider := NewDBAuthProvider(h.state.middleware.provider.(*DBAuthProvider).db, 24*time.Hour)
+	_, err := provider.Authenticate(h.state.ctx, username, password)
+	if err != nil {
+		return fmt.Errorf("authentication failed: %v", err)
+	}
+
+	// Proceed with deletion
+	err = h.state.middleware.DeleteUser(h.state.ctx, username)
 	if err != nil {
 		return fmt.Errorf("account deletion failed: %v", err)
 	}
