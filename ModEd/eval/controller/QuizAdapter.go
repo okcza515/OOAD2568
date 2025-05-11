@@ -23,7 +23,7 @@ func (a *QuizAdapter) ToExamination() *model.Exam {
 		StartDate:    a.quiz.StartDate,
 		EndDate:      a.quiz.EndDate,
 		InstructorID: a.quiz.InstructorID,
-		CourseID:     a.quiz.CourseID,
+		ClassID:      a.quiz.CourseID,
 		Attempt:      uint(a.quiz.Attempts),
 	}
 }
@@ -35,7 +35,7 @@ func (a *QuizAdapter) FromExamination(exam *model.Exam) {
 	a.quiz.StartDate = exam.StartDate
 	a.quiz.EndDate = exam.EndDate
 	a.quiz.InstructorID = exam.InstructorID
-	a.quiz.CourseID = exam.CourseID
+	a.quiz.CourseID = exam.ClassID
 	a.quiz.Attempts = uint(exam.Attempt)
 }
 
@@ -44,13 +44,13 @@ func (a *QuizAdapter) GetQuiz() *model.Quiz {
 }
 
 type QuizControllerAdapter struct {
-	examController     *ExaminationController
+	examController     *ExamController
 	questionController *QuestionController
 }
 
 func NewQuizControllerAdapter(db *gorm.DB) *QuizControllerAdapter {
 	return &QuizControllerAdapter{
-		examController:     NewExaminationController(db),
+		examController:     NewExamController(db),
 		questionController: NewQuestionController(db),
 	}
 }
@@ -63,7 +63,7 @@ func (a *QuizControllerAdapter) CreateQuiz(quiz *model.Quiz) (*model.Quiz, error
 		StartDate:    quiz.StartDate,
 		EndDate:      quiz.EndDate,
 		InstructorID: quiz.InstructorID,
-		CourseID:     quiz.CourseID,
+		ClassID:      quiz.CourseID,
 		Attempt:      uint(quiz.Attempts),
 	}
 
@@ -84,7 +84,7 @@ func (a *QuizControllerAdapter) UpdateQuiz(quiz *model.Quiz) (*model.Quiz, error
 		StartDate:    quiz.StartDate,
 		EndDate:      quiz.EndDate,
 		InstructorID: quiz.InstructorID,
-		CourseID:     quiz.CourseID,
+		ClassID:      quiz.CourseID,
 		Attempt:      uint(quiz.Attempts),
 	}
 
@@ -117,7 +117,7 @@ func (a *QuizControllerAdapter) GetQuiz(id uint) (*model.Quiz, error) {
 		StartDate:    exam.StartDate,
 		EndDate:      exam.EndDate,
 		InstructorID: exam.InstructorID,
-		CourseID:     exam.CourseID,
+		CourseID:     exam.ClassID,
 		Attempts:     uint(exam.Attempt),
 	}
 
@@ -139,7 +139,7 @@ func (a *QuizControllerAdapter) GetAllQuizzes() ([]*model.Quiz, error) {
 			StartDate:    exam.StartDate,
 			EndDate:      exam.EndDate,
 			InstructorID: exam.InstructorID,
-			CourseID:     exam.CourseID,
+			CourseID:     exam.ClassID,
 			Attempts:     uint(exam.Attempt),
 		}
 		quizzes = append(quizzes, quiz)
