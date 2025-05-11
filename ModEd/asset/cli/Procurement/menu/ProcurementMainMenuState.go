@@ -24,7 +24,7 @@ func NewProcurementMainMenuState(manager *cli.CLIMenuStateManager) *ProcurementM
 
 	// Register Submenus (Commented out for now)
 	manager.AddMenu(string(MENU_INSTRUMENT_REQUEST), NewInstrumentRequestMenuState(manager))
-	// manager.AddMenu(string(MENU_PROCUREMENT), NewProcurementMenuState(manager))
+	manager.AddMenu(string(MENU_PROCUREMENT), NewProcurementMenuState(manager))
 	// manager.AddMenu(string(MENU_ACCEPTANCE), NewAcceptancetestMenuState(manager))
 	manager.AddMenu(string(MENU_APPROVAL), NewApprovalMenuState(manager))
 	// manager.AddMenu(string(MENU_QUOTATION), NewQuotationMenuState(manager))
