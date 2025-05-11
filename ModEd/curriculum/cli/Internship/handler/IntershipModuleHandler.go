@@ -33,9 +33,9 @@ func (handler *InternShipModuleMenuStateHandler) Render() {
 	fmt.Println("1. Load csv data")
 	fmt.Println("2. Application Management")
 	fmt.Println("3. Evaluate Student Performance")
-	fmt.Println("5. Manage Evaluation Criteria")
-	fmt.Println("6. Manage Result Evaluations")
-	fmt.Println("7. Manage Internship Information")
+	fmt.Println("4. Manage Evaluation Criteria")
+	fmt.Println("5. Manage Result Evaluations")
+	fmt.Println("6. Manage Internship Information")
 	fmt.Println("Type 'exit' to quit")
 	fmt.Print("Enter your choice: ")
 }
@@ -52,13 +52,13 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 	case "3":
 		handler.menuManager.SetState(handler.InternshipResultEvaluationHandler)
 		return nil
-	case "5":
+	case "4":
 		handler.menuManager.SetState(handler.InternshipEvaluationCriteriaHandler)
 		return nil
-	case "6":
+	case "5":
 		handler.menuManager.SetState(handler.InternshipResultEvaluationHandler)
 		return nil
-	case "7":
+	case "6":
 		handler.menuManager.SetState(handler.InternshipInformationHandler)
 		return nil
 	case "exit":
