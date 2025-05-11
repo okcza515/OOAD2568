@@ -55,9 +55,9 @@ func (u *UserMenuState) HandleUserInput(input string) error {
 	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
-func UserCLI(applicantRegistrationService ApplicantRegistrationService, applicantReportService ApplicantReportService) {
+func UserCLI(applicantDeps ApplicantDependencies) {
 	manager := cli.NewCLIMenuManager()
-	userMenu := NewUserMenuState(manager, applicantRegistrationService, applicantReportService)
+	userMenu := NewUserMenuState(manager, applicantDeps.ApplicantRegistrationService, applicantDeps.ApplicantReportService)
 
 	manager.SetState(userMenu)
 
