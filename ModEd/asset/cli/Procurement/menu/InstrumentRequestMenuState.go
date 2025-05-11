@@ -39,7 +39,30 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 				WithStatus(model.InstrumentRequestStatusPending).
 				Build()
 
-			for {
+			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)
+			if err != nil {
+				fmt.Println("Failed to create request:", err)
+				util.PressEnterToContinue()
+				return nil
+			}
+
+			fmt.Println("Instrument Request created with ID:", newRequest.InstrumentRequestID)
+
+			newBudgetApproval := controller.NewBudgetApprovalBuilder().
+				WithInstrumentRequestID(newRequest.InstrumentRequestID).
+				WithStatus(model.BudgetStatusPending).
+				Build()
+
+			err1 := facade.BudgetApproval.CreateBudgetRequest(newBudgetApproval)
+			if err1 != nil {
+				fmt.Println("Failed to create budget approval:", err1)
+			} else {
+				fmt.Println("Budget Approval created with ID:", newBudgetApproval.InstrumentRequestID)
+			}
+
+			addMore := util.GetStringInput("\nDo you want to add instruments to this request now? (y/n): ")
+
+			for addMore == "y" || addMore == "Y" {
 				fmt.Println("\n--- Add Instrument ---")
 				label := util.GetStringInput("Enter Instrument Label: ")
 				desc := util.GetStringInput("Enter Description: ")
@@ -56,29 +79,14 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 					WithRequestID(newRequest.InstrumentRequestID).
 					Build()
 
-				newRequest.Instruments = append(newRequest.Instruments, *detail)
-
-				addMore := util.GetStringInput("\nDo you want to add another instrument? (y/n): ")
-				if addMore != "y" && addMore != "Y" {
-					break
+				err := facade.RequestedItem.AddInstrumentToRequest(newRequest.InstrumentRequestID, detail)
+				if err != nil {
+					fmt.Println("Failed to add instrument:", err)
+				} else {
+					fmt.Println("Instrument added to request!")
 				}
-			}
 
-			err := facade.RequestedItem.CreateInstrumentRequest(newRequest)
-			if err != nil {
-				fmt.Println("Failed to create Instrument Request:", err)
-				util.PressEnterToContinue()
-				return err
-			}
-
-			fmt.Println("\nInstrument Request created successfully with ID:", newRequest.InstrumentRequestID)
-
-			fmt.Println("\n--- Request Summary ---")
-			fmt.Printf("Department ID: %d\n", newRequest.DepartmentID)
-			fmt.Println("Instruments:")
-			for _, instrument := range newRequest.Instruments {
-				fmt.Printf("  - Label: %s | Qty: %d | Price: %.2f\n",
-					instrument.InstrumentLabel, instrument.Quantity, instrument.EstimatedPrice)
+				addMore = util.GetStringInput("\nAdd another instrument? (y/n): ")
 			}
 			util.PressEnterToContinue()
 			return nil

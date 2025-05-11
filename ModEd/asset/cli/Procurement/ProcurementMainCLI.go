@@ -1,42 +1,42 @@
 package main
 
-// import (
-// 	"ModEd/asset/cli/Procurement/menu"
-// 	"ModEd/asset/util"
-// 	"ModEd/core/cli"
-// 	"fmt"
-// )
+import (
+	"ModEd/asset/cli/Procurement/menu"
+	"ModEd/asset/util"
+	"ModEd/core/cli"
+	"fmt"
+)
 
-// func main() {
-// 	util.ClearScreen()
-// 	util.PrintBanner()
+func main() {
+	util.ClearScreen()
+	util.PrintBanner()
 
-// 	manager := cli.NewCLIMenuManager()
+	manager := cli.NewCLIMenuManager()
 
-// 	mainMenu := menu.NewProcurementMainMenuState(manager)
-// 	manager.SetState(mainMenu)
+	mainMenu := menu.NewProcurementMainMenuState(manager)
+	manager.SetState(mainMenu)
 
-// 	for {
-// 		util.ClearScreen()
-// 		util.PrintBanner()
+	for {
+		util.ClearScreen()
+		util.PrintBanner()
 
-// 		// Render the current menu
-// 		manager.Render()
+		// Render the current menu
+		manager.Render()
 
-// 		// Get user input
-// 		manager.UserInput = util.GetCommandInput()
-// 		if manager.UserInput == "exit" {
-// 			break
-// 		}
+		// Get user input
+		manager.UserInput = util.GetCommandInput()
+		if manager.UserInput == "exit" {
+			break
+		}
 
-// 		util.ClearScreen()
+		util.ClearScreen()
 
-// 		// Handle the user input
-// 		err := manager.HandleUserInput()
-// 		if err != nil {
-// 			fmt.Println("Error handling user input:", err)
-// 		}
-// 	}
+		// Handle the user input
+		err := manager.HandleUserInput()
+		if err != nil {
+			fmt.Println("Error handling user input:", err)
+		}
+	}
 
-// 	util.PrintByeBye()
-// }
+	util.PrintByeBye()
+}
