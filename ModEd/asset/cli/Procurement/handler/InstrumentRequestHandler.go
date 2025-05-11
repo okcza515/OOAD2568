@@ -61,7 +61,7 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 					WithDescription(desc).
 					WithCategoryID(categoryID).
 					WithEstimatedPrice(estimatedPrice).
-					WithQuantity(quantity).
+					WithQuantity(int(quantity)).
 					WithRequestID(newRequest.InstrumentRequestID).
 					Build()
 
@@ -105,7 +105,7 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 				WithDescription(desc).
 				WithCategoryID(categoryID).
 				WithEstimatedPrice(estimatedPrice).
-				WithQuantity(quantity).
+				WithQuantity(int(quantity)).
 				WithRequestID(requestID).
 				Build()
 
