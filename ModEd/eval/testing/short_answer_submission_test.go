@@ -4,7 +4,6 @@ import (
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
@@ -15,41 +14,10 @@ func setupTestDBShortAnswerSubmission(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
-	err = db.AutoMigrate(&model.Question{}, &model.Examination{}, &model.ExamSection{}, &model.ShortAnswerSubmission{})
+	err = db.AutoMigrate(&model.ShortAnswerSubmission{})
 	assert.NoError(t, err)
 
 	return db
-}
-
-func createTestDataShortAnswerSubmission(db *gorm.DB) (model.ShortAnswerSubmission, uint) {
-	exam := model.Examination{ExamName: "Test Exam", InstructorID: 1, CourseID: 1, Description: "desc", ExamStatus: model.Draft, Attempt: 1, StartDate: time.Now(), EndDate: time.Now()}
-	db.Create(&exam)
-
-	section := model.ExamSection{
-		ExamID:       exam.ID,
-		SectionNo:    1,
-		Description:  "Test Section",
-		NumQuestions: 1,
-		Score:        1,
-	}
-	db.Create(&section)
-
-	question := model.Question{
-		SectionID:      section.ID,
-		Score:          1,
-		ActualQuestion: "What is the capital of France?",
-		QuestionType:   model.ShortAnswerQuestion,
-	}
-	db.Create(&question)
-
-	submission := model.ShortAnswerSubmission{
-		QuestionID:    question.ID,
-		SubmissionID:  1,
-		StudentAnswer: "Paris",
-	}
-	db.Create(&submission)
-
-	return submission, question.ID
 }
 
 func TestCreateShortAnswerSubmission(t *testing.T) {
@@ -62,68 +30,108 @@ func TestCreateShortAnswerSubmission(t *testing.T) {
 		StudentAnswer: "London",
 	}
 
-	id, err := ctrl.CreateShortAnswerSubmission(submission)
+	err := ctrl.Insert(submission)
 	assert.NoError(t, err)
-	assert.NotZero(t, id)
+	assert.NotZero(t, submission.ID, "ID should not be zero after insertion")
+
+	var found model.ShortAnswerSubmission
+	err = db.First(&found, submission.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, submission.QuestionID, found.QuestionID)
+	assert.Equal(t, submission.SubmissionID, found.SubmissionID)
+	assert.Equal(t, submission.StudentAnswer, found.StudentAnswer)
 }
 
 func TestGetAllShortAnswerSubmissions(t *testing.T) {
 	db := setupTestDBShortAnswerSubmission(t)
 	ctrl := controller.NewShortAnswerSubmissionController(db)
 
-	_, _ = createTestDataShortAnswerSubmission(db)
+	submission1 := &model.ShortAnswerSubmission{
+		QuestionID:    1,
+		SubmissionID:  1,
+		StudentAnswer: "London",
+	}
+	submission2 := &model.ShortAnswerSubmission{
+		QuestionID:    2,
+		SubmissionID:  2,
+		StudentAnswer: "Berlin",
+	}
 
-	results, err := ctrl.GetAllShortAnswerSubmissions()
+	err := ctrl.Insert(submission1)
 	assert.NoError(t, err)
-	assert.Len(t, results, 1)
+	assert.NotZero(t, submission1.ID, "ID should not be zero after insertion")
+
+	err = ctrl.Insert(submission2)
+	assert.NoError(t, err)
+	assert.NotZero(t, submission2.ID, "ID should not be zero after insertion")
+
+	submissions, err := ctrl.List(map[string]interface{}{})
+	assert.NoError(t, err)
+	assert.Len(t, submissions, 2)
 }
 
 func TestGetShortAnswerSubmission(t *testing.T) {
 	db := setupTestDBShortAnswerSubmission(t)
 	ctrl := controller.NewShortAnswerSubmissionController(db)
 
-	submission, _ := createTestDataShortAnswerSubmission(db)
+	submission := &model.ShortAnswerSubmission{
+		QuestionID:    1,
+		SubmissionID:  1,
+		StudentAnswer: "London",
+	}
 
-	result, err := ctrl.GetShortAnswerSubmission(submission.ID)
+	err := ctrl.Insert(submission)
 	assert.NoError(t, err)
-	assert.Equal(t, submission.ID, result.ID)
-}
+	assert.NotZero(t, submission.ID, "ID should not be zero after insertion")
 
-func TestGetShortAnswerSubmissionsBySubmissionID(t *testing.T) {
-	db := setupTestDBShortAnswerSubmission(t)
-	ctrl := controller.NewShortAnswerSubmissionController(db)
-
-	submission, _ := createTestDataShortAnswerSubmission(db)
-
-	results, err := ctrl.GetShortAnswerSubmissionsBySubmissionID(1)
+	var found model.ShortAnswerSubmission
+	err = db.First(&found, submission.ID).Error
 	assert.NoError(t, err)
-	assert.Len(t, results, 1)
-	assert.Equal(t, submission.ID, results[0].ID)
+	assert.Equal(t, submission.QuestionID, found.QuestionID)
+	assert.Equal(t, submission.StudentAnswer, found.StudentAnswer)
 }
 
 func TestUpdateShortAnswerSubmission(t *testing.T) {
 	db := setupTestDBShortAnswerSubmission(t)
 	ctrl := controller.NewShortAnswerSubmissionController(db)
 
-	submission, _ := createTestDataShortAnswerSubmission(db)
+	submission := &model.ShortAnswerSubmission{
+		QuestionID:    1,
+		SubmissionID:  1,
+		StudentAnswer: "London",
+	}
+
+	err := ctrl.Insert(submission)
+	assert.NoError(t, err)
+	assert.NotZero(t, submission.ID, "ID should not be zero after insertion")
 
 	submission.StudentAnswer = "Berlin"
-	updated, err := ctrl.UpdateShortAnswerSubmission(&submission)
+	err = ctrl.UpdateByID(submission)
 	assert.NoError(t, err)
-	assert.Equal(t, "Berlin", updated.StudentAnswer)
+
+	var found model.ShortAnswerSubmission
+	err = db.First(&found, submission.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, "Berlin", found.StudentAnswer)
 }
 
 func TestDeleteShortAnswerSubmission(t *testing.T) {
 	db := setupTestDBShortAnswerSubmission(t)
 	ctrl := controller.NewShortAnswerSubmissionController(db)
 
-	submission, _ := createTestDataShortAnswerSubmission(db)
+	submission := &model.ShortAnswerSubmission{
+		QuestionID:    1,
+		SubmissionID:  1,
+		StudentAnswer: "London",
+	}
 
-	deleted, err := ctrl.DeleteShortAnswerSubmission(submission.ID)
+	err := ctrl.Insert(submission)
 	assert.NoError(t, err)
-	assert.Equal(t, submission.ID, deleted.ID)
 
-	var check model.ShortAnswerSubmission
-	err = db.First(&check, submission.ID).Error
+	err = ctrl.DeleteByID(submission.ID)
+	assert.NoError(t, err)
+
+	var found model.ShortAnswerSubmission
+	err = db.First(&found, submission.ID).Error
 	assert.Error(t, err)
 }

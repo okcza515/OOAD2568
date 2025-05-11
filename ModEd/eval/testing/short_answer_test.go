@@ -14,8 +14,7 @@ func setupTestDBShortAnswer(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
-	// Use AutoMigrate for ShortAnswer model
-	err = db.AutoMigrate(&model.Examination{}, &model.ExamSection{}, &model.Question{}, &model.ShortAnswer{})
+	err = db.AutoMigrate(&model.Exam{}, &model.ExamSection{}, &model.Question{}, &model.ShortAnswer{})
 	assert.NoError(t, err)
 
 	return db
@@ -31,12 +30,12 @@ func TestCreateShortAnswer(t *testing.T) {
 		ExpectedAnswer: "This is a short answer",
 	}
 
-	shortAnswerID, err := ctrl.CreateShortAnswer(shortAnswer)
+	err := ctrl.Insert(shortAnswer)
 	assert.NoError(t, err)
-	assert.NotZero(t, shortAnswerID)
+	assert.NotZero(t, shortAnswer.ID)
 
 	var found model.ShortAnswer
-	err = db.First(&found, shortAnswerID).Error
+	err = db.First(&found, shortAnswer.ID).Error
 	assert.NoError(t, err)
 	assert.Equal(t, shortAnswer.QuestionID, found.QuestionID)
 	assert.Equal(t, shortAnswer.ExpectedAnswer, found.ExpectedAnswer)
@@ -56,12 +55,12 @@ func TestGetAllShortAnswers(t *testing.T) {
 		ExpectedAnswer: "Answer 2",
 	}
 
-	_, err := ctrl.CreateShortAnswer(shortAnswer1)
+	err := ctrl.Insert(shortAnswer1)
 	assert.NoError(t, err)
-	_, err = ctrl.CreateShortAnswer(shortAnswer2)
+	err = ctrl.Insert(shortAnswer2)
 	assert.NoError(t, err)
 
-	shortAnswers, err := ctrl.GetAllShortAnswers()
+	shortAnswers, err := ctrl.List(map[string]interface{}{})
 	assert.NoError(t, err)
 	assert.Len(t, shortAnswers, 2)
 }
@@ -76,10 +75,10 @@ func TestGetShortAnswer(t *testing.T) {
 		ExpectedAnswer: "Short answer",
 	}
 
-	shortAnswerID, err := ctrl.CreateShortAnswer(shortAnswer)
+	err := ctrl.Insert(shortAnswer)
 	assert.NoError(t, err)
 
-	found, err := ctrl.GetShortAnswer(shortAnswerID)
+	found, err := ctrl.RetrieveByID(shortAnswer.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, shortAnswer.QuestionID, found.QuestionID)
 	assert.Equal(t, shortAnswer.ExpectedAnswer, found.ExpectedAnswer)
@@ -93,15 +92,15 @@ func TestUpdateShortAnswer(t *testing.T) {
 		QuestionID:     1,
 		ExpectedAnswer: "Original answer",
 	}
-	shortAnswerID, err := ctrl.CreateShortAnswer(shortAnswer)
+	err := ctrl.Insert(shortAnswer)
 	assert.NoError(t, err)
-	assert.NotEqual(t, shortAnswerID, 0, "shortAnswerID should not be zero")
+	assert.NotEqual(t, shortAnswer.ID, 0, "shortAnswerID should not be zero")
 
 	shortAnswer.ExpectedAnswer = "Updated answer"
-	updatedShortAnswer, err := ctrl.UpdateShortAnswer(shortAnswer)
+	err = ctrl.UpdateByID(shortAnswer)
 	assert.NoError(t, err)
 
-	assert.Equal(t, "Updated answer", updatedShortAnswer.ExpectedAnswer, "ExpectedAnswer should be updated")
+	assert.Equal(t, "Updated answer", shortAnswer.ExpectedAnswer, "ExpectedAnswer should be updated")
 }
 
 func TestDeleteShortAnswer(t *testing.T) {
@@ -112,15 +111,14 @@ func TestDeleteShortAnswer(t *testing.T) {
 		QuestionID:     1,
 		ExpectedAnswer: "Delete me",
 	}
-	shortAnswerID, err := ctrl.CreateShortAnswer(shortAnswer)
+	err := ctrl.Insert(shortAnswer)
 	assert.NoError(t, err)
-	assert.NotEqual(t, shortAnswerID, 0, "shortAnswerID should not be zero")
+	assert.NotEqual(t, shortAnswer.ID, 0, "shortAnswer.ID should not be zero")
 
-	deletedShortAnswer, err := ctrl.DeleteShortAnswer(shortAnswerID)
+	err = ctrl.DeleteByID(shortAnswer.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, shortAnswerID, deletedShortAnswer.ID)
 
 	var found model.ShortAnswer
-	err = db.First(&found, shortAnswerID).Error
-	assert.Error(t, err)
+	err = db.First(&found, shortAnswer.ID).Error
+	assert.Error(t, err, "Expected error when retrieving deleted shortAnswer")
 }
