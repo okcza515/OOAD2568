@@ -96,6 +96,16 @@ func (fv *FieldValidator) IsDateTime() *FieldValidator {
 	return fv
 }
 
+func (fv *FieldValidator) Length(length int) *FieldValidator {
+	fv.rules = append(fv.rules, func(val string) string {
+		if len(val) != length {
+			return fmt.Sprintf("field '%s' ('%s') must have a length of %d", fv.fieldName, val, length)
+		}
+		return ""
+	})
+	return fv
+}
+
 func (fv *FieldValidator) IsPhoneNumber() *FieldValidator {
 	fv.rules = append(fv.rules, func(val string) string {
 		if !fv.chain.validator.IsPhoneNumberValid(val) {
