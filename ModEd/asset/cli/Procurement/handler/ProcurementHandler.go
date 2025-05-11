@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/controller"
 	procurement "ModEd/asset/controller"
 	model "ModEd/asset/model"
 	util "ModEd/asset/util"
@@ -9,7 +10,7 @@ import (
 	"time"
 )
 
-func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
+func ProcurementHandler(facade *controller.ProcurementControllerFacade) {
 	inputBuffer := ""
 
 	for inputBuffer != "back" {
@@ -32,14 +33,14 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			timeline := util.GetStringInput("Enter TOR Timeline: ")
 			committee := util.GetStringInput("Enter TOR Committee: ")
 
-			tor := &model.TOR{
-				InstrumentRequestID: instrumentRequestID,
-				Scope:               scope,
-				Deliverables:        deliverables,
-				Timeline:            timeline,
-				Committee:           committee,
-				CreatedAt:           time.Now(),
-			}
+			tor := controller.NewTORBuilder().
+				WithInstrumentRequestID(instrumentRequestID).
+				WithScope(scope).
+				WithDeliverables(deliverables).
+				WithTimeline(timeline).
+				WithCommittee(committee).
+				WithCreatedAt(time.Now()).
+				Build()
 
 			validator := validation.NewModelValidator()
 			if err := validator.ModelValidate(tor); err != nil {
@@ -54,11 +55,11 @@ func ProcurementHandler(facade *procurement.ProcurementControllerFacade) {
 			} else {
 				fmt.Println("TOR created successfully with ID:", tor.TORID)
 			}
-			newProcurement := &model.Procurement{
-				TORID:     tor.TORID,
-				Status:    model.ProcurementStatusPending,
-				CreatedAt: time.Now(),
-			}
+			newProcurement := controller.NewProcurementBuilder().
+				WithTOR(tor).
+				WithStatus(model.ProcurementStatusPending).
+				WithCreatedAt(time.Now()).
+				Build()
 			err = facade.Procurement.CreateProcurement(newProcurement)
 			if err != nil {
 				fmt.Println("Failed to create Procurement:", err)
@@ -191,12 +192,12 @@ func ListAllProcurements(facade *procurement.ProcurementControllerFacade) {
 			if !procurement.CreatedAt.IsZero() {
 				createdAt = procurement.CreatedAt.Format("2006-01-02 15:04:05")
 			}
-			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | CreatedAt: %s\n", 
+			fmt.Printf("ID: %d | ApproverID: %s | Status: %s | CreatedAt: %s\n",
 				procurement.ProcurementID, approverID, procurement.Status, createdAt)
 		}
 	}
 }
-	
+
 func showApprovedRequests(requests *[]model.InstrumentRequest, err error) bool {
 	if err != nil {
 		fmt.Println("Failed to retrieve requests:", err)

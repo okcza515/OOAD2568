@@ -4,44 +4,61 @@
 package controller
 
 import (
-	"ModEd/eval/model"
+	"ModEd/core"
+	evalModel "ModEd/eval/model"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type EvaluationController struct {
-	evaluations []*model.Evaluation
-	csvPath     string
+	*core.BaseController[evalModel.Evaluation]
+	db *gorm.DB
 }
 
-func NewEvaluationController(evals []*model.Evaluation, csvPath string) *EvaluationController {
+func NewEvaluationController(db *gorm.DB) *EvaluationController {
 	return &EvaluationController{
-		evaluations: evals,
-		csvPath:     csvPath,
+		db:             db,
+		BaseController: core.NewBaseController[evalModel.Evaluation](db),
 	}
 }
 
-func (ec *EvaluationController) EvaluateAssessment(studentCode, instructorCode string, assessmentID uint, assessmentType string, score uint, comment string) {
-	for _, e := range ec.evaluations {
-		if e.StudentCode == studentCode && e.AssessmentID == assessmentID && e.AssessmentType == assessmentType {
-			e.Score = score
-			e.Comment = comment
-			e.EvaluatedAt = time.Now()
-			model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
-			return
-		}
-	}
-	ec.evaluations = append(ec.evaluations, &model.Evaluation{
+// CreateEvaluation creates a new evaluation
+func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assessmentId uint, score uint, comment string) error {
+	newEvaluation := evalModel.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssessmentID:   assessmentID,
-		AssessmentType: assessmentType,
+		AssessmentId:   assessmentId,
 		Score:          score,
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
-	})
-	model.SaveEvaluationsToCSV(ec.csvPath, ec.evaluations)
+	}
+	return ec.Insert(newEvaluation)
 }
 
-func (ec *EvaluationController) ListEvaluations() []*model.Evaluation {
-	return ec.evaluations
+// ViewAllEvaluations returns all evaluations with related data
+func (ec *EvaluationController) ViewAllEvaluations() ([]evalModel.Evaluation, error) {
+	return ec.List(nil, "Student", "Instructor", "Assessment")
+}
+
+// ViewEvaluationByID returns evaluation by student ID
+func (ec *EvaluationController) ViewEvaluationByID(studentCode string) ([]evalModel.Evaluation, error) {
+	condition := map[string]interface{}{
+		"student_code": studentCode,
+	}
+	return ec.List(condition, "Student", "Instructor", "Assessment")
+}
+
+// UpdateEvaluation updates an existing evaluation
+func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment string) error {
+	evaluation, err := ec.RetrieveByID(id, "Student", "Instructor", "Assessment")
+	if err != nil {
+		return err
+	}
+
+	evaluation.Score = score
+	evaluation.Comment = comment
+	evaluation.EvaluatedAt = time.Now()
+
+	return ec.UpdateByID(evaluation)
 }

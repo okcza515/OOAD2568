@@ -40,7 +40,7 @@ func (menu *ProgressMenuStateHandler) Render() {
 	menu.handler.AddHandler("2", "Get progress by student ID.", handler.FuncStrategy{Action: menu.GetProgressByStudentCode})
 	menu.handler.AddHandler("3", "Get progress by submission status.", handler.FuncStrategy{Action: menu.GetProgressByStatus})
 	menu.handler.AddHandler("4", "Get Assessment submit count.", handler.FuncStrategy{Action: menu.GetAssessmentSubmitCount})
-
+	menu.handler.AddBackHandler(menu.backhandler)
 	menu.handler.ShowMenu()
 }
 
