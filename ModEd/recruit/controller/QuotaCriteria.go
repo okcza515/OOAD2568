@@ -23,28 +23,16 @@ func (c *QuotaCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
 		}
 	}
 
-	// Check if Quota Category is provided
 	if quotaCategory == "" {
 		return false
 	}
 
-	// Check minimum GPAX
-	if applicant.GPAX < 2.5 {
+	if applicant.GPAX < 3 {
 		return false
 	}
 
-	// ✅ Check minimum English score
-	if applicant.EnglishGrade < 50 {
-		return false
-	}
-
-	// ✅ Check minimum Math score
-	if applicant.MathGrade < 50 {
-		return false
-	}
-
-	// ✅ Check minimum Science score
-	if applicant.ScienceGrade < 50 {
+	
+	if applicant.EnglishGrade < 3.5 || applicant.MathGrade < 3.5 || applicant.ScienceGrade < 3.5  {
 		return false
 	}
 
