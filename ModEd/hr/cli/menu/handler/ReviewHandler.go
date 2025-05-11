@@ -9,13 +9,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type ControllerReviewFunc func(tx *gorm.DB, requestID string, action string, reason string) error
+type ControllerReviewFunc func(requestID string, action string, reason string) error
 
-func HandleReviewRequest(
-	tx *gorm.DB,
-	entityType string, 
-	controllerFunc ControllerReviewFunc,
-) error {
+type ReviewHandler struct {
+	ControllerFunc ControllerReviewFunc
+}
+
+func NewReviewHandlerStrategy(tx *gorm.DB, entityType string, controllerFunc ControllerReviewFunc) *ReviewHandler {
+	return &ReviewHandler{ ControllerFunc: controllerFunc,}
+}
+
+func (handler ReviewHandler) Execute() error {
 	validator := validation.NewValidationChain(core.GetUserInput)
 
 	requestID := validator.Field(validation.FieldConfig{Name: "id", Prompt: "Enter Request ID:"}).Required().GetInput()
@@ -25,11 +29,12 @@ func HandleReviewRequest(
 	if strings.ToLower(action) == "reject" {
 		reason = validator.Field(validation.FieldConfig{Name: "reason", Prompt: "Enter rejection reason:"}).Required().GetInput()
 	}
-	err := controllerFunc(tx, requestID, strings.ToLower(action), reason)
+
+	err := handler.ControllerFunc(requestID, strings.ToLower(action), reason)
 	if err != nil {
-		return fmt.Errorf("failed to review %s request: %v", entityType, err)
+		return fmt.Errorf("failed to review %s request: %w", err)
 	}
 
-	fmt.Printf("%s request '%s' %sed successfully!\n", entityType, requestID, action)
+	fmt.Printf("%s request '%s' %sed successfully!\n", requestID, action)
 	return nil
 }
