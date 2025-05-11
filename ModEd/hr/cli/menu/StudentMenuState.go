@@ -30,7 +30,12 @@ func (a *StudentMenuState) Render() {
 	a.handlerContext.ShowMenu()
 }
 
-func NewStudentMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController, leaveStudentCtrl *controller.LeaveStudentHRController) *StudentMenuState {
+func NewStudentMenuState(
+	manager *cli.CLIMenuStateManager,
+	studentCtrl *controller.StudentHRController,
+	leaveStudentCtrl *controller.LeaveStudentHRController,
+	resignStudentCtrl *controller.ResignationStudentHRController,
+) *StudentMenuState {
 	handlerContext := coreHandler.NewHandlerContext()
 
 	// Pass the controller to your strategy/handler
@@ -39,13 +44,14 @@ func NewStudentMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controll
 	deleteStudentHandler := hrHandler.NewDeleteStudentStrategy(studentCtrl)
 	updateStudentInfoHandler := hrHandler.NewUpdateStudentInfoStrategy(studentCtrl)
 	requestStudentLeaveHandler := hrHandler.NewRequestStudentLeaveStrategy(leaveStudentCtrl)
+	requestStudentResignHandler := hrHandler.NewRequestStudentResignationStrategy(resignStudentCtrl)
 
 	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
 	handlerContext.AddHandler("2", "List student", listStudentHandler)
 	handlerContext.AddHandler("3", "Update student Info", updateStudentInfoHandler)
 	handlerContext.AddHandler("4", "Delete student", deleteStudentHandler)
 	handlerContext.AddHandler("5", "Request leave", requestStudentLeaveHandler)
-	handlerContext.AddHandler("6", "Request resignation", nil)
+	handlerContext.AddHandler("6", "Request resignation", requestStudentResignHandler)
 	handlerContext.AddHandler("7", "Review leave", nil)
 	handlerContext.AddHandler("8", "Review resignation", nil)
 
