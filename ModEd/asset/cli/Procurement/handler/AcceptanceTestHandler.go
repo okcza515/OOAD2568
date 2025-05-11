@@ -57,9 +57,9 @@ func AcceptanceTestHandler(facade *controller.ProcurementControllerFacade) {
 
 			WaitForEnter()
 		case "2":
-			// caid := util.GetUintInput("Enter category ID: ")
-			// facade.AcceptanceTest.PrintCategoriesByIDs(caid)
-
+			fmt.Println("View Quotation Details by Procurement ID")
+			PID := util.GetUintInput("Enter procurement ID: ")
+			facade.Acceptance.PrintQuotationDetailsByProcurement(PID)
 			WaitForEnter()
 		}
 	}
@@ -69,42 +69,8 @@ func printAcceptanceTestOptions() {
 	fmt.Println(":/Procurement/Main")
 	fmt.Println()
 	fmt.Println("--Acceptance Functions--")
-	fmt.Println("  1:\tList All Acceptance Requests")
+	fmt.Println("  1:\tList All Acceptance Requests and Quotation Details")
 	fmt.Println("  2:\tAcceptance test")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
-
-// func PrintCategoriesByTOR(torID uint, facade *controller.ProcurementControllerFacade) error {
-// 	details, err := facade.AcceptanceTest.GetQuotationDetailsByTOR(torID)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	categorySet := make(map[uint]bool)
-// 	for _, d := range details {
-// 		categorySet[d.CategoryID] = true
-// 	}
-
-// 	var categoryIDs []uint
-// 	for id := range categorySet {
-// 		categoryIDs = append(categoryIDs, id)
-// 	}
-
-// 	categories, err := facade.AcceptanceTest.GetCategoriesByIDs(categoryIDs)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	for _, category := range categories {
-// 		fmt.Println("Category Name:", category.CategoryName)
-// 		if category.Description != nil {
-// 			fmt.Println("Description:", *category.Description)
-// 		} else {
-// 			fmt.Println("Description: (none)")
-// 		}
-// 		fmt.Println("-----")
-// 	}
-
-// 	return nil
-// }
