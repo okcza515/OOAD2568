@@ -75,17 +75,79 @@ func (controller *PermanentBookingController) RetrieveByID(id uint, preloads ...
 }
 
 func (controller *PermanentBookingController) UpdateByID(schedule model.PermanentSchedule) error {
-	_, err := controller.RetrieveByID(schedule.ID)
+	existingSchedule, err := controller.RetrieveByID(schedule.ID)
 	if err != nil {
 		return err
 	}
 
-	err = controller.baseController.UpdateByID(schedule)
-	if err != nil {
+	tx := controller.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	updateData := map[string]interface{}{
+		"faculty_id":     schedule.FacultyID,
+		"department_id":  schedule.DepartmentID,
+		"programtype_id": schedule.ProgramtypeID,
+		"course_id":      schedule.CourseId,
+		"class_id":       schedule.ClassId,
+	}
+
+	if err := tx.Model(&model.PermanentSchedule{}).Where("id = ?", existingSchedule.ID).Updates(updateData).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return nil
+	if schedule.TimeTable.StartDate.Unix() > 0 || schedule.TimeTable.EndDate.Unix() > 0 || schedule.TimeTable.RoomID > 0 {
+		timeTableUpdateData := map[string]interface{}{}
+
+		if !schedule.TimeTable.StartDate.IsZero() {
+			timeTableUpdateData["start_date"] = schedule.TimeTable.StartDate
+		}
+
+		if !schedule.TimeTable.EndDate.IsZero() {
+			timeTableUpdateData["end_date"] = schedule.TimeTable.EndDate
+		}
+
+		if schedule.TimeTable.RoomID > 0 {
+			var startDate, endDate time.Time
+			if !schedule.TimeTable.StartDate.IsZero() {
+				startDate = schedule.TimeTable.StartDate
+			} else {
+				startDate = existingSchedule.TimeTable.StartDate
+			}
+
+			if !schedule.TimeTable.EndDate.IsZero() {
+				endDate = schedule.TimeTable.EndDate
+			} else {
+				endDate = existingSchedule.TimeTable.EndDate
+			}
+
+			if schedule.TimeTable.RoomID != existingSchedule.TimeTable.RoomID {
+				isAvailable, err := controller.CheckRoomAvailability(schedule.TimeTable.RoomID, startDate, endDate)
+				if err != nil {
+					tx.Rollback()
+					return err
+				}
+
+				if !isAvailable {
+					tx.Rollback()
+					return errors.New("room is not available during the requested time period")
+				}
+
+				timeTableUpdateData["room_id"] = schedule.TimeTable.RoomID
+			}
+		}
+
+		if len(timeTableUpdateData) > 0 {
+			if err := tx.Model(&model.TimeTable{}).Where("id = ?", existingSchedule.TimeTableID).Updates(timeTableUpdateData).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	return tx.Commit().Error
 }
 
 func (controller *PermanentBookingController) DeleteByID(id uint) error {
