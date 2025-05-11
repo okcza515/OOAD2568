@@ -1,177 +1,18 @@
+// Wrote by MEP-1001
 package authentication
 
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-type AuthMenuItemHandler interface {
-	ExecuteItem() error
-}
-
-type AuthMenuHandler struct {
-	itemHandlerMap map[string]AuthMenuItemHandler
-	itemLabelMap   map[string]string
-	items          []string
-}
-
-func NewAuthMenuHandler() *AuthMenuHandler {
-	return &AuthMenuHandler{
-		itemHandlerMap: make(map[string]AuthMenuItemHandler),
-		itemLabelMap:   make(map[string]string),
-		items:          []string{},
-	}
-}
-
-func (handler *AuthMenuHandler) AppendItem(key string, label string, itemHandler AuthMenuItemHandler) {
-	handler.itemHandlerMap[key] = itemHandler
-	handler.itemLabelMap[key] = label
-	handler.items = append(handler.items, key)
-}
-
-func (handler *AuthMenuHandler) Execute(selectedMenu string) error {
-	// Convert numeric input to menu key
-	if index, err := strconv.Atoi(selectedMenu); err == nil {
-		if index > 0 && index <= len(handler.items) {
-			selectedMenu = handler.items[index-1]
-		}
-	}
-
-	if itemHandler, exists := handler.itemHandlerMap[selectedMenu]; exists {
-		return itemHandler.ExecuteItem()
-	}
-	return fmt.Errorf("invalid option")
-}
-
-func (handler *AuthMenuHandler) DisplayMenu() {
-	fmt.Println("\n=== Authentication Menu ===")
-	for i, key := range handler.items {
-		fmt.Printf("%d. %s\n", i+1, handler.itemLabelMap[key])
-	}
-	fmt.Print("Select an option: ")
-}
-
-func (handler *AuthMenuHandler) GetMenuChoice() string {
-	var choiceIndex int
-	fmt.Scan(&choiceIndex)
-
-	if choiceIndex > 0 && choiceIndex <= len(handler.items) {
-		return handler.items[choiceIndex-1]
-	}
-
-	return ""
-}
-
 type AuthMenuState struct {
 	middleware *Middleware
 	ctx        context.Context
-	handler    *AuthMenuHandler
-}
-
-type LoginHandler struct {
-	state *AuthMenuState
-}
-
-func (h *LoginHandler) ExecuteItem() error {
-	var username, password string
-	fmt.Print("Username: ")
-	fmt.Scanln(&username)
-	fmt.Print("Password: ")
-	fmt.Scanln(&password)
-
-	userCtx, err := h.state.middleware.Authenticate(h.state.ctx, username, password)
-	if err != nil {
-		return fmt.Errorf("login failed: %v", err)
-	}
-
-	h.state.ctx = WithContext(context.Background(), userCtx)
-	fmt.Printf("Login successful! Welcome %s (Role: %s)\n", userCtx.Username, userCtx.Role)
-
-	return fmt.Errorf("login_success")
-}
-
-type RegisterHandler struct {
-	state *AuthMenuState
-}
-
-func (h *RegisterHandler) ExecuteItem() error {
-	var username, password, role string
-	fmt.Print("Username: ")
-	fmt.Scanln(&username)
-	fmt.Print("Password: ")
-	fmt.Scanln(&password)
-	fmt.Print("Role (user/admin): ")
-	fmt.Scanln(&role)
-
-	err := h.state.middleware.CreateUser(h.state.ctx, username, password, role)
-	if err != nil {
-		return fmt.Errorf("registration failed: %v", err)
-	}
-
-	fmt.Println("Registration successful!")
-	return nil
-}
-
-type ChangePasswordHandler struct {
-	state *AuthMenuState
-}
-
-func (h *ChangePasswordHandler) ExecuteItem() error {
-	var username, oldPass, newPass string
-	fmt.Print("Username: ")
-	fmt.Scanln(&username)
-	fmt.Print("Current Password: ")
-	fmt.Scanln(&oldPass)
-	fmt.Print("New Password: ")
-	fmt.Scanln(&newPass)
-
-	err := h.state.middleware.UpdatePassword(h.state.ctx, username, oldPass, newPass)
-	if err != nil {
-		return fmt.Errorf("password change failed: %v", err)
-	}
-
-	fmt.Println("Password changed successfully!")
-	return nil
-}
-
-type DeleteAccountHandler struct {
-	state *AuthMenuState
-}
-
-func (h *DeleteAccountHandler) ExecuteItem() error {
-	var username string
-	fmt.Print("Username to delete: ")
-	fmt.Scanln(&username)
-
-	err := h.state.middleware.DeleteUser(h.state.ctx, username)
-	if err != nil {
-		return fmt.Errorf("account deletion failed: %v", err)
-	}
-
-	fmt.Println("Account deleted successfully!")
-	return nil
-}
-
-type ExitHandler struct{}
-
-func (h *ExitHandler) ExecuteItem() error {
-	return fmt.Errorf("exit")
-}
-
-func (a *AuthMenuState) Render() {
-	a.handler.DisplayMenu()
-}
-
-func (a *AuthMenuState) HandleUserInput(input string) error {
-	return a.handler.Execute(input)
-}
-
-func (a *AuthMenuState) GetContext() context.Context {
-	return a.ctx
+	handlers   map[string]func() error
 }
 
 func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
@@ -180,15 +21,101 @@ func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
 	state := &AuthMenuState{
 		middleware: middleware,
 		ctx:        context.Background(),
-		handler:    NewAuthMenuHandler(),
+		handlers:   make(map[string]func() error),
 	}
 
 	// Initialize menu items
-	state.handler.AppendItem("login", "Login", &LoginHandler{state: state})
-	state.handler.AppendItem("register", "Register", &RegisterHandler{state: state})
-	state.handler.AppendItem("changepass", "Change Password", &ChangePasswordHandler{state: state})
-	state.handler.AppendItem("delete", "Delete Account", &DeleteAccountHandler{state: state})
-	state.handler.AppendItem("exit", "Exit", &ExitHandler{})
+	state.handlers["1"] = func() error {
+		var username, password string
+		fmt.Print("Username: ")
+		fmt.Scanln(&username)
+		fmt.Print("Password: ")
+		fmt.Scanln(&password)
+
+		userCtx, err := state.middleware.Authenticate(state.ctx, username, password)
+		if err != nil {
+			return fmt.Errorf("login failed: %v", err)
+		}
+
+		state.ctx = WithContext(context.Background(), userCtx)
+		fmt.Printf("Login successful! Welcome %s (Role: %s)\n", userCtx.Username, userCtx.Role)
+		return fmt.Errorf("login_success")
+	}
+
+	state.handlers["2"] = func() error {
+		var username, password, role string
+		fmt.Print("Username: ")
+		fmt.Scanln(&username)
+		fmt.Print("Password: ")
+		fmt.Scanln(&password)
+		fmt.Print("Role (user/admin): ")
+		fmt.Scanln(&role)
+
+		err := state.middleware.CreateUser(state.ctx, username, password, role)
+		if err != nil {
+			return fmt.Errorf("registration failed: %v", err)
+		}
+
+		fmt.Println("Registration successful!")
+		return nil
+	}
+
+	state.handlers["3"] = func() error {
+		var username, oldPass, newPass string
+		fmt.Print("Username: ")
+		fmt.Scanln(&username)
+		fmt.Print("Current Password: ")
+		fmt.Scanln(&oldPass)
+		fmt.Print("New Password: ")
+		fmt.Scanln(&newPass)
+
+		err := state.middleware.UpdatePassword(state.ctx, username, oldPass, newPass)
+		if err != nil {
+			return fmt.Errorf("password change failed: %v", err)
+		}
+
+		fmt.Println("Password changed successfully!")
+		return nil
+	}
+
+	state.handlers["4"] = func() error {
+		var username string
+		fmt.Print("Username to delete: ")
+		fmt.Scanln(&username)
+
+		err := state.middleware.DeleteUser(state.ctx, username)
+		if err != nil {
+			return fmt.Errorf("account deletion failed: %v", err)
+		}
+
+		fmt.Println("Account deleted successfully!")
+		return nil
+	}
+
+	state.handlers["exit"] = func() error {
+		return fmt.Errorf("exit")
+	}
 
 	return state
+}
+
+func (a *AuthMenuState) Render() {
+	fmt.Println("\n=== Authentication Menu ===")
+	fmt.Println("1. Login")
+	fmt.Println("2. Register")
+	fmt.Println("3. Change Password")
+	fmt.Println("4. Delete Account")
+	fmt.Println("exit. Exit")
+	fmt.Print("Select an option: ")
+}
+
+func (a *AuthMenuState) HandleUserInput(input string) error {
+	if handler, exists := a.handlers[input]; exists {
+		return handler()
+	}
+	return fmt.Errorf("invalid option")
+}
+
+func (a *AuthMenuState) GetContext() context.Context {
+	return a.ctx
 }
