@@ -31,6 +31,10 @@ func (h LoginHandler) Execute() error {
 
 	userCtx, err := h.state.middleware.Authenticate(h.state.ctx, username, password)
 	if err != nil {
+		if err == ErrRoleNotAllowed {
+			fmt.Println("Access denied: Your role is not allowed to use this program")
+			return nil
+		}
 		return fmt.Errorf("login failed: %v", err)
 	}
 

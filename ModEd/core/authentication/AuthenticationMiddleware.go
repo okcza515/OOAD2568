@@ -12,6 +12,7 @@ var (
 	ErrUserNotFound           = errors.New("user not found")
 	ErrUserExists             = errors.New("user already exists")
 	ErrUnauthorized           = errors.New("unauthorized: requires admin role")
+	ErrRoleNotAllowed         = errors.New("this role is not allowed to access the program")
 )
 
 type UserContext struct {
@@ -39,17 +40,36 @@ type AuthenticationProvider interface {
 }
 
 type Middleware struct {
-	provider AuthenticationProvider
+	provider     AuthenticationProvider
+	allowedRoles map[string]bool
 }
 
 func NewMiddleware(provider AuthenticationProvider) *Middleware {
 	return &Middleware{
-		provider: provider,
+		provider:     provider,
+		allowedRoles: make(map[string]bool),
+	}
+}
+
+// SetAllowedRoles sets which roles are allowed to access the program
+func (m *Middleware) SetAllowedRoles(roles []string) {
+	m.allowedRoles = make(map[string]bool)
+	for _, role := range roles {
+		m.allowedRoles[role] = true
 	}
 }
 
 func (m *Middleware) Authenticate(ctx context.Context, username, password string) (*UserContext, error) {
-	return m.provider.Authenticate(ctx, username, password)
+	userCtx, err := m.provider.Authenticate(ctx, username, password)
+	if err != nil {
+		return nil, err
+	}
+
+	if !m.IsRoleAllowed(userCtx.Role) {
+		return nil, ErrRoleNotAllowed
+	}
+
+	return userCtx, nil
 }
 
 func (m *Middleware) CreateUser(ctx context.Context, username, password string, role string) error {
@@ -93,4 +113,9 @@ func RequireAdmin(ctx context.Context) error {
 		return ErrUnauthorized
 	}
 	return nil
+}
+
+func (m *Middleware) IsRoleAllowed(role string) bool {
+	allowed, exists := m.allowedRoles[role]
+	return exists && allowed
 }

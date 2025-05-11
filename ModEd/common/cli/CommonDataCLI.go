@@ -96,6 +96,7 @@ func main() {
 
 	authenticationCLI := authentication.NewAuthenticationCLI()
 	authenticationCLI.SetDB(db)
+	authenticationCLI.SetAllowedRoles([]string{"admin"})
 	authenticationCLI.ExecuteItem(args)
 
 	menu := NewMenuHandler()
