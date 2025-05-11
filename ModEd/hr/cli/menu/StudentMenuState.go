@@ -28,6 +28,7 @@ func (a *StudentMenuState) HandleUserInput(input string) error {
 func (a *StudentMenuState) Render() {
 	fmt.Println("=== Student Menu ===")
 	a.handlerContext.ShowMenu()
+	fmt.Println("exit:\tExit the program.")
 }
 
 func NewStudentMenuState(
