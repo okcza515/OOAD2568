@@ -1,10 +1,8 @@
-package cli
+package authentication
 
 import (
 	"context"
 	"fmt"
-
-	"ModEd/core/authentication"
 
 	"gorm.io/gorm"
 )
@@ -23,11 +21,11 @@ func (c *AuthenticationCLI) SetDB(db *gorm.DB) {
 
 func (c *AuthenticationCLI) ExecuteItem(parameters []string) {
 	ctx := context.Background()
-	if err := authentication.RequireAdmin(ctx); err == nil {
+	if err := RequireAdmin(ctx); err == nil {
 		return
 	}
 
-	authMenu := authentication.NewAuthMenuState(c.db)
+	authMenu := NewAuthMenuState(c.db)
 
 	for {
 		authMenu.Render()

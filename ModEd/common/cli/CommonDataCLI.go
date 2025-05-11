@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ModEd/core/cli"
+	"ModEd/core/authentication"
 	"flag"
 	"fmt"
 
@@ -94,7 +94,7 @@ func main() {
 
 	db := ConnectDB()
 
-	authenticationCLI := cli.NewAuthenticationCLI()
+	authenticationCLI := authentication.NewAuthenticationCLI()
 	authenticationCLI.SetDB(db)
 	authenticationCLI.ExecuteItem(args)
 
