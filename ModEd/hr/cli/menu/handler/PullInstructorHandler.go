@@ -3,21 +3,18 @@ package handler
 import (
 	"ModEd/hr/controller"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 type PullInstructorHandler struct {
-	tx *gorm.DB
+	instructorController *controller.InstructorHRController
 }
 
-func NewPullInstructorHandlerStrategy(tx *gorm.DB) *PullInstructorHandler {
-	return &PullInstructorHandler{tx: tx}
+func NewPullInstructorHandlerStrategy(instructorCtrl *controller.InstructorHRController) *PullInstructorHandler {
+	return &PullInstructorHandler{instructorController: instructorCtrl}
 }
 
 func (handler PullInstructorHandler) Execute() error {
-	instructorController := controller.NewInstructorHRController(handler.tx)
-	if err := instructorController.MigrateInstructorRecords(); err != nil {
+	if err := handler.instructorController.MigrateInstructorRecords(); err != nil {
 		return fmt.Errorf("failed to pull instructor record into instructorinfo: %w", err)
 	}
 
