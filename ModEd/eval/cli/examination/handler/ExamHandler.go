@@ -3,6 +3,7 @@ package handler
 // MEP-1007
 
 import (
+	"ModEd/core"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/eval/util"
@@ -135,21 +136,34 @@ func (c *UpdateExamCommand) Execute() {
 		fmt.Println("Error:", err)
 		return
 	}
+	if exam.ExamStatus != "Draft" {
+		fmt.Println("Exam is not in Draft status, cannot update.")
+		return
+	}
 
 	// mock up
-	exam.ExamName = "Mock Exam Updated"
-	exam.Description = "This is a mocked updated exam"
-	exam.Attempt = 5
-	exam.ExamStatus = "Draft"
-
-	updated, err := c.ExamCtrl.UpdateExam(exam)
+	updatedExam := &model.Exam{
+		BaseModel: core.BaseModel{
+			Model: gorm.Model{ID: exam.ID},
+		},
+		Description: "Updated description",
+		ExamName:    "Updated Exam Name",
+		ExamStatus:  "Draft",
+		StartDate:   func() time.Time {
+			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 09:00:00")
+			return t
+		}(),
+		EndDate:     func() time.Time {
+			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 12:00:00")
+			return t
+		}(),
+	}
+	err = c.ExamCtrl.UpdateByID(updatedExam)
 	if err != nil {
 		fmt.Println("Update failed:", err)
 		return
 	}
-
-	fmt.Println("Mock exam updated successfully:")
-	fmt.Printf("ID: %d, Name: %s, Status: %s\n", updated.ID, updated.ExamName, updated.ExamStatus)
+	fmt.Println("Exam updated successfully.")
 }
 
 type DeleteExamCommand struct {
