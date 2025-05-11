@@ -1,8 +1,10 @@
+// Wrote by MEP-1001
 package authentication
 
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"ModEd/core/handler"
@@ -15,8 +17,6 @@ type AuthMenuState struct {
 	ctx            context.Context
 	handlerContext *handler.HandlerContext
 }
-
-// ---- Handler Implementations using shared interface ----
 
 type LoginHandler struct {
 	state *AuthMenuState
@@ -37,7 +37,6 @@ func (h LoginHandler) Execute() error {
 	h.state.ctx = WithContext(context.Background(), userCtx)
 	fmt.Printf("Login successful! Welcome %s (Role: %s)\n", userCtx.Username, userCtx.Role)
 
-	// signal login success to higher-level manager
 	return fmt.Errorf("login_success")
 }
 
@@ -103,7 +102,12 @@ func (h DeleteAccountHandler) Execute() error {
 	return nil
 }
 
-// ---- Main AuthMenuState ----
+type ExitHandler struct{}
+
+func (h ExitHandler) Execute() error {
+	os.Exit(0)
+	return nil
+}
 
 func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
 	provider := NewDBAuthProvider(db, 24*time.Hour)
@@ -118,16 +122,11 @@ func NewAuthMenuState(db *gorm.DB) *AuthMenuState {
 		handlerContext: ctx,
 	}
 
-	// Add menu items using HandlerContext
 	ctx.AddHandler("1", "Login", LoginHandler{state})
 	ctx.AddHandler("2", "Register", RegisterHandler{state})
 	ctx.AddHandler("3", "Change Password", ChangePasswordHandler{state})
 	ctx.AddHandler("4", "Delete Account", DeleteAccountHandler{state})
-	ctx.AddHandler("back", "Back to Main Menu", handler.FuncStrategy{
-		Action: func() error {
-			return fmt.Errorf("back")
-		},
-	})
+	ctx.AddHandler("5", "exit", ExitHandler{})
 
 	return state
 }
