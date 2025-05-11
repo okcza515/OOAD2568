@@ -84,10 +84,7 @@ func (c *LeaveInstructorHRController) SubmitInstructorLeaveRequest(instructorID,
 	})
 }
 
-
-func (c *LeaveInstructorHRController) ReviewInstructorLeaveRequest(
-	tx *gorm.DB,
-	requestID, action, reason string,
+func (c *LeaveInstructorHRController) ReviewInstructorLeaveRequest(requestID, action, reason string,
 ) error {
 	return ReviewRequest(
 		requestID,
@@ -97,7 +94,7 @@ func (c *LeaveInstructorHRController) ReviewInstructorLeaveRequest(
 			return c.getByID(id)
 		},
 		func(r Reviewable) error {
-			return tx.Save(r).Error
+			return c.db.Save(r).Error
 		},
 	)
 }

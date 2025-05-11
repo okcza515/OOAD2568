@@ -74,9 +74,7 @@ func (c *ResignationInstructorHRController) SubmitResignationInstructor(instruct
 	})
 }
 
-func (c *ResignationInstructorHRController) ReviewInstructorResignRequest(
-	tx *gorm.DB,
-	requestID, action, reason string,
+func (c *ResignationInstructorHRController) ReviewInstructorResignRequest(requestID, action, reason string,
 ) error {
 	return ReviewRequest(
 		requestID,
@@ -88,7 +86,7 @@ func (c *ResignationInstructorHRController) ReviewInstructorResignRequest(
 		},
 		// save
 		func(r Reviewable) error {
-			return tx.Save(r).Error
+			return c.db.Save(r).Error
 		},
 	)
 }
