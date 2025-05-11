@@ -88,3 +88,20 @@ func (c *InstrumentRequestController) MarkAsUsed(id uint) error {
 		Where("instrument_request_id = ?", id).
 		Update("is_linked_to_tor", true).Error
 }
+
+func (c *InstrumentRequestController) UpdateTotalEstimatedPrice(id uint) error {
+	var total float64
+
+	err := c.db.Table("instrument_details").
+		Where("instrument_request_id = ?", id).
+		Select("SUM(estimated_price * quantity) as total").
+		Scan(&total).Error
+
+	if err != nil {
+		return err
+	}
+
+	return c.db.Model(&model.InstrumentRequest{}).
+		Where("instrument_request_id = ?", id).
+		Update("total_estimated_price", total).Error
+}

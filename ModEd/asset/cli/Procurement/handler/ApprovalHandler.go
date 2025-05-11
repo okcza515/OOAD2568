@@ -3,6 +3,7 @@ package handler
 import (
 	"ModEd/asset/controller"
 	util "ModEd/asset/util"
+	model "ModEd/asset/model"
 	"fmt"
 )
 
@@ -76,6 +77,7 @@ func printApprovalOption(observer controller.ApprovalObserver) {
 
 func printApprovalList(observer controller.ApprovalObserver) {
 	switch o := observer.(type) {
+
 	case *controller.BudgetApprovalController:
 		approvals, err := o.ListAllApprovals()
 		if err != nil {
@@ -86,35 +88,19 @@ func printApprovalList(observer controller.ApprovalObserver) {
 			fmt.Println("No budget approvals found.")
 			return
 		}
-		fmt.Println("Available Budget Approvals:")
-		for _, a := range approvals {
-			approverID := "waiting"
-			if a.ApproverID != nil && *a.ApproverID != 0 {
-				approverID = fmt.Sprintf("%d", *a.ApproverID)
-			}
-			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
-				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
-		}
+		printFormattedApprovals("Budget Approval", approvals, "InstrumentRequestID")
 
 	case *controller.ProcurementController:
-		approvals, err := o.ListAllProcurement()
+		approvals, err := o.ListSelectedProcurements()
 		if err != nil {
 			fmt.Println("Failed to fetch procurement approvals:", err)
 			return
 		}
-		if len(*approvals) == 0 {
+		if approvals == nil || len(*approvals) == 0 {
 			fmt.Println("No procurement approvals found.")
 			return
 		}
-		fmt.Println("Available Procurement Approvals:")
-		for _, a := range *approvals {
-			approverID := "waiting"
-			if a.ApproverID != nil && *a.ApproverID != 0 {
-				approverID = fmt.Sprintf("%d", *a.ApproverID)
-			}
-			fmt.Printf("  ApprovalID: %d | ProcurementID: %d | Status: %s | Approver ID: %s\n",
-				a.ProcurementID, a.ProcurementID, a.Status, approverID)
-		}
+		printFormattedApprovals("Procurement Approval", *approvals, "ProcurementID")
 
 	case *controller.AcceptanceApprovalController:
 		approvals, err := o.ListAllApprovals()
@@ -126,8 +112,35 @@ func printApprovalList(observer controller.ApprovalObserver) {
 			fmt.Println("No acceptance approvals found.")
 			return
 		}
-		fmt.Println("Available Acceptance Approvals:")
-		for _, a := range approvals {
+		printFormattedApprovals("Acceptance Approval", approvals, "ProcurementID")
+	}
+}
+
+
+func printFormattedApprovals(title string, approvals interface{}, idField string) {
+	fmt.Printf("Available %s:\n", title)
+	
+	switch items := approvals.(type) {
+	case []model.BudgetApproval:
+		for _, a := range items {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | RequestID: %d | Status: %s | Approver ID: %s\n",
+				a.BudgetApprovalID, a.InstrumentRequestID, a.Status, approverID)
+		}
+	case []model.Procurement:
+		for _, a := range items {
+			approverID := "waiting"
+			if a.ApproverID != nil && *a.ApproverID != 0 {
+				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			}
+			fmt.Printf("  ApprovalID: %d | ProcurementID: %d | TOR ID: %d | Status: %s | Approver ID: %s\n",
+				a.ProcurementID, a.ProcurementID, a.TORID, a.Status, approverID)
+		}
+	case []model.AcceptanceApproval:
+		for _, a := range items {
 			approverID := "waiting"
 			if a.ApproverID != nil && *a.ApproverID != 0 {
 				approverID = fmt.Sprintf("%d", *a.ApproverID)

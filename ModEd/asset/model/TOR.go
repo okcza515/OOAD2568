@@ -1,8 +1,9 @@
 package model
 
 import (
-	"time"
 	"ModEd/core/validation"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -14,9 +15,10 @@ type TOR struct {
 	Timeline            string         `gorm:"type:text" validation:"not null"`
 	Committee           string         `gorm:"type:text" validation:"not null"`
 	Quotations          []Quotation    `gorm:"foreignKey:TORID"`
+	TotalPrice          float64        `gorm:"type:decimal(12,2);default:0"`
 	Status              TORStatus      `gorm:"type:varchar(50);default:'announced'"`
 	DeletedAt           gorm.DeletedAt `gorm:"index"`
-	CreatedAt           time.Time	   
+	CreatedAt           time.Time
 	UpdatedAt           time.Time
 	InstrumentRequest   InstrumentRequest
 }

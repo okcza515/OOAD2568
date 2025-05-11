@@ -27,6 +27,23 @@ func (c *ProcurementController) ListAllProcurement() (*[]model.Procurement, erro
 	return &procurements, err
 }
 
+func (c *ProcurementController) ListSelectedProcurements() (*[]model.Procurement, error) {
+    var procurements []model.Procurement
+
+    err := c.db.Preload("Approver").
+        Preload("TOR").
+        Joins("JOIN tors ON tors.tor_id = procurements.tor_id").
+        Where("tors.status = ?", "selected").
+        Find(&procurements).Error
+
+    if err != nil {
+        return nil, err
+    }
+
+    return &procurements, nil
+}
+
+
 func (c *ProcurementController) GetProcurementByID(id uint) (*model.Procurement, error) {
 	var procurement model.Procurement
 	err := c.db.First(&procurement, id).Error
@@ -104,5 +121,7 @@ func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
 		Updates(map[string]interface{}{
 			"status":      model.ProcurementStatusRejected,
 			"approver_id": approverID,
+			"approval_time": time.Now(),
 		}).Error
 }
+

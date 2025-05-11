@@ -54,6 +54,10 @@ func ProcurementHandler(facade *controller.ProcurementControllerFacade) {
 				fmt.Println("Failed to create TOR:", err)
 			} else {
 				fmt.Println("TOR created successfully with ID:", tor.TORID)
+				err = facade.TOR.UpdateTotalPrice(tor.TORID)
+				if err != nil {
+					fmt.Println("Failed to update total price:", err)
+				}
 			}
 			newProcurement := controller.NewProcurementBuilder().
 				WithTOR(tor).
@@ -125,6 +129,7 @@ func ProcurementHandler(facade *controller.ProcurementControllerFacade) {
 			fmt.Printf("Scope: %s\n", tor.Scope)
 			fmt.Printf("Deliverables: %s\n", tor.Deliverables)
 			fmt.Printf("Status: %s\n", tor.Status)
+			fmt.Printf("Total Price: %.2f\n", tor.TotalPrice)
 			fmt.Printf("Committee: %s\n", tor.Committee)
 			fmt.Printf("Created At: %s\n", createdAt)
 

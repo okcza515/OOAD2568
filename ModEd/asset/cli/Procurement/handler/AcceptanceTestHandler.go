@@ -2,7 +2,6 @@ package handler
 
 import (
 	"ModEd/asset/controller"
-	model "ModEd/asset/model"
 	util "ModEd/asset/util"
 	"fmt"
 )
@@ -18,49 +17,14 @@ func AcceptanceTestHandler(facade *controller.ProcurementControllerFacade) {
 
 		switch inputBuffer {
 		case "1":
-			fmt.Println("List All Acceptance Requests")
-			acceptanceRequests, err := facade.Acceptance.ListAllApprovals()
-			if err != nil {
-				fmt.Println("Failed to fetch acceptance requests:", err)
-				WaitForEnter()
-				break
-			}
-
-			if len(acceptanceRequests) == 0 {
-				fmt.Println("No acceptance requests found.")
-				WaitForEnter()
-				break
-			}
-
-			fmt.Println("\nAvailable Acceptance Requests:")
-			found := false
-			for _, req := range acceptanceRequests {
-				if req.Procurement != nil && req.Procurement.Status == model.ProcurementStatusApproved {
-					found = true
-					approverID := "Not Assigned"
-					if req.ApproverID != nil {
-						approverID = fmt.Sprintf("%d", *req.ApproverID)
-					}
-
-					approvalTime := "-"
-					if !req.ApprovalTime.IsZero() {
-						approvalTime = req.ApprovalTime.Format("2006-01-02 15:04:05")
-					}
-
-					fmt.Printf("  - Acceptance ID: %d | Procurement ID: %d | Status: %s | Approver ID: %s | Approval Time: %s\n",
-						req.AcceptanceApprovalID, req.ProcurementID, req.Status, approverID, approvalTime)
-				}
-			}
-			if !found {
-				fmt.Println("No acceptance requests found with approved procurements.")
-			}
-
+			ListAllAcceptanceRequests(facade)
 			WaitForEnter()
 		case "2":
-			fmt.Println("View Quotation Details by Procurement ID")
-			PID := util.GetUintInput("Enter procurement ID: ")
-			facade.Acceptance.PrintQuotationDetailsByProcurement(PID)
-			WaitForEnter()
+			ListAllAcceptanceRequests(facade)
+			fmt.Println("View Quotation Details by Acceptance ID")
+			id := util.GetUintInput("Enter Acceptance ID: ")
+			PrintQuotationDetailsByAcceptance(facade, id)
+			WaitForEnter()		
 		}
 	}
 }
@@ -69,8 +33,76 @@ func printAcceptanceTestOptions() {
 	fmt.Println(":/Procurement/Main")
 	fmt.Println()
 	fmt.Println("--Acceptance Functions--")
-	fmt.Println("  1:\tList All Acceptance Requests and Quotation Details")
+	fmt.Println("  1:\tList All Acceptance Requests")
 	fmt.Println("  2:\tAcceptance test")
 	fmt.Println("  back:\tBack to main menu (or Ctrl+C to exit ¯\\\\_(ツ)_/¯)")
 	fmt.Println()
 }
+
+func ListAllAcceptanceRequests(facade *controller.ProcurementControllerFacade) {
+	acceptanceRequests, err := facade.Acceptance.ListAllApprovals()
+	if err != nil {
+		fmt.Println("Failed to fetch acceptance requests:", err)
+		return
+	} 
+
+	if len(acceptanceRequests) == 0 {
+		fmt.Println("No acceptance requests found.")
+		return
+	}
+
+	fmt.Println("Acceptance Request List:")
+	for _, req := range acceptanceRequests {
+		approverID := "Not Assigned"
+		if req.ApproverID != nil {
+			approverID = fmt.Sprintf("%d", *req.ApproverID)
+		}
+		createdAt := "-"
+		if !req.CreatedAt.IsZero() {
+			createdAt = req.CreatedAt.Format("2006-01-02 15:04:05")
+		}
+		approvalTime := "-"
+		if req.ApprovalTime != nil {
+			approvalTime = req.ApprovalTime.Format("2006-01-02 15:04:05")
+		}
+		fmt.Printf("ID: %d | ProcurementID: %d | ApproverID: %s | Status: %s | CreatedAt: %s | ApprovalTime: %s\n",
+			req.AcceptanceApprovalID, req.ProcurementID, approverID, req.Status, createdAt, approvalTime)
+	}
+}
+
+func PrintQuotationDetailsByAcceptance(facade *controller.ProcurementControllerFacade, acceptanceID uint) {
+    fmt.Printf("Searching for Quotation Details for Acceptance Request ID: %d\n", acceptanceID)
+    
+    details, err := facade.Acceptance.GetQuotationDetailsByAcceptance(acceptanceID)
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+
+    if len(details) == 0 {
+        fmt.Printf("No quotation details found for Acceptance Request ID: %d\n", acceptanceID)
+        return
+    }
+
+    fmt.Printf("\nQuotation Details for Acceptance Request ID: %d\n", acceptanceID)
+    totalPrice := 0.0
+    for _, detail := range details {
+        fmt.Printf("QuotationDetailID: %d\n", detail.QuotationDetailID)
+        fmt.Printf("InstrumentLabel: %s\n", detail.InstrumentLabel)
+        if detail.Description != nil {
+            fmt.Printf("Description: %s\n", *detail.Description)
+        } else {
+            fmt.Println("Description: (none)")
+        }
+        fmt.Printf("CategoryID: %d\n", detail.CategoryID)
+        fmt.Printf("Quantity: %d\n", detail.Quantity)
+        fmt.Printf("Offered Price: %.2f\n", detail.OfferedPrice)
+        fmt.Println("------")
+
+        totalPrice += detail.OfferedPrice * float64(detail.Quantity)
+    }
+
+    fmt.Printf("\nTotal Estimated Cost for Acceptance Request ID %d: %.2f\n", acceptanceID, totalPrice)
+}
+
+

@@ -71,6 +71,7 @@ func (c *BudgetApprovalController) OnApproved(id uint, approverID uint) error {
 			Updates(map[string]interface{}{
 				"status":      model.BudgetStatusApproved,
 				"approver_id": approverID,
+				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
 		}
@@ -97,6 +98,7 @@ func (c *BudgetApprovalController) OnRejected(id uint, approverID uint) error {
 			Updates(map[string]interface{}{
 				"status":      model.BudgetStatusRejected,
 				"approver_id": approverID,
+				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
 		}

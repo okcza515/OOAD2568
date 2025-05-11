@@ -70,6 +70,10 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 					fmt.Println("Failed to add instrument:", err)
 				} else {
 					fmt.Println("Instrument added to request!")
+					err = facade.RequestedItem.UpdateTotalEstimatedPrice(newRequest.InstrumentRequestID)
+					if err != nil {
+						fmt.Println("Failed to update total estimated price:", err)
+					}
 				}
 
 				addMore = util.GetStringInput("\nAdd another instrument? (y/n): ")
@@ -114,6 +118,10 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 				fmt.Println("Failed to add instrument:", err)
 			} else {
 				fmt.Println("Instrument added to request!")
+				err = facade.RequestedItem.UpdateTotalEstimatedPrice(requestID)
+				if err != nil {
+					fmt.Println("Failed to update total estimated price:", err)
+				}
 			}
 			WaitForEnter()
 		case "4":
@@ -133,6 +141,7 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 				fmt.Printf("\nInstrument Request ID: %d\n", request.InstrumentRequestID)
 				fmt.Printf("Department ID: %d\n", request.DepartmentID)
 				fmt.Printf("Status: %s\n", request.Status)
+				fmt.Printf("Total Estimated Price: %.2f\n", request.TotalEstimatedPrice)
 				fmt.Println("Instruments:")
 
 				if len(request.Instruments) == 0 {
@@ -238,6 +247,10 @@ func InstrumentRequestHandler(facade *controller.ProcurementControllerFacade) {
 				fmt.Println("Failed to update item:", err)
 			} else {
 				fmt.Println("Instrument item updated successfully.")
+				err = facade.RequestedItem.UpdateTotalEstimatedPrice(requestID)
+				if err != nil {
+					fmt.Println("Failed to update total estimated price:", err)
+				}
 			}
 
 			WaitForEnter()
