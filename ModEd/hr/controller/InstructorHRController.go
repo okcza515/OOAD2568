@@ -51,11 +51,11 @@ func (c *InstructorHRController) delete(id string) error {
 
 func (c *InstructorHRController) AddInstructor(
 	instructorCode string, firstName string, lastName string, email string, startDate string, department string,
-	gender string, citizenID string, phoneNumber string, salary int, academicPos string, departmentPos string,
+	gender string, citizenID string, phoneNumber string, salary float64, academicPos string, departmentPos string,
 ) error {
 	tm := &util.TransactionManager{DB: c.db}
 	err := tm.Execute(func(tx *gorm.DB) error {
-		startDateParsed, err := time.Parse("02-01-2006", startDate)
+		startDateParsed, err := time.Parse("2006-01-02", startDate)
 		if err != nil {
 			return fmt.Errorf("failed to parse start date: %w", err)
 		}
@@ -236,4 +236,23 @@ func (c *InstructorHRController) MigrateInstructorRecords() error {
 
 		return nil
 	})
+}
+
+func (c *InstructorHRController) DeleteInstructor(instructorID string) error {
+	tm := &util.TransactionManager{DB: c.db}
+
+	err := tm.Execute(func(tx *gorm.DB) error {
+		commonInstructorController := commonController.NewInstructorController(tx)
+		if err := commonInstructorController.DeleteByCode(instructorID); err != nil {
+			return fmt.Errorf("failed to delete instructor from common data: %w", err)
+		}
+
+		instructorController := NewInstructorHRController(tx)
+		if err := instructorController.delete(instructorID); err != nil {
+			return fmt.Errorf("failed to delete instructor HR info: %w", err)
+		}
+
+		return nil
+	})
+	return err
 }

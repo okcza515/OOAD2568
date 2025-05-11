@@ -3,8 +3,14 @@ package menu
 import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
+	hrHandler "ModEd/hr/cli/menu/handler"
+	"ModEd/hr/controller"
 	"fmt"
 )
+
+// var (
+// 	databasePath = flag.String("database", "data/ModEd.bin", "Path of SQLite Database")
+// )
 
 type DatabaseMenuState struct {
 	manager        *cli.CLIMenuStateManager
@@ -23,16 +29,22 @@ func (a *DatabaseMenuState) HandleUserInput(input string) error {
 func (a *DatabaseMenuState) Render() {
 	fmt.Println("=== Database Menu ===")
 	a.handlerContext.ShowMenu()
-	fmt.Println("back:\tBack to main menu")
 	fmt.Println("exit:\tExit the program.")
 }
 
-func NewDatabaseMenuState(manager *cli.CLIMenuStateManager) *DatabaseMenuState {
+func NewDatabaseMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController, instructorCtrl *controller.InstructorHRController) *DatabaseMenuState {
+
 	handlerContext := handler.NewHandlerContext()
 
-	handlerContext.AddHandler("1", "Migrate database", nil)
-	handlerContext.AddHandler("2", "Pull student data", nil)
-	handlerContext.AddHandler("3", "Pull instructor data", nil)
+	pullStudentHandler := hrHandler.NewPullHandlerStrategy(studentCtrl.MigrateStudentRecords)
+	pullInstructorHandler := hrHandler.NewPullHandlerStrategy(instructorCtrl.MigrateInstructorRecords)
+	importStudentHandler := hrHandler.NewImportHandlerStrategy(studentCtrl.ImportStudents)
+	importInstructorHandler := hrHandler.NewImportHandlerStrategy(instructorCtrl.ImportInstructors)
+
+	handlerContext.AddHandler("1", "Pull student data", pullStudentHandler)
+	handlerContext.AddHandler("2", "Pull instructor data", pullInstructorHandler)
+	handlerContext.AddHandler("3", "Import student data", importStudentHandler)
+	handlerContext.AddHandler("4", "Import instructor data", importInstructorHandler)
 
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_HR)))
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)

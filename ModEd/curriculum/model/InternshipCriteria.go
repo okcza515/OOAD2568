@@ -5,7 +5,7 @@ import (
 	"ModEd/core"
 )
 
-type InternshipEvaluationCriteria struct {
+type InternshipCriteria struct {
 	core.BaseModel
 
 	Title                   string                `gorm:"type:varchar(255);not null"`

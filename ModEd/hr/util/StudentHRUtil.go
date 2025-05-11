@@ -21,11 +21,11 @@ func StatusToString(status commonModel.StudentStatus) string {
 
 func StatusFromString(status string) (commonModel.StudentStatus, error) {
 	switch status {
-	case "ACTIVE":
+	case "ACTIVE", "Active":
 		return commonModel.ACTIVE, nil
-	case "GRADUATED":
+	case "GRADUATED", "Graduated":
 		return commonModel.GRADUATED, nil
-	case "DROP":
+	case "DROP", "Drop":
 		return commonModel.DROP, nil
 	default:
 		return commonModel.ACTIVE, fmt.Errorf("invalid status: %s (must be ACTIVE, GRADUATED, or DROP)", status)

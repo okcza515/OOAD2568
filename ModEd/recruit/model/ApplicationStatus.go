@@ -9,4 +9,7 @@ const (
 	Evaluated      ApplicationStatus = "Evaluated"
 	Accepted       ApplicationStatus = "Accepted"
 	Rejected       ApplicationStatus = "Rejected"
+	Confirmed      ApplicationStatus = "Confirmed"
+	Withdrawn      ApplicationStatus = "Withdrawn"
+	Student        ApplicationStatus = "Student"
 )

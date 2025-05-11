@@ -138,7 +138,7 @@ func ProcurementHandler(facade *controller.ProcurementControllerFacade) {
 			fmt.Println("Delete Procurement")
 			ListAllProcurements(facade)
 			id := util.GetUintInput("Enter procurement ID to delete: ")
-			err := facade.Procurement.Delete(id)
+			err := facade.Procurement.DeleteProcurement(id)
 			if err != nil {
 				fmt.Printf("Failed to delete procurement with ID %d: %v\n", id, err)
 				return

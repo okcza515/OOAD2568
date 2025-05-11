@@ -25,6 +25,7 @@ var (
 	getNumericRegex     = lazyRegexCompile("^[-+]?[0-9]+(?:\\.[0-9]+)?$")
 	getNumberRegex      = lazyRegexCompile("^[0-9]+$")
 	getDateTimeRegex    = lazyRegexCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$`)
+	getDateRegex        = lazyRegexCompile(`^\d{4}-\d{2}-\d{2}$`)
 	getStudentCodeRegex = lazyRegexCompile(`^\d{11}$`)
 )
 
@@ -119,6 +120,13 @@ func (v *Validator) IsDateTimeValid(dateTime string) bool {
 		return false
 	}
 	return getDateTimeRegex().MatchString(dateTime)
+}
+
+func (v *Validator) IsDateValid(date string) bool {
+	if !v.IsStringNotEmpty(date) {
+		return false
+	}
+	return getDateRegex().MatchString(date)
 }
 
 func (v *Validator) IsStudentID(studentId string) bool {

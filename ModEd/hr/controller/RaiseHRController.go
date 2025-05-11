@@ -50,7 +50,7 @@ func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.Requ
 	return requests, nil
 }
 
-func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
+func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount float64, reason string) error {
 	tm := &util.TransactionManager{DB: c.db}
 
 	return tm.Execute(func(tx *gorm.DB) error {
@@ -81,9 +81,7 @@ func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, 
 	})
 }
 
-func (c *RaiseHRController) ReviewInstructorRaiseRequest(
-	tx *gorm.DB,
-	requestID, action, reason string,
+func (c *RaiseHRController) ReviewInstructorRaiseRequest(requestID, action, reason string,
 ) error {
 	return ReviewRequest(
 		requestID,
@@ -95,7 +93,7 @@ func (c *RaiseHRController) ReviewInstructorRaiseRequest(
 		},
 		// save
 		func(r Reviewable) error {
-			return tx.Save(r).Error
+			return c.db.Save(r).Error
 		},
 	)
 }

@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package main
 
 import (
@@ -54,6 +55,7 @@ func main() {
 
 	facultyCtrl := common.NewFacultyController(db.DB)
 	departmentCtrl := common.NewDepartmentController(db.DB)
+	studentCtrl := common.NewStudentController(db.DB)
 	interviewCriteriaCtrl := controller.NewInterviewCriteriaCtrl(db.DB)
 
 	instructorViewInterviewDetailsService := cli.NewInstructorViewInterviewDetailsService(db.DB, interviewController)
@@ -62,13 +64,13 @@ func main() {
 		interviewCriteriaCtrl,
 		applicationReportCtrl,
 	)
-	applicantRegistrationService := cli.NewApplicantRegistrationService(
-		applicantController,
-		applicationRoundCtrl,
-		applicationReportCtrl,
-		facultyCtrl,
-		departmentCtrl,
-	)
+	// applicantRegistrationService := cli.NewApplicantRegistrationService(
+	// 	applicantController,
+	// 	applicationRoundCtrl,
+	// 	applicationReportCtrl,
+	// 	facultyCtrl,
+	// 	departmentCtrl,
+	// )
 	applicantReportService := cli.NewApplicantReportService(db.DB, applicationReportCtrl)
 
 	if err := applicationRoundCtrl.ReadApplicationRoundsFromCSV(roundsCSVPath); err != nil {
@@ -84,6 +86,11 @@ func main() {
 	loginController := controller.LoginController{Strategy: factory.CreateStrategy(role)}
 
 	// adminInterviewService := cli.NewAdminInterviewService(interviewController)
+	applicantDeps := cli.ApplicantDependencies{
+	ApplicantRegistrationService: cli.NewApplicantRegistrationService(applicantController,applicationRoundCtrl,applicationReportCtrl,facultyCtrl,departmentCtrl,),
+	ApplicantReportService:       applicantReportService,
+	}
+
 	adminDeps := cli.AdminDependencies{
 		ApplicantController:                applicantController,
 		ApplicationReportCtrl:              applicationReportCtrl,
@@ -93,39 +100,45 @@ func main() {
 		AdminInterviewService:              cli.NewAdminInterviewService(interviewController),
 		AdminShowApplicationReportsService: cli.NewAdminShowApplicationReportsService(applicationReportCtrl, interviewController),
 		AdminScheduleInterviewService:      cli.NewAdminScheduleInterviewService(interviewController, applicationReportCtrl),
+		ConfirmedApplicantToStudentService: cli.NewConfirmedApplicantToStudentService(applicationReportCtrl, studentCtrl),
 	}
 
+	instructorDeps := cli.InstructorDependencies{
+		ViewInterviewService:     instructorViewInterviewDetailsService,
+		EvaluateApplicantService: instructorEvaluateApplicantService,
+		ApplicantReportService:   applicantReportService,
+		LoginCtrl:                &loginController,
+		DB:                       db.DB,
+	}
+	
+	
 	for {
 		util.ClearScreen()
 
 		if role == "" {
-			// Display the main menu
 			fmt.Println("\n\033[1;34m╔══════════════════════════════════════╗")
 			fmt.Println("║       Moded Recruitment System       ║")
 			fmt.Println("╚══════════════════════════════════════╝\033[0m")
 
-			// Options for role selection
 			fmt.Println("\n\033[1;36m[1]\033[0m  User")
 			fmt.Println("\033[1;36m[2]\033[0m  Admin")
 			fmt.Println("\033[1;36m[3]\033[0m  Instructor")
 			fmt.Println("\033[1;36m[4]\033[0m  Exit")
 			fmt.Print("\n\033[1;33mSelect role:\033[0m ")
 
-			// Get user input for role selection
 			var roleChoice int
 			fmt.Scanln(&roleChoice)
 
 			switch roleChoice {
 			case 1:
 				loginController.SetStrategy(factory.CreateStrategy("user"))
-				cli.UserCLI(applicantRegistrationService, applicantReportService)
+				cli.UserCLI(applicantDeps)
 			case 2:
 				loginController.SetStrategy(factory.CreateStrategy("admin"))
-				// cli.AdminCLI(applicantController, applicationReportCtrl, interviewController, adminCtrl, &loginController)
 				cli.AdminCLI(adminDeps)
 			case 3:
 				loginController.SetStrategy(factory.CreateStrategy("instructor"))
-				cli.InstructorCLI(instructorViewInterviewDetailsService, instructorEvaluateApplicantService, applicantReportService, &loginController, db.DB)
+				cli.InstructorCLI(instructorDeps)
 
 			case 4:
 				fmt.Println("Exiting...")

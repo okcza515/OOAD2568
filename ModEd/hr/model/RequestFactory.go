@@ -28,7 +28,7 @@ type CreateRequestParams struct {
 	LeaveType    string // For Leave
 	Reason       string
 	DateStr      string // For Leave (format "02-01-2006")
-	TargetSalary int    // For Raise
+	TargetSalary float64    // For Raise
 }
 
 // requestCreator defines a function signature for creating a specific request.

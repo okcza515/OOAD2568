@@ -18,6 +18,8 @@ type ApplicationReport struct {
 	DepartmentID uint
 	Department   *model.Department `gorm:"foreignKey:DepartmentID;references:ID"`
 
+	Program *model.ProgramType `gorm:"type:varchar(20)"`
+
 	ApplicationStatuses ApplicationStatus `gorm:"type:varchar(20)"`
 }
 

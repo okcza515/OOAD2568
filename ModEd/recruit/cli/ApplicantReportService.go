@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package cli
 
 import (
@@ -10,6 +11,7 @@ import (
 type ApplicantReportService interface {
 	GetApplicationReport(applicantionReportID uint) (*model.ApplicationReport, error)
 	DisplayReport([]*model.ApplicationReport)
+	ConfirmAcceptance(applicationReportID uint, status model.ApplicationStatus) error
 }
 
 type applicantReportService struct {
@@ -53,4 +55,12 @@ func (s *applicantReportService) DisplayReport(reports []*model.ApplicationRepor
 	}
 
 	reportDisplay.DisplayReport(converted)
+}
+
+func (s *applicantReportService) ConfirmAcceptance(applicationReportID uint, status model.ApplicationStatus) error {
+	err := s.ApplicantReportCtrl.UpdateApplicationStatus(applicationReportID, status)
+	if err != nil {
+		return err
+	}
+	return nil
 }

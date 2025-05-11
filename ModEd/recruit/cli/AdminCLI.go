@@ -24,6 +24,7 @@ func NewAdminMenuState(
 	reportService AdminShowApplicationReportsService,
 	scheduleInterviewService AdminScheduleInterviewService,
 	deleteInterviewService AdminInterviewService,
+	confirmToStudentService ConfirmedApplicantToStudentService,
 ) *AdminMenuState {
 
 	adminMenu := &AdminMenuState{
@@ -31,10 +32,11 @@ func NewAdminMenuState(
 		username: username,
 	}
 
-	manager.AddMenu("1", NewAdminShowApplicationReportMenuState(manager, reportService, adminMenu))
+	adminshow := NewAdminShowApplicationReportMenuState(manager, reportService, adminMenu)
+	manager.AddMenu("1", adminshow)
 	manager.AddMenu("2", NewAdminScheduleInterviewMenuState(manager, scheduleInterviewService, adminMenu))
 	manager.AddMenu("3", NewAdminDeleteInterviewMenuState(manager, deleteInterviewService, adminMenu))
-	//manager.AddMenu("4", nil)
+	manager.AddMenu("4", NewAdminConfirmToStudentMenuState(manager, confirmToStudentService, adminMenu, adminshow))
 	return adminMenu
 }
 
@@ -47,12 +49,13 @@ func (a *AdminMenuState) Render() {
 	fmt.Println("\033[1;36m[1]\033[0m View Application Reports")
 	fmt.Println("\033[1;36m[2]\033[0m Schedule Interview")
 	fmt.Println("\033[1;36m[3]\033[0m Delete Interview")
-	fmt.Println("\033[1;36m[4]\033[0m Back")
+	fmt.Println("\033[1;36m[4]\033[0m Transfer Confirmed Applicants to Students")
+	fmt.Println("\033[1;36m[5]\033[0m Back")
 	fmt.Print("\n\033[1;33mSelect an option:\033[0m ")
 }
 
 func (a *AdminMenuState) HandleUserInput(input string) error {
-	if input == "4" {
+	if input == "5" {
 		return ErrExitMenu
 	}
 
@@ -79,6 +82,7 @@ func AdminCLI(dep AdminDependencies) {
 		dep.AdminShowApplicationReportsService,
 		dep.AdminScheduleInterviewService,
 		dep.AdminInterviewService,
+		dep.ConfirmedApplicantToStudentService,
 	)
 	manager.SetState(adminMenu)
 	for {

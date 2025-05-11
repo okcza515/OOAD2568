@@ -72,9 +72,7 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 	})
 }
 
-func (c *ResignationStudentHRController) ReviewStudentResignRequest(
-	tx *gorm.DB,
-	requestID, action, reason string,
+func (c *ResignationStudentHRController) ReviewStudentResignRequest(requestID, action, reason string,
 ) error {
 	return ReviewRequest(
 		requestID,
@@ -86,7 +84,7 @@ func (c *ResignationStudentHRController) ReviewStudentResignRequest(
 		},
 		// save
 		func(r Reviewable) error {
-			return tx.Save(r).Error
+			return c.db.Save(r).Error
 		},
 	)
 }

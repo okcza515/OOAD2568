@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package controller
 
 import "fmt"
@@ -5,7 +6,7 @@ import "fmt"
 type PortfolioEvaluationStrategy struct{}
 
 func (s PortfolioEvaluationStrategy) GetCriteria() []string {
-	return []string{"Communication", "Creativity", "ProjectKnowledge"}
+	return []string{"Communication", "Creativity", "ProjectKnowledge", "Analytical Thinking"}
 }
 
 func (s PortfolioEvaluationStrategy) Evaluate(scores map[string]float64) (float64, error) {

@@ -76,7 +76,7 @@ func (c *ProcurementController) Reject(id uint, approverID uint) error {
 		}).Error
 }
 
-func (c *ProcurementController) Delete(id uint) error {
+func (c *ProcurementController) DeleteProcurement(id uint) error {
 	return c.db.Delete(&model.Procurement{}, id).Error
 }
 
@@ -86,8 +86,8 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 		if err := tx.Model(&model.Procurement{}).
 			Where("procurement_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":      model.ProcurementStatusApproved,
-				"approver_id": approverID,
+				"status":        model.ProcurementStatusApproved,
+				"approver_id":   approverID,
 				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err

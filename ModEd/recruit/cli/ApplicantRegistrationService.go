@@ -20,7 +20,7 @@ type ApplicantRegistrationService interface {
 	RegisterFromFile(scanner *bufio.Scanner)
 	SelectApplicationRound() *model.ApplicationRound
 	SelectFacultyAndDepartment() (*commonModel.Faculty, *commonModel.Department)
-	SaveReportForApplicant(applicantID uint, roundID uint, faculty *commonModel.Faculty, department *commonModel.Department, status string)
+	SaveReportForApplicant(applicantID uint, roundID uint, faculty *commonModel.Faculty, department *commonModel.Department, program *commonModel.ProgramType, status string)
 }
 
 type applicantRegistrationService struct {
@@ -65,6 +65,16 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 	scanner.Scan()
 	applicant.Email = scanner.Text()
 
+	fmt.Print("Enter Birth Date (YYYY-MM-DD): ")
+	scanner.Scan()
+	birthDateStr := scanner.Text()
+	birthDate, err := time.Parse("2006-01-02", birthDateStr)
+	if err != nil {
+		fmt.Println("Invalid birth date format.")
+		return
+	}
+	applicant.BirthDate = birthDate
+
 	fmt.Print("Enter Address: ")
 	scanner.Scan()
 	applicant.Address = scanner.Text()
@@ -85,57 +95,37 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 	}
 
 	applicant.GPAX = inputFloat("Enter GPAX: ")
-	applicant.TGAT1 = inputFloat("Enter TGAT1 Score: ")
-	applicant.TGAT2 = inputFloat("Enter TGAT2 Score: ")
-	applicant.TGAT3 = inputFloat("Enter TGAT3 Score: ")
-	applicant.TPAT1 = inputFloat("Enter TPAT1 Score: ")
-	applicant.TPAT2 = inputFloat("Enter TPAT2 Score: ")
-	applicant.TPAT3 = inputFloat("Enter TPAT3 Score: ")
-	applicant.TPAT4 = inputFloat("Enter TPAT4 Score: ")
-	applicant.TPAT5 = inputFloat("Enter TPAT5 Score: ")
+	tgatFields := []*float32{&applicant.TGAT1, &applicant.TGAT2, &applicant.TGAT3}
+	for i := range tgatFields {
+		*tgatFields[i] = inputFloat(fmt.Sprintf("Enter TGAT%d Score: ", i+1))
+	}
+
+	tpatFields := []*float32{&applicant.TPAT1, &applicant.TPAT2, &applicant.TPAT3, &applicant.TPAT4, &applicant.TPAT5}
+	for i := range tpatFields {
+		*tpatFields[i] = inputFloat(fmt.Sprintf("Enter TPAT%d Score: ", i+1))
+	}
 
 	round := s.SelectApplicationRound()
 	if round == nil {
 		return
 	}
 
-	// Apply additional form strategy if needed
 	if !s.handleRoundFormData(round, &applicant) {
 		return
 	}
-	// strategy, err := controller.GetFormStrategy(round.RoundName)
-	// if err != nil && strategy == nil {
-	// 	println("failed to get evaluation strategy: %w", err)
-	// 	return
-	// }
-	// roundData := make(map[string]string)
-	// for _, roundField := range strategy.GetForm() {
-	// 	fmt.Printf("Enter %s: ", roundField)
-	// 	scanner := bufio.NewScanner(os.Stdin)
-	// 	scanner.Scan()
-	// 	data := scanner.Text()
-	// 	roundData[roundField] = data
-	// }
 	
-	// err = strategy.Validate(roundData)
-	// if err != nil {
-	// 	fmt.Printf("Error validating form data: %v\n", err)
-	// 	return 
-	// }
-
-	// Register the applicant
 	if err := s.applicantCtrl.RegisterApplicant(&applicant); err != nil {
 		fmt.Println("Registration failed:", err)
 		return
 	}
 
-	// Select faculty and department
 	faculty, department := s.SelectFacultyAndDepartment()
 	if faculty == nil || department == nil {
 		return
 	}
 
-	// Build criteria for applicant and determine status
+	program := s.SelectProgram()
+
 	compositeCriteria := s.criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 	status := model.Pending
 	if compositeCriteria.IsSatisfiedBy(applicant) {
@@ -144,8 +134,7 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 		status = model.Rejected
 	}
 
-	// Save application report
-	s.SaveReportForApplicant(applicant.ApplicantID, round.RoundID, faculty, department, string(status))
+	s.SaveReportForApplicant(applicant.ApplicantID, round.RoundID, faculty, department, &program, string(status))
 	// fmt.Println("Registration successful! Your Applicantion Report ID is:", applicant.ApplicantID)
 	util.WaitForEnter()
 }
@@ -162,14 +151,12 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 	defaultRegisDataPath := filepath.Join(parentDir, "recruit", "data", "RegisData.csv")
 	filePath := defaultRegisDataPath
 
-	// Read applicants from the file
 	applicants, err := s.applicantCtrl.ReadApplicantsFromFile(filePath)
 	if err != nil {
 		fmt.Println("Error reading applicants from file:", err)
 		return
 	}
 
-	// Register applicants from the file
 	for _, a := range applicants {
 		round := s.SelectApplicationRound()
 		if round == nil {
@@ -177,32 +164,23 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 			continue
 		}
 
-		// Apply additional form strategy if needed
 		if !s.handleRoundFormData(round, &a) {
 			fmt.Printf("Skipping %s %s due to invalid form data.\n", a.FirstName, a.LastName)
 			continue
 		}
-		// strategy, err := controller.GetFormStrategy(round.RoundName)
-		// if err == nil && strategy != nil {
-		// 	if err := strategy.ApplyForm(&a); err != nil {
-		// 		fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, err)
-		// 		continue
-		// 	}
-		// }
-
-		// Register the applicant
+	
 		if err := s.applicantCtrl.RegisterApplicant(&a); err != nil {
 			fmt.Printf("Failed to register %s %s: %v\n", a.FirstName, a.LastName, err)
 			continue
 		}
 
-		// Select faculty and department
 		faculty, department := s.SelectFacultyAndDepartment()
 		if faculty == nil || department == nil {
 			continue
 		}
 
-		// Build criteria for applicant and determine status
+		program := s.SelectProgram()
+
 		compositeCriteria := s.criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 		status := model.Pending
 		if compositeCriteria.IsSatisfiedBy(a) {
@@ -211,8 +189,7 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 			status = model.Rejected
 		}
 
-		// Save application report
-		s.SaveReportForApplicant(a.ApplicantID, round.RoundID, faculty, department, string(status))
+		s.SaveReportForApplicant(a.ApplicantID, round.RoundID, faculty, department, &program, string(status))
 		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
 }
@@ -224,7 +201,6 @@ func (s *applicantRegistrationService) SelectApplicationRound() *model.Applicati
 		return nil
 	}
 
-	// Display available application rounds
 	fmt.Println("\n==== Available Application Rounds ====")
 	for i, round := range rounds {
 		fmt.Printf("%d. %s\n", i+1, round.RoundName)
@@ -240,14 +216,12 @@ func (s *applicantRegistrationService) SelectApplicationRound() *model.Applicati
 }
 
 func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonModel.Faculty, *commonModel.Department) {
-	// Retrieve faculties
 	faculties, err := s.facultyCtrl.GetAll()
 	if err != nil || len(faculties) == 0 {
 		fmt.Println("Error retrieving faculties.")
 		return nil, nil
 	}
 
-	// Display available faculties
 	fmt.Println("\n==== Available Faculties ====")
 	for i, faculty := range faculties {
 		fmt.Printf("%d. %s\n", i+1, faculty.Name)
@@ -261,14 +235,12 @@ func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonMode
 	}
 	selectedFaculty := faculties[facultyChoice-1]
 
-	// Retrieve departments for selected faculty
 	departments, err := s.departmentCtrl.GetByFaculty(selectedFaculty.Name)
 	if err != nil || len(departments) == 0 {
 		fmt.Println("Error retrieving departments.")
 		return nil, nil
 	}
 
-	// Display available departments
 	fmt.Println("\n==== Available Departments ====")
 	for i, dept := range departments {
 		fmt.Printf("%d. %s\n", i+1, dept.Name)
@@ -283,12 +255,13 @@ func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonMode
 	return selectedFaculty, departments[deptChoice-1]
 }
 
-func (s *applicantRegistrationService) SaveReportForApplicant(applicantID uint, roundID uint, faculty *commonModel.Faculty, department *commonModel.Department, status string) {
+func (s *applicantRegistrationService) SaveReportForApplicant(applicantID uint, roundID uint, faculty *commonModel.Faculty, department *commonModel.Department, program *commonModel.ProgramType, status string) {
 	report := model.ApplicationReport{
 		ApplicantID:         applicantID,
 		ApplicationRoundsID: roundID,
 		Faculty:             faculty,
 		Department:          department,
+		Program:             program,
 		ApplicationStatuses: model.ApplicationStatus(status),
 	}
 
@@ -316,17 +289,29 @@ func (s *applicantRegistrationService) handleRoundFormData(round *model.Applicat
 	scanner := bufio.NewScanner(os.Stdin)
 	for _, roundField := range strategy.GetForm() {
 		fmt.Printf("Enter %s: ", roundField)
-		
+
 		scanner.Scan()
 		data := scanner.Text()
 		roundData[roundField] = data
 	}
 
-	// if err := strategy.Validate(roundData); err != nil {
-	// 	fmt.Printf("Error validating form data: %v\n", err)
-	// 	return false
-	// }
 	a.SetRoundInfo(roundData)
 	return true
 }
 
+func (s *applicantRegistrationService) SelectProgram() commonModel.ProgramType {
+	fmt.Println("\n==== Available Programs ====")
+	for k, v := range commonModel.ProgramTypeLabel {
+		fmt.Printf("%d. %s\n", k, v)
+	}
+
+	fmt.Print("Select a program: ")
+	var choice int
+	fmt.Scan(&choice)
+
+	if _, ok := commonModel.ProgramTypeLabel[commonModel.ProgramType(choice)]; !ok {
+		fmt.Println("Invalid selection. Defaulting to Regular.")
+		return commonModel.REGULAR
+	}
+	return commonModel.ProgramType(choice)
+}
