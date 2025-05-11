@@ -28,13 +28,6 @@ func (controller *ApplicationRoundController) CreateApplicationRound(round *mode
 
 func (c *ApplicationRoundController) GetAllRounds() ([]*model.ApplicationRound, error) {
 	return c.Base.List(nil)
-	// var rounds []*model.ApplicationRound
-
-	// if err := c.DB.Find(&rounds).Error; err != nil {
-	// 	return nil, fmt.Errorf("failed to query application rounds: %w", err)
-	// }
-
-	// return rounds, nil
 }
 
 func (c *ApplicationRoundController) ReadApplicationRoundsFromCSV(filePath string) error {

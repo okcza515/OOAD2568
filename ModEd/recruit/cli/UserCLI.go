@@ -51,8 +51,6 @@ func (u *UserMenuState) HandleUserInput(input string) error {
 	}
 	return nil
 
-	// fmt.Println("\nPress Enter to continue...")
-	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
 func UserCLI(applicantDeps ApplicantDependencies) {

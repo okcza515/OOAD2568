@@ -1,15 +1,11 @@
 package controller
 
 import (
-	
 	"errors"
-	
 )
 
 type QuotaStrategy struct{}
 
-
-// Implements FormRound
 func (q *QuotaStrategy) GetForm() []string {
 	return []string{"MathGrade", "ScienceGrade", "EnglishGrade"}
 }

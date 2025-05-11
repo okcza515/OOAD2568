@@ -1,3 +1,4 @@
+// MEP-1003 Student Recruitment
 package controller
 
 import (
@@ -24,7 +25,6 @@ func (s *AdminLoginStrategy) ApplyLogin(req LoginRequest, model interface{}) (bo
 		return false, fmt.Errorf("model must have Username and Password fields")
 	}
 
-	// ค้นหาผู้ใช้ในฐานข้อมูล
 	err := s.DB.Where("username = ?", req.Username).First(model).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -33,7 +33,6 @@ func (s *AdminLoginStrategy) ApplyLogin(req LoginRequest, model interface{}) (bo
 		return false, err
 	}
 
-	// ตรวจสอบรหัสผ่าน
 	if passwordField.String() != req.Password {
 		return false, nil
 	}

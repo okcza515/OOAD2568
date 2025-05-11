@@ -23,11 +23,3 @@ func (s PortfolioStrategy) Validate(data map[string]string) (error) {
 	return nil
 }
 
-// func (p *PortfolioStrategy) ApplyForm(applicant *model.Applicant) error {
-// 	fmt.Print("Enter Portfolio URL: ")
-// 	var portfolioURL string
-// 	fmt.Scan(&portfolioURL)
-// 	applicant.PortfolioURL = portfolioURL
-// 	return nil
-// }
-

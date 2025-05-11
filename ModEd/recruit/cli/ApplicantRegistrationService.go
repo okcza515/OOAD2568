@@ -110,37 +110,15 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 		return
 	}
 
-	// Apply additional form strategy if needed
 	if !s.handleRoundFormData(round, &applicant) {
 		return
 	}
-	// strategy, err := controller.GetFormStrategy(round.RoundName)
-	// if err != nil && strategy == nil {
-	// 	println("failed to get evaluation strategy: %w", err)
-	// 	return
-	// }
-	// roundData := make(map[string]string)
-	// for _, roundField := range strategy.GetForm() {
-	// 	fmt.Printf("Enter %s: ", roundField)
-	// 	scanner := bufio.NewScanner(os.Stdin)
-	// 	scanner.Scan()
-	// 	data := scanner.Text()
-	// 	roundData[roundField] = data
-	// }
-
-	// err = strategy.Validate(roundData)
-	// if err != nil {
-	// 	fmt.Printf("Error validating form data: %v\n", err)
-	// 	return
-	// }
-
-	// Register the applicant
+	
 	if err := s.applicantCtrl.RegisterApplicant(&applicant); err != nil {
 		fmt.Println("Registration failed:", err)
 		return
 	}
 
-	// Select faculty and department
 	faculty, department := s.SelectFacultyAndDepartment()
 	if faculty == nil || department == nil {
 		return
@@ -148,7 +126,6 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 
 	program := s.SelectProgram()
 
-	// Build criteria for applicant and determine status
 	compositeCriteria := s.criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 	status := model.Pending
 	if compositeCriteria.IsSatisfiedBy(applicant) {
@@ -157,7 +134,6 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 		status = model.Rejected
 	}
 
-	// Save application report
 	s.SaveReportForApplicant(applicant.ApplicantID, round.RoundID, faculty, department, &program, string(status))
 	// fmt.Println("Registration successful! Your Applicantion Report ID is:", applicant.ApplicantID)
 	util.WaitForEnter()
@@ -175,14 +151,12 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 	defaultRegisDataPath := filepath.Join(parentDir, "recruit", "data", "RegisData.csv")
 	filePath := defaultRegisDataPath
 
-	// Read applicants from the file
 	applicants, err := s.applicantCtrl.ReadApplicantsFromFile(filePath)
 	if err != nil {
 		fmt.Println("Error reading applicants from file:", err)
 		return
 	}
 
-	// Register applicants from the file
 	for _, a := range applicants {
 		round := s.SelectApplicationRound()
 		if round == nil {
@@ -190,26 +164,16 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 			continue
 		}
 
-		// Apply additional form strategy if needed
 		if !s.handleRoundFormData(round, &a) {
 			fmt.Printf("Skipping %s %s due to invalid form data.\n", a.FirstName, a.LastName)
 			continue
 		}
-		// strategy, err := controller.GetFormStrategy(round.RoundName)
-		// if err == nil && strategy != nil {
-		// 	if err := strategy.ApplyForm(&a); err != nil {
-		// 		fmt.Printf("Error applying form for %s %s: %v\n", a.FirstName, a.LastName, err)
-		// 		continue
-		// 	}
-		// }
-
-		// Register the applicant
+	
 		if err := s.applicantCtrl.RegisterApplicant(&a); err != nil {
 			fmt.Printf("Failed to register %s %s: %v\n", a.FirstName, a.LastName, err)
 			continue
 		}
 
-		// Select faculty and department
 		faculty, department := s.SelectFacultyAndDepartment()
 		if faculty == nil || department == nil {
 			continue
@@ -217,7 +181,6 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 
 		program := s.SelectProgram()
 
-		// Build criteria for applicant and determine status
 		compositeCriteria := s.criteriaCtrl.BuildCriteriaForApplicant(round.RoundName, faculty.Name, department.Name)
 		status := model.Pending
 		if compositeCriteria.IsSatisfiedBy(a) {
@@ -226,7 +189,6 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 			status = model.Rejected
 		}
 
-		// Save application report
 		s.SaveReportForApplicant(a.ApplicantID, round.RoundID, faculty, department, &program, string(status))
 		fmt.Println("Registration successful! Your Applicant ID is:", a.ApplicantID)
 	}
@@ -239,7 +201,6 @@ func (s *applicantRegistrationService) SelectApplicationRound() *model.Applicati
 		return nil
 	}
 
-	// Display available application rounds
 	fmt.Println("\n==== Available Application Rounds ====")
 	for i, round := range rounds {
 		fmt.Printf("%d. %s\n", i+1, round.RoundName)
@@ -255,14 +216,12 @@ func (s *applicantRegistrationService) SelectApplicationRound() *model.Applicati
 }
 
 func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonModel.Faculty, *commonModel.Department) {
-	// Retrieve faculties
 	faculties, err := s.facultyCtrl.GetAll()
 	if err != nil || len(faculties) == 0 {
 		fmt.Println("Error retrieving faculties.")
 		return nil, nil
 	}
 
-	// Display available faculties
 	fmt.Println("\n==== Available Faculties ====")
 	for i, faculty := range faculties {
 		fmt.Printf("%d. %s\n", i+1, faculty.Name)
@@ -276,14 +235,12 @@ func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonMode
 	}
 	selectedFaculty := faculties[facultyChoice-1]
 
-	// Retrieve departments for selected faculty
 	departments, err := s.departmentCtrl.GetByFaculty(selectedFaculty.Name)
 	if err != nil || len(departments) == 0 {
 		fmt.Println("Error retrieving departments.")
 		return nil, nil
 	}
 
-	// Display available departments
 	fmt.Println("\n==== Available Departments ====")
 	for i, dept := range departments {
 		fmt.Printf("%d. %s\n", i+1, dept.Name)
@@ -338,10 +295,6 @@ func (s *applicantRegistrationService) handleRoundFormData(round *model.Applicat
 		roundData[roundField] = data
 	}
 
-	// if err := strategy.Validate(roundData); err != nil {
-	// 	fmt.Printf("Error validating form data: %v\n", err)
-	// 	return false
-	// }
 	a.SetRoundInfo(roundData)
 	return true
 }
