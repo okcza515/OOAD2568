@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ControllerReviewFunc func(tx *gorm.DB, requestID string, action string, reason string) error
+type ControllerReviewFunc func(requestID string, action string, reason string) error
 
 func handleReviewCommand(
 	args []string,
@@ -36,7 +36,7 @@ func handleReviewCommand(
 		return fmt.Errorf("validation error: %v", err)
 	}
 
-	if err := controllerFunc(tx, *requestID, strings.ToLower(*action), *reason); err != nil {
+	if err := controllerFunc(*requestID, strings.ToLower(*action), *reason); err != nil {
 		return fmt.Errorf("failed to review %s request: %v", entityType, err)
 	}
 
