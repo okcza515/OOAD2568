@@ -15,7 +15,12 @@ type InstructorMenuState struct {
 
 // HandleUserInput implements cli.MenuState.
 func (a *InstructorMenuState) HandleUserInput(input string) error {
-	panic("unimplemented")
+	err := a.handlerContext.HandleInput(input)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Render implements cli.MenuState.
