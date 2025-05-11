@@ -28,7 +28,7 @@ func NewHRMenuCLI(manager *cli.CLIMenuStateManager) *HRMenuCLI {
 
 func (app *HRMenuCLI) Run() {
 	for {
-		core.ClearScreen()
+		// core.ClearScreen()
 
 		if app.lastError != nil {
 			fmt.Printf("Error: %v\nPlease try again.\n\n", app.lastError)
@@ -66,7 +66,10 @@ func main() {
 	manager := cli.NewCLIMenuManager()
 
 	mainMenu := menu.NewHRMainMenuState(manager,
-		hrController.NewStudentHRController(db))
+		hrController.NewStudentHRController(db),
+		hrController.NewInstructorHRController(db),
+		hrController.NewLeaveStudentHRController(db),
+	)
 
 	manager.SetState(mainMenu)
 

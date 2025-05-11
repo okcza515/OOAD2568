@@ -28,20 +28,23 @@ func (a *StudentMenuState) HandleUserInput(input string) error {
 func (a *StudentMenuState) Render() {
 	fmt.Println("=== Student Menu ===")
 	a.handlerContext.ShowMenu()
-	fmt.Println("back:\tBack to main menu")
 }
 
-func NewStudentMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController) *StudentMenuState {
+func NewStudentMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController, leaveStudentCtrl *controller.LeaveStudentHRController) *StudentMenuState {
 	handlerContext := coreHandler.NewHandlerContext()
 
 	// Pass the controller to your strategy/handler
 	addStudentHandler := hrHandler.NewAddStudentStrategy(studentCtrl)
+	listStudentHandler := hrHandler.NewListStudentStrategy(studentCtrl)
+	deleteStudentHandler := hrHandler.NewDeleteStudentStrategy(studentCtrl)
+	updateStudentInfoHandler := hrHandler.NewUpdateStudentInfoStrategy(studentCtrl)
+	requestStudentLeaveHandler := hrHandler.NewRequestStudentLeaveStrategy(leaveStudentCtrl)
 
 	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
-	handlerContext.AddHandler("2", "List student", nil)
-	handlerContext.AddHandler("3", "Update student Info", nil)
-	handlerContext.AddHandler("4", "Delete student", nil)
-	handlerContext.AddHandler("5", "Request leave", nil)
+	handlerContext.AddHandler("2", "List student", listStudentHandler)
+	handlerContext.AddHandler("3", "Update student Info", updateStudentInfoHandler)
+	handlerContext.AddHandler("4", "Delete student", deleteStudentHandler)
+	handlerContext.AddHandler("5", "Request leave", requestStudentLeaveHandler)
 	handlerContext.AddHandler("6", "Request resignation", nil)
 	handlerContext.AddHandler("7", "Review leave", nil)
 	handlerContext.AddHandler("8", "Review resignation", nil)

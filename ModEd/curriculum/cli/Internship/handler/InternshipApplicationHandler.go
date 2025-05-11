@@ -109,6 +109,33 @@ func (handler *InternshipApplicationHandler) DeleteApplication() error {
 	return nil
 }
 
+func (handler *InternshipApplicationHandler) UpdateApprovalStatus() error {
+	studentCode := utils.GetUserInput("Enter Student Code: ")
+	if studentCode == "" {
+		return fmt.Errorf("error: student code cannot be empty")
+	}
+
+	advisorStatusStr := utils.GetUserInput("Enter Advisor Approval Status (APPROVED/REJECT): ")
+	if advisorStatusStr != string(model.APPROVED) && advisorStatusStr != string(model.REJECT) {
+		return fmt.Errorf("error: invalid advisor approval status, must be 'APPROVED' or 'REJECT'")
+	}
+	advisorStatus := model.ApprovedStatus(advisorStatusStr)
+
+	companyStatusStr := utils.GetUserInput("Enter Company Approval Status (APPROVED/REJECT): ")
+	if companyStatusStr != string(model.APPROVED) && companyStatusStr != string(model.REJECT) {
+		return fmt.Errorf("error: invalid company approval status, must be 'APPROVED' or 'REJECT'")
+	}
+	companyStatus := model.ApprovedStatus(companyStatusStr)
+
+	err := handler.wrapper.Approved.UpdateApprovalStatuses(studentCode, advisorStatus, companyStatus)
+	if err != nil {
+		return fmt.Errorf("error updating approval statuses: %w", err)
+	}
+
+	fmt.Println("Approval statuses updated successfully!")
+	return nil
+}
+
 func (handler *InternshipApplicationHandler) HandleUserInput(input string) error {
 	switch input {
 	case "1":
@@ -119,6 +146,8 @@ func (handler *InternshipApplicationHandler) HandleUserInput(input string) error
 		return handler.GetApplicationStatus()
 	case "4":
 		return handler.DeleteApplication()
+	case "5":
+		return handler.UpdateApprovalStatus()
 	case "back":
 		handler.manager.SetState(handler.InternshipModule)
 		return nil
@@ -134,6 +163,7 @@ func (handler *InternshipApplicationHandler) Render() {
 	fmt.Println("2. List All Internship Applications")
 	fmt.Println("3. Get Application Status")
 	fmt.Println("4. Delete Internship Application")
+	fmt.Println("5. Update Approval Status")
 	fmt.Println("Type 'back' to return to the previous menu")
 	fmt.Print("Enter your choice: ")
 }
