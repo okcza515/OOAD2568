@@ -31,21 +31,29 @@ func (a *InstructorMenuState) Render() {
 	fmt.Println("exit:\tExit the program.")
 }
 
-func NewInstructorMenuState(manager *cli.CLIMenuStateManager, instructorCtrl *controller.InstructorHRController) *InstructorMenuState {
+func NewInstructorMenuState(
+	manager *cli.CLIMenuStateManager,
+	instructorCtrl *controller.InstructorHRController,
+	leaveInstructorCtrl *controller.LeaveInstructorHRController,
+	resignInstructorCtrl *controller.ResignationInstructorHRController,
+	raiseInstructorCtrl *controller.RaiseHRController,
+) *InstructorMenuState {
 	handlerContext := coreHandler.NewHandlerContext()
 
 	addInstructorHandler := hrHandler.NewAddInstructorStrategy(instructorCtrl)
 	listInstructorHandler := hrHandler.NewListInstructorStrategy(instructorCtrl)
 	updateInstructorHandler := hrHandler.NewUpdateInstructorInfoStrategy(instructorCtrl)
-	// requestInstructorHandler := hrHandler.NewRequestInstructorLeaveStrategy(instructorCtrl)
+	requestInstructorLeaveHandler := hrHandler.NewRequestLeaveHandlerStrategy(leaveInstructorCtrl.SubmitInstructorLeaveRequest)
+	requestInstructorResignHandler := hrHandler.NewRequestResignationHandlerStrategy(resignInstructorCtrl.SubmitResignationInstructor)
+	requestInstructorRaiseHandler := hrHandler.NewRequestRaiseHandlerStrategy(raiseInstructorCtrl)
 
 	handlerContext.AddHandler("1", "Add new instructor", addInstructorHandler)
 	handlerContext.AddHandler("2", "List instructor", listInstructorHandler)
 	handlerContext.AddHandler("3", "Update instructor Info", updateInstructorHandler)
 	handlerContext.AddHandler("4", "Delete instructor", nil)
-	handlerContext.AddHandler("5", "Request leave", nil)
-	handlerContext.AddHandler("6", "Request resignation", nil)
-	handlerContext.AddHandler("7", "Request raise", nil)
+	handlerContext.AddHandler("5", "Request leave", requestInstructorLeaveHandler)
+	handlerContext.AddHandler("6", "Request resignation", requestInstructorResignHandler)
+	handlerContext.AddHandler("7", "Request raise", requestInstructorRaiseHandler)
 	handlerContext.AddHandler("8", "Review leave", nil)
 	handlerContext.AddHandler("9", "Review resignation", nil)
 	handlerContext.AddHandler("10", "Review raise", nil)

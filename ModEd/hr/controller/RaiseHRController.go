@@ -50,7 +50,7 @@ func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.Requ
 	return requests, nil
 }
 
-func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount int, reason string) error {
+func (c *RaiseHRController) SubmitRaiseRequest(instructorID string, amount float64, reason string) error {
 	tm := &util.TransactionManager{DB: c.db}
 
 	return tm.Execute(func(tx *gorm.DB) error {

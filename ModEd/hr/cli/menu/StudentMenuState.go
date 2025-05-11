@@ -44,8 +44,8 @@ func NewStudentMenuState(
 	listStudentHandler := hrHandler.NewListStudentStrategy(studentCtrl)
 	deleteStudentHandler := hrHandler.NewDeleteStudentStrategy(studentCtrl)
 	updateStudentInfoHandler := hrHandler.NewUpdateStudentInfoStrategy(studentCtrl)
-	requestStudentLeaveHandler := hrHandler.NewRequestStudentLeaveStrategy(leaveStudentCtrl)
-	requestStudentResignHandler := hrHandler.NewRequestStudentResignationStrategy(resignStudentCtrl)
+	requestStudentLeaveHandler := hrHandler.NewRequestLeaveHandlerStrategy(leaveStudentCtrl.SubmitStudentLeaveRequest)
+	requestStudentResignHandler := hrHandler.NewRequestResignationHandlerStrategy(resignStudentCtrl.SubmitResignationStudent)
 
 	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
 	handlerContext.AddHandler("2", "List student", listStudentHandler)

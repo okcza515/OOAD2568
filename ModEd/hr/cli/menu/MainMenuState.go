@@ -31,11 +31,14 @@ func (state *HRMainMenuState) Render() {
 }
 
 func NewHRMainMenuState(
-	manager *cli.CLIMenuStateManager, 
-	studentCtrl *controller.StudentHRController, 
-	instructorCtrl *controller.InstructorHRController, 
+	manager *cli.CLIMenuStateManager,
+	studentCtrl *controller.StudentHRController,
+	instructorCtrl *controller.InstructorHRController,
 	leaveStudentCtrl *controller.LeaveStudentHRController,
+	leaveInstructorCtrl *controller.LeaveInstructorHRController,
 	resignStudentCtrl *controller.ResignationStudentHRController,
+	resignInstructorCtrl *controller.ResignationInstructorHRController,
+	raiseInstructorCtrl *controller.RaiseHRController,
 ) *HRMainMenuState {
 	handlerContext := handler.NewHandlerContext()
 	state := &HRMainMenuState{
@@ -45,7 +48,7 @@ func NewHRMainMenuState(
 
 	manager.AddMenu(string(MENU_HR), state)
 	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl, leaveStudentCtrl, resignStudentCtrl))
-	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager, instructorCtrl))
+	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager, instructorCtrl, leaveInstructorCtrl, resignInstructorCtrl, raiseInstructorCtrl))
 	manager.AddMenu(string(MENU_DATABASE), NewDatabaseMenuState(manager, studentCtrl, instructorCtrl))
 
 	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))

@@ -120,7 +120,7 @@ func handleRaiseRequest(target string, args []string, tx *gorm.DB) error {
 
 	idUsage := fmt.Sprintf("%s ID", target)
 	id := fs.String("id", "", idUsage)
-	amount := fs.Int("amount", 0, "Raise amount")
+	amount := fs.Float64("amount", 0, "Raise amount")
 	reason := fs.String("reason", "", "Reason for raise")
 
 	if err := fs.Parse(args); err != nil {

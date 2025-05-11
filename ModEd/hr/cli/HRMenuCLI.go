@@ -69,7 +69,10 @@ func main() {
 		hrController.NewStudentHRController(db),
 		hrController.NewInstructorHRController(db),
 		hrController.NewLeaveStudentHRController(db),
+		hrController.NewLeaveInstructorHRController(db),
 		hrController.NewResignationStudentHRController(db),
+		hrController.NewResignationInstructorHRController(db),
+		hrController.NewRaiseHRController(db),
 	)
 
 	manager.SetState(mainMenu)
