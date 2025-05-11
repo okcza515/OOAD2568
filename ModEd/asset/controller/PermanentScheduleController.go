@@ -14,7 +14,8 @@ import (
 
 type PermanentBookingControllerInterface interface {
 	SeedPermanentBookingSchedule(path string) ([]*model.PermanentSchedule, error)
-	NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error)
+	//NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error)
+	Insert(data model.PermanentSchedule) error
 	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 	UpdateByID(schedule model.PermanentSchedule) error
 	DeleteByID(id uint) error
@@ -51,62 +52,22 @@ func (controller *PermanentBookingController) SeedPermanentBookingSchedule(path 
 	return schedule, nil
 }
 
-func (controller *PermanentBookingController) NewPermanentSchedule(schedule model.PermanentSchedule) ([]model.PermanentSchedule, error) {
-	var timeTable model.TimeTable
-	if err := controller.db.Where("id = ?", schedule.TimeTableID).First(&timeTable).Error; err != nil {
-		return nil, errors.New("time table not found")
+func (controller *PermanentBookingController) Insert(data model.PermanentSchedule) error {
+	timeTable := model.TimeTable{
+		StartDate:   data.TimeTable.StartDate,
+		EndDate:     data.TimeTable.EndDate,
+		RoomID:      data.TimeTable.RoomID,
+		IsAvailable: false,
 	}
 
-	if !timeTable.IsAvailable {
-		return nil, errors.New("time slot is unavailable")
+	data.TimeTableID = timeTable.ID
+
+	if err := controller.baseController.Insert(data); err != nil {
+		controller.db.Delete(&timeTable)
+		return err
 	}
 
-	var room model.Room
-	if err := controller.db.Where("id = ?", timeTable.RoomID).First(&room).Error; err != nil {
-		return nil, err
-	}
-	if room.IsRoomOutOfService {
-		return nil, errors.New("room is out of service")
-	}
-
-	startDate := timeTable.StartDate
-	endDate := timeTable.EndDate
-	var schedules []model.PermanentSchedule
-
-	tx := controller.db.Begin()
-	for current := startDate; !current.After(endDate); current = current.AddDate(0, 0, 7) {
-
-		newTimeTable := model.TimeTable{
-			StartDate:   current,
-			EndDate:     current.Add(timeTable.EndDate.Sub(timeTable.StartDate)),
-			RoomID:      timeTable.RoomID,
-			IsAvailable: false,
-			BookingType: model.BOOKING_PERMANENT,
-		}
-		if err := tx.Create(&newTimeTable).Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-
-		newSchedule := model.PermanentSchedule{
-			TimeTableID:   newTimeTable.ID,
-			FacultyID:     schedule.FacultyID,
-			DepartmentID:  schedule.DepartmentID,
-			ProgramtypeID: schedule.ProgramtypeID,
-			CourseId:      schedule.CourseId,
-			ClassId:       schedule.ClassId,
-		}
-		if err := tx.Create(&newSchedule).Error; err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-		schedules = append(schedules, newSchedule)
-	}
-	if err := tx.Commit().Error; err != nil {
-		return nil, err
-	}
-
-	return schedules, nil
+	return nil
 }
 
 func (controller *PermanentBookingController) RetrieveByID(id uint, preloads ...string) (model.PermanentSchedule, error) {

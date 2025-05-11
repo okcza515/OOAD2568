@@ -3,7 +3,6 @@ package model
 
 import (
 	"fmt"
-	"strings"
 
 	master "ModEd/common/model"
 	"ModEd/core"
@@ -27,76 +26,71 @@ type PermanentSchedule struct {
 }
 
 func (ps PermanentSchedule) ToString() string {
-	truncate := func(s string, maxLen int) string {
-		if len(s) > maxLen {
-			return s[:maxLen-3] + "..."
-		}
-		return s
+	return fmt.Sprintf("==================================================================\n"+
+		" PERMANENT SCHEDULE #%-43d \n"+
+		"------------------------------------------------------------------\n"+
+		" Created:                      %-25s \n"+
+		" Updated:                      %-25s \n"+
+		"------------------------------------------------------------------\n"+
+		" Faculty:                      %-25s \n"+
+		" Department:                   %-25s \n"+
+		" Program Type:                 %-25s \n"+
+		"------------------------------------------------------------------\n"+
+		" Course:                       %-25s \n"+
+		" Class/Section:                %-25d \n"+
+		"------------------------------------------------------------------\n"+
+		" Room:                         %-25s \n"+
+		" Building:                     %-25s \n"+
+		" Floor:                        %-25d \n"+
+		"------------------------------------------------------------------\n"+
+		" Start:                        %-25s \n"+
+		" End:                          %-25s \n"+
+		" Booking Type:                 %-25s \n"+
+		"==================================================================",
+		ps.ID,
+		ps.CreatedAt.Format("2006-01-02 15:04:05"),
+		ps.UpdatedAt.Format("2006-01-02 15:04:05"),
+		getFacultyName(ps.Faculty),
+		getDepartmentName(ps.Department),
+		getProgramTypeName(ps.ProgramtypeID),
+		getCourseName(ps.Course),
+		ps.ClassId,
+		ps.TimeTable.Room.RoomName,
+		ps.TimeTable.Room.Building,
+		ps.TimeTable.Room.Floor,
+		ps.TimeTable.StartDate.Format("2006-01-02 15:04"),
+		ps.TimeTable.EndDate.Format("2006-01-02 15:04"),
+		string(ps.TimeTable.BookingType))
+}
+
+func getFacultyName(faculty master.Faculty) string {
+	if faculty.Name == "" {
+		return fmt.Sprintf("ID: %d", faculty.ID)
 	}
+	return faculty.Name
+}
 
-	idWidth := 5
-	timetableWidth := 10
-	facultyWidth := 20
-	departmentWidth := 20
-	programWidth := 15
-	courseWidth := 20
-	classWidth := 10
-
-	headerBorder := "+" +
-		strings.Repeat("-", idWidth+2) + "+" +
-		strings.Repeat("-", timetableWidth+2) + "+" +
-		strings.Repeat("-", facultyWidth+2) + "+" +
-		strings.Repeat("-", departmentWidth+2) + "+" +
-		strings.Repeat("-", programWidth+2) + "+" +
-		strings.Repeat("-", courseWidth+2) + "+" +
-		strings.Repeat("-", classWidth+2) + "+"
-
-	headerRow := fmt.Sprintf("| %-*s | %-*s | %-*s | %-*s | %-*s | %-*s | %-*s |",
-		idWidth, "ID", timetableWidth, "TimeTable", facultyWidth, "Faculty",
-		departmentWidth, "Department", programWidth, "Program",
-		courseWidth, "Course", classWidth, "Section")
-
-	// Faculty
-	faculty := fmt.Sprintf("%d", ps.FacultyID)
-	if ps.Faculty.Name != "" {
-		faculty = ps.Faculty.Name
+func getDepartmentName(department master.Department) string {
+	if department.Name == "" {
+		return fmt.Sprintf("ID: %d", department.ID)
 	}
+	return department.Name
+}
 
-	// Department
-	department := fmt.Sprintf("%d", ps.DepartmentID)
-	if ps.Department.Name != "" {
-		department = ps.Department.Name
+func getProgramTypeName(programTypeID uint) string {
+	switch programTypeID {
+	case 0:
+		return "Regular"
+	case 1:
+		return "International"
+	default:
+		return fmt.Sprintf("ID: %d", programTypeID)
 	}
+}
 
-	// Program type
-	programType := "Unknown"
-	if ps.ProgramtypeID == 0 {
-		programType = "Regular"
-	} else if ps.ProgramtypeID == 1 {
-		programType = "International"
+func getCourseName(course curriculum.Course) string {
+	if course.Name == "" {
+		return fmt.Sprintf("ID: %d", course.CourseId)
 	}
-
-	// Course
-	course := fmt.Sprintf("%d", ps.CourseId)
-	if ps.Course.Name != "" {
-		course = ps.Course.Name
-	}
-
-	// Section
-	section := ps.ClassId
-	// if ps.Class.Name != "" {
-	// 	section = ps.Class.Name
-	// }
-
-	dataRow := fmt.Sprintf("| %-*d | %-*d | %-*s | %-*s | %-*s | %-*s | %-*d |",
-		idWidth, ps.ID,
-		timetableWidth, ps.TimeTableID,
-		facultyWidth, truncate(faculty, facultyWidth),
-		departmentWidth, truncate(department, departmentWidth),
-		programWidth, truncate(programType, programWidth),
-		courseWidth, truncate(course, courseWidth),
-		classWidth, section)
-
-	return fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n",
-		headerBorder, headerRow, headerBorder, dataRow, headerBorder)
+	return course.Name
 }

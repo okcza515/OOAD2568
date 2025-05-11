@@ -5,11 +5,47 @@
     "UpdatedAt": "2025-01-15T09:00:00Z",
     "DeletedAt": null,
     "time_table_id": 101,
+    "time_table": {
+      "ID": 101,
+      "CreatedAt": "2025-01-15T08:30:00Z",
+      "UpdatedAt": "2025-01-15T08:30:00Z",
+      "DeletedAt": null,
+      "start_date": "2025-05-12T09:00:00Z",
+      "end_date": "2025-05-12T11:00:00Z",
+      "room_id": 1,
+      "room": {
+        "ID": 1,
+        "RoomName": "IT-301",
+        "Building": "IT",
+        "Floor": 3,
+        "Capacity": 40
+      },
+      "is_available": true,
+      "booking_type": "permanent"
+    },
     "faculty_id": 1,
+    "faculty": {
+      "ID": 1,
+      "Name": "Engineering"
+    },
     "department_id": 1,
+    "department": {
+      "ID": 1,
+      "Name": "Computer Engineering"
+    },
     "programtype_id": 0,
+    "programtype": 0,
     "course_id": 1,
-    "class_id": 1
+    "course": {
+      "CourseId": 1,
+      "Name": "Computer Programming",
+      "Code": "CPE111"
+    },
+    "class_id": 1,
+    "class": {
+      "ClassId": 1,
+      "Name": "Section 1"
+    }
   },
   {
     "ID": 2,
@@ -17,11 +53,47 @@
     "UpdatedAt": "2025-01-16T14:30:00Z",
     "DeletedAt": null,
     "time_table_id": 102,
+    "time_table": {
+      "ID": 102,
+      "CreatedAt": "2025-01-16T14:00:00Z",
+      "UpdatedAt": "2025-01-16T14:00:00Z",
+      "DeletedAt": null,
+      "start_date": "2025-05-12T13:00:00Z",
+      "end_date": "2025-05-12T16:00:00Z",
+      "room_id": 2,
+      "room": {
+        "ID": 2,
+        "RoomName": "IT-401",
+        "Building": "IT",
+        "Floor": 4,
+        "Capacity": 60
+      },
+      "is_available": true,
+      "booking_type": "permanent"
+    },
     "faculty_id": 1,
+    "faculty": {
+      "ID": 1,
+      "Name": "Engineering"
+    },
     "department_id": 1,
+    "department": {
+      "ID": 1,
+      "Name": "Computer Engineering"
+    },
     "programtype_id": 0,
-    "course_id": 1,
-    "class_id": 2
+    "programtype": 0,
+    "course_id": 2,
+    "course": {
+      "CourseId": 2,
+      "Name": "Data Structures",
+      "Code": "CPE222"
+    },
+    "class_id": 2,
+    "class": {
+      "ClassId": 2,
+      "Name": "Section 2"
+    }
   },
   {
     "ID": 3,
@@ -29,11 +101,47 @@
     "UpdatedAt": "2025-01-17T10:15:00Z",
     "DeletedAt": null,
     "time_table_id": 103,
-    "faculty_id": 1,
-    "department_id": 1,
+    "time_table": {
+      "ID": 103,
+      "CreatedAt": "2025-01-17T10:00:00Z",
+      "UpdatedAt": "2025-01-17T10:00:00Z",
+      "DeletedAt": null,
+      "start_date": "2025-05-13T09:00:00Z",
+      "end_date": "2025-05-13T12:00:00Z",
+      "room_id": 3,
+      "room": {
+        "ID": 3,
+        "RoomName": "SC-201",
+        "Building": "Science",
+        "Floor": 2,
+        "Capacity": 45
+      },
+      "is_available": true,
+      "booking_type": "permanent"
+    },
+    "faculty_id": 2,
+    "faculty": {
+      "ID": 2,
+      "Name": "Science"
+    },
+    "department_id": 2,
+    "department": {
+      "ID": 2,
+      "Name": "Mathematics"
+    },
     "programtype_id": 0,
-    "course_id": 1,
-    "class_id": 3
+    "programtype": 0,
+    "course_id": 3,
+    "course": {
+      "CourseId": 3,
+      "Name": "Calculus I",
+      "Code": "MTH101"
+    },
+    "class_id": 3,
+    "class": {
+      "ClassId": 3,
+      "Name": "Section 1"
+    }
   },
   {
     "ID": 4,
@@ -41,11 +149,47 @@
     "UpdatedAt": "2025-01-18T08:45:00Z",
     "DeletedAt": null,
     "time_table_id": 104,
-    "faculty_id": 2,
-    "department_id": 2,
+    "time_table": {
+      "ID": 104,
+      "CreatedAt": "2025-01-18T08:30:00Z",
+      "UpdatedAt": "2025-01-18T08:30:00Z",
+      "DeletedAt": null,
+      "start_date": "2025-05-14T13:00:00Z",
+      "end_date": "2025-05-14T16:00:00Z",
+      "room_id": 4,
+      "room": {
+        "ID": 4,
+        "RoomName": "BUS-101",
+        "Building": "Business",
+        "Floor": 1,
+        "Capacity": 80
+      },
+      "is_available": true,
+      "booking_type": "permanent"
+    },
+    "faculty_id": 3,
+    "faculty": {
+      "ID": 3,
+      "Name": "Business Administration"
+    },
+    "department_id": 3,
+    "department": {
+      "ID": 3,
+      "Name": "Management"
+    },
     "programtype_id": 1,
-    "course_id": 2,
-    "class_id": 4
+    "programtype": 1,
+    "course_id": 4,
+    "course": {
+      "CourseId": 4,
+      "Name": "Intro to Management",
+      "Code": "MGT101"
+    },
+    "class_id": 4,
+    "class": {
+      "ClassId": 4,
+      "Name": "Section 1"
+    }
   },
   {
     "ID": 5,
@@ -53,10 +197,46 @@
     "UpdatedAt": "2025-01-19T11:20:00Z",
     "DeletedAt": null,
     "time_table_id": 105,
-    "faculty_id": 2,
-    "department_id": 2,
+    "time_table": {
+      "ID": 105,
+      "CreatedAt": "2025-01-19T11:00:00Z",
+      "UpdatedAt": "2025-01-19T11:00:00Z",
+      "DeletedAt": null,
+      "start_date": "2025-05-15T09:00:00Z",
+      "end_date": "2025-05-15T12:00:00Z",
+      "room_id": 5,
+      "room": {
+        "ID": 5,
+        "RoomName": "ENG-501",
+        "Building": "Engineering",
+        "Floor": 5,
+        "Capacity": 35
+      },
+      "is_available": true,
+      "booking_type": "permanent"
+    },
+    "faculty_id": 1,
+    "faculty": {
+      "ID": 1,
+      "Name": "Engineering"
+    },
+    "department_id": 4,
+    "department": {
+      "ID": 4,
+      "Name": "Electrical Engineering"
+    },
     "programtype_id": 1,
-    "course_id": 2,
-    "class_id": 5
+    "programtype": 1,
+    "course_id": 5,
+    "course": {
+      "CourseId": 5,
+      "Name": "Digital Electronics",
+      "Code": "EE303"
+    },
+    "class_id": 5,
+    "class": {
+      "ClassId": 5,
+      "Name": "Section 1"
+    }
   }
 ]
