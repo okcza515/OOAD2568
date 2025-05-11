@@ -96,6 +96,16 @@ func (fv *FieldValidator) IsDateTime() *FieldValidator {
 	return fv
 }
 
+func (fv *FieldValidator) IsDate() *FieldValidator {
+	fv.rules = append(fv.rules, func(val string) string {
+		if !fv.chain.validator.IsDateValid(val) {
+			return fmt.Sprintf("field '%s' ('%s') must be a valid date (YYYY-MM-DD)", fv.fieldName, val)
+		}
+		return ""
+	})
+	return fv
+}
+
 func (fv *FieldValidator) Length(length int) *FieldValidator {
 	fv.rules = append(fv.rules, func(val string) string {
 		if len(val) != length {
