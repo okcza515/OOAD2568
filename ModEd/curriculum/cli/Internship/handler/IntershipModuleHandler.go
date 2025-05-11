@@ -3,8 +3,6 @@ package handler
 import (
 	"ModEd/core/cli"
 	"ModEd/curriculum/controller"
-	"ModEd/curriculum/model"
-	"ModEd/curriculum/utils"
 	"fmt"
 )
 
@@ -13,6 +11,9 @@ type InternShipModuleMenuStateHandler struct {
 	wrapper     *controller.InternshipModuleWrapper
 
 	InternshipApplicationMenuStateHandler *InternshipApplicationHandler
+	InternshipEvaluationCriteriaHandler   *InternShipEvaluationCriteriaHandler
+	InternshipResultEvaluationHandler     *InternshipResultEvaluationHandler
+	InternshipInformationHandler          *InternshipInformationHandler
 }
 
 func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.InternshipModuleWrapper) *InternShipModuleMenuStateHandler {
@@ -21,7 +22,9 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 		wrapper:     wrapper,
 	}
 	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
-
+	InternshipModule.InternshipEvaluationCriteriaHandler = NewInternShipEvaluationCriteriaHandler(manager, wrapper.InternshipCriteriaController)
+	InternshipModule.InternshipResultEvaluationHandler = NewInternshipResultEvaluationHandler(manager, wrapper.InternshipResultEvaluationController)
+	InternshipModule.InternshipInformationHandler = NewInternshipInformationHandler(manager, wrapper.InformationController)
 	return InternshipModule
 }
 
@@ -30,7 +33,9 @@ func (handler *InternShipModuleMenuStateHandler) Render() {
 	fmt.Println("1. Load csv data")
 	fmt.Println("2. Application Management")
 	fmt.Println("3. Evaluate Student Performance")
-	fmt.Println("4. Update Approval Status")
+	fmt.Println("5. Manage Evaluation Criteria")
+	fmt.Println("6. Manage Result Evaluations")
+	fmt.Println("7. Manage Internship Information")
 	fmt.Println("Type 'exit' to quit")
 	fmt.Print("Enter your choice: ")
 }
@@ -45,13 +50,17 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 		handler.menuManager.SetState(handler.InternshipApplicationMenuStateHandler)
 		return nil
 	case "3":
+		handler.menuManager.SetState(handler.InternshipResultEvaluationHandler)
 		return nil
-	case "4":
-		err := handler.handleUpdateApprovalStatus()
-		if err != nil {
-			fmt.Println("Error updating approval status:", err)
-		}
-		return err
+	case "5":
+		handler.menuManager.SetState(handler.InternshipEvaluationCriteriaHandler)
+		return nil
+	case "6":
+		handler.menuManager.SetState(handler.InternshipResultEvaluationHandler)
+		return nil
+	case "7":
+		handler.menuManager.SetState(handler.InternshipInformationHandler)
+		return nil
 	case "exit":
 		fmt.Println("Exiting...")
 		return nil
@@ -59,31 +68,4 @@ func (handler *InternShipModuleMenuStateHandler) HandleUserInput(input string) e
 		fmt.Println("Invalid input")
 		return nil
 	}
-}
-
-func (handler *InternShipModuleMenuStateHandler) handleUpdateApprovalStatus() error {
-	studentCode := utils.GetUserInput("Enter Student Code: ")
-	if studentCode == "" {
-		return fmt.Errorf("error: student code cannot be empty")
-	}
-
-	advisorStatusStr := utils.GetUserInput("Enter Advisor Approval Status (APPROVED/REJECT): ")
-	if advisorStatusStr != string(model.APPROVED) && advisorStatusStr != string(model.REJECT) {
-		return fmt.Errorf("error: invalid advisor approval status, must be 'APPROVED' or 'REJECT'")
-	}
-	advisorStatus := model.ApprovedStatus(advisorStatusStr)
-
-	companyStatusStr := utils.GetUserInput("Enter Company Approval Status (APPROVED/REJECT): ")
-	if companyStatusStr != string(model.APPROVED) && companyStatusStr != string(model.REJECT) {
-		return fmt.Errorf("error: invalid company approval status, must be 'APPROVED' or 'REJECT'")
-	}
-	companyStatus := model.ApprovedStatus(companyStatusStr)
-
-	err := handler.wrapper.Approved.UpdateApprovalStatuses(studentCode, advisorStatus, companyStatus)
-	if err != nil {
-		return fmt.Errorf("error updating approval statuses: %w", err)
-	}
-
-	fmt.Println("Approval statuses updated successfully!")
-	return nil
 }
