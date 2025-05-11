@@ -6,7 +6,6 @@ import (
 	"ModEd/core"
 	"ModEd/core/migration"
 	"errors"
-
 	"gorm.io/gorm"
 )
 
@@ -34,7 +33,12 @@ func NewSupplyManagementController() *SupplyManagementController {
 }
 
 func (c *SupplyManagementController) List(condition map[string]interface{}, preloads ...string) ([]model.SupplyManagement, error) {
-	records, err := c.BaseController.List(condition, preloads...)
+	 // Add default preloads if none provided - only Room and Supply
+     if len(preloads) == 0 {
+        preloads = []string{"Room", "Supply"}
+    }
+    
+    records, err := c.BaseController.List(condition, preloads...)
     if err != nil {
         return nil, err
     }
@@ -42,6 +46,11 @@ func (c *SupplyManagementController) List(condition map[string]interface{}, prel
 }
 
 func (c *SupplyManagementController) RetrieveByID(id uint, preloads ...string) (model.SupplyManagement, error) {
+     // Add default preloads if none provided - only Room and Supply
+     if len(preloads) == 0 {
+        preloads = []string{"Room", "Supply"}
+    }
+    
     record, err := c.BaseController.RetrieveByID(id, preloads...)
     if err != nil {
         return model.SupplyManagement{}, err
@@ -51,24 +60,19 @@ func (c *SupplyManagementController) RetrieveByID(id uint, preloads ...string) (
 
 func (c *SupplyManagementController) RetrieveByRoomId(roomID uint) (*[]model.SupplyManagement, error) {
     if roomID == 0 {
-        return nil, errors.New("invalid room ID: ID cannot be zero")
-    }
+		return nil, errors.New("no RoomID provided")
+	}
 
-    condition := map[string]interface{}{
-        "room_id": roomID,
-    }
+	assetList := new([]model.SupplyManagement)
+	// Add preloading to this query - only Room and Supply
+	result := c.db.Preload("Room").Preload("Supply").Where("room_id = ?", roomID).Find(&assetList)
 
-    records, err := c.BaseController.List(condition)
-    if err != nil {
-        return nil, err
-    }
-
-    return &records, nil
+	return assetList, result.Error
 }
 
 func (c *SupplyManagementController) Insert(payload *model.SupplyManagement) error {
 	if payload == nil {
-		return errors.New("invalid instrument management data")
+		return errors.New("invalid supply management data")
 	}
 	err := c.BaseController.Insert(*payload)
 	return err

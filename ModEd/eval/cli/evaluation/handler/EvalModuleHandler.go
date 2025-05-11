@@ -14,7 +14,8 @@ type EvalModuleMenuStateHandler struct {
 	Manager *cli.CLIMenuStateManager
 	wrapper *controller.EvalModuleWrapper
 
-	ProgressMenuStateHandler *ProgressMenuStateHandler
+	ProgressMenuStateHandler   *ProgressMenuStateHandler
+	EvaluationMenuStateHandler *EvaluationMenuStateHandler
 }
 
 func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.EvalModuleWrapper) *EvalModuleMenuStateHandler {
@@ -26,6 +27,7 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 	evalModuleHandler.ProgressMenuStateHandler = NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
 
 	evalModuleHandler.Manager.AddMenu("3", evalModuleHandler.ProgressMenuStateHandler)
+	evalModuleHandler.Manager.AddMenu("4", evalModuleHandler.EvaluationMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("Exit", nil)
 
 	return evalModuleHandler
@@ -34,6 +36,7 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 func (handler *EvalModuleMenuStateHandler) Render() {
 	fmt.Println("\nEvaluation Module Menu:")
 	fmt.Println("3. Progress")
+	fmt.Println("4. Evaluation")
 	fmt.Println("Exit the Evaluation Module")
 }
 

@@ -18,7 +18,7 @@ type Evaluation struct {
 	Instructor     commonModel.Instructor `gorm:"foreignKey:InstructorCode;references:InstructorCode"`
 	AssessmentId   uint                   //assignment
 	Assessment     Assessment             `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
-	Score          uint
+	Score          uint                   `gorm:"column:Score;default:0"`
 	Comment        string
 	EvaluatedAt    time.Time
 }

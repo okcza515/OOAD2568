@@ -1,62 +1,52 @@
 [
   {
-    "room_id": 101,
-    "instrument_serial_id": 1001,
-    "instrument_label": "Guitar A-001",
-    "borrow_id": 0
+    "room_id": 1,
+    "instrument_id": 1,
+    "instrument_borrow_id": 1
   },
   {
-    "room_id": 102,
-    "instrument_serial_id": 1002,
-    "instrument_label": "Piano P-001",
-    "borrow_id": 1
+    "room_id": 2,
+    "instrument_id": 2,
+    "instrument_borrow_id": 2
   },
   {
-    "room_id": 101,
-    "instrument_serial_id": 1003,
-    "instrument_label": "Drums D-001",
-    "borrow_id": 0
+    "room_id": 3,
+    "instrument_id": 3,
+    "instrument_borrow_id": 3
   },
   {
-    "room_id": 103,
-    "instrument_serial_id": 1004,
-    "instrument_label": "Violin V-001",
-    "borrow_id": 2
+    "room_id": 4,
+    "instrument_id": 4,
+    "instrument_borrow_id": 4
   },
   {
-    "room_id": 102,
-    "instrument_serial_id": 1005,
-    "instrument_label": "Bass B-001",
-    "borrow_id": 0
+    "room_id": 5,
+    "instrument_id": 5,
+    "instrument_borrow_id": 5
   },
   {
-    "room_id": 103,
-    "instrument_serial_id": 1006,
-    "instrument_label": "Saxophone S-001",
-    "borrow_id": 3
+    "room_id": 6,
+    "instrument_id": 6,
+    "instrument_borrow_id": 6
   },
   {
-    "room_id": 101,
-    "instrument_serial_id": 1007,
-    "instrument_label": "Trumpet T-001",
-    "borrow_id": 0
+    "room_id": 7,
+    "instrument_id": 7,
+    "instrument_borrow_id": 7
   },
   {
-    "room_id": 102,
-    "instrument_serial_id": 1008,
-    "instrument_label": "Flute F-001",
-    "borrow_id": 4
+    "room_id": 8,
+    "instrument_id": 8,
+    "instrument_borrow_id": 8
   },
   {
-    "room_id": 103,
-    "instrument_serial_id": 1009,
-    "instrument_label": "Clarinet C-001",
-    "borrow_id": 0
+    "room_id": 9,
+    "instrument_id": 9,
+    "instrument_borrow_id": 9
   },
   {
-    "room_id": 101,
-    "instrument_serial_id": 1010,
-    "instrument_label": "Keyboard K-001",
-    "borrow_id": 5
+    "room_id": 10,
+    "instrument_id": 10,
+    "instrument_borrow_id": 10
   }
 ]

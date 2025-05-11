@@ -34,10 +34,10 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 		Action: func() error {
 			deptID := util.GetUintInput("Enter Department ID: ")
 
-			newRequest := &model.InstrumentRequest{
-				DepartmentID: deptID,
-				Status:       model.InstrumentRequestStatusPending,
-			}
+			newRequest := controller.NewInstrumentRequestBuilder().
+				WithDepartmentID(deptID).
+				WithStatus(model.InstrumentRequestStatusPending).
+				Build()
 
 			for {
 				fmt.Println("\n--- Add Instrument ---")
@@ -47,14 +47,14 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
 				quantity := util.GetUintInput("Enter Quantity: ")
 
-				detail := &model.InstrumentDetail{
-					InstrumentLabel:     label,
-					Description:         &desc,
-					CategoryID:          categoryID,
-					EstimatedPrice:      estimatedPrice,
-					Quantity:            int(quantity),
-					InstrumentRequestID: newRequest.InstrumentRequestID,
-				}
+				detail := controller.NewInstrumentDetailBuilder().
+					WithLabel(label).
+					WithDescription(desc).
+					WithCategoryID(categoryID).
+					WithEstimatedPrice(estimatedPrice).
+					WithQuantity(int(quantity)).
+					WithRequestID(newRequest.InstrumentRequestID).
+					Build()
 
 				newRequest.Instruments = append(newRequest.Instruments, *detail)
 
@@ -167,14 +167,14 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
 				quantity := util.GetUintInput("Enter Quantity: ")
 
-				detail := &model.InstrumentDetail{
-					InstrumentLabel:     label,
-					Description:         &desc,
-					CategoryID:          categoryID,
-					EstimatedPrice:      estimatedPrice,
-					Quantity:            int(quantity),
-					InstrumentRequestID: request.InstrumentRequestID,
-				}
+				detail := controller.NewInstrumentDetailBuilder().
+					WithLabel(label).
+					WithDescription(desc).
+					WithCategoryID(categoryID).
+					WithEstimatedPrice(estimatedPrice).
+					WithQuantity(int(quantity)).
+					WithRequestID(request.InstrumentRequestID).
+					Build()
 
 				err := facade.RequestedItem.AddInstrumentToRequest(request.InstrumentRequestID, detail)
 				if err != nil {
