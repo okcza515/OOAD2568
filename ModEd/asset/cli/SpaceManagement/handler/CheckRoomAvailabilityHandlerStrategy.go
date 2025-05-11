@@ -57,11 +57,21 @@ func (h *CheckRoomAvailabilityHandlerStrategy) Execute() error {
 		return err
 	}
 	
-	available, err := h.controller.CheckRoomAvailability(uint(roomID), startDate, endDate)
-	if err != nil {
-		fmt.Println("Error checking availability:", err)
-		return err
-	}
+    if endDate.Before(startDate) || endDate.Equal(startDate) {
+        fmt.Println("Error: End date/time must be after start date/time")
+        return fmt.Errorf("invalid date range")
+    }
+
+    if startDate.Before(time.Now()) {
+        fmt.Println("Error: Start date/time cannot be in the past")
+        return fmt.Errorf("invalid start date")
+    }
+    
+    available, err := h.controller.CheckRoomAvailability(uint(roomID), startDate, endDate)
+    if err != nil {
+        fmt.Println("Error checking availability:", err)
+        return err
+    }
 	
 	fmt.Println("==================================================================")
 	fmt.Printf(" Room #%-5d                                                 \n", roomID)

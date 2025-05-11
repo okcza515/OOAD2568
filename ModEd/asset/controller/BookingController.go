@@ -24,7 +24,6 @@ type BookingControllerInterface interface {
 type BookingController struct {
 	db             *gorm.DB
 	baseController *core.BaseController[model.Booking]
-	observers      []SpaceManagementObserverInterface[model.Booking]
 }
 
 func NewBookingController() BookingControllerInterface {
@@ -32,17 +31,6 @@ func NewBookingController() BookingControllerInterface {
 	return &BookingController{
 		db:             db,
 		baseController: core.NewBaseController[model.Booking](db),
-		observers:      make([]SpaceManagementObserverInterface[model.Booking], 0),
-	}
-}
-
-func (c *BookingController) RegisterObserver(observer SpaceManagementObserverInterface[model.Booking]) {
-	c.observers = append(c.observers, observer)
-}
-
-func (c *BookingController) NotifyObservers(eventType string, booking model.Booking) {
-	for _, observer := range c.observers {
-		observer.HandleEvent(eventType, booking)
 	}
 }
 
@@ -62,7 +50,6 @@ func (c *BookingController) Insert(data model.Booking) error {
 		return err
 	}
 
-	c.NotifyObservers("booking_created", data)
 	return nil
 }
 
@@ -113,12 +100,11 @@ func (c *BookingController) UpdateByID(booking *model.Booking) error {
 		return err
 	}
 
-	c.NotifyObservers("booking_updated", existing)
 	return nil
 }
 
 func (c *BookingController) DeleteByID(id uint) error {
-	booking, err := c.RetrieveByID(id)
+	_, err := c.RetrieveByID(id)
 	if err != nil {
 		return err
 	}
@@ -127,7 +113,6 @@ func (c *BookingController) DeleteByID(id uint) error {
 		return err
 	}
 
-	c.NotifyObservers("booking_deleted", booking)
 	return nil
 }
 
