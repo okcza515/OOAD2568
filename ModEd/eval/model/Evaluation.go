@@ -19,7 +19,7 @@ type Evaluation struct {
 	AssessmentId   uint                   //assignment
 	Assessment     Assessment             `gorm:"foreignKey:AssessmentId;references:AssessmentId"`
 	Score          uint                   `gorm:"column:Score;default:0"`
-	Comment        string
+	Comment        string                 `gorm:"type:varchar(255);"`
 	EvaluatedAt    time.Time
 }
 
