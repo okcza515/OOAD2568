@@ -237,3 +237,22 @@ func (c *InstructorHRController) MigrateInstructorRecords() error {
 		return nil
 	})
 }
+
+func (c *InstructorHRController) DeleteInstructor(instructorID string) error {
+	tm := &util.TransactionManager{DB: c.db}
+
+	err := tm.Execute(func(tx *gorm.DB) error {
+		commonInstructorController := commonController.NewInstructorController(tx)
+		if err := commonInstructorController.DeleteByCode(instructorID); err != nil {
+			return fmt.Errorf("failed to delete instructor from common data: %w", err)
+		}
+
+		instructorController := NewInstructorHRController(tx)
+		if err := instructorController.delete(instructorID); err != nil {
+			return fmt.Errorf("failed to delete instructor HR info: %w", err)
+		}
+
+		return nil
+	})
+	return err
+}
