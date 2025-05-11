@@ -133,3 +133,66 @@ func main() {
     // --- Existing Code ---
 
     ```
+
+## Fluent Validator
+
+### Overview
+
+The Fluent Validator provides a simple API to:
+
+- Define a field with a prompt message.
+- Chain required validations and specific rule validations (e.g., email, phone, or student code).
+- Automatically prompt the user for input until all rules pass.
+
+### Example Usage
+
+```go
+    func main() {
+        // Define an input getter function that prompts the user for input on the console.
+        inputGetter := func(prompt string) string {
+            var input string
+            fmt.Printf("%s: ", prompt)
+            fmt.Scanln(&input)
+            return input
+        }
+
+        // Create a new ValidationChain with the input getter.
+        chain := validation.NewValidationChain(inputGetter)
+
+        // Example: Validate an email address.
+        email := chain.
+            Field(validation.FieldConfig{
+                Name:   "email",
+                Prompt: "Enter your email",
+            }).
+            Required().
+            IsEmail().
+            GetInput()
+
+        fmt.Printf("Validated Email: %s\n", email)
+
+        // Example: Validate a student code (11 digits).
+        studentCode := chain.
+            Field(validation.FieldConfig{
+                Name:   "student code",
+                Prompt: "Enter your student code",
+            }).
+            Required().
+            IsStudentCode().
+            GetInput()
+
+        fmt.Printf("Validated Student Code: %s\n", studentCode)
+
+        // Example: Validate a phone number (10 digits, starting with 0).
+        phoneNumber := chain.
+            Field(validation.FieldConfig{
+                Name:   "phone number",
+                Prompt: "Enter your phone number",
+            }).
+            Required().
+            IsPhoneNumber().
+            GetInput()
+
+        fmt.Printf("Validated Phone Number: %s\n", phoneNumber)
+    }
+```
