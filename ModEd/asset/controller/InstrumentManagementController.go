@@ -1,5 +1,4 @@
 // MEP-1013
-
 package controller
 
 import (
@@ -34,15 +33,24 @@ func NewInstrumentManagementController() *InstrumentManagementController {
 }
 
 func (c *InstrumentManagementController) List(condition map[string]interface{}, preloads ...string) ([]model.InstrumentManagement, error) {
+    // Add default preloads if none provided - only Room and Instrument
+    if len(preloads) == 0 {
+        preloads = []string{"Room", "Instrument"}
+    }
+    
     records, err := c.BaseController.List(condition, preloads...)
     if err != nil {
-		//SOMETHING
         return nil, err
     }
     return records, err
 }
 
 func (c *InstrumentManagementController) RetrieveByID(id uint, preloads ...string) (model.InstrumentManagement, error) {
+    // Add default preloads if none provided - only Room and Instrument
+    if len(preloads) == 0 {
+        preloads = []string{"Room", "Instrument"}
+    }
+    
     record, err := c.BaseController.RetrieveByID(id, preloads...)
     if err != nil {
         return model.InstrumentManagement{}, err
@@ -56,11 +64,11 @@ func (c *InstrumentManagementController) RetrieveByRoomId(roomID uint) (*[]model
 	}
 
 	assetList := new([]model.InstrumentManagement)
-	result := c.db.Where("room_id = ?", roomID).Find(&assetList)
+	// Add preloading to this query - only Room and Instrument
+	result := c.db.Preload("Room").Preload("Instrument").Where("room_id = ?", roomID).Find(&assetList)
 
 	return assetList, result.Error
 }
-
 
 func (c *InstrumentManagementController) Insert(payload *model.InstrumentManagement) error {
 	if payload == nil {
