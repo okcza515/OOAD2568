@@ -46,6 +46,11 @@ func NewInstructorMenuState(
 	requestInstructorLeaveHandler := hrHandler.NewRequestLeaveHandlerStrategy(leaveInstructorCtrl.SubmitInstructorLeaveRequest)
 	requestInstructorResignHandler := hrHandler.NewRequestResignationHandlerStrategy(resignInstructorCtrl.SubmitResignationInstructor)
 	requestInstructorRaiseHandler := hrHandler.NewRequestRaiseHandlerStrategy(raiseInstructorCtrl)
+	reviewLeaveHandler := hrHandler.NewReviewHandlerStrategy(leaveInstructorCtrl.ReviewLeaveRequest)
+	reviewResignationHandler := hrHandler.NewReviewHandlerStrategy(resignInstructorCtrl.ReviewResignationRequest)
+	reviewRaiseHandler := hrHandler.NewReviewHandlerStrategy(raiseInstructorCtrl.ReviewRaiseRequest)
+	
+
 
 	handlerContext.AddHandler("1", "Add new instructor", addInstructorHandler)
 	handlerContext.AddHandler("2", "List instructor", listInstructorHandler)
@@ -54,9 +59,9 @@ func NewInstructorMenuState(
 	handlerContext.AddHandler("5", "Request leave", requestInstructorLeaveHandler)
 	handlerContext.AddHandler("6", "Request resignation", requestInstructorResignHandler)
 	handlerContext.AddHandler("7", "Request raise", requestInstructorRaiseHandler)
-	handlerContext.AddHandler("8", "Review leave", nil)
-	handlerContext.AddHandler("9", "Review resignation", nil)
-	handlerContext.AddHandler("10", "Review raise", nil)
+	handlerContext.AddHandler("8", "Review leave", reviewLeaveHandler)
+	handlerContext.AddHandler("9", "Review resignation", reviewResignationHandler)
+	handlerContext.AddHandler("10", "Review raise", reviewRaiseHandler)
 
 	backHandler := coreHandler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_HR)))
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)
