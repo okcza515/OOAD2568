@@ -123,7 +123,7 @@ func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurem
 
 	var quotations []model.Quotation
 	err := c.db.Preload("Details").
-		Where("tor_id = ?", procurement.TORID).
+		Where("tor_id = ? AND status = ?", procurement.TORID, model.QuotationStatusApproved).
 		Find(&quotations).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get quotations: %w", err)
