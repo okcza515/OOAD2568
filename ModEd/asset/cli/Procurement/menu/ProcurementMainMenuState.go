@@ -25,6 +25,7 @@ func NewProcurementMainMenuState(manager *cli.CLIMenuStateManager) *ProcurementM
 	// Register Submenus (Commented out for now)
 	manager.AddMenu(string(MENU_INSTRUMENT_REQUEST), NewInstrumentRequestMenuState(manager))
 	// manager.AddMenu(string(MENU_PROCUREMENT), NewProcurementMenuState(manager))
+	// manager.AddMenu(string(MENU_ACCEPTANCE), NewAcceptancetestMenuState(manager))
 	// manager.AddMenu(string(MENU_APPROVAL), NewApprovalMenuState(manager))
 	// manager.AddMenu(string(MENU_QUOTATION), NewQuotationMenuState(manager))
 	// manager.AddMenu(string(MENU_TOR), NewTORMenuState(manager))
@@ -32,9 +33,8 @@ func NewProcurementMainMenuState(manager *cli.CLIMenuStateManager) *ProcurementM
 	// Register Handlers for Navigation
 	handlerContext.AddHandler("1", "Instrument Request Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT_REQUEST))))
 	handlerContext.AddHandler("2", "Procurement Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT))))
+	handlerContext.AddHandler("4", "Acceptance Test", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ACCEPTANCE))))
 	handlerContext.AddHandler("3", "Approval Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_APPROVAL))))
-	handlerContext.AddHandler("4", "Quotation Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_QUOTATION))))
-	handlerContext.AddHandler("5", "TOR Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_TOR))))
 
 	handlerContext.AddHandler("exit", "Exit the application", handler.FuncStrategy{
 		Action: func() error {

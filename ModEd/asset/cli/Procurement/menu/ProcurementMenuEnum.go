@@ -8,5 +8,6 @@ const (
 	MENU_PROCUREMENT        ProcurementMenuEnum = "procurement"
 	MENU_APPROVAL           ProcurementMenuEnum = "approval"
 	MENU_QUOTATION          ProcurementMenuEnum = "quotation"
+	MENU_ACCEPTANCE         ProcurementMenuEnum = "acceptance"
 	MENU_TOR                ProcurementMenuEnum = "tor"
 )
