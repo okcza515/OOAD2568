@@ -37,3 +37,7 @@
 Last update (before 13th May)
 
 - add seed data in migration
+
+- Permanent Schedule
+    - All function can run.
+    - Cannot link data with Faculty and Department Model yet.
