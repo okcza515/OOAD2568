@@ -8,7 +8,6 @@ import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"fmt"
-	"ModEd/core/validation"
 )
 
 type InstrumentRequestMenuState struct {
@@ -17,7 +16,6 @@ type InstrumentRequestMenuState struct {
 }
 
 func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *InstrumentRequestMenuState {
-	// Get the ProcurementControllerFacade instance
 	facade, err := controller.CreateProcurementControllerFacade()
 	if err != nil {
 		fmt.Println("Failed to create ProcurementControllerFacade:", err)
@@ -30,7 +28,6 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 		handlerContext: handlerContext,
 	}
 
-	// Register Handlers
 	handlerContext.AddHandler("1", "Create New Instrument Request", handler.FuncStrategy{
 		Action: func() error {
 			deptID := util.GetUintInput("Enter Department ID: ")
@@ -62,40 +59,10 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 			}
 
 			addMore := util.GetStringInput("\nDo you want to add instruments to this request now? (y/n): ")
-
-			for addMore == "y" || addMore == "Y" {
-				fmt.Println("\n--- Add Instrument ---")
-				label := util.GetStringInput("Enter Instrument Label: ")
-				desc := util.GetStringInput("Enter Description: ")
-				categoryID := util.GetUintInput("Enter Category ID: ")
-				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
-				quantity := util.GetUintInput("Enter Quantity: ")
-
-				detail := controller.NewInstrumentDetailBuilder().
-					WithLabel(label).
-					WithDescription(desc).
-					WithCategoryID(categoryID).
-					WithEstimatedPrice(estimatedPrice).
-					WithQuantity(int(quantity)).
-					WithRequestID(newRequest.InstrumentRequestID).
-					Build()
-
-				validator := validation.NewModelValidator()
-				if err := validator.ModelValidate(detail); err != nil {
-					fmt.Println("Validation failed:", err)
-					util.PressEnterToContinue()
-					return nil
-				}
-
-				err := facade.RequestedItem.AddInstrumentToRequest(newRequest.InstrumentRequestID, detail)
-				if err != nil {
-					fmt.Println("Failed to add instrument:", err)
-				} else {
-					fmt.Println("Instrument added to request!")
-				}
-
-				addMore = util.GetStringInput("\nAdd another instrument? (y/n): ")
+			if addMore == "y" || addMore == "Y" {
+				helper.AddInstrumentsLoopToRequest(facade, newRequest.InstrumentRequestID)
 			}
+
 			util.PressEnterToContinue()
 			return nil
 		},
@@ -103,19 +70,7 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 
 	handlerContext.AddHandler("2", "List All Instrument Requests", handler.FuncStrategy{
 		Action: func() error {
-			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-			if err != nil {
-				fmt.Println("Failed to retrieve instrument requests:", err)
-				util.PressEnterToContinue()
-				return err
-			}
-			if len(*requests) == 0 {
-				fmt.Println("No available instrument requests found.")
-				util.PressEnterToContinue()
-				return nil
-			}
-
-			helper.DisplayRequestList(*requests)
+			helper.ShowAllInstrumentRequests(facade)
 			util.PressEnterToContinue()
 			return nil
 		},
@@ -123,19 +78,7 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 
 	handlerContext.AddHandler("3", "View Instrument Request Details", handler.FuncStrategy{
 		Action: func() error {
-			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
-			if err != nil {
-				fmt.Println("Failed to retrieve instrument requests:", err)
-				util.PressEnterToContinue()
-				return err
-			}
-			if len(*requests) == 0 {
-				fmt.Println("No available instrument requests found.")
-				util.PressEnterToContinue()
-				return nil
-			}
-
-			helper.DisplayRequestList(*requests)
+			helper.ShowAllInstrumentRequests(facade)
 
 			requestID := util.GetUintInput("\nEnter Instrument Request ID to View Details: ")
 
@@ -173,44 +116,12 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 			}
 
 			fmt.Println()
-
-			for {
-				fmt.Println("\n--- Add Instrument ---")
-
-				label := util.GetStringInput("Enter Instrument Label: ")
-				desc := util.GetStringInput("Enter Description: ")
-				categoryID := util.GetUintInput("Enter Category ID: ")
-				estimatedPrice := util.GetFloatInput("Enter Estimated Price: ")
-				quantity := util.GetUintInput("Enter Quantity: ")
-
-				detail := controller.NewInstrumentDetailBuilder().
-					WithLabel(label).
-					WithDescription(desc).
-					WithCategoryID(categoryID).
-					WithEstimatedPrice(estimatedPrice).
-					WithQuantity(int(quantity)).
-					WithRequestID(request.InstrumentRequestID).
-					Build()
-
-				err := facade.RequestedItem.AddInstrumentToRequest(request.InstrumentRequestID, detail)
-				if err != nil {
-					fmt.Println("Failed to add instrument to the request:", err)
-				} else {
-					fmt.Println("Instrument added successfully!")
-				}
-
-				addMore := util.GetStringInput("\nDo you want to add another instrument? (y/n): ")
-				if addMore != "y" && addMore != "Y" {
-					break
-				}
-			}
-
+			helper.AddInstrumentsLoopToRequest(facade, request.InstrumentRequestID)
 			util.PressEnterToContinue()
 			return nil
 		},
 	})
 
-	// Register Handler for Editing
 	handlerContext.AddHandler("5", "Edit Instrument in Request", handler.FuncStrategy{
 		Action: func() error {
 			request, err := helper.SelectInstrumentRequest(facade)
@@ -241,9 +152,7 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 		},
 	})
 
-	// Register Back Handler
 	handlerContext.AddBackHandler(handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT_MAIN))))
-
 	return menu
 }
 
