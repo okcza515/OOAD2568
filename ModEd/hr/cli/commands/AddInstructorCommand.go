@@ -22,7 +22,7 @@ func (cmd *AddInstructorCommand) Execute(args []string, tx *gorm.DB) error {
 	gender := fs.String("gender", "", "Gender")
 	citizenID := fs.String("citizenID", "", "Citizen ID")
 	phoneNumber := fs.String("phone", "", "Phone Number")
-	salary := fs.Int("salary", 0, "Salary")
+	salary := fs.Float64("salary", 0, "Salary")
 	academicPos := fs.String("academicPos", "", "Academic Position")
 	departmentPos := fs.String("departmentPos", "", "Department Position")
 

@@ -10,12 +10,12 @@ type InstructorInfo struct {
 	Gender             string             `csv:"Gender"`
 	CitizenID          string             `csv:"CitizenID"`
 	PhoneNumber        string             `csv:"PhoneNumber"`
-	Salary             int                `csv:"Salary" default:"0"`
+	Salary             float64            `csv:"Salary" default:"0"`
 	AcademicPosition   AcademicPosition   `csv:"AcademicPosition" default:"0"`
 	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition" default:"0"`
 }
 
-func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary int, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
+func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary float64, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
 	return &InstructorInfo{
 		Instructor:         instr,
 		Gender:             Gender,

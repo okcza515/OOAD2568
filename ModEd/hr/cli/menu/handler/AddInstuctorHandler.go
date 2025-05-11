@@ -5,7 +5,6 @@ import (
 	"ModEd/core/validation"
 	"ModEd/hr/controller"
 	"fmt"
-	"strconv"
 )
 
 type AddInstructorStrategy struct {
@@ -28,16 +27,12 @@ func (handler AddInstructorStrategy) Execute() error {
 	gender := validator.Field(validation.FieldConfig{Name: "gender", Prompt: "Enter instructor gender (e.g., Male, Female, Other): "}).Required().GetInput()
 	citizenID := validator.Field(validation.FieldConfig{Name: "citizenID", Prompt: "Enter instructor citizen ID (13 digits): "}).Required().IsAllDigits().Length(13).GetInput()
 	phoneNumber := validator.Field(validation.FieldConfig{Name: "phoneNumber", Prompt: "Enter instructor phone number (10 digits, e.g., 0812345678): "}).Required().IsPhoneNumber().GetInput()
-	salaryStr := validator.Field(validation.FieldConfig{Name: "salary", Prompt: "Enter instructor salary: "}).Required().GetInput()
-	salary, err := strconv.Atoi(salaryStr)
-	if err != nil {
-		return fmt.Errorf("invalid salary format: %w", err)
-	}
+	salary := validator.Field(validation.FieldConfig{Name: "salary", Prompt: "Enter instructor salary: "}).Required().GetParsedNumber()
 
 	academicPos := validator.Field(validation.FieldConfig{Name: "academicPos", Prompt: "Enter instructor academic position: "}).Required().GetInput()
 	departmentPos := validator.Field(validation.FieldConfig{Name: "departmentPos", Prompt: "Enter instructor department position: "}).Required().GetInput()
 
-	err = handler.instructorController.AddInstructor(
+	err := handler.instructorController.AddInstructor(
 		instructorCode,
 		firstName,
 		lastName,

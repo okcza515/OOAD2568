@@ -45,7 +45,7 @@ func NewHRMainMenuState(
 
 	manager.AddMenu(string(MENU_HR), state)
 	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl, leaveStudentCtrl, resignStudentCtrl))
-	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager))
+	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager, instructorCtrl))
 	manager.AddMenu(string(MENU_DATABASE), NewDatabaseMenuState(manager, studentCtrl, instructorCtrl))
 
 	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))

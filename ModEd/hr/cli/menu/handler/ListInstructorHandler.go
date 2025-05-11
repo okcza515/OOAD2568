@@ -9,7 +9,7 @@ type ListInstructorHandler struct {
 	instructorController *controller.InstructorHRController
 }
 
-func NewListInstructorHandler(instructorCtrl *controller.InstructorHRController) *ListInstructorHandler {
+func NewListInstructorStrategy(instructorCtrl *controller.InstructorHRController) *ListInstructorHandler {
 	return &ListInstructorHandler{instructorController: instructorCtrl}
 }
 

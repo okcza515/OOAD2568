@@ -2,14 +2,15 @@ package menu
 
 import (
 	"ModEd/core/cli"
-	"ModEd/core/handler"
 	coreHandler "ModEd/core/handler"
+	hrHandler "ModEd/hr/cli/menu/handler"
+	"ModEd/hr/controller"
 	"fmt"
 )
 
 type InstructorMenuState struct {
 	manager        *cli.CLIMenuStateManager
-	handlerContext *handler.HandlerContext
+	handlerContext *coreHandler.HandlerContext
 }
 
 // HandleUserInput implements cli.MenuState.
@@ -25,12 +26,17 @@ func (a *InstructorMenuState) Render() {
 	fmt.Println("back:\tBack to main menu")
 }
 
-func NewInstructorMenuState(manager *cli.CLIMenuStateManager) *InstructorMenuState {
-	handlerContext := handler.NewHandlerContext()
+func NewInstructorMenuState(manager *cli.CLIMenuStateManager, instructorCtrl *controller.InstructorHRController) *InstructorMenuState {
+	handlerContext := coreHandler.NewHandlerContext()
 
-	handlerContext.AddHandler("1", "Add new instructor", nil)
-	handlerContext.AddHandler("2", "List instructor", nil)
-	handlerContext.AddHandler("3", "Update instructor Info", nil)
+	addInstructorHandler := hrHandler.NewAddInstructorStrategy(instructorCtrl)
+	listInstructorHandler := hrHandler.NewListInstructorStrategy(instructorCtrl)
+	updateInstructorHandler := hrHandler.NewUpdateInstructorInfoStrategy(instructorCtrl)
+	// requestInstructorHandler := hrHandler.NewRequestInstructorLeaveStrategy(instructorCtrl)
+
+	handlerContext.AddHandler("1", "Add new instructor", addInstructorHandler)
+	handlerContext.AddHandler("2", "List instructor", listInstructorHandler)
+	handlerContext.AddHandler("3", "Update instructor Info", updateInstructorHandler)
 	handlerContext.AddHandler("4", "Delete instructor", nil)
 	handlerContext.AddHandler("5", "Request leave", nil)
 	handlerContext.AddHandler("6", "Request resignation", nil)
