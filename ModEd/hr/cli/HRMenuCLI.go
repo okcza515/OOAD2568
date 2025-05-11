@@ -67,7 +67,9 @@ func main() {
 
 	mainMenu := menu.NewHRMainMenuState(manager,
 		hrController.NewStudentHRController(db),
-		hrController.NewInstructorHRController(db))
+		hrController.NewInstructorHRController(db),
+		hrController.NewLeaveStudentHRController(db),
+	)
 
 	manager.SetState(mainMenu)
 

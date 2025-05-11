@@ -30,7 +30,7 @@ func (state *HRMainMenuState) Render() {
 	fmt.Println()
 }
 
-func NewHRMainMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController, instructorCtrl *controller.InstructorHRController) *HRMainMenuState {
+func NewHRMainMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controller.StudentHRController, instructorCtrl *controller.InstructorHRController, leaveStudentCtrl *controller.LeaveStudentHRController) *HRMainMenuState {
 	handlerContext := handler.NewHandlerContext()
 	state := &HRMainMenuState{
 		manager:        manager,
@@ -38,7 +38,7 @@ func NewHRMainMenuState(manager *cli.CLIMenuStateManager, studentCtrl *controlle
 	}
 
 	manager.AddMenu(string(MENU_HR), state)
-	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl))
+	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl, leaveStudentCtrl))
 	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager))
 	manager.AddMenu(string(MENU_DATABASE), NewDatabaseMenuState(manager, studentCtrl, instructorCtrl))
 
