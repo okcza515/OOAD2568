@@ -38,8 +38,8 @@ func (c *SubmissionController) GradingSubmission(submissionId uint) (submission 
 		return nil, err
 	}
 	for _, mcAnsSub := range mcAnsSubs {
-		if mcAnsSub.Choice.IsExpected == true {
-			score += mcAnsSub.Choice.Question.Score
+		if mcAnsSub.Choice.IsExpected {
+			score += mcAnsSub.Question.Score
 		}
 	}
 
