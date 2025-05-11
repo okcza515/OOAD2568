@@ -31,8 +31,7 @@ func NewProcurementMainMenuState(manager *cli.CLIMenuStateManager) *ProcurementM
 
 	// Register Handlers for Navigation
 	handlerContext.AddHandler("1", "Instrument Request Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT_REQUEST))))
-	handlerContext.AddHandler("2", "Procurement Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT)))) // ✅ Added Procurement Management
-	handlerContext.AddHandler("3", "Approval Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_APPROVAL))))
+	handlerContext.AddHandler("2", "Procurement Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT))))
 	handlerContext.AddHandler("4", "Quotation Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_QUOTATION))))
 	handlerContext.AddHandler("5", "TOR Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_TOR))))
 
