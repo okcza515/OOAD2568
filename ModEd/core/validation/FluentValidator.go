@@ -187,3 +187,25 @@ func (fv *FieldValidator) GetInput() string {
 		fv.inputObtained = false
 	}
 }
+
+func (fv *FieldValidator) GetParsedNumber() float64 {
+    for {
+        val := fv.GetInput()
+        if parsed, ok := fv.chain.validator.ParseNumber(val); ok {
+            return parsed
+        }
+        fmt.Printf("Input '%s' is not a valid number. Please try again.\n", val)
+        fv.inputObtained = false
+    }
+}
+
+func (fv *FieldValidator) GetParsedUint() uint {
+    for {
+        val := fv.GetInput()
+        if parsed, ok := fv.chain.validator.ParseUint(val); ok {
+            return parsed
+        }
+        fmt.Printf("Input '%s' is not a valid unsigned integer. Please try again.\n", val)
+        fv.inputObtained = false
+    }
+}
