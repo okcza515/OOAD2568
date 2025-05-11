@@ -14,7 +14,7 @@ func setupTestDBTFAnswer(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
-	err = db.AutoMigrate(&model.Examination{}, &model.ExamSection{}, &model.Question{}, &model.TrueFalseAnswer{})
+	err = db.AutoMigrate(&model.Exam{}, &model.ExamSection{}, &model.Question{}, &model.TrueFalseAnswer{})
 	assert.NoError(t, err)
 
 	return db
@@ -30,12 +30,12 @@ func TestCreateTrueFalseAnswer(t *testing.T) {
 		IsExpected: true,
 	}
 
-	tfAnswerID, err := ctrl.CreateTrueFalseAnswer(tfAnswer)
+	err := ctrl.Insert(tfAnswer)
 	assert.NoError(t, err)
-	assert.NotZero(t, tfAnswerID)
+	assert.NotZero(t, tfAnswer.ID)
 
 	var found model.TrueFalseAnswer
-	err = db.First(&found, tfAnswerID).Error
+	err = db.First(&found, tfAnswer.ID).Error
 	assert.NoError(t, err)
 	assert.Equal(t, tfAnswer.QuestionID, found.QuestionID)
 	assert.Equal(t, tfAnswer.IsExpected, found.IsExpected)
@@ -55,12 +55,14 @@ func TestGetAllTrueFalseAnswers(t *testing.T) {
 		IsExpected: false,
 	}
 
-	_, err := ctrl.CreateTrueFalseAnswer(tfAnswer1)
+	err := ctrl.Insert(tfAnswer1)
 	assert.NoError(t, err)
-	_, err = ctrl.CreateTrueFalseAnswer(tfAnswer2)
+	assert.NotZero(t, tfAnswer1.ID)
+	err = ctrl.Insert(tfAnswer2)
 	assert.NoError(t, err)
+	assert.NotZero(t, tfAnswer2.ID)
 
-	tfAnswers, err := ctrl.GetAllTrueFalseAnswers()
+	tfAnswers, err := ctrl.List(map[string]interface{}{})
 	assert.NoError(t, err)
 	assert.Len(t, tfAnswers, 2)
 }
@@ -75,10 +77,11 @@ func TestGetTrueFalseAnswer(t *testing.T) {
 		IsExpected: true,
 	}
 
-	tfAnswerID, err := ctrl.CreateTrueFalseAnswer(tfAnswer)
+	err := ctrl.Insert(tfAnswer)
 	assert.NoError(t, err)
+	assert.NotZero(t, tfAnswer.ID)
 
-	found, err := ctrl.GetTrueFalseAnswer(tfAnswerID)
+	found, err := ctrl.RetrieveByID(tfAnswer.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, tfAnswer.QuestionID, found.QuestionID)
 	assert.Equal(t, tfAnswer.IsExpected, found.IsExpected)
@@ -90,17 +93,16 @@ func TestUpdateTrueFalseAnswer(t *testing.T) {
 
 	tfAnswer := &model.TrueFalseAnswer{
 		QuestionID: 1,
-		IsExpected: false,
+		IsExpected: true,
 	}
-	tfAnswerId, err := ctrl.CreateTrueFalseAnswer(tfAnswer)
+	err := ctrl.Insert(tfAnswer)
 	assert.NoError(t, err)
-	assert.NotEqual(t, tfAnswerId, 0, "tfAnswerId should not be zero")
+	assert.NotEqual(t, tfAnswer.ID, 0, "tfAnswerId should not be zero")
 
-	tfAnswer.IsExpected = true
-	updatedTfAnswer, err := ctrl.UpdateTrueFalseAnswer(tfAnswer)
+	tfAnswer.IsExpected = false
+	err = ctrl.UpdateByID(tfAnswer)
 	assert.NoError(t, err)
-
-	assert.Equal(t, true, updatedTfAnswer.IsExpected, "IsExpected should be true after update")
+	assert.Equal(t, false, tfAnswer.IsExpected, "IsExpected should be false after update")
 }
 
 func TestDeleteTrueFalseAnswer(t *testing.T) {
@@ -111,15 +113,14 @@ func TestDeleteTrueFalseAnswer(t *testing.T) {
 		QuestionID: 1,
 		IsExpected: true,
 	}
-	tfAnswerId, err := ctrl.CreateTrueFalseAnswer(tfAnswer)
+	err := ctrl.Insert(tfAnswer)
 	assert.NoError(t, err)
-	assert.NotEqual(t, tfAnswerId, 0, "tfAnswerId should not be zero")
+	assert.NotEqual(t, tfAnswer.ID, 0, "tfAnswer.ID should not be zero")
 
-	deletedTfAnswer, err := ctrl.DeleteTrueFalseAnswer(tfAnswerId)
+	err = ctrl.DeleteByID(tfAnswer.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, tfAnswerId, deletedTfAnswer.ID)
 
 	var found model.TrueFalseAnswer
-	err = db.First(&found, tfAnswerId).Error
-	assert.Error(t, err)
+	err = db.First(&found, tfAnswer.ID).Error
+	assert.Error(t, err, "Expected error when retrieving deleted record")
 }

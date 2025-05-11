@@ -36,6 +36,7 @@ func NewInstrumentManagementController() *InstrumentManagementController {
 func (c *InstrumentManagementController) List(condition map[string]interface{}, preloads ...string) ([]model.InstrumentManagement, error) {
     records, err := c.BaseController.List(condition, preloads...)
     if err != nil {
+		//SOMETHING
         return nil, err
     }
     return records, err

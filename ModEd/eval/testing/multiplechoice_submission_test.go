@@ -15,14 +15,23 @@ func setupTestDBMCSubmission(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
-	err = db.AutoMigrate(&model.Question{}, &model.Examination{}, &model.ExamSection{}, &model.MultipleChoiceAnswer{}, &model.MultipleChoiceAnswerSubmission{})
+	err = db.AutoMigrate(&model.Exam{}, &model.ExamSection{}, &model.Question{}, &model.MultipleChoiceAnswer{}, &model.MultipleChoiceAnswerSubmission{})
 	assert.NoError(t, err)
 
 	return db
 }
 
-func createTestData(db *gorm.DB) (model.MultipleChoiceAnswerSubmission, uint) {
-	exam := model.Examination{ExamName: "Test Exam", InstructorID: 1, CourseID: 1, Description: "desc", ExamStatus: model.Draft, Attempt: 1, StartDate: time.Now(), EndDate: time.Now()}
+func createTestDataMC(db *gorm.DB) (*model.Question, *model.MultipleChoiceAnswer) {
+	exam := model.Exam{
+		ExamName:     "Test Exam",
+		InstructorID: 1,
+		CourseID:     1,
+		Description:  "desc",
+		ExamStatus:   model.Draft,
+		Attempt:      1,
+		StartDate:    time.Now(),
+		EndDate:      time.Now(),
+	}
 	db.Create(&exam)
 
 	section := model.ExamSection{
@@ -49,64 +58,113 @@ func createTestData(db *gorm.DB) (model.MultipleChoiceAnswerSubmission, uint) {
 	}
 	db.Create(&choice)
 
-	mcSub := model.MultipleChoiceAnswerSubmission{
+	return &question, &choice
+}
+
+func TestCreateMultipleChoiceAnswerSubmission(t *testing.T) {
+	db := setupTestDBMCSubmission(t)
+	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
+
+	question, choice := createTestDataMC(db)
+
+	submission := &model.MultipleChoiceAnswerSubmission{
 		QuestionID:   question.ID,
 		SubmissionID: 1,
 		ChoiceID:     choice.ID,
 	}
-	db.Create(&mcSub)
+	err := ctrl.Insert(submission)
+	assert.NoError(t, err)
+	assert.NotEqual(t, submission.ID, 0, "submission.ID should not be zero")
 
-	return mcSub, choice.ID
+	var found model.MultipleChoiceAnswerSubmission
+	err = db.First(&found, submission.ID).Error
+	assert.NoError(t, err)
+	assert.Equal(t, submission.ChoiceID, found.ChoiceID)
+	assert.Equal(t, submission.SubmissionID, found.SubmissionID)
+	assert.Equal(t, submission.QuestionID, found.QuestionID)
 }
 
 func TestGetAllMultipleChoiceAnswerSubmissions(t *testing.T) {
 	db := setupTestDBMCSubmission(t)
 	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
 
-	_, _ = createTestData(db)
+	_, _ = createTestDataMC(db)
 
-	results, err := ctrl.GetAllMultipleChoiceAnswerSubmissions()
+	submission := model.MultipleChoiceAnswerSubmission{
+		QuestionID:   1,
+		SubmissionID: 1,
+		ChoiceID:     1,
+	}
+	db.Create(&submission)
+
+	results, err := ctrl.List(map[string]interface{}{})
 	assert.NoError(t, err)
 	assert.Len(t, results, 1)
 }
 
-func TestGetMultipleChoiceAnswerSubmission(t *testing.T) {
+func TestGetMultipleChoiceAnswerSubmissionByID(t *testing.T) {
 	db := setupTestDBMCSubmission(t)
 	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
 
-	mcSub, _ := createTestData(db)
+	question, choice := createTestDataMC(db)
 
-	result, err := ctrl.GetMultipleChoiceAnswerSubmission(mcSub.ID)
+	submission := model.MultipleChoiceAnswerSubmission{
+		QuestionID:   question.ID,
+		SubmissionID: 1,
+		ChoiceID:     choice.ID,
+	}
+	db.Create(&submission)
+
+	results, err := ctrl.List(map[string]interface{}{"submission_id": submission.SubmissionID})
 	assert.NoError(t, err)
-	assert.Equal(t, mcSub.ID, result.ID)
+	assert.Len(t, results, 1)
+	assert.Equal(t, submission.ID, results[0].ID)
 }
 
 func TestGetMultipleChoiceAnswerSubmissionsBySubmissionID(t *testing.T) {
 	db := setupTestDBMCSubmission(t)
 	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
 
-	_, _ = createTestData(db)
+	question, choice := createTestDataMC(db)
 
-	results, err := ctrl.GetMultipleChoiceAnswerSubmissionsBySubmissionID(1)
+	submission := model.MultipleChoiceAnswerSubmission{
+		QuestionID:   question.ID,
+		SubmissionID: 1,
+		ChoiceID:     choice.ID,
+	}
+	db.Create(&submission)
+
+	result, err := ctrl.RetrieveByCondition(map[string]interface{}{"submission_id": submission.SubmissionID})
 	assert.NoError(t, err)
-	assert.Len(t, results, 1)
+	assert.Equal(t, submission.ID, result.ID)
 }
 
 func TestUpdateMultipleChoiceAnswerSubmission(t *testing.T) {
 	db := setupTestDBMCSubmission(t)
 	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
 
-	mcSub, _ := createTestData(db)
+	question, oldChoice := createTestDataMC(db)
+
+	submission := &model.MultipleChoiceAnswerSubmission{
+		QuestionID:   question.ID,
+		SubmissionID: 1,
+		ChoiceID:     oldChoice.ID,
+	}
+	db.Create(submission)
 
 	newChoice := model.MultipleChoiceAnswer{
-		QuestionID:  mcSub.QuestionID,
+		QuestionID:  question.ID,
 		AnswerLabel: "5",
 		IsExpected:  false,
 	}
 	db.Create(&newChoice)
 
-	mcSub.ChoiceID = newChoice.ID
-	updated, err := ctrl.UpdateMultipleChoiceAnswerSubmission(&mcSub)
+	submission.ChoiceID = newChoice.ID
+	err := ctrl.UpdateByID(submission)
+	assert.NoError(t, err)
+
+	var updated model.MultipleChoiceAnswerSubmission
+	err = db.First(&updated, submission.ID).Error
 	assert.NoError(t, err)
 	assert.Equal(t, newChoice.ID, updated.ChoiceID)
 }
@@ -115,13 +173,20 @@ func TestDeleteMultipleChoiceAnswerSubmission(t *testing.T) {
 	db := setupTestDBMCSubmission(t)
 	ctrl := controller.NewMultipleChoiceAnswerSubmissionController(db)
 
-	mcSub, _ := createTestData(db)
+	question, choice := createTestDataMC(db)
 
-	deleted, err := ctrl.DeleteMultipleChoiceAnswerSubmission(mcSub.ID)
+	submission := &model.MultipleChoiceAnswerSubmission{
+		QuestionID:   question.ID,
+		SubmissionID: 1,
+		ChoiceID:     choice.ID,
+	}
+	db.Create(submission)
+
+	err := ctrl.DeleteByID(submission.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, mcSub.ID, deleted.ID)
 
-	var check model.MultipleChoiceAnswerSubmission
-	err = db.First(&check, mcSub.ID).Error
+	var found model.MultipleChoiceAnswerSubmission
+	err = db.First(&found, submission.ID).Error
 	assert.Error(t, err)
+	assert.Equal(t, gorm.ErrRecordNotFound, err)
 }

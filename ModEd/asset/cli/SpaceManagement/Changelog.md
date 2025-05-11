@@ -32,3 +32,8 @@
 <!-- ### Command
 
 - `ToString()` methods are used to standardize and encapsulate UI output logic, following the Command pattern principles. -->
+
+
+Last update (before 13th May)
+
+- add seed data in migration

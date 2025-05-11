@@ -75,6 +75,8 @@ func (manager *SpaceManagementControllerManager) LoadSeedData() error {
 	err = migration.GetInstance().AddSeedData(("data/asset/Room.JSON"), &[]model.Room{}).
 		AddSeedData(("data/asset/Booking.JSON"), &[]model.Booking{}).
 		AddSeedData(("data/asset/PermanentSchedule.JSON"), &[]model.PermanentSchedule{}).
+		AddSeedData(("data/asset/InstrumentManagement.JSON"), &[]model.InstrumentManagement{}).
+		AddSeedData(("data/asset/SupplyManagement.JSON"),&[]model.SupplyManagement{}).
 		//Add more seed data as needed
 		LoadSeedData()
 	if err != nil {
