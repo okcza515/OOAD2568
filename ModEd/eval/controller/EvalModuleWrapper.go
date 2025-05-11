@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"ModEd/eval/model"
-
 	"gorm.io/gorm"
 )
 
@@ -13,12 +11,9 @@ type EvalModuleWrapper struct {
 }
 
 func NewEvalModuleWrapper(db *gorm.DB) *EvalModuleWrapper {
-	evaluations := make([]*model.Evaluation, 0)
-	csvPath := ""
-
 	return &EvalModuleWrapper{
 		ProgressController:   NewProgressController(db),
 		AssessmentController: NewAssessmentController(db),
-		EvaluationController: NewEvaluationController(evaluations, csvPath),
+		EvaluationController: NewEvaluationController(db),
 	}
 }

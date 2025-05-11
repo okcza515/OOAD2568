@@ -7,8 +7,6 @@ import (
 
 	evaluation "ModEd/eval/cli/evaluation"
 
-	"ModEd/eval/model"
-
 	"fmt"
 
 	controller "ModEd/eval/controller"
@@ -65,14 +63,14 @@ func main() {
 	db, err := migration.
 		GetInstance().
 		SetPathDB(defaultDBPath).
-		MigrateModule(core.MODULE_EVAL).
+		MigrateModule(core.MODULE_QUIZ).
 		BuildDB()
 
 	if err != nil {
 		panic(err)
 	}
 
-	evaluationController := controller.NewEvaluationController([]*model.Evaluation{}, defaultDBPath)
+	evaluationController := controller.NewEvaluationController(db)
 	progressController := controller.NewProgressController(db)
 	assessmentController := controller.NewAssessmentController(db)
 
@@ -116,7 +114,7 @@ func resetDB() error {
 
 	_, err = migration.GetInstance().
 		SetPathDB(defaultDBPath).
-		MigrateModule(core.MODULE_EVAL).
+		MigrateModule(core.MODULE_QUIZ).
 		BuildDB()
 
 	if err != nil {
