@@ -8,6 +8,7 @@ import (
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"fmt"
+	"ModEd/core/validation"
 )
 
 type InstrumentRequestMenuState struct {
@@ -78,6 +79,13 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 					WithQuantity(int(quantity)).
 					WithRequestID(newRequest.InstrumentRequestID).
 					Build()
+
+				validator := validation.NewModelValidator()
+				if err := validator.ModelValidate(detail); err != nil {
+					fmt.Println("Validation failed:", err)
+					util.PressEnterToContinue()
+					return nil
+				}
 
 				err := facade.RequestedItem.AddInstrumentToRequest(newRequest.InstrumentRequestID, detail)
 				if err != nil {
