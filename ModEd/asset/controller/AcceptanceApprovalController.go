@@ -30,6 +30,7 @@ func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApp
     var approvals []model.AcceptanceApproval
     err := c.db.
         Preload("Procurement").
+		Preload("Approver").
         Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
         Where("procurements.procurement_id IS NOT NULL").
         Find(&approvals).Error
@@ -96,21 +97,10 @@ func (c *AcceptanceApprovalController) OnApproved(id uint, approverID uint) erro
 			}).Error; err != nil {
 			return err
 		}
-
-		var approval model.AcceptanceApproval
-		if err := tx.First(&approval, id).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(&model.Procurement{}).
-			Where("procurement_id = ?", approval.ProcurementID).
-			Update("status", model.ProcurementStatusApproved).Error; err != nil {
-			return err
-		}
-
 		return nil
 	})
 }
+
 
 func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
@@ -123,21 +113,10 @@ func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) erro
 			}).Error; err != nil {
 			return err
 		}
-
-		var approval model.AcceptanceApproval
-		if err := tx.First(&approval, id).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(&model.Procurement{}).
-			Where("procurement_id = ?", approval.ProcurementID).
-			Update("status", model.ProcurementStatusRejected).Error; err != nil {
-			return err
-		}
-
 		return nil
 	})
 }
+
 
 func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurementID uint) ([]model.QuotationDetail, error) {
 	var procurement model.Procurement

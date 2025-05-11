@@ -142,8 +142,10 @@ func printFormattedApprovals(title string, approvals interface{}, idField string
 	case []model.AcceptanceApproval:
 		for _, a := range items {
 			approverID := "waiting"
-			if a.ApproverID != nil && *a.ApproverID != 0 {
+			if a.Status == model.AcceptanceStatusApproved && a.ApproverID != nil && *a.ApproverID != 0 {
 				approverID = fmt.Sprintf("%d", *a.ApproverID)
+			} else if a.Status != model.AcceptanceStatusApproved {
+				approverID = "waiting"
 			}
 			fmt.Printf("  ApprovalID: %d | ProcurementID: %d | Status: %s | Approver ID: %s\n",
 				a.AcceptanceApprovalID, a.ProcurementID, a.Status, approverID)

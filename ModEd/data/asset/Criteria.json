@@ -1,0 +1,127 @@
+[
+    {
+        "CategoryID": 1,
+        "CriteriaName": "Accuracy Test",
+        "Description": "Measure accuracy against a known reference."
+    },
+    {
+        "CategoryID": 1,
+        "CriteriaName": "Calibration Check",
+        "Description": "Verify calibration settings."
+    },
+    {
+        "CategoryID": 1,
+        "CriteriaName": "Sensitivity Test",
+        "Description": "Check the instrument's response to various levels of input."
+    },
+    {
+        "CategoryID": 1,
+        "CriteriaName": "Stability Analysis",
+        "Description": "Ensure consistent output over time."
+    },
+    {
+        "CategoryID": 1,
+        "CriteriaName": "Environmental Resistance",
+        "Description": "Test the instrument's durability in various environmental conditions."
+    },
+    {
+        "CategoryID": 2,
+        "CriteriaName": "Load Test",
+        "Description": "Check load handling capabilities."
+    },
+    {
+        "CategoryID": 2,
+        "CriteriaName": "Power Output Verification",
+        "Description": "Verify that power output matches specifications."
+    },
+    {
+        "CategoryID": 2,
+        "CriteriaName": "Efficiency Measurement",
+        "Description": "Measure efficiency under different loads."
+    },
+    {
+        "CategoryID": 2,
+        "CriteriaName": "Heat Dissipation",
+        "Description": "Ensure proper heat management during operation."
+    },
+    {
+        "CategoryID": 2,
+        "CriteriaName": "Voltage Regulation",
+        "Description": "Check stability of voltage under varying conditions."
+    },
+    {
+        "CategoryID": 3,
+        "CriteriaName": "Quality Verification",
+        "Description": "Ensure quality standards are met."
+    },
+    {
+        "CategoryID": 3,
+        "CriteriaName": "Durability Test",
+        "Description": "Test the robustness of the stationary over time."
+    },
+    {
+        "CategoryID": 3,
+        "CriteriaName": "Material Quality Check",
+        "Description": "Inspect the materials used for durability."
+    },
+    {
+        "CategoryID": 3,
+        "CriteriaName": "Usability Test",
+        "Description": "Evaluate user-friendliness during operation."
+    },
+    {
+        "CategoryID": 3,
+        "CriteriaName": "Packaging Inspection",
+        "Description": "Verify the quality of packaging for transportation."
+    },
+    {
+        "CategoryID": 4,
+        "CriteriaName": "Compatibility Test",
+        "Description": "Check compatibility with other components."
+    },
+    {
+        "CategoryID": 4,
+        "CriteriaName": "Electrical Conductivity Test",
+        "Description": "Verify proper electrical flow through components."
+    },
+    {
+        "CategoryID": 4,
+        "CriteriaName": "Thermal Stress Test",
+        "Description": "Assess the component's reaction to heat."
+    },
+    {
+        "CategoryID": 4,
+        "CriteriaName": "Material Resilience Analysis",
+        "Description": "Ensure components can withstand physical stress."
+    },
+    {
+        "CategoryID": 4,
+        "CriteriaName": "Signal Integrity Verification",
+        "Description": "Check for lossless signal transmission."
+    },
+    {
+        "CategoryID": 5,
+        "CriteriaName": "Ergonomic Assessment",
+        "Description": "Evaluate design for comfort and efficiency."
+    },
+    {
+        "CategoryID": 5,
+        "CriteriaName": "Material Durability",
+        "Description": "Test material resilience under stress."
+    },
+    {
+        "CategoryID": 5,
+        "CriteriaName": "Structural Integrity Test",
+        "Description": "Verify the furniture's ability to handle weight."
+    },
+    {
+        "CategoryID": 5,
+        "CriteriaName": "Finish Quality Inspection",
+        "Description": "Check for smoothness and consistency in surface finish."
+    },
+    {
+        "CategoryID": 5,
+        "CriteriaName": "Safety Compliance Verification",
+        "Description": "Ensure the furniture complies with safety standards."
+    }
+]

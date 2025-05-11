@@ -1,61 +1,61 @@
 package main
 
-// import (
-// 	handler "ModEd/asset/cli/Procurement/handler"
-// 	controller "ModEd/asset/controller"
-// 	util "ModEd/asset/util"
-// 	"fmt"
-// )
+import (
+	handler "ModEd/asset/cli/Procurement/handler"
+	controller "ModEd/asset/controller"
+	util "ModEd/asset/util"
+	"fmt"
+)
 
-// func main() {
-// 	facade := initProgram()
+func main() {
+	facade := initProgram()
 
-// 	inputBuffer := ""
+	inputBuffer := ""
 
-// 	for inputBuffer != "exit" {
-// 		util.ClearScreen()
+	for inputBuffer != "exit" {
+		util.ClearScreen()
 
-// 		printOption()
+		printOption()
 
-// 		inputBuffer = util.GetCommandInput()
+		inputBuffer = util.GetCommandInput()
 
-// 		switch inputBuffer {
-// 		case "1":
-// 			handler.InstrumentRequestHandler(facade)
-// 		case "2":
-// 			handler.ProcurementHandler(facade)
-// 		case "3":
-// 			handler.ApprovalHandler(facade)
-// 		case "4":
-// 			handler.AcceptanceTestHandler(facade)
-// 		case "5":
-// 			fmt.Println("Not implemented yet...")
-// 		}
-// 	}
+		switch inputBuffer {
+		case "1":
+			handler.InstrumentRequestHandler(facade)
+		case "2":
+			handler.ProcurementHandler(facade)
+		case "3":
+			handler.ApprovalHandler(facade)
+		case "4":
+			handler.AcceptanceTestHandler(facade)
+		case "5":
+			fmt.Println("Not implemented yet...")
+		}
+	}
 
-// 	fmt.Println("Good Bye!")
-// }
+	fmt.Println("Good Bye!")
+}
 
-// func initProgram() *controller.ProcurementControllerFacade {
-// 	facade, err := controller.CreateProcurementControllerFacade()
-// 	if err != nil {
-// 		fmt.Printf("Init failed: %v\n", err)
-// 		panic(err)
-// 	}
+func initProgram() *controller.ProcurementControllerFacade {
+	facade, err := controller.CreateProcurementControllerFacade()
+	if err != nil {
+		fmt.Printf("Init failed: %v\n", err)
+		panic(err)
+	}
 
-// 	return facade
-// }
+	return facade
+}
 
-// func printOption() {
-// 	fmt.Println(":/Procurement")
-// 	fmt.Println()
-// 	fmt.Println("Welcome to ModEd Procurement Service CLI!")
-// 	fmt.Println("Here is the list of page you can use, choose wisely!")
-// 	fmt.Println("  1:\tRequest Instrument Page")
-// 	fmt.Println("  2:\tProcurement Page")
-// 	fmt.Println("  3:\tApproval Page")
-// 	fmt.Println("  4:\tInstrument Acceptance Page")
-// 	fmt.Println("  5:\tNot implemented yet... Page")
-// 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
-// 	fmt.Println()
-// }
+func printOption() {
+	fmt.Println(":/Procurement")
+	fmt.Println()
+	fmt.Println("Welcome to ModEd Procurement Service CLI!")
+	fmt.Println("Here is the list of page you can use, choose wisely!")
+	fmt.Println("  1:\tRequest Instrument Page")
+	fmt.Println("  2:\tProcurement Page")
+	fmt.Println("  3:\tApproval Page")
+	fmt.Println("  4:\tInstrument Acceptance Page")
+	fmt.Println("  5:\tNot implemented yet... Page")
+	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
+	fmt.Println()
+}

@@ -82,7 +82,6 @@ func (c *ProcurementController) DeleteProcurement(id uint) error {
 
 func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
-
 		if err := tx.Model(&model.Procurement{}).
 			Where("procurement_id = ?", id).
 			Updates(map[string]interface{}{
@@ -93,27 +92,40 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 			return err
 		}
 
-		var procurement model.Procurement
-		if err := tx.First(&procurement, id).Error; err != nil {
+		var existingApproval model.AcceptanceApproval
+		err := tx.Where("procurement_id = ?", id).
+			First(&existingApproval).Error
+
+		if err == nil {		
+			if err := tx.Model(&existingApproval).
+				Updates(map[string]interface{}{
+					"status":        model.AcceptanceStatusPending,
+					"approver_id":   approverID,
+					"approval_time": time.Now(),
+				}).Error; err != nil {
+				return err
+			}
+			fmt.Printf("Updated existing Acceptance Approval with ID %d for Procurement ID %d\n", existingApproval.AcceptanceApprovalID, id)
+		} else if err == gorm.ErrRecordNotFound {			
+			newApproval := model.AcceptanceApproval{
+				ProcurementID: id,
+				Status:        model.AcceptanceStatusPending,
+				ApproverID:    &approverID,
+				CreatedAt:     time.Now(),
+			}
+
+			if err := tx.Create(&newApproval).Error; err != nil {
+				return err
+			}
+			fmt.Printf("Created new Acceptance Approval for Procurement ID %d with ID %d\n", id, newApproval.AcceptanceApprovalID)
+		} else {
 			return err
 		}
-
-		acceptanceApproval := model.AcceptanceApproval{
-			ProcurementID: procurement.ProcurementID,
-			Status:        model.AcceptanceStatusPending,
-			ApproverID:    &approverID,
-			CreatedAt:     time.Now(),
-		}
-
-		if err := tx.Create(&acceptanceApproval).Error; err != nil {
-			return err
-		}
-
-		fmt.Printf("Acceptance Approval created for Procurement ID %d with ID %d\n", procurement.ProcurementID, acceptanceApproval.AcceptanceApprovalID)
 
 		return nil
 	})
 }
+
 
 func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
 	return c.db.Model(&model.Procurement{}).
