@@ -36,8 +36,8 @@ func NewDatabaseMenuState(manager *cli.CLIMenuStateManager, studentCtrl *control
 
 	handlerContext := handler.NewHandlerContext()
 
-	pullStudentHandler := hrHandler.NewPullStudentHandlerStrategy(studentCtrl)
-	pullInstructorHandler := hrHandler.NewPullInstructorHandlerStrategy(instructorCtrl)
+	pullStudentHandler := hrHandler.NewPullHandlerStrategy(studentCtrl.MigrateStudentRecords)
+	pullInstructorHandler := hrHandler.NewPullHandlerStrategy(instructorCtrl.MigrateInstructorRecords)
 	importStudentHandler := hrHandler.NewImportHandlerStrategy(studentCtrl.ImportStudents)
 	importInstructorHandler := hrHandler.NewImportHandlerStrategy(instructorCtrl.ImportInstructors)
 
