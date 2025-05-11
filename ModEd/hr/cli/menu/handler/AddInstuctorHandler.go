@@ -22,7 +22,7 @@ func (handler AddInstructorStrategy) Execute() error {
 	firstName := validator.Field(validation.FieldConfig{Name: "firstName", Prompt: "Enter instructor first name: "}).Required().GetInput()
 	lastName := validator.Field(validation.FieldConfig{Name: "lastName", Prompt: "Enter instructor last name: "}).Required().GetInput()
 	email := validator.Field(validation.FieldConfig{Name: "email", Prompt: "Enter instructor email: "}).Required().IsEmail().GetInput()
-	startDate := validator.Field(validation.FieldConfig{Name: "startDate", Prompt: "Enter instructor start date (YYYY-MM-DD): "}).Required().IsDateTime().GetInput()
+	startDate := validator.Field(validation.FieldConfig{Name: "startDate", Prompt: "Enter instructor start date (YYYY-MM-DD): "}).Required().IsDate().GetInput()
 	department := validator.Field(validation.FieldConfig{Name: "department", Prompt: "Enter instructor department: "}).Required().GetInput()
 	gender := validator.Field(validation.FieldConfig{Name: "gender", Prompt: "Enter instructor gender (e.g., Male, Female, Other): "}).Required().GetInput()
 	citizenID := validator.Field(validation.FieldConfig{Name: "citizenID", Prompt: "Enter instructor citizen ID (13 digits): "}).Required().IsAllDigits().Length(13).GetInput()

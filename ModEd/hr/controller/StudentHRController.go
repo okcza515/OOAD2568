@@ -61,12 +61,13 @@ func (c *StudentHRController) AddStudent(
 	studentCode string, firstName string, lastName string, email string, startDate string, birthdate string, program string, department string, status string,
 	gender string, citizenID string, phoneNumber string, advisorCode string,
 ) error {
-	startDateParsed, err := time.Parse("2006-10-31", startDate)
+	fmt.Printf("Date: %s\n", startDate)
+	startDateParsed, err := time.Parse("2006-01-02", startDate)
 	if err != nil {
 		return fmt.Errorf("failed to parse start date: %w", err)
 	}
 
-	birthDateParsed, err := time.Parse("02-01-2006", birthdate)
+	birthDateParsed, err := time.Parse("2006-01-02", birthdate)
 	if err != nil {
 		return fmt.Errorf("failed to parse birth date: %w", err)
 	}

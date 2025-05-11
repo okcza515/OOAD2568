@@ -55,7 +55,7 @@ func (c *InstructorHRController) AddInstructor(
 ) error {
 	tm := &util.TransactionManager{DB: c.db}
 	err := tm.Execute(func(tx *gorm.DB) error {
-		startDateParsed, err := time.Parse("02-01-2006", startDate)
+		startDateParsed, err := time.Parse("2006-01-02", startDate)
 		if err != nil {
 			return fmt.Errorf("failed to parse start date: %w", err)
 		}
