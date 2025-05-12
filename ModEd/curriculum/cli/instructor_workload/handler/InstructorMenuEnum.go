@@ -1,6 +1,7 @@
 package handler
 
 type WorkloadCommand string
+type AcademicMenuCommand string
 
 const (
 	MENU_LOAD_SEED_DATA   WorkloadCommand = "Load Seed Data"
@@ -9,4 +10,35 @@ const (
 	MENU_SENIOR_PROJECT   WorkloadCommand = "Senior Project"
 	MENU_STUDENT_ADVISOR  WorkloadCommand = "Student Advisor"
 	MENU_WORKLOAD_REPORT  WorkloadCommand = "Workload Report"
+	MENU_CURRICULUM    AcademicMenuCommand = "Curriculum"
+	MENU_COURSE        AcademicMenuCommand = "Course"
+	MENU_CLASS         AcademicMenuCommand = "Class"
+	MENU_CLASSMATERIAL AcademicMenuCommand = "Class Material"
+	MENU_COURSEPLAN    AcademicMenuCommand = "Course Plan"
+	MENU_CREATECURRICULUM AcademicMenuCommand = "Create Curriculum"
+	MENU_RETRIEVECURRICULUM AcademicMenuCommand = "Retrieve Curriculum"
+	MENU_UPDATECURRICULUM AcademicMenuCommand = "Update Curriculum"
+	MENU_DELETECURRICULUM AcademicMenuCommand = "Delete Curriculum"
+	MENU_LISTCURRICULUM AcademicMenuCommand = "List Curriculum"
+	MENU_CREATECOURSE     AcademicMenuCommand = "Create Course"
+	MENU_RETRIEVECOURSE   AcademicMenuCommand = "Retrieve Course"
+	MENU_UPDATECOURSE     AcademicMenuCommand = "Update Course"
+	MENU_DELETECOURSE     AcademicMenuCommand = "Delete Course"
+	MENU_LISTCOURSE       AcademicMenuCommand = "List Course"
+	MENU_CREATECLASS      AcademicMenuCommand = "Create Class"
+	MENU_RETRIEVECLASS    AcademicMenuCommand = "Retrieve Class"
+	MENU_UPDATECLASS      AcademicMenuCommand = "Update Class"
+	MENU_DELETECLASS      AcademicMenuCommand = "Delete Class"
+	MENU_LISTCLASS        AcademicMenuCommand = "List Class"
+	MENU_CREATECLASSMATERIAL AcademicMenuCommand = "Create Class Material"
+	MENU_RETRIEVECLASSMATERIAL AcademicMenuCommand = "Retrieve Class Material"
+	MENU_UPDATECLASSMATERIAL AcademicMenuCommand = "Update Class Material"
+	MENU_DELETECLASSMATERIAL AcademicMenuCommand = "Delete Class Material"
+	MENU_LISTCLASSMATERIAL   AcademicMenuCommand = "List Class Material"
+	MENU_CREATECOURSEPLAN    AcademicMenuCommand = "Create Course Plan"
+	MENU_RETRIEVECOURSEPLAN  AcademicMenuCommand = "Retrieve Course Plan"
+	MENU_UPDATECOURSEPLAN    AcademicMenuCommand = "Update Course Plan"
+	MENU_LISTCOURSEPLAN      AcademicMenuCommand = "List Course Plan"
+	MENU_DELETECOURSEPLAN    AcademicMenuCommand = "Delete Course Plan"
+	MENU_LISTUPCOMINGCOURSEPLANS AcademicMenuCommand = "List Upcoming Course Plans"	
 )
