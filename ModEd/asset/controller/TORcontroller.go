@@ -1,9 +1,11 @@
+// MEP-1014
 package controller
 
 import (
 	model "ModEd/asset/model"
-	"gorm.io/gorm"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type TORController struct {
@@ -39,35 +41,35 @@ func (c *TORController) DeleteTOR(id uint) error {
 }
 
 func (c *TORController) UpdateTotalPrice(torID uint) error {
-    var tor model.TOR
-    err := c.db.Preload("Quotations.Details").First(&tor, torID).Error
-    if err != nil {
-        fmt.Printf("Failed to find TOR with ID %d: %v\n", torID, err)
-        return err
-    }
+	var tor model.TOR
+	err := c.db.Preload("Quotations.Details").First(&tor, torID).Error
+	if err != nil {
+		fmt.Printf("Failed to find TOR with ID %d: %v\n", torID, err)
+		return err
+	}
 
-    fmt.Printf("Loaded TOR ID: %d with %d quotations\n", tor.TORID, len(tor.Quotations))
+	fmt.Printf("Loaded TOR ID: %d with %d quotations\n", tor.TORID, len(tor.Quotations))
 
-    totalPrice := 0.0
-    for _, quotation := range tor.Quotations {
-        fmt.Printf("Quotation ID: %d has %d details\n", quotation.QuotationID, len(quotation.Details))
-        for _, detail := range quotation.Details {
-            totalPrice += detail.OfferedPrice * float64(detail.Quantity)
-            fmt.Printf("Adding Price: %.2f * %d = %.2f\n", detail.OfferedPrice, detail.Quantity, detail.OfferedPrice*float64(detail.Quantity))
-        }
-    }
+	totalPrice := 0.0
+	for _, quotation := range tor.Quotations {
+		fmt.Printf("Quotation ID: %d has %d details\n", quotation.QuotationID, len(quotation.Details))
+		for _, detail := range quotation.Details {
+			totalPrice += detail.OfferedPrice * float64(detail.Quantity)
+			fmt.Printf("Adding Price: %.2f * %d = %.2f\n", detail.OfferedPrice, detail.Quantity, detail.OfferedPrice*float64(detail.Quantity))
+		}
+	}
 
-    fmt.Printf("Total price calculated: %.2f\n", totalPrice)
+	fmt.Printf("Total price calculated: %.2f\n", totalPrice)
 
-    err = c.db.Model(&model.TOR{}).
-        Where("tor_id = ?", torID).
-        Update("total_price", totalPrice).Error
+	err = c.db.Model(&model.TOR{}).
+		Where("tor_id = ?", torID).
+		Update("total_price", totalPrice).Error
 
-    if err != nil {
-        fmt.Printf("Failed to update TotalPrice for TOR %d: %v\n", torID, err)
-        return err
-    }
+	if err != nil {
+		fmt.Printf("Failed to update TotalPrice for TOR %d: %v\n", torID, err)
+		return err
+	}
 
-    fmt.Printf("TotalPrice for TOR ID %d updated to %.2f\n", torID, totalPrice)
-    return nil
+	fmt.Printf("TotalPrice for TOR ID %d updated to %.2f\n", torID, totalPrice)
+	return nil
 }

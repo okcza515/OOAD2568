@@ -1,11 +1,10 @@
+// MEP-1014
 package controller
 
 import (
 	model "ModEd/asset/model"
 	"time"
 )
-
-// --- TORBuilder ---
 
 type TORBuilder struct {
 	tor *model.TOR

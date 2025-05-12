@@ -18,15 +18,6 @@ func (c *AcceptanceApprovalController) CreateAcceptanceRequest(req *model.Accept
 	return c.db.Create(req).Error
 }
 
-// func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApproval, error) {
-// 	var approvals []model.AcceptanceApproval
-// 	err := c.db.
-// 		Preload("Procurement").
-// 		Preload("Approver").
-// 		Find(&approvals).Error
-// 	return approvals, err
-// }
-
 func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApproval, error) {
 	var approvals []model.AcceptanceApproval
 	err := c.db.
