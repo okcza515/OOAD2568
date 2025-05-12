@@ -40,16 +40,13 @@ func (menu *QuizMenuStateHandler) Render() {
 	menu.handler.ShowMenu()
 }
 
-func (menu *QuizMenuStateHandler) HandlerUserInput(input string) error {
-	err := menu.handler.HandleInput(input)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (menu *QuizMenuStateHandler) HandleUserInput(input string) error {
 	return menu.handler.HandleInput(input)
+}
+
+func (menu *QuizMenuStateHandler) getQuizTableHeader() {
+	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "ID", "Title", "Status", "Start Date", "End Date", "Attempts")
+	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "---", "-----", "------", "----------", "--------", "--------")
 }
 
 func (menu *QuizMenuStateHandler) printQuizTable(quizzes []*model.Quiz) {
@@ -58,9 +55,7 @@ func (menu *QuizMenuStateHandler) printQuizTable(quizzes []*model.Quiz) {
 		return
 	}
 
-	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "ID", "Title", "Status", "Start Date", "End Date", "Attempts")
-	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "---", "-----", "------", "----------", "--------", "--------")
-
+	menu.getQuizTableHeader()
 	for _, quiz := range quizzes {
 		fmt.Printf("\n%-5d %-20s %-15s %-15s %-10s %-10d",
 			quiz.ID,
@@ -132,7 +127,7 @@ func (menu *QuizMenuStateHandler) CreateQuiz() error {
 		return errors.New("failed to create quiz")
 	}
 
-	fmt.Printf("\nQuiz created successfully with ID: %d", createdQuiz.ID)
+	fmt.Printf("\nQuiz created successfully with ID: %d\n", createdQuiz.ID)
 	return nil
 }
 
@@ -207,23 +202,20 @@ func (menu *QuizMenuStateHandler) UpdateQuiz() error {
 		}
 	}
 
-	quiz := &model.Quiz{
-		Title:        title,
-		Description:  description,
-		Status:       status,
-		StartDate:    startDate,
-		EndDate:      endDate,
-		Attempts:     attempts,
-		InstructorID: existingQuiz.InstructorID,
-		CourseID:     existingQuiz.CourseID,
-	}
+	// Set the quiz fields but keep the original ID
+	existingQuiz.Title = title
+	existingQuiz.Description = description
+	existingQuiz.Status = status
+	existingQuiz.StartDate = startDate
+	existingQuiz.EndDate = endDate
+	existingQuiz.Attempts = attempts
 
-	updatedQuiz, err := menu.wrapper.QuizController.UpdateQuiz(quiz)
+	updatedQuiz, err := menu.wrapper.QuizController.UpdateQuiz(existingQuiz)
 	if err != nil {
 		return errors.New("failed to update quiz")
 	}
 
-	fmt.Printf("\nQuiz updated successfully with ID: %d", updatedQuiz.ID)
+	fmt.Printf("\nQuiz updated successfully with ID: %d\n", updatedQuiz.ID)
 	return nil
 }
 
@@ -238,7 +230,7 @@ func (menu *QuizMenuStateHandler) DeleteQuiz() error {
 		return errors.New("failed to delete quiz")
 	}
 
-	fmt.Printf("\nQuiz with ID %d has been marked as hidden", quizID)
+	fmt.Printf("\nQuiz with ID %d has been marked as hidden\n", quizID)
 	return nil
 }
 
@@ -258,12 +250,11 @@ func (menu *QuizMenuStateHandler) GetQuizByID() error {
 	fmt.Printf("\nTitle: %s", quiz.Title)
 	fmt.Printf("\nDescription: %s", quiz.Description)
 	fmt.Printf("\nStatus: %s", quiz.Status)
-	fmt.Printf("\nStart Date: %s", quiz.StartDate)
-	fmt.Printf("\nEnd Date: %s", quiz.EndDate)
+	fmt.Printf("\nStart Date: %s", quiz.StartDate.Format("2006-01-02"))
+	fmt.Printf("\nEnd Date: %s", quiz.EndDate.Format("2006-01-02"))
 	fmt.Printf("\nAttempts: %d", quiz.Attempts)
 	fmt.Printf("\nInstructor ID: %d", quiz.InstructorID)
-	fmt.Printf("\nCourse ID: %d", quiz.CourseID)
-	fmt.Println()
+	fmt.Printf("\nCourse ID: %d\n", quiz.CourseID)
 	return nil
 }
 

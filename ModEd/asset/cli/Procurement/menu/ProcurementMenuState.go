@@ -30,10 +30,9 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		handlerContext: handlerContext,
 	}
 
-	// 1. Create TOR and Procurement
+	// Create TOR and Procurement
 	handlerContext.AddHandler("1", "Create TOR and Procurement", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("Create TOR and Procurement")
 			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
 			if err != nil {
 				fmt.Println("Failed to list Instrument Requests:", err)
@@ -59,8 +58,23 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n",
 					req.InstrumentRequestID, req.DepartmentID, req.Status)
 			}
-			// Get Input
-			requestID := util.GetUintInput("Enter Instrument Request ID: ")
+
+			requestID := util.GetUintInput("\nEnter Instrument Request ID to proceed: ")
+
+			var selectedRequest *model.InstrumentRequest
+			for _, req := range approvedRequests {
+				if req.InstrumentRequestID == requestID {
+					selectedRequest = &req
+					break
+				}
+			}
+
+			if selectedRequest == nil {
+				fmt.Println("Invalid Instrument Request ID.")
+				util.PressEnterToContinue()
+				return fmt.Errorf("invalid instrument request ID")
+			}
+
 			scope := util.GetStringInput("Enter TOR Scope: ")
 			deliverables := util.GetStringInput("Enter TOR Deliverables: ")
 			timeline := util.GetStringInput("Enter TOR Timeline: ")
@@ -75,8 +89,7 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				WithCreatedAt(time.Now()).
 				Build()
 
-			err = facade.TOR.CreateTOR(tor)
-			if err != nil {
+			if err := facade.TOR.CreateTOR(tor); err != nil {
 				fmt.Println("Failed to create TOR:", err)
 				util.PressEnterToContinue()
 				return err
@@ -89,12 +102,19 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				WithCreatedAt(time.Now()).
 				Build()
 
-			err = facade.Procurement.CreateProcurement(procurement)
-			if err != nil {
+			if err := facade.Procurement.CreateProcurement(procurement); err != nil {
 				fmt.Println("Failed to create Procurement:", err)
+				util.PressEnterToContinue()
+				return err
 			} else {
 				fmt.Println("Procurement created successfully!")
 			}
+
+			err = facade.RequestedItem.UpdateInstrumentRequestStatus(requestID, model.InstrumentRequestStatusProcessed)
+			if err != nil {
+				fmt.Println("Failed to update Instrument Request status:", err)
+			}
+
 			util.PressEnterToContinue()
 			return nil
 		},
@@ -126,9 +146,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	// Listing All TORs
 	handlerContext.AddHandler("3", "List All TORs", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("List All TORs")
-
-			// Correct method call
 			tors, err := facade.TOR.GetAllTORs()
 			if err != nil {
 				fmt.Println("Failed to list TORs:", err)
@@ -136,7 +153,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				return err
 			}
 
-			// Display the list — no need for "*"
 			helper.DisplayTORList(tors)
 			util.PressEnterToContinue()
 			return nil
@@ -146,7 +162,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	// Viewing Procurement Details
 	handlerContext.AddHandler("4", "View Procurement Detail by ID", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("View Procurement Detail by ID")
 			procurement, err := helper.SelectProcurement(facade)
 			if err != nil {
 				fmt.Println("Failed to retrieve procurement details:", err)
@@ -162,10 +177,10 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 			return nil
 		},
 	})
+
 	// Viewing TOR Details
 	handlerContext.AddHandler("5", "View TOR Detail by ID", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("View TOR Detail by ID")
 			tor, err := helper.SelectTOR(facade)
 			if err != nil {
 				fmt.Println("Failed to retrieve TOR details:", err)
@@ -187,7 +202,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	// Deleting Procurement
 	handlerContext.AddHandler("6", "Delete Procurement", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("Delete Procurement")
 			procurement, err := helper.SelectProcurement(facade)
 			if err != nil {
 				return err
@@ -199,7 +213,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	// Deleting TOR
 	handlerContext.AddHandler("7", "Delete TOR", handler.FuncStrategy{
 		Action: func() error {
-			fmt.Println("Delete TOR")
 			tor, err := helper.SelectTOR(facade)
 			if err != nil {
 				return err

@@ -3,7 +3,8 @@ package examination
 // MEP-1007
 
 import (
-	"ModEd/eval/cli/examination/handler"
+	newMenuHandler "ModEd/curriculum/cli/instructor_workload/handler"
+	examMenu "ModEd/eval/cli/examination/menu"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/utils/deserializer"
@@ -30,9 +31,9 @@ func RunExamModuleCLI(
 	examCtrl *controller.ExamController,
 	examSectionCtrl *controller.ExamSectionController,
 ) {
-	menu := handler.NewMenuHandler("Exam Menu", true)
-	menu.Add("Manage Exams", handler.ExamHandler{ExamCtrl: examCtrl})
-	menu.Add("Manage Exam Sections", handler.ExamSectionHandler{ExamSectionCtrl: examSectionCtrl})
+	menu := newMenuHandler.NewMenuHandler("Exam Module", true)
+	menu.Add("Load Seed Data", LoadSeedData{db: db})
+	menu.Add("Manage Exams", examMenu.ExamMenu{ExamCtrl: examCtrl, ExamSectionCtrl: examSectionCtrl})
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
 	menu.Execute()
@@ -45,7 +46,6 @@ type LoadSeedData struct {
 func (l LoadSeedData) Execute() {
 	SeedJsonData := map[string]interface{}{
 		"exam":     &[]model.Exam{},
-		"exam_section":      &[]model.ExamSection{},
 	}
 	for filename, model := range SeedJsonData {
 		fileDeserializer, err := deserializer.NewFileDeserializer("../../data/exam/" + filename + ".json")
