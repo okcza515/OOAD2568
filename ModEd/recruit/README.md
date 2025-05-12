@@ -26,6 +26,84 @@ go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLI
 
 go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLIFunction.go --database="data/ModEd.bin"  --database="data/ModEd.bin" --database="data/ModEd.bin" --database="data/ModEd.bin" --path="data/common/DepartmentList.csv"
 
+## User guide
+
+### Admin role
+#### Select `Admin` role on the start menu:
+
+#### Login with: 
+- Username: `admin`
+- password: `1234`
+
+#### Then, you will see the `Admin menu`:
+
+    Admin Menu:
+    1. View Application Report
+    2. Schedule Interview
+    3. Delete Interview
+    4. Transfer Confirmed Applicants to Students
+ --> Select `1:Application Report` for view Applicant infomations, the functions will show up.
+
+    1. view All Applicatoin Reports
+    2. View Interview Reports
+    3. View Application Reports by Status:
+
+`remark`: you can search by status  <span style="color:yellow">Pending</span>, 
+<span style="color:green">Accepted</span>, 
+<span style="color:red">Rejected</span>, 
+etc
+
+
+--> Select `2:Schedule Interview` for Schedule Applicant and Instructor to interview. By enter both ID and Interview date and time to create interview schedule.
+
+--> Select `3:Delete Interview` for Delete the interview that in Student recruit system, By enter interview ID.
+
+--> Select `4:Transfer Confirm Applicant to student` for Transfer applicant that confirmed recruitment to student 
+
+### User role
+
+### Instructor role
+#### Select `Instructor` role on the start menu:
+
+#### Login with: 
+- Instructor ID :  `Use ID in ModEd.bin`
+#### Main Menu Options
+```bash
+1. View All Interview Details
+2. View Pending Interview Details
+3. View Evaluated Interview Details
+4. Evaluate Applicant
+3. Menu Details
+```
+`Option 1`: View All Interview Details
+Shows all applicants assigned to this instructor
+
+Includes applicant ID, application round, and evaluation scores (if any)
+
+Useful to get an overview of the full workload
+
+`Option 2`: View Pending Interview Details
+Displays only those applicants that have not yet been evaluated
+
+Helps plan upcoming interviews
+
+`Option 3`: View Evaluated Interview Details
+Shows applicants that have already been evaluated
+
+Useful for review or reporting
+
+`Option 4`: Evaluate Applicant
+1. Select an applicant ID from your list
+
+2. You will be prompted with evaluation criteria (loaded from JSON file)
+
+3. Enter scores or comments as required
+
+4. Confirm to submit your evaluation
+
+5. Evaluation is saved to memory or file
+
+
 
 ### process flow
 1. Registration Form

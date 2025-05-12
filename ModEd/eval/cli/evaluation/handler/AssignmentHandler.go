@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -32,6 +33,7 @@ func NewAssignmentMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *co
 }
 
 func (menu *AssignmentMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nAssignment management menu:")
 	menu.handler.AddHandler("1", "Create a new assignment.", handler.FuncStrategy{Action: menu.CreateAssignment})
 	menu.handler.AddHandler("2", "View all assignments.", handler.FuncStrategy{Action: menu.ViewAllAssignments})
@@ -39,6 +41,7 @@ func (menu *AssignmentMenuStateHandler) Render() {
 	menu.handler.AddHandler("4", "Update assignment details.", handler.FuncStrategy{Action: menu.UpdateAssignment})
 	menu.handler.AddHandler("5", "Change assignment status.", handler.FuncStrategy{Action: menu.ChangeAssignmentStatus})
 	menu.handler.AddHandler("6", "Delete an assignment.", handler.FuncStrategy{Action: menu.DeleteAssignment})
+	menu.handler.AddHandler("7", "Assignment Submission Menu", handler.FuncStrategy{Action: menu.GoToSubmissionMenu})
 	menu.handler.AddHandler("back", "Back to previous menu.", menu.backhandler)
 
 	menu.handler.ShowMenu()
@@ -148,6 +151,8 @@ func (menu *AssignmentMenuStateHandler) CreateAssignment() error {
 
 	fmt.Printf("\nAssignment created successfully with ID: %d\n", assignmentId)
 	fmt.Println("Assignment has been saved to CSV file automatically.")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -159,6 +164,8 @@ func (menu *AssignmentMenuStateHandler) ViewAllAssignments() error {
 
 	fmt.Println("\nAll Assignments:")
 	menu.printAssignmentList(assignments)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -186,6 +193,8 @@ func (menu *AssignmentMenuStateHandler) ViewAssignmentByID() error {
 	fmt.Printf("Status: %s\n", assignment.Status)
 	fmt.Printf("Class ID: %v\n", assignment.ClassId)
 	fmt.Printf("Instructor Code: %s\n", assignment.InstructorCode)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -298,6 +307,8 @@ func (menu *AssignmentMenuStateHandler) UpdateAssignment() error {
 
 	fmt.Println("\nAssignment updated successfully")
 	fmt.Println("Changes have been saved to CSV file automatically.")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -347,6 +358,8 @@ func (menu *AssignmentMenuStateHandler) ChangeAssignmentStatus() error {
 
 	fmt.Printf("\nAssignment status updated to: %s\n", newStatus)
 	fmt.Println("Changes have been saved to CSV file.")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -377,5 +390,16 @@ func (menu *AssignmentMenuStateHandler) DeleteAssignment() error {
 	}
 
 	fmt.Println("\nAssignment deleted successfully")
+	util.PressEnterToContinue()
+	util.ClearScreen()
+	return nil
+}
+
+func (menu *AssignmentMenuStateHandler) GoToSubmissionMenu() error {
+	util.ClearScreen()
+	// Create the assignment submission menu handler
+	submissionHandler := NewAssignmentSubmissionMenuStateHandler(menu.Manager, menu.wrapper, menu)
+	// Set it as the current state
+	menu.Manager.SetState(submissionHandler)
 	return nil
 }
