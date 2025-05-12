@@ -1,0 +1,38 @@
+[
+    {
+        "StudentCode": "65070503445",
+        "AssessmentId": 1,
+        "Issubmitted": true,
+        "TotalSubmit": 0
+    },
+
+    {
+        "StudentCode": "65070503466",
+        "AssessmentId": 1,
+        "Issubmitted": false,
+        "TotalSubmit": 0
+    },
+
+    {
+        "StudentCode": "65070503469",
+        "AssessmentId": 1,
+        "Issubmitted": true,
+        "TotalSubmit": 0
+    },
+
+    {
+        "StudentCode": "65070503445",
+        "AssessmentId": 2,
+        "Issubmitted": true,
+        "TotalSubmit": 0
+    },
+
+    {
+        "StudentCode": "65070503466",
+        "AssessmentId": 2,
+        "Issubmitted": true,
+        "TotalSubmit": 0
+    }
+
+
+]
