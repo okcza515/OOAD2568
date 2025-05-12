@@ -36,7 +36,7 @@ func newMigrationManager() *MigrationManager {
 	migrationMap[core.MODULE_ASSET] = &AssetMigrationStrategy{}
 	migrationMap[core.MODULE_PROCUREMENT] = nil
 	migrationMap[core.MODULE_SPACEMANAGEMENT] = &SpaceManagementMigrationStrategy{}
-	migrationMap[core.MODULE_COMMON] = nil
+	migrationMap[core.MODULE_COMMON] = &CommonStrategy{}
 	migrationMap[core.MODULE_CURRICULUM] = &CurriculumMigrationStrategy{}
 	migrationMap[core.MODULE_INSTRUCTOR] = &InstructorWorkloadMigrationStrategy{}
 	migrationMap[core.MODULE_INTERNSHIP] = &InternshipMigrationStrategy{}
@@ -133,25 +133,32 @@ func (m *MigrationManager) AddSeedData(path string, model interface{}) *Migratio
 
 func (m *MigrationManager) LoadSeedData() error {
 	for path, md := range m.seedDatas {
+		fmt.Println("Loading seed data from path:", path)
+
 		fd, err := deserializer.NewFileDeserializer(path)
 		if err != nil {
+			fmt.Printf("Error creating deserializer for %s: %v\n", path, err)
 			return err
 		}
 
-		// Print fd
-		fmt.Println(fd)
+		// Print file deserializer info
+		fmt.Printf("FileDeserializer: %+v\n", fd)
 
 		err = fd.Deserialize(md)
 		if err != nil {
+			fmt.Printf("Error deserializing %s: %v\n", path, err)
 			return err
 		}
 
-		fmt.Println(md)
+		fmt.Printf("Deserialized data for %s: %+v\n", path, md)
 
 		result := m.DB.Create(md)
 		if result.Error != nil {
+			fmt.Printf("Error creating records from %s: %v\n", path, result.Error)
 			return result.Error
 		}
+
+		fmt.Printf("Successfully loaded data from %s: %d rows affected\n", path, result.RowsAffected)
 	}
 
 	return nil

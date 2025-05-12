@@ -5,7 +5,6 @@ import (
 
 	commonModel "ModEd/common/model"
 	"ModEd/core"
-	curriculumModel "ModEd/curriculum/model"
 )
 
 type AssessmentStatus string
@@ -24,7 +23,7 @@ type Assessment struct {
 	PublishDate    time.Time
 	DueDate        time.Time
 	Status         AssessmentStatus       `gorm:"type:varchar(20);not null;default:'drafted'"`
-	ClassId        curriculumModel.Class  `gorm:"foreignKey:ClassId;references:ClassId"`
+	ClassId        uint                   `gorm:"not null"`
 	InstructorCode commonModel.Instructor `gorm:"foreignKey:InstructorCode;references:InstructorCode"`
 	Submission     []AssessmentSubmission `gorm:"foreignKey:AssessmentId"`
 	State          AssessmentState        `gorm:"-"`

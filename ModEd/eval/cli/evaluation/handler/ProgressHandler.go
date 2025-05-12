@@ -2,17 +2,11 @@ package handler
 
 import (
 	"ModEd/core"
-
 	"ModEd/core/cli"
-
 	"ModEd/core/handler"
-
 	"ModEd/eval/controller"
-
 	"ModEd/eval/model"
-
 	"errors"
-
 	"fmt"
 )
 
@@ -73,7 +67,7 @@ func (menu *ProgressMenuStateHandler) printProgressTable(progressList []model.Pr
 			progress.ID,
 			progress.AssessmentId,
 			progress.StudentCode,
-			progress.Submitted.Submitted,
+			progress.IsSubmitted,
 			progress.TotalSubmit)
 	}
 	fmt.Println()
@@ -81,7 +75,7 @@ func (menu *ProgressMenuStateHandler) printProgressTable(progressList []model.Pr
 
 func (menu *ProgressMenuStateHandler) GetAllProgress() error {
 	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID:",
+		PromptText:    "Enter Assessment ID: ",
 		FieldNameText: "Assessment ID",
 	}).(uint)
 
@@ -89,7 +83,7 @@ func (menu *ProgressMenuStateHandler) GetAllProgress() error {
 		"assessment_id": assessmentId,
 	})
 	if err != nil {
-		return errors.New("Failed to retrieve progress list.")
+		return errors.New("failed to retrieve progress list")
 	}
 
 	fmt.Printf("\nAssessment %d Progress List:", assessmentId)
@@ -99,12 +93,12 @@ func (menu *ProgressMenuStateHandler) GetAllProgress() error {
 
 func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID:",
+		PromptText:    "Enter Assessment ID: ",
 		FieldNameText: "Assessment ID",
 	}).(uint)
 
 	studentCode := core.ExecuteUserInputStep(core.StringInputStep{
-		PromptText:    "Enter Student Code:",
+		PromptText:    "Enter Student Code: ",
 		FieldNameText: "Student Code",
 	}).(string)
 
@@ -113,7 +107,7 @@ func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 		"student_code":  studentCode,
 	})
 	if err != nil {
-		return errors.New("Failed to retrieve progress list.")
+		return errors.New("failed to retrieve progress list")
 	}
 
 	fmt.Printf("\nAssessment %d Progress List for Student %s:", assessmentId, studentCode)
@@ -123,12 +117,12 @@ func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 
 func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID:",
+		PromptText:    "Enter Assessment ID: ",
 		FieldNameText: "Assessment ID",
 	}).(uint)
 
 	statusStr := core.ExecuteUserInputStep(core.StringInputStep{
-		PromptText:    "Enter Submission Status (true/false):",
+		PromptText:    "Enter Submission Status (true/false): ",
 		FieldNameText: "Submitted",
 	}).(string)
 
@@ -136,10 +130,10 @@ func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 
 	progressList, err := menu.wrapper.ProgressController.List(map[string]interface{}{
 		"assessment_id": assessmentId,
-		"submitted":     submitted,
+		"is_submitted":  submitted,
 	})
 	if err != nil {
-		return errors.New("Failed to retrieve progress list.")
+		return errors.New("failed to retrieve progress list")
 	}
 
 	fmt.Printf("\nAssessment %d Progress List with Submission Status %v:", assessmentId, submitted)
@@ -149,7 +143,7 @@ func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 
 func (menu *ProgressMenuStateHandler) GetAssessmentSubmitCount() error {
 	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID:",
+		PromptText:    "Enter Assessment ID: ",
 		FieldNameText: "Assessment ID",
 	}).(uint)
 
@@ -157,19 +151,18 @@ func (menu *ProgressMenuStateHandler) GetAssessmentSubmitCount() error {
 		"assessment_id": assessmentId,
 	})
 	if err != nil {
-		return errors.New("Failed to retrieve progress list.")
+		return errors.New("failed to retrieve progress list")
 	}
 
 	statusCount := make(map[bool]int)
 	for _, progress := range progressList {
-		statusCount[progress.Submitted.Submitted]++
+		statusCount[progress.IsSubmitted]++
 	}
 
 	fmt.Printf("\nAssessment %d Submission Count:", assessmentId)
 	for submitted, count := range statusCount {
 		fmt.Printf("\nSubmitted: %v - Count: %d", submitted, count)
 	}
-	fmt.Printf("\nTotal Submissions: %d", len(progressList))
 	fmt.Println()
 	return nil
 }

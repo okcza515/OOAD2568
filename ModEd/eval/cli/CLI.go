@@ -3,6 +3,8 @@ package main
 import (
 	"ModEd/core"
 
+	evalModel "ModEd/eval/model"
+
 	"ModEd/core/migration"
 
 	evaluation "ModEd/eval/cli/evaluation"
@@ -40,6 +42,45 @@ func (r *ResetDBCommand) Execute() error {
 	return resetDB()
 }
 
+type LoadEvalCommand struct{}
+
+func (l *LoadEvalCommand) Execute() error {
+	mgr := migration.GetInstance()
+	db := mgr.DB
+
+	if db == nil {
+		var err error
+		db, err = mgr.SetPathDB(defaultDBPath).
+			MigrateModule(core.MODULE_QUIZ).
+			MigrateModule(core.MODULE_COMMON).
+			BuildDB()
+		if err != nil {
+			return fmt.Errorf("failed to initialize database: %v", err)
+		}
+	}
+	fmt.Println("Deleting existing progress records...")
+	if err := db.Exec("DELETE FROM progresses").Error; err != nil {
+		return fmt.Errorf("failed to delete existing progress records: %v", err)
+	}
+
+	fmt.Println("Loading seed data from path: ../../data/quiz/Progress.csv")
+	var progresses []evalModel.Progress
+
+	mgr.AddSeedData("../../data/quiz/Progress.csv", &progresses)
+
+	err := mgr.LoadSeedData()
+	if err != nil {
+		return err
+	}
+
+	var count int64
+	db.Model(&evalModel.Progress{}).Count(&count)
+	fmt.Printf("Successfully loaded %d progress records\n", count)
+
+	fmt.Println("Seed data loaded successfully.")
+	return nil
+}
+
 type CommandExecutor struct {
 	commands map[string]Command
 }
@@ -64,6 +105,7 @@ func main() {
 		GetInstance().
 		SetPathDB(defaultDBPath).
 		MigrateModule(core.MODULE_QUIZ).
+		MigrateModule(core.MODULE_COMMON).
 		BuildDB()
 
 	if err != nil {
@@ -76,6 +118,8 @@ func main() {
 
 	CommandExecutor := NewCommandExecutor()
 	CommandExecutor.RegisterCommand("1", &EvaluationCommand{db, evaluationController, progressController, assessmentController})
+	CommandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
+	CommandExecutor.RegisterCommand("loadeval", &LoadEvalCommand{})
 
 	for {
 		DisplayMainMenu()
@@ -96,7 +140,9 @@ func DisplayMainMenu() {
 	fmt.Println("\nEvaluation Module Menu:")
 	fmt.Println("1. Evaluation Assignment & Quiz")
 	fmt.Println("2. Evaluation Examination")
+	fmt.Println("0. Exit")
 	fmt.Println("'resetdb' to re-initialize the database")
+	fmt.Println("'loadeval' to load evaluation seed data")
 }
 
 func GetUserChoice() string {
@@ -115,8 +161,6 @@ func resetDB() error {
 	_, err = migration.GetInstance().
 		SetPathDB(defaultDBPath).
 		MigrateModule(core.MODULE_QUIZ).
-		MigrateModule(core.MODULE_COMMON).
-		MigrateModule(core.MODULE_INSTRUCTOR).
 		BuildDB()
 
 	if err != nil {
