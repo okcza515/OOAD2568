@@ -27,7 +27,7 @@ type CreateRequestParams struct {
 	ID           string
 	LeaveType    string // For Leave
 	Reason       string
-	DateStr      string // For Leave (format "02-01-2006")
+	DateStr      string
 	TargetSalary float64    // For Raise
 }
 
@@ -40,7 +40,7 @@ func createStudentLeaveRequest(params CreateRequestParams) (interface{}, error) 
 	if params.LeaveType == "" || params.Reason == "" || params.DateStr == "" {
 		return nil, fmt.Errorf("missing parameters for student leave request (LeaveType, Reason, DateStr are required)")
 	}
-	t, err := time.Parse("02-01-2006", params.DateStr)
+	t, err := time.Parse("2006-01-02", params.DateStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format for student leave request ('%s'): %w", params.DateStr, err)
 	}
@@ -78,7 +78,7 @@ func createInstructorLeaveRequest(params CreateRequestParams) (interface{}, erro
 	if params.LeaveType == "" || params.Reason == "" || params.DateStr == "" {
 		return nil, fmt.Errorf("missing parameters for instructor leave request (LeaveType, Reason, DateStr are required)")
 	}
-	t, err := time.Parse("02-01-2006", params.DateStr)
+	t, err := time.Parse("2006-01-02", params.DateStr)
 	if err != nil {
 		return nil, fmt.Errorf("invalid date format for instructor leave request ('%s'): %w", params.DateStr, err)
 	}
