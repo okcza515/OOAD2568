@@ -23,3 +23,17 @@ func (mapper *CSVMapper[T]) Deserialize() []*T {
 	}
 	return result
 }
+
+func (mapper *CSVMapper[T]) Serialize(data []*T) error {
+	file, err := os.OpenFile(mapper.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	err = gocsv.MarshalFile(&data, file)
+	if err != nil {
+		return err
+	}
+	return nil
+}
