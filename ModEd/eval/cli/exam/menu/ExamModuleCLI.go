@@ -2,7 +2,7 @@ package menu
 
 import (
 	"ModEd/core/cli"
-	"ModEd/eval/cli/handler"
+	"ModEd/eval/cli/exam/handler"
 	"ModEd/eval/controller"
 
 	"fmt"

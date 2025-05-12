@@ -20,7 +20,7 @@ type ExamModuleMenuStateHandler struct {
 	Manager *cli.CLIMenuStateManager
 	wrapper *controller.ExamModuleWrapper
 
-	ExamMenuStateHandler	   *ExamMenuStateHandler
+	ExamMenuStateHandler	   *ExamMenuState
 	QuestionMenuStateHandler   *QuestionMenuStateHandler
 	SubmissionMenuStateHandler *SubmissionMenuStateHandler
 	handler                    *handler.HandlerContext

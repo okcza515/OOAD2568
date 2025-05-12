@@ -7,7 +7,7 @@ import (
 	"ModEd/core/handler"
 	"ModEd/core/migration"
 	"ModEd/eval/cli/evaluation/command"
-	examinationCommand "ModEd/eval/cli/command"
+	examinationCommand "ModEd/eval/cli/exam/command"
 	controller "ModEd/eval/controller"
 	"fmt"
 )

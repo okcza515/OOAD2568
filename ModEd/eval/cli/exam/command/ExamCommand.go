@@ -1,7 +1,7 @@
 package command
 
 import (
-	"ModEd/eval/cli/menu"
+	"ModEd/eval/cli/exam/menu"
 	controller "ModEd/eval/controller"
 
 	"gorm.io/gorm"
