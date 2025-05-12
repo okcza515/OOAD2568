@@ -1,9 +1,4 @@
-<<<<<<< Updated upstream
-//MEP-1006
-=======
-//MEP-1006 Quiz and Assignment
->>>>>>> Stashed changes
-
+// MEP-1006 Quiz and Assignment
 package handler
 
 import (
