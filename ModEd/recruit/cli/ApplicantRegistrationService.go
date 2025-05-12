@@ -302,13 +302,14 @@ func (s *applicantRegistrationService) handleRoundFormData(round *model.Applicat
 func (s *applicantRegistrationService) SelectProgram() commonModel.ProgramType {
 	fmt.Println("\n==== Available Programs ====")
 	for k, v := range commonModel.ProgramTypeLabel {
-		fmt.Printf("%d. %s\n", k, v)
+		fmt.Printf("%d. %s\n", k+1, v)
 	}
 
 	fmt.Print("Select a program: ")
 	var choice int
 	fmt.Scan(&choice)
 
+	choice--
 	if _, ok := commonModel.ProgramTypeLabel[commonModel.ProgramType(choice)]; !ok {
 		fmt.Println("Invalid selection. Defaulting to Regular.")
 		return commonModel.REGULAR

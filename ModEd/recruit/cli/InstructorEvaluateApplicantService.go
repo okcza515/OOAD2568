@@ -36,10 +36,14 @@ func NewInstructorEvaluateApplicantService(db *gorm.DB, interviewCreiteriaCtrl *
 }
 
 func (s *instructorEvaluateApplicantService) HasPermissionToEvaluate(instructorID, applicationReportID uint) (bool, error) {
-	interview, err := s.InterviewCtrl.GetInterviewByApplicationReportID(applicationReportID)
+	interviews, err := s.InterviewCtrl.GetInterviewByApplicationReportID(applicationReportID)
 	if err != nil {
 		return false, err
 	}
+	if len(interviews) == 0 {
+		return false, fmt.Errorf("no interview found for application report ID %d", applicationReportID)
+	}
+	interview := interviews[0]
 	return interview.InstructorID == instructorID, nil
 }
 
@@ -68,10 +72,14 @@ func (s *instructorEvaluateApplicantService) EvaluateApplicant(applicationReport
 		return err
 	}
 
-	interviewModel, err := s.InterviewCtrl.GetInterviewByApplicationReportID(applicationReportID)
+	interviewModels, err := s.InterviewCtrl.GetInterviewByApplicationReportID(applicationReportID)
 	if err != nil {
 		return fmt.Errorf("failed to get interview record: %w", err)
 	}
+	if len(interviewModels) == 0 {
+		return fmt.Errorf("no interview found for application report ID %d", applicationReportID)
+	}
+	interviewModel := interviewModels[0]
 
 	interview := &model.Interview{
 		InterviewID:          interviewModel.InterviewID,

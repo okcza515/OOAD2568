@@ -66,22 +66,23 @@ func (c *InterviewController) GetAllInterviews() ([]*model.Interview, error) {
 	return interviews, nil
 }
 
-func (c *InterviewController) GetInterviewByApplicationReportID(reportID uint) (*model.Interview, error) {
-	var interview model.Interview
-	err := c.DB.Where("application_report_id = ?", reportID).First(&interview).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("Notfound Application Report ID")
-		}
-		return nil, err
+func (c *InterviewController) GetInterviewByApplicationReportID(reportID uint) ([]*model.Interview, error) {
+	condition := map[string]interface{}{
+		"application_report_id": reportID,
 	}
-	return &interview, nil
+	return c.Base.List(
+		condition,
+		"Instructor",
+		"ApplicationReport",
+		"ApplicationReport.Applicant",
+		"ApplicationReport.ApplicationRound",
+	)
 }
 
 func (c *InterviewController) SaveInterviewEvaluation(data *model.Interview) error {
 	var interview model.Interview
 	if err := c.DB.First(&interview, data.InterviewID).Error; err != nil {
-		return errors.New("ไม่พบข้อมูลสัมภาษณ์")
+		return errors.New("Notfound Interview ID")
 	}
 
 	interview.CriteriaScores = data.CriteriaScores
@@ -90,14 +91,4 @@ func (c *InterviewController) SaveInterviewEvaluation(data *model.Interview) err
 	interview.InterviewStatus = model.ApplicationStatus(data.InterviewStatus)
 
 	return c.DB.Save(&interview).Error
-}
-
-func GetInterviewDetails(db *gorm.DB, reportID uint) (*model.Interview, error) {
-	var interview model.Interview
-
-	err := db.Where("application_report_id = ?", reportID).First(&interview).Error
-	if err != nil {
-		return nil, errors.New("ไม่พบข้อมูลสัมภาษณ์สำหรับผู้สมัครที่ให้มา")
-	}
-	return &interview, nil
 }
