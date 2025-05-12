@@ -26,7 +26,6 @@ func NewInsertInstrumentManagementStrategy(
 func (handler InsertInstrumentManagementStrategy) Execute() error {
     fmt.Println("=== Create New Instrument Management ===")
     
-    // Get Room ID
     fmt.Print("Enter Room ID: ")
     var roomID uint
     _, err := fmt.Sscan(util.GetCommandInput(), &roomID)
@@ -34,7 +33,6 @@ func (handler InsertInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid room ID: %v", err)
     }
 
-    // Get Instrument ID
     fmt.Print("Enter Instrument ID: ")
     var instrumentID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &instrumentID)
@@ -42,7 +40,6 @@ func (handler InsertInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid instrument ID: %v", err)
     }
 
-    // Get Borrow ID (required)
     fmt.Print("Enter Borrow ID: ")
     var borrowID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &borrowID)
@@ -50,7 +47,6 @@ func (handler InsertInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid borrow ID: %v", err)
     }
     
-    // Create instrument management record
     instrumentManagement := &model.InstrumentManagement{
         RoomID:         roomID,
         InstrumentID:   instrumentID,

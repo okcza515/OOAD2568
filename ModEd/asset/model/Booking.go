@@ -5,15 +5,24 @@ import (
 	"ModEd/core"
 	"fmt"
 	"strings"
+    "github.com/go-playground/validator/v10"
 )
 
 type Booking struct {
 	core.BaseModel
-	TimeTableID uint      `gorm:"type:integer;not null" json:"time_table_id" csv:"time_table_id"`
-	TimeTable   TimeTable `gorm:"foreignKey:TimeTableID;references:ID" json:"time_table" csv:"time_table"`
-	UserID      uint      `gorm:"type:integer;not null" json:"user_id" csv:"user_id"`
-	UserRole    Role      `gorm:"type:text;not null" json:"user_role" csv:"user_role"`
-	EventName   string    `gorm:"type:text;not null" json:"event_name" csv:"event_name"`
+	TimeTableID uint      `gorm:"type:integer;not null" json:"time_table_id" csv:"time_table_id" validate:"-"`
+	TimeTable   TimeTable `gorm:"foreignKey:TimeTableID;references:ID" json:"time_table" csv:"time_table" validate:"-"`
+	UserID      uint      `gorm:"type:integer;not null" json:"user_id" csv:"user_id" validate:"required"`
+	UserRole    Role      `gorm:"type:text;not null" json:"user_role" csv:"user_role" validate:"required"`
+	EventName   string    `gorm:"type:text;not null" json:"event_name" csv:"event_name" validate:"required"`
+}
+
+func (booking Booking) Validate() error {
+    validate := validator.New()
+    if err := validate.Struct(booking); err != nil {
+        return err
+    }
+    return nil
 }
 
 func (booking Booking) ToString() string {

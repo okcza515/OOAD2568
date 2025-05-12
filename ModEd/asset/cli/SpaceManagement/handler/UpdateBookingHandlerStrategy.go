@@ -27,7 +27,6 @@ func NewUpdateBookingHandlerStrategy(controller interface {
 func (h *UpdateBookingHandlerStrategy) Execute() error {
     fmt.Println("===== Update Booking =====")
 
-    // Get booking ID
     fmt.Print("Enter Booking ID to update: ")
     var idStr string
     fmt.Scanln(&idStr)
@@ -37,17 +36,14 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         return err
     }
 
-    // Retrieve existing booking
     booking, err := h.controller.RetrieveByID(uint(id))
     if err != nil {
         fmt.Println("Error retrieving booking:", err)
         return err
     }
 
-    // Store original booking for comparison
     originalBooking := booking
 
-    // Update Event Name
     fmt.Printf("Current Event Name: %s\n", booking.EventName)
     fmt.Print("Enter new Event Name (or press Enter to keep current): ")
     newEventName := util.GetCommandInput()
@@ -55,7 +51,6 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         booking.EventName = newEventName
     }
 
-    // Update User Role
     fmt.Printf("Current User Role: %s\n", booking.UserRole)
     fmt.Print("Enter new User Role (STUDENT/ADVISOR/ADMIN) (or press Enter to keep current): ")
     newRole := util.GetCommandInput()
@@ -73,7 +68,6 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         }
     }
 
-    // Update Start Date/Time
     fmt.Printf("Current Start Date/Time: %s\n", booking.TimeTable.StartDate.Format("2006-01-02 15:04"))
     fmt.Print("Update start date/time? (y/n): ")
     var updateStart string
@@ -93,7 +87,6 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         booking.TimeTable.StartDate = newStartDate
     }
 
-    // Update End Date/Time
     fmt.Printf("Current End Date/Time: %s\n", booking.TimeTable.EndDate.Format("2006-01-02 15:04"))
     fmt.Print("Update end date/time? (y/n): ")
     var updateEnd string
@@ -113,13 +106,11 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
         booking.TimeTable.EndDate = newEndDate
     }
 
-    // Validate date range
     if booking.TimeTable.EndDate.Before(booking.TimeTable.StartDate) {
         fmt.Println("Error: End date/time must be after start date/time")
         return fmt.Errorf("invalid date range")
     }
 
-    // Display changes and confirm
     fmt.Println("\nChanges to be made:")
     fmt.Println("==================================================================")
     if booking.EventName != originalBooking.EventName {
@@ -146,6 +137,11 @@ func (h *UpdateBookingHandlerStrategy) Execute() error {
     if strings.ToLower(strings.TrimSpace(confirm)) != "y" {
         fmt.Println("Update cancelled")
         return nil
+    }
+
+    if err := booking.Validate(); err != nil {
+        fmt.Println("Validation error:", err)
+        return err
     }
 
     err = h.controller.UpdateByID(&booking)

@@ -28,7 +28,6 @@ func (menu *PermanentBookingState) Render() {
 	fmt.Println("4. Update Schedule")
 	fmt.Println("5. Delete a Schedule")
 	fmt.Println("6. Delete All Schedules")
-	//fmt.Println("7. Seed All Schedules")
 	fmt.Println("Type 'back' to return to previous menu")
 	fmt.Println("======================================")
 }
@@ -73,15 +72,11 @@ func NewPermanentScheduleState(db *gorm.DB, manager *cli.CLIMenuStateManager, sp
 
 	handlerContext := handler.NewHandlerContext()
 
-	//createHandler := spaceManagementHandler.NewCreatePermanentScheduleHandler(controllerInstance)
 	createHandler := spaceManagementHandler.NewCreatePermanentScheduleHandler(controllerInstance)
 	listHandler := handler.NewListHandlerStrategy[model.PermanentSchedule](controllerInstance)
-	// listHandler := spaceManagementHandler.NewListPermanentSchedulesHandler(controllerInstance)
-	// getHandler := spaceManagementHandler.NewGetScheduleDetailsHandler(controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.PermanentSchedule](controllerInstance)
 	updateHandler := spaceManagementHandler.NewUpdatePermanentScheduleHandler(controllerInstance)
 	deleteHandler := spaceManagementHandler.NewDeleteScheduleHandler(controllerInstance)
-	//seedHandler := spaceManagementHandler.NewSeedAllSchedulesHandler(controllerInstance)
 	deleteAllHandler := spaceManagementHandler.NewDeleteAllSchedulesHandler(controllerInstance)
 
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)

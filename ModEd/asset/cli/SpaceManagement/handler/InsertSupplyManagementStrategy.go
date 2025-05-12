@@ -26,7 +26,6 @@ func NewInsertSupplyManagementStrategy(
 func (handler InsertSupplyManagementStrategy) Execute() error {
     fmt.Println("=== Create New Supply Management ===")
     
-    // Get Room ID
     fmt.Print("Enter Room ID: ")
     var roomID uint
     _, err := fmt.Sscan(util.GetCommandInput(), &roomID)
@@ -34,7 +33,6 @@ func (handler InsertSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid room ID: %v", err)
     }
 
-    // Get Supply ID
     fmt.Print("Enter Supply ID: ")
     var supplyID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &supplyID)
@@ -42,7 +40,6 @@ func (handler InsertSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid supply ID: %v", err)
     }
     
-    // Create supply management record
     supplyManagement := &model.SupplyManagement{
         RoomID:    roomID,
         SupplyID:  supplyID,

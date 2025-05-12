@@ -29,7 +29,6 @@ func NewUpdateInstrumentManagementStrategy(
 func (handler UpdateInstrumentManagementStrategy) Execute() error {
     fmt.Println("=== Update Instrument Management ===")
 
-    // Get ID to update
     fmt.Print("Enter ID to update: ")
     var id uint
     _, err := fmt.Sscan(util.GetCommandInput(), &id)
@@ -37,7 +36,6 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid ID format: %v", err)
     }
 
-    // Get new room ID
     fmt.Print("Enter new Room ID: ")
     var roomID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &roomID)
@@ -45,7 +43,6 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Room ID format: %v", err)
     }
 
-    // Get new instrument ID
     fmt.Print("Enter new Instrument ID: ")
     var instrumentID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &instrumentID)
@@ -53,7 +50,6 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Instrument ID format: %v", err)
     }
 
-    // Get new borrow ID
     fmt.Print("Enter new Borrow ID: ")
     var borrowID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &borrowID)
@@ -61,7 +57,6 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Borrow ID format: %v", err)
     }
 
-    // Create update payload
     instrumentManagement := &model.InstrumentManagement{
         BaseModel: core.BaseModel{
             Model: gorm.Model{ID: id},
@@ -76,7 +71,6 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
 		return err
 	}
 
-    // Perform update
     if err := handler.controller.UpdateById(instrumentManagement); err != nil {
         return fmt.Errorf("failed to update instrument management: %v", err)
     }

@@ -28,7 +28,6 @@ func NewUpdateSupplyManagementStrategy(
 func (handler UpdateSupplyManagementStrategy) Execute() error {
     fmt.Println("=== Update Supply Management ===")
 
-    // Get ID to update
     fmt.Print("Enter ID to update: ")
     var id uint
     _, err := fmt.Sscan(util.GetCommandInput(), &id)
@@ -36,7 +35,6 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid ID format: %v", err)
     }
 
-    // Get new room ID
     fmt.Print("Enter new Room ID: ")
     var roomID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &roomID)
@@ -44,7 +42,6 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Room ID format: %v", err)
     }
 
-    // Get new supply ID
     fmt.Print("Enter new Supply ID: ")
     var supplyID uint
     _, err = fmt.Sscan(util.GetCommandInput(), &supplyID)
@@ -52,7 +49,6 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Supply ID format: %v", err)
     }
 
-    // Create update payload
     supplyManagement := &model.SupplyManagement{
         BaseModel: core.BaseModel{
             Model: gorm.Model{ID: id},
@@ -66,7 +62,6 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
 		return err
 	}
 
-    // Perform update
     if err := handler.controller.UpdateById(supplyManagement); err != nil {
         return fmt.Errorf("failed to update supply management: %v", err)
     }
