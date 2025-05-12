@@ -6,7 +6,6 @@ import (
 	"ModEd/curriculum/model"
 	"ModEd/curriculum/utils"
 	"fmt"
-	"log"
 )
 
 type InternshipResultEvaluationHandler struct {
@@ -17,10 +16,19 @@ type InternshipResultEvaluationHandler struct {
 	InternshipResultEvaluation *controller.InternshipResultEvaluationController
 }
 
-func NewInternshipResultEvaluationHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipResultEvaluationController) *InternshipResultEvaluationHandler {
+func NewInternshipResultEvaluationHandler(
+	manager *cli.CLIMenuStateManager,
+	resultCtrl *controller.InternshipResultEvaluationController,
+	infoCtrl *controller.InternshipInformationController,
+	criteriaCtrl *controller.InternshipCriteriaController,
+) *InternshipResultEvaluationHandler {
 	return &InternshipResultEvaluationHandler{
-		manager:    manager,
-		controller: controller}
+		manager:                    manager,
+		controller:                 resultCtrl,
+		InternshipInformation:      infoCtrl,
+		InternshipCriteria:         criteriaCtrl,
+		InternshipResultEvaluation: resultCtrl,
+	}
 }
 
 func (handler *InternshipResultEvaluationHandler) Render() {
@@ -30,6 +38,7 @@ func (handler *InternshipResultEvaluationHandler) Render() {
 	fmt.Println("3. Update Result Evaluation")
 	fmt.Println("4. Delete Result Evaluation by ID")
 	fmt.Println("5. List All Result Evaluations")
+	fmt.Println("6. Evaluate Student Internship")
 	fmt.Println("Type 'back' to return to the previous menu")
 	fmt.Print("Enter your choice: ")
 }
@@ -46,6 +55,8 @@ func (handler *InternshipResultEvaluationHandler) HandleUserInput(input string) 
 		return handler.deleteResultEvaluationByID()
 	case "5":
 		return handler.listAllResultEvaluations()
+	case "6":
+		return handler.EvaluateStudentInternship()
 	case "back":
 		fmt.Println("Returning to the previous menu...")
 		return nil
@@ -134,37 +145,47 @@ func (handler *InternshipResultEvaluationHandler) listAllResultEvaluations() err
 func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() error {
 	studentCode := utils.GetUserInput("Enter Student Code: ")
 	if studentCode == "" {
-		fmt.Println("Error: Student Code cannot be empty.")
-		return nil
+			fmt.Println("Error: Student Code cannot be empty.")
+			return nil
 	}
+
 	criteriaScores := map[uint]uint{}
 	fmt.Println("Enter Criteria Scores (Enter 0 for Criteria ID to finish):")
 	for {
-		criteriaID := utils.GetUserInputUint("Enter Criteria ID: ")
-		if criteriaID == 0 {
-			break
-		}
-		score := utils.GetUserInputUint("Enter Score for Criteria (1-5): ")
-		if score < 1 || score > 5 {
-			fmt.Println("Invalid score. Please enter a value between 1 and 5.")
-			continue
-		}
-		criteriaScores[criteriaID] = score
+			criteriaID := utils.GetUserInputUint("Enter Criteria ID: ")
+			if criteriaID == 0 {
+					break
+			}
+			score := utils.GetUserInputUint("Enter Score for Criteria (1-5): ")
+			if score < 1 || score > 5 {
+					fmt.Println("Invalid score. Please enter a value between 1 and 5.")
+					continue
+			}
+			criteriaScores[criteriaID] = score
 	}
+
 	comment := utils.GetUserInput("Enter Evaluation Comment: ")
 	if comment == "" {
-		fmt.Println("Error: Comment cannot be empty.")
-		return nil
+			fmt.Println("Error: Comment cannot be empty.")
+			return nil
 	}
+
+	// Ensure the facade is properly initialized
+	if handler.InternshipInformation == nil || handler.InternshipCriteria == nil || handler.InternshipResultEvaluation == nil {
+			fmt.Println("Error: Missing required controllers for evaluation.")
+			return fmt.Errorf("missing required controllers")
+	}
+
 	facade := controller.NewInternshipEvaluationFacade(
-		*handler.InternshipInformation,
-		*handler.InternshipCriteria,
-		*handler.InternshipResultEvaluation,
+			*handler.InternshipInformation,
+			*handler.InternshipCriteria,
+			*handler.InternshipResultEvaluation,
 	)
+
 	err := facade.EvaluateInternship(studentCode, criteriaScores, comment)
 	if err != nil {
-		log.Println("Evaluation failed:", err)
-		return err
+			fmt.Printf("Evaluation failed: %v\n", err)
+			return err
 	}
 
 	fmt.Println("Evaluation completed successfully!")
