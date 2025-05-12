@@ -68,14 +68,6 @@ func NewQuotationMenuState(manager *cli.CLIMenuStateManager) *QuotationMenuState
 			return nil
 		},
 	})
-	handlerContext.AddHandler("5", "Import Department", handler.FuncStrategy{
-		Action: func() error {
-			path := util.GetStringInput("Insert Your Department.csv path: ")
-			helper.SeedDepartmentsFromCSV(facade.GetDB(), path)
-			util.PressEnterToContinue()
-			return nil
-		},
-	})
 
 	handlerContext.AddBackHandler(handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT_MAIN))))
 
