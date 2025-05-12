@@ -7,21 +7,22 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-playground/validator/v10"
+	"ModEd/core/validation"
+
 	"gorm.io/gorm"
 )
 
 type Class struct {
-	ClassId     uint               `gorm:"primaryKey" csv:"class_id" json:"class_id" validate:"-"`
-	CourseId    uint               `gorm:"not null" csv:"course_id" json:"course_id" validate:"required"`
-	Course      Course             `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-" validate:"-"`
-	Section     int                `gorm:"not null" csv:"section" json:"section" validate:"required,gt=0"`
-	Schedule    time.Time          `gorm:"not null" csv:"schedule" json:"schedule" validate:"required"`
-	StudentList []model.Student    `gorm:"many2many:class_students" csv:"-" json:"-" validate:"-"`
-	Instructors []model.Instructor `gorm:"many2many:class_instructors;" csv:"-" json:"-" validate:"-"`
-	CreatedAt   time.Time          `gorm:"autoCreateTime" csv:"created_at" json:"created_at" validate:"-"`
-	UpdatedAt   time.Time          `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at" validate:"-"`
-	DeletedAt   gorm.DeletedAt     `csv:"-" json:"-" validate:"-"`
+	ClassId     uint               `gorm:"primaryKey" csv:"class_id" json:"class_id"`
+	CourseId    uint               `gorm:"not null" csv:"course_id" json:"course_id"`
+	Course      Course             `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
+	Section     int                `gorm:"not null" csv:"section" json:"section"`
+	Schedule    time.Time          `gorm:"not null" csv:"schedule" json:"schedule"`
+	StudentList []model.Student    `gorm:"many2many:class_students" csv:"-" json:"-"`
+	Instructors []model.Instructor `gorm:"many2many:class_instructors;" csv:"-" json:"-"`
+	CreatedAt   time.Time          `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
+	UpdatedAt   time.Time          `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
+	DeletedAt   gorm.DeletedAt     `csv:"-" json:"-"`
 	*core.SerializableRecord
 }
 
@@ -34,10 +35,9 @@ func (c *Class) ToString() string {
 }
 
 func (c *Class) Validate() error {
-	validate := validator.New()
+	modelValidator := validation.NewModelValidator()
 
-	// Validate struct fields using v10 validator
-	if err := validate.Struct(c); err != nil {
+	if err := modelValidator.ModelValidate(c); err != nil {
 		return err
 	}
 
