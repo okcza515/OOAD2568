@@ -1,7 +1,7 @@
 package menu
 
 import (
-	"ModEd/asset/cli/asset/assetclihandler"
+	assetHandler "ModEd/asset/cli/asset/handler"
 	"ModEd/asset/controller"
 	"ModEd/asset/model"
 	"ModEd/asset/util"
@@ -26,7 +26,7 @@ func NewBorrowInstrumentMenuState(
 
 	insertHandler := handler.NewInsertHandlerStrategy[model.BorrowInstrument](controllerInstance)
 	listHandler := handler.NewListHandlerStrategy[model.BorrowInstrument](controllerInstance)
-	returnHandler := assetclihandler.NewReturnHandlerStrategy[model.BorrowInstrument](controllerInstance)
+	returnHandler := assetHandler.NewReturnHandlerStrategy[model.BorrowInstrument](controllerInstance)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.BorrowInstrument](controllerInstance)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ASSET)))
 
