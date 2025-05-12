@@ -30,7 +30,7 @@ func (h *deleteCourseByIdHandler) Execute() error {
 	courseId := utils.GetUserInputUint("Enter the course Id to delete: ")
 
 	confirm := utils.GetUserInput(fmt.Sprintf("Are you sure you want to delete course with Id %d? (y/n): ", courseId))
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Deletion cancelled.")
 		return nil
 	}

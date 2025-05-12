@@ -24,14 +24,14 @@ func (h *createCurriculumHandler) Execute() error {
 
 	name := utils.GetUserInput("Enter name: ")
 
-	startYearStr := utils.GetUserInput("Enter start year: ")
+	startYearStr := utils.GetUserInput("Enter start year (format: YYYY): ")
 	startYear, err := strconv.Atoi(startYearStr)
 	if err != nil {
 		fmt.Println("Invalid start year format")
 		return err
 	}
 
-	endYearStr := utils.GetUserInput("Enter end year: ")
+	endYearStr := utils.GetUserInput("Enter end year (format: YYYY): ")
 	endYear, err := strconv.Atoi(endYearStr)
 	if err != nil {
 		fmt.Println("Invalid end year format")
@@ -65,7 +65,6 @@ func (h *createCurriculumHandler) Execute() error {
 		DepartmentId: uint(departmentId),
 	}
 
-	// Validate the curriculum
 	if err := curriculum.Validate(); err != nil {
 		fmt.Println("Validation error:", err)
 		return err
@@ -78,7 +77,7 @@ func (h *createCurriculumHandler) Execute() error {
 	fmt.Printf("Program Type: %s\n", model.ProgramTypeLabel[curriculum.ProgramType])
 
 	confirm := utils.GetUserInput("\nConfirm creation? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Creation cancelled.")
 		return nil
 	}

@@ -30,7 +30,6 @@ func NewClassMenuState(
 		courseController: courseController,
 	}
 
-	// Add menu options with corresponding handlers
 	handlerContext.AddHandler("1", "Create New Class", chandler.NewCreateClassHandler(controller, courseController))
 	handlerContext.AddHandler("2", "Create Seed Class", chandler.NewCreateSeedClassHandler(controller))
 	handlerContext.AddHandler("3", "List all Classes", chandler.NewListClassesHandler(controller))
@@ -38,7 +37,6 @@ func NewClassMenuState(
 	handlerContext.AddHandler("5", "Update Class by Id", chandler.NewUpdateClassByIdHandler(controller, courseController))
 	handlerContext.AddHandler("6", "Delete Class by Id", chandler.NewDeleteClassByIdHandler(controller))
 
-	// Add back option
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_MAIN)))
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)
 

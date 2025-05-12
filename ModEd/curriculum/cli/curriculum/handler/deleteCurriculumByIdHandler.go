@@ -30,7 +30,7 @@ func (h *deleteCurriculumByIdHandler) Execute() error {
 	curriculumId := utils.GetUserInputUint("Enter the curriculum Id to delete: ")
 
 	confirm := utils.GetUserInput(fmt.Sprintf("Are you sure you want to delete curriculum with Id %d? (y/n): ", curriculumId))
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Deletion cancelled.")
 		return nil
 	}

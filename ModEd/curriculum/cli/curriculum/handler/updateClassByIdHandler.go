@@ -20,6 +20,11 @@ func NewUpdateClassByIdHandler(classController controller.ClassControllerInterfa
 	}
 }
 
+var confirmOptions = map[string]bool{
+	"y": true,
+	"n": false,
+}
+
 func (h *updateClassByIdHandler) Execute() error {
 	classId := utils.GetUserInputUint("Enter the class ID: ")
 	class, err := h.classController.GetClass(classId)
@@ -33,7 +38,6 @@ func (h *updateClassByIdHandler) Execute() error {
 
 	fmt.Println("\nEnter new values (leave blank to keep current value):")
 
-	// Update CourseId
 	newCourseId := utils.GetUserInput(fmt.Sprintf("Course ID [%d]: ", class.CourseId))
 	if newCourseId != "" {
 		courseId, err := strconv.Atoi(newCourseId)
@@ -44,7 +48,6 @@ func (h *updateClassByIdHandler) Execute() error {
 		}
 	}
 
-	// Update Section
 	newSection := utils.GetUserInput(fmt.Sprintf("Section [%d]: ", class.Section))
 	if newSection != "" {
 		section, err := strconv.Atoi(newSection)
@@ -56,7 +59,7 @@ func (h *updateClassByIdHandler) Execute() error {
 	}
 
 	if !class.Schedule.IsZero() {
-		newSchedule := utils.GetUserInput(fmt.Sprintf("Schedule [%s]: ", class.Schedule.Format("2006-01-02 15:04:05")))
+		newSchedule := utils.GetUserInput(fmt.Sprintf("Schedule [%s] format (YYYY-MM-DD HH:MM:SS): ", class.Schedule.Format("2006-01-02 15:04:05")))
 		if newSchedule != "" {
 			schedule, err := time.Parse("2006-01-02 15:04:05", newSchedule)
 			if err == nil {
@@ -66,7 +69,7 @@ func (h *updateClassByIdHandler) Execute() error {
 			}
 		}
 	} else {
-		newSchedule := utils.GetUserInput("Schedule [none]: ")
+		newSchedule := utils.GetUserInput("Schedule [none] format (YYYY-MM-DD HH:MM:SS): ")
 		if newSchedule != "" {
 			schedule, err := time.Parse("2006-01-02 15:04:05", newSchedule)
 			if err == nil {
@@ -84,7 +87,7 @@ func (h *updateClassByIdHandler) Execute() error {
 	}
 
 	confirm := utils.GetUserInput("Are you sure you want to update this class? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Update cancelled.")
 		return nil
 	}

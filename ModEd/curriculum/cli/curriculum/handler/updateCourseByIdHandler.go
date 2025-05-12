@@ -20,6 +20,11 @@ func NewUpdateCourseByIdHandler(courseController controller.CourseControllerInte
 	}
 }
 
+var optionalOptions = map[string]bool{
+	"1": true,  // Yes
+	"2": false, // No
+}
+
 func (h *updateCourseByIdHandler) Execute() error {
 	courseId := utils.GetUserInputUint("Enter the course ID: ")
 	course, err := h.courseController.GetCourse(courseId)
@@ -53,18 +58,14 @@ func (h *updateCourseByIdHandler) Execute() error {
 		}
 	}
 
-	// Update Optional flag
 	fmt.Println("Is this course optional?")
 	fmt.Println("1. Yes")
 	fmt.Println("2. No")
 	optionalChoice := utils.GetUserInput(fmt.Sprintf("Optional [%v] (1/2): ", course.Optional))
-	if optionalChoice == "1" {
-		course.Optional = true
-	} else if optionalChoice == "2" {
-		course.Optional = false
+	if newValue, exists := optionalOptions[optionalChoice]; exists {
+		course.Optional = newValue
 	}
 
-	// Update CourseStatus
 	fmt.Println("Course Status options:")
 	for key, value := range model.CourseStatusLabel {
 		fmt.Printf("%d. %s\n", key, value)
@@ -79,15 +80,13 @@ func (h *updateCourseByIdHandler) Execute() error {
 		}
 	}
 
-	// Validate updated course
 	if err := course.Validate(); err != nil {
 		fmt.Println("Validation error:", err)
 		return err
 	}
 
-	// Confirm update
 	confirm := utils.GetUserInput("Are you sure you want to update this course? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Update cancelled.")
 		return nil
 	}

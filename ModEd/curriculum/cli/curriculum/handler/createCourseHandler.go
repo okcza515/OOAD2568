@@ -23,7 +23,6 @@ func NewCreateCourseHandler(courseController controller.CourseControllerInterfac
 func (h *createCourseHandler) Execute() error {
 	fmt.Println("\nCreate New Course:")
 
-	// List available curriculums for reference
 	curriculums, err := h.curriculumController.GetCurriculums()
 	if err != nil {
 		fmt.Println("Error fetching curriculums:", err)
@@ -55,10 +54,9 @@ func (h *createCourseHandler) Execute() error {
 	fmt.Println("2. No")
 	optionalChoice := utils.GetUserInput("Select option (1/2): ")
 	var optional bool
-	if optionalChoice == "1" {
-		optional = true
-	} else if optionalChoice == "2" {
-		optional = false
+
+	if newValue, exists := optionalOptions[optionalChoice]; exists {
+		optional = newValue
 	}
 
 	fmt.Println("Course Status options:")

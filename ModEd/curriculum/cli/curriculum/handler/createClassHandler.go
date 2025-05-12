@@ -24,7 +24,6 @@ func NewCreateClassHandler(classController controller.ClassControllerInterface, 
 func (h *createClassHandler) Execute() error {
 	fmt.Println("\nCreate New Class:")
 
-	// List available courses for reference
 	courses, err := h.courseController.GetCourses()
 	if err != nil {
 		fmt.Println("Error fetching courses:", err)
@@ -87,7 +86,7 @@ func (h *createClassHandler) Execute() error {
 	}
 
 	confirm := utils.GetUserInput("\nConfirm creation? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Creation cancelled.")
 		return nil
 	}

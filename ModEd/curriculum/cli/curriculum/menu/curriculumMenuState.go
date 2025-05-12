@@ -25,15 +25,12 @@ func NewCurriculumMenuState(
 		handlerContext: handlerContext,
 	}
 
-	// Add menu options with corresponding handlers
 	handlerContext.AddHandler("1", "Create New Curriculum", chandler.NewCreateCurriculumHandler(curriculumController))
 	handlerContext.AddHandler("2", "Create Seed Curriculum", chandler.NewCreateSeedCurriculumHandler(curriculumController))
 	handlerContext.AddHandler("3", "List all Curriculums", chandler.NewListCurriculumsHandler(curriculumController))
 	handlerContext.AddHandler("4", "Get Curriculum by Id", chandler.NewGetCurriculumByIdHandler(curriculumController))
 	handlerContext.AddHandler("5", "Update Curriculum by Id", chandler.NewUpdateCurriculumByIdHandler(curriculumController))
 	handlerContext.AddHandler("6", "Delete Curriculum by Id", chandler.NewDeleteCurriculumByIdHandler(curriculumController))
-
-	// Add back option to main menu
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_MAIN)))
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)
 
