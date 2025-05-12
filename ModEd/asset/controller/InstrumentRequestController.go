@@ -105,3 +105,9 @@ func (c *InstrumentRequestController) UpdateTotalEstimatedPrice(id uint) error {
 		Where("instrument_request_id = ?", id).
 		Update("total_estimated_price", total).Error
 }
+
+func (c *InstrumentRequestController) UpdateInstrumentRequestStatus(id uint, status model.InstrumentRequestStatus) error {
+	return c.db.Model(&model.InstrumentRequest{}).
+		Where("instrument_request_id = ?", id).
+		Update("status", status).Error
+}

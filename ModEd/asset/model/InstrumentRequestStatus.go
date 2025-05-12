@@ -4,9 +4,10 @@ package model
 type InstrumentRequestStatus string
 
 const (
-	InstrumentRequestStatusPending  InstrumentRequestStatus = "pending"
-	InstrumentRequestStatusApproved InstrumentRequestStatus = "approved"
-	InstrumentRequestStatusRejected InstrumentRequestStatus = "rejected"
+	InstrumentRequestStatusPending   InstrumentRequestStatus = "pending"
+	InstrumentRequestStatusApproved  InstrumentRequestStatus = "approved"
+	InstrumentRequestStatusRejected  InstrumentRequestStatus = "rejected"
+	InstrumentRequestStatusProcessed InstrumentRequestStatus = "processed"
 )
 
 func ValidItemRequestStatus() []InstrumentRequestStatus {
@@ -14,6 +15,7 @@ func ValidItemRequestStatus() []InstrumentRequestStatus {
 		InstrumentRequestStatusPending,
 		InstrumentRequestStatusApproved,
 		InstrumentRequestStatusRejected,
+		InstrumentRequestStatusProcessed,
 	}
 }
 
