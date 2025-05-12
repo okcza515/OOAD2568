@@ -3,10 +3,11 @@ package handler
 // MEP-1007
 
 import (
-	"ModEd/eval/controller"
-	"ModEd/core/handler"
-	"ModEd/eval/model"
+	assetUtil "ModEd/asset/util"
 	"ModEd/core/cli"
+	"ModEd/core/handler"
+	"ModEd/eval/controller"
+	"ModEd/eval/model"
 	"fmt"
 )
 
@@ -43,30 +44,6 @@ func (menu *SubmissionMenuStateHandler) HandleUserInput(input string) error {
 	return menu.handler.HandleInput(input)
 }
 
-// func (menu *QuizMenuStateHandler) getQuizTableHeader() {
-// 	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "ID", "Title", "Status", "Start Date", "End Date", "Attempts")
-// 	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "---", "-----", "------", "----------", "--------", "--------")
-// }
-
-// func (menu *QuizMenuStateHandler) printQuizTable(quizzes []*model.Quiz) {
-// 	if len(quizzes) == 0 {
-// 		fmt.Println("\nNo quizzes found.")
-// 		return
-// 	}
-
-// 	menu.getQuizTableHeader()
-// 	for _, quiz := range quizzes {
-// 		fmt.Printf("\n%-5d %-20s %-15s %-15s %-10s %-10d",
-// 			quiz.ID,
-// 			quiz.Title,
-// 			quiz.Status,
-// 			quiz.StartDate.Format("2006-01-02"),
-// 			quiz.EndDate.Format("2006-01-02"),
-// 			quiz.Attempts)
-// 	}
-// 	fmt.Println()
-// }
-
 func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	var studentID uint
 	fmt.Print("Enter Student ID: ")
@@ -74,7 +51,7 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 
 	exams, err := menu.wrapper.ExamController.ListActiveExamsByStudentID(studentID)
 	if err != nil {
-		fmt.Printf("Error: Exam with Student ID: %d not found: %v\n", studentID, err)
+		fmt.Printf("Exam with Student ID: %d not found\n", studentID)
 		return err
 	}
 
@@ -105,16 +82,19 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	}
 	err = menu.wrapper.SubmissionController.Insert(data)
 	if err != nil {
+		fmt.Printf("Error While Insert Submission: %v\n", err)
 		return err
 	}
 
 	submission, err := menu.wrapper.SubmissionController.RetrieveByCondition(map[string]interface{}{"student_id": studentID, "exam_id": exams[examNo-1].ID})
 	if err != nil {
+		fmt.Printf("Error While Retrieve Submission: %v\n", err)
 		return err
 	}
 
 	sections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID})
 	if err != nil {
+		fmt.Printf("Error While List Sections: %v\n", err)
 		return err
 	}
 
@@ -126,6 +106,7 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 
 		questions, err := menu.wrapper.QuestionController.List(map[string]interface{}{"section_id": section.ID})
 		if err != nil {
+			fmt.Printf("Error While List Questions: %v\n", err)
 			return err
 		}
 
@@ -137,6 +118,7 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 			if question.QuestionType == "MultipleChoiceQuestion" {
 				mcAnswers, err := menu.wrapper.MultipleChoiceAnswerController.List(map[string]interface{}{"question_id": question.ID})
 				if err != nil {
+					fmt.Printf("Error While List Choices: %v\n", err)
 					return err
 				}
 
@@ -156,6 +138,10 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 					ChoiceID:     mcAnswers[answer-1].ID,
 				}
 				err = menu.wrapper.MultipleChoiceAnswerSubmissionController.Insert(data)
+				if err != nil {
+					fmt.Printf("Error While Insert Multiple Choice Answer Submission: %v\n", err)
+					return err
+				}
 
 			} else if question.QuestionType == "ShortAnswerQuestion" {
 				var answer string
@@ -168,6 +154,10 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 					StudentAnswer: answer,
 				}
 				err = menu.wrapper.ShortAnswerSubmissionController.Insert(data)
+				if err != nil {
+					fmt.Printf("Error While Insert Short Answer Submission: %v\n", err)
+					return err
+				}
 
 			} else if question.QuestionType == "TrueFalseQuestion" {
 				var answer bool
@@ -180,6 +170,10 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 					StudentAnswer: answer,
 				}
 				err = menu.wrapper.TrueFalseAnswerSubmissionController.Insert(data)
+				if err != nil {
+					fmt.Printf("Error While Insert True False Answer Submission: %v\n", err)
+					return err
+				}
 			}
 
 			fmt.Println("--------------------")
@@ -188,10 +182,13 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 
 	_, err = menu.wrapper.SubmissionController.GradingSubmission(submission.ID)
 	if err != nil {
+		fmt.Printf("Error While Grading Submission: %v\n", err)
 		return err
 	}
 
 	fmt.Println("Exam Submitted")
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -202,7 +199,7 @@ func (menu *SubmissionMenuStateHandler) ViewScore() error {
 
 	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"student_id": studentID})
 	if err != nil {
-		fmt.Printf("Error: Exam Submission with Student ID: %d not found: %v\n", studentID, err)
+		fmt.Printf("Submission with Student ID: %d not found:\n", studentID)
 		return err
 	}
 
@@ -210,16 +207,23 @@ func (menu *SubmissionMenuStateHandler) ViewScore() error {
 	for _, submission := range submissions {
 		perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(submission.ExamID)
 		if err != nil {
+			fmt.Printf("Error While Get Perfect Score: %v\n", err)
 			return err
 		}
 
 		exam, err := menu.wrapper.ExamController.RetrieveByID(submission.ExamID)
+		if err != nil {
+			fmt.Printf("Error While Retrieve Exam: %v\n", err)
+			return err
+		}
 
 		fmt.Printf("Exam: %s\n", exam.ExamName)
 		fmt.Printf("Score: %f/%f\n", submission.Score, perfectScore)
 		fmt.Println("--------------------")
 	}
 
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -230,6 +234,7 @@ func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
+		fmt.Printf("Error While List Exams: %v\n", err)
 		return err
 	}
 
@@ -261,6 +266,7 @@ func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
+		fmt.Printf("Error While Get Perfect Score: %v\n", err)
 		return err
 	}
 
@@ -275,6 +281,8 @@ func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 		fmt.Println("--------------------")
 	}
 
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -285,6 +293,12 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
+		fmt.Printf("Error While Get Perfect Score: %v\n", err)
+		return nil
+	}
+	
+	if len(exams) == 0 {
+		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
 		return nil
 	}
 
@@ -299,11 +313,6 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 		fmt.Println("--------------------")
 	}
 
-	if len(exams) == 0 {
-		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
-		return nil
-	}
-
 	var examNo uint
 	fmt.Print("Enter Exam No. for Submissions List: ")
 	fmt.Scanln(&examNo)
@@ -316,6 +325,7 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
+		fmt.Printf("Error While Get Perfect Score: %v\n", err)
 		return nil
 	}
 
@@ -341,10 +351,13 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 	submissions[submissionNo-1].Score = newScore
 	err = menu.wrapper.SubmissionController.UpdateByID(submissions[submissionNo-1])
 	if err != nil {
+		fmt.Printf("Error While Update Submission: %v\n", err)
 		return nil
 	}
 
 	fmt.Println("Update Successful")
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -355,6 +368,12 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
+		fmt.Printf("Error While List Exams: %v\n", err)
+		return nil
+	}
+
+	if len(exams) == 0 {
+		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
 		return nil
 	}
 
@@ -369,11 +388,6 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 		fmt.Println("--------------------")
 	}
 
-	if len(exams) == 0 {
-		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
-		return nil
-	}
-
 	var examNo uint
 	fmt.Print("Enter Exam No. for Submissions List: ")
 	fmt.Scanln(&examNo)
@@ -386,6 +400,7 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
+		fmt.Printf("Error While Get Perfect Score: %v\n", err)
 		return nil
 	}
 
@@ -406,9 +421,12 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 
 	err = menu.wrapper.SubmissionController.DeleteByID(submissions[submissionNo-1].ID)
 	if err != nil {
+		fmt.Printf("Error While Delete Submission: %v\n", err)
 		return nil
 	}
 
 	fmt.Println("Delete Successful")
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
