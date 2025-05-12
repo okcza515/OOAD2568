@@ -3,6 +3,7 @@ package handler
 //MEP-1007
 
 import (
+	assetUtil "ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -94,7 +95,8 @@ func (menu *QuestionMenuStateHandler) CreateQuestion() error {
 	if err := menu.wrapper.QuestionController.Insert(question); err != nil {
 		return fmt.Errorf("failed to insert question: %w", err)
 	}
-
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -111,7 +113,8 @@ func (menu *QuestionMenuStateHandler) DeleteQuestion() error {
 	if err := menu.wrapper.QuestionController.DeleteByID(questionID); err != nil {
 		return fmt.Errorf("failed to delete question: %w", err)
 	}
-
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -144,7 +147,8 @@ func (menu *QuestionMenuStateHandler) UpdateQuestion() error {
 	if err := menu.wrapper.QuestionController.UpdateByID(question); err != nil {
 		return fmt.Errorf("failed to update question: %w", err)
 	}
-
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -166,7 +170,7 @@ func (menu *QuestionMenuStateHandler) ShowCorrectAnswerByQyestionID() error {
 	if question_type == "MultiplechoiseQuestion" {
 		ans, _ := menu.wrapper.QuestionController.RetrieveByID(questionID, "MultipleChoiceAnswers")
 		for _, result := range ans.MultipleChoiceAnswers {
-			if result.IsExpected == true {
+			if result.IsExpected {
 				fmt.Printf("Correct answer for question %s: %s\n", question.ActualQuestion, result.AnswerLabel)
 			}
 		}
@@ -177,12 +181,13 @@ func (menu *QuestionMenuStateHandler) ShowCorrectAnswerByQyestionID() error {
 	} else if question_type == "TrueFalseAnswerQuestion" {
 		ans, _ := menu.wrapper.QuestionController.RetrieveByID(questionID, "TruefalseAnswer")
 		getanswer := "True"
-		if ans.TruefalseAnswer.IsExpected == false {
+		if !ans.TruefalseAnswer.IsExpected {
 			getanswer = "False"
 		}
 		fmt.Printf("Correct answer for question %s: %s\n", question.ActualQuestion, getanswer)
 	}
-
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
 	return nil
 
 }
