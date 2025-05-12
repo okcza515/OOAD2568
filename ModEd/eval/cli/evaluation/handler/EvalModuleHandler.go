@@ -135,7 +135,6 @@ func (evalHandler *EvalModuleMenuStateHandler) Render() {
 }
 
 func (handler *EvalModuleMenuStateHandler) HandleUserInput(input string) error {
-	util.ClearScreen()
 	err := handler.Manager.GoToMenu(input)
 
 	if err != nil {

@@ -63,6 +63,46 @@ etc
 ### User role
 
 ### Instructor role
+#### Select `Instructor` role on the start menu:
+
+#### Login with: 
+- Instructor ID :  `Use ID in ModEd.bin`
+#### Main Menu Options
+```bash
+1. View All Interview Details
+2. View Pending Interview Details
+3. View Evaluated Interview Details
+4. Evaluate Applicant
+3. Menu Details
+```
+`Option 1`: View All Interview Details
+Shows all applicants assigned to this instructor
+
+Includes applicant ID, application round, and evaluation scores (if any)
+
+Useful to get an overview of the full workload
+
+`Option 2`: View Pending Interview Details
+Displays only those applicants that have not yet been evaluated
+
+Helps plan upcoming interviews
+
+`Option 3`: View Evaluated Interview Details
+Shows applicants that have already been evaluated
+
+Useful for review or reporting
+
+`Option 4`: Evaluate Applicant
+1. Select an applicant ID from your list
+
+2. You will be prompted with evaluation criteria (loaded from JSON file)
+
+3. Enter scores or comments as required
+
+4. Confirm to submit your evaluation
+
+5. Evaluation is saved to memory or file
+
 
 
 ### process flow

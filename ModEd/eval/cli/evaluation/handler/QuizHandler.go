@@ -43,7 +43,6 @@ func (menu *QuizMenuStateHandler) Render() {
 }
 
 func (menu *QuizMenuStateHandler) HandleUserInput(input string) error {
-	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 
@@ -131,6 +130,8 @@ func (menu *QuizMenuStateHandler) CreateQuiz() error {
 	}
 
 	fmt.Printf("\nQuiz created successfully with ID: %d\n", createdQuiz.ID)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -219,6 +220,8 @@ func (menu *QuizMenuStateHandler) UpdateQuiz() error {
 	}
 
 	fmt.Printf("\nQuiz updated successfully with ID: %d\n", updatedQuiz.ID)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -234,6 +237,8 @@ func (menu *QuizMenuStateHandler) DeleteQuiz() error {
 	}
 
 	fmt.Printf("\nQuiz with ID %d has been marked as hidden\n", quizID)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -258,6 +263,8 @@ func (menu *QuizMenuStateHandler) GetQuizByID() error {
 	fmt.Printf("\nAttempts: %d", quiz.Attempts)
 	fmt.Printf("\nInstructor ID: %d", quiz.InstructorID)
 	fmt.Printf("\nCourse ID: %d\n", quiz.CourseID)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -269,5 +276,7 @@ func (menu *QuizMenuStateHandler) ListAllQuizzes() error {
 
 	fmt.Println("\nAll Quizzes:")
 	menu.printQuizTable(quizzes)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }

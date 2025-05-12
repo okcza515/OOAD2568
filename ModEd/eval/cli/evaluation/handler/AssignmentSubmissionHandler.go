@@ -44,7 +44,6 @@ func (menu *AssignmentSubmissionMenuStateHandler) Render() {
 }
 
 func (menu *AssignmentSubmissionMenuStateHandler) HandleUserInput(input string) error {
-	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 
@@ -65,6 +64,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewPublishedAssignments() err
 
 	if len(publishedAssignments) == 0 {
 		fmt.Println("\nNo published assignments available for submission.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -91,6 +92,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewPublishedAssignments() err
 	}
 
 	fmt.Println("\n")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -156,6 +159,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) CreateDraftSubmission() error 
 		fmt.Println("\nDraft submission created successfully!")
 	}
 
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -230,6 +235,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) SubmitAssignment() error {
 	}
 
 	fmt.Println("\nAssignment submitted successfully!")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -246,6 +253,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewMySubmissions() error {
 
 	if len(submissions) == 0 {
 		fmt.Println("\nNo submissions found.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -253,6 +262,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewMySubmissions() error {
 	for _, submission := range submissions {
 		menu.displaySubmission(submission)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -274,6 +285,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewSubmissionsByAssignment() 
 
 	if len(submissions) == 0 {
 		fmt.Println("\nNo submissions found for this assignment.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -281,6 +294,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) ViewSubmissionsByAssignment() 
 	for _, submission := range submissions {
 		menu.displaySubmission(submission)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -302,6 +317,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) DeleteSubmission() error {
 
 	if confirmation != "yes" {
 		fmt.Println("\nDeletion cancelled")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -311,6 +328,8 @@ func (menu *AssignmentSubmissionMenuStateHandler) DeleteSubmission() error {
 	}
 
 	fmt.Println("\nSubmission deleted successfully")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
