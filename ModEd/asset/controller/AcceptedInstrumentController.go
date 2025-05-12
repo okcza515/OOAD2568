@@ -7,26 +7,31 @@ import (
 )
 
 type AcceptedInstrumentController struct {
-	InstrumentController // 🔄 Extends InstrumentController
+	db *gorm.DB
 }
 
-// ✅ Constructor for AcceptedInstrumentController
 func NewAcceptedInstrumentController(db *gorm.DB) *AcceptedInstrumentController {
 	return &AcceptedInstrumentController{
-		InstrumentController: InstrumentController{
-			db: db,
-		},
+		db: db,
 	}
 }
 
-// ✅ List all instruments
 func (c *AcceptedInstrumentController) ListAllInstruments() ([]model.Instrument, error) {
 	var instruments []model.Instrument
-	err := c.db.Find(&instruments).Error
-	return instruments, err
+	if err := c.db.Find(&instruments).Error; err != nil {
+		return nil, err
+	}
+	return instruments, nil
 }
 
-// ✅ Create Instruments from an accepted acceptance request
+func (c *AcceptedInstrumentController) RetrieveByID(id uint) (*model.Instrument, error) {
+	var instrument model.Instrument
+	if err := c.db.Where("id = ?", id).First(&instrument).Error; err != nil {
+		return nil, err
+	}
+	return &instrument, nil
+}
+
 func (c *AcceptedInstrumentController) CreateInstrumentsFromAcceptance(acceptanceID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
 		var acceptance model.AcceptanceApproval
@@ -46,17 +51,14 @@ func (c *AcceptedInstrumentController) CreateInstrumentsFromAcceptance(acceptanc
 			return fmt.Errorf("approval time is not set for this acceptance")
 		}
 
-		// Get the Budget Year from the approval time
 		budgetYear := acceptance.ApprovalTime.Year()
 
-		// Get Quotation Details linked to this procurement's TOR
 		var quotationDetails []model.QuotationDetail
 		if err := tx.Where("quotation_id IN (SELECT quotation_id FROM quotations WHERE tor_id = ?)", acceptance.Procurement.TORID).
 			Find(&quotationDetails).Error; err != nil {
 			return fmt.Errorf("failed to fetch quotation details: %w", err)
 		}
 
-		// Prepare a list of instruments to insert
 		var instruments []model.Instrument
 		for _, detail := range quotationDetails {
 			for i := 0; i < detail.Quantity; i++ {
@@ -75,12 +77,10 @@ func (c *AcceptedInstrumentController) CreateInstrumentsFromAcceptance(acceptanc
 			}
 		}
 
-		// ✅ Now you can call InsertMany, because it is inherited from InstrumentController
-		if err := c.InsertMany(instruments); err != nil {
+		if err := tx.Create(&instruments).Error; err != nil {
 			return fmt.Errorf("failed to create instruments: %w", err)
 		}
 
-		// Mark as Instruments Created
 		if err := tx.Model(&model.AcceptanceApproval{}).
 			Where("acceptance_approval_id = ?", acceptanceID).
 			Update("InstrumentsCreated", true).Error; err != nil {
@@ -90,4 +90,20 @@ func (c *AcceptedInstrumentController) CreateInstrumentsFromAcceptance(acceptanc
 		fmt.Printf("%d Instruments successfully created for Acceptance ID %d\n", len(instruments), acceptanceID)
 		return nil
 	})
+}
+
+func (c *AcceptanceApprovalController) UpdateStatusToImported(acceptanceID uint) error {
+	result := c.db.Model(&model.AcceptanceApproval{}).
+		Where("acceptance_approval_id = ?", acceptanceID).
+		Update("status", model.AcceptanceStatusImported)
+	
+	if result.Error != nil {
+		return fmt.Errorf("failed to update status to Imported: %w", result.Error)
+	}
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("no record found with AcceptanceApprovalID %d", acceptanceID)
+	}
+
+	fmt.Printf("Status updated to 'Imported' for Acceptance ID %d\n", acceptanceID)
+	return nil
 }

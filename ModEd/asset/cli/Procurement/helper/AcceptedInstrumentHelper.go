@@ -18,7 +18,7 @@ import (
 func HandleInstrumentOption(facade *controller.ProcurementControllerFacade) {
 	for {
 		util.ClearScreen()
-		printInstrumentList(facade)
+		PrintInstrumentList(facade)
 
 		fmt.Println(":/Instrument Menu")
 		fmt.Println(" back:\tBack to previous menu")
@@ -35,49 +35,86 @@ func HandleInstrumentOption(facade *controller.ProcurementControllerFacade) {
 	}
 }
 
-func printInstrumentList(facade *controller.ProcurementControllerFacade) {
-	instruments, err := facade.Instrument.ListAllInstruments()
-	if err != nil {
-		fmt.Println("Failed to fetch instruments:", err)
-		return
-	}
-	if len(instruments) == 0 {
-		fmt.Println("No instruments found.")
-		return
-	}
+func PrintInstrumentList(facade *controller.ProcurementControllerFacade) {
+    instruments, err := facade.Instrument.ListAllInstruments()
+    if err != nil {
+        fmt.Println("Failed to fetch instruments:", err)
+        return
+    }
 
-	fmt.Println("Available Instruments:")
-	for _, inst := range instruments {
-		fmt.Println(inst)
-	}
+    if len(instruments) == 0 {
+        fmt.Println("No instruments found.")
+        return
+    }
+
+    fmt.Println("Available Instruments:")
+    fmt.Println("---------------------------------------------------------------------------------------------")
+    fmt.Printf("%-5s | %-25s | %-15s | %-10s | %-15s\n", "ID", "Label", "Code", "Status", "Location")
+    fmt.Println("---------------------------------------------------------------------------------------------")
+    for _, inst := range instruments {
+        fmt.Printf("%-5d | %-25s | %-15s | %-10s | %-15s\n",
+            inst.ID,
+            inst.InstrumentLabel,
+            inst.InstrumentCode,
+            inst.InstrumentStatus,
+            inst.Location,
+        )
+    }
+    fmt.Println("---------------------------------------------------------------------------------------------")
 }
+
 
 func HandleInstrumentDetails(facade *controller.ProcurementControllerFacade) {
+    id := util.GetUintInput("Enter Instrument ID: ")
+
+    // 🔎 Try making a safe call to the database
+    if _, err := facade.Instrument.ListAllInstruments(); err != nil {
+        fmt.Println("Instrument Controller is not initialized or database connection failed:", err)
+        util.PressEnterToContinue()
+        return
+    }
+
+    // ✅ Now we can safely retrieve the instrument
+    fmt.Println("Attempting to fetch instrument details...") // <-- Logging
+    instrument, err := facade.Instrument.RetrieveByID(id)
+    
+    // 🔍 Check for errors during retrieval
+    if err != nil {
+        fmt.Println("Failed to retrieve instrument:", err)
+        util.PressEnterToContinue()
+        return
+    }
+    
+    // 🔎 Instead of nil, we check if it is "zero-valued"
+    if instrument.ID == 0 {
+        fmt.Println("Instrument not found.")
+        util.PressEnterToContinue()
+        return
+    }
+
+    // ✅ Display Instrument Details
 	util.ClearScreen()
-	id := util.GetUintInput("Enter Instrument ID: ")
-	instrument, err := facade.Instrument.RetrieveByID(id)
-	if err != nil {
-		fmt.Println("Failed to retrieve instrument:", err)
-	} else {
-		fmt.Println("Instrument Details:")
-		fmt.Printf("  ID: %d\n", instrument.ID)
-		fmt.Printf("  Label: %s\n", instrument.InstrumentLabel)
-		fmt.Printf("  Code: %s\n", instrument.InstrumentCode)
-		fmt.Printf("  Status: %s\n", instrument.InstrumentStatus)
-		fmt.Printf("  Room ID: %s\n", instrument.RoomID)
-		fmt.Printf("  Location: %s\n", instrument.Location)
-		fmt.Printf("  Category ID: %d\n", instrument.CategoryID)
-		fmt.Printf("  Cost: %.2f\n", instrument.Cost)
-		fmt.Printf("  Budget Year: %d\n", instrument.BudgetYear)
-		if instrument.InstrumentBrand != nil {
-			fmt.Printf("  Brand: %s\n", *instrument.InstrumentBrand)
-		}
-		if instrument.InstrumentModel != nil {
-			fmt.Printf("  Model: %s\n", *instrument.InstrumentModel)
-		}
-	}
-	util.PressEnterToContinue()
+    fmt.Println("Instrument Details:")
+    fmt.Printf("  ID: %d\n", instrument.ID)
+    fmt.Printf("  Label: %s\n", instrument.InstrumentLabel)
+    fmt.Printf("  Code: %s\n", instrument.InstrumentCode)
+    fmt.Printf("  Status: %s\n", instrument.InstrumentStatus)
+    fmt.Printf("  Room ID: %s\n", instrument.RoomID)
+    fmt.Printf("  Location: %s\n", instrument.Location)
+    fmt.Printf("  Category ID: %d\n", instrument.CategoryID)
+    fmt.Printf("  Cost: %.2f\n", instrument.Cost)
+    fmt.Printf("  Budget Year: %d\n", instrument.BudgetYear)
+    
+    if instrument.InstrumentBrand != nil {
+        fmt.Printf("  Brand: %s\n", *instrument.InstrumentBrand)
+    }
+    if instrument.InstrumentModel != nil {
+        fmt.Printf("  Model: %s\n", *instrument.InstrumentModel)
+    }
+
+    util.PressEnterToContinue()
 }
+
 
 func HandleImportInstrument(facade *controller.ProcurementControllerFacade) {
 	filename := util.GetStringInput("Enter path to the CSV file (data/instruments.csv): ")
@@ -163,15 +200,68 @@ func parseInt(value string) int {
 }
 
 func HandleCreateInstrumentFromAcceptance(facade *controller.ProcurementControllerFacade) {
-	util.ClearScreen()
-	fmt.Println("Create Instruments from Accepted Request")
+	fmt.Println("List of Approved Accepted Requests:")
+	
+	PrintAcceptanceList(facade)
+	
 	acceptanceID := util.GetUintInput("Enter Acceptance Approval ID: ")
+
+	util.ClearScreen()  
 
 	err := facade.Instrument.CreateInstrumentsFromAcceptance(acceptanceID)
 	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Printf("Instruments created successfully for Acceptance ID %d\n", acceptanceID)
+		fmt.Println("Error creating instruments:", err)
+		util.PressEnterToContinue()
+		return
 	}
+
+	err = facade.Acceptance.UpdateStatusToImported(acceptanceID)
+	if err != nil {
+		fmt.Println("Error updating status to 'Imported':", err)
+	} else {
+		fmt.Printf("Instruments created and status updated to 'Imported' for Acceptance ID %d\n", acceptanceID)
+	}
+
 	util.PressEnterToContinue()
+}
+
+
+func PrintAcceptanceList(facade *controller.ProcurementControllerFacade) {
+	acceptedRequests, err := facade.Acceptance.ListAllApprovals()
+	if err != nil {
+		fmt.Println("Failed to fetch acceptance approvals:", err)
+		return
+	}
+
+	var approvedRequests []model.AcceptanceApproval
+	for _, req := range acceptedRequests {
+		if req.Status == model.AcceptanceStatusApproved {
+			approvedRequests = append(approvedRequests, req)
+		}
+	}
+
+	if len(approvedRequests) == 0 {
+		fmt.Println("No approved acceptance requests found.")
+		return
+	}
+
+	fmt.Println("---------------------------------------------------------------------------------------------")
+	for _, a := range approvedRequests {
+		approverID := "waiting"
+		if a.ApproverID != nil && *a.ApproverID != 0 {
+			approverID = fmt.Sprintf("%d", *a.ApproverID)
+		}
+		approvalTime := "N/A"
+		if a.ApprovalTime != nil {
+			approvalTime = a.ApprovalTime.Format("2006-01-02 15:04:05")
+		}
+		fmt.Printf("  ApprovalID: %d | ProcurementID: %d | Status: %s | Approver ID: %s | Approval Time: %s\n",
+			a.AcceptanceApprovalID,
+			a.ProcurementID,
+			a.Status,
+			approverID,
+			approvalTime,
+		)
+	}
+	fmt.Println("---------------------------------------------------------------------------------------------")
 }
