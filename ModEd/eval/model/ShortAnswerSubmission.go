@@ -12,19 +12,3 @@ type ShortAnswerSubmission struct {
 	SubmissionID  uint     `gorm:"type:integer;not null" json:"submission_id" csv:"submission_id"`
 	StudentAnswer string   `gorm:"type:text;not null" json:"student_answer" csv:"student_answer"`
 }
-
-func (s *ShortAnswerSubmission) SetQuestionID(id uint) {
-	s.QuestionID = id
-}
-
-func (s *ShortAnswerSubmission) GetQuestionID() uint {
-	return s.QuestionID
-}
-
-func (s *ShortAnswerSubmission) SetSubmmissionID(id uint) {
-	s.SubmissionID = id
-}
-
-func (s *ShortAnswerSubmission) GetSubmissionID() uint {
-	return s.SubmissionID
-}

@@ -11,19 +11,3 @@ type MultipleChoiceAnswerSubmission struct {
 	ChoiceID     uint                 `gorm:"type:integer;not null" json:"choice_id" csv:"choice_id"`
 	Choice       MultipleChoiceAnswer `gorm:"foreignKey:ChoiceID;references:ID" json:"student_answer" csv:"student_answer"`
 }
-
-func (s *MultipleChoiceAnswerSubmission) SetQuestionID(id uint) {
-	s.QuestionID = id
-}
-
-func (s *MultipleChoiceAnswerSubmission) GetQuestionID() uint {
-	return s.QuestionID
-}
-
-func (s *MultipleChoiceAnswerSubmission) SetSubmmissionID(id uint) {
-	s.SubmissionID = id
-}
-
-func (s *MultipleChoiceAnswerSubmission) GetSubmissionID() uint {
-	return s.SubmissionID
-}

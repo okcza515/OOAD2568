@@ -1,12 +1,7 @@
 // MEP-1007
 package model
 
-type SubmissionFactory interface {
-	SetQuestionID(id uint)
-	GetQuestionID() uint
-	SetSubmmissionID(id uint)
-	GetSubmissionID() uint
-}
+type SubmissionFactory interface{}
 
 func NewSubmissionByFactory(questionType QuestionType) SubmissionFactory {
 	switch questionType {

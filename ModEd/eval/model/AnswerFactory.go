@@ -1,10 +1,7 @@
 // MEP-1007
 package model
 
-type AnswerFactory interface {
-	SetQuestionID(id uint)
-	GetQuestionID() uint
-}
+type AnswerFactory interface{}
 
 func NewAnswerByFactory(questionType QuestionType) AnswerFactory {
 	switch questionType {

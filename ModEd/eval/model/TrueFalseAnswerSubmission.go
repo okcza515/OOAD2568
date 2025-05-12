@@ -12,19 +12,3 @@ type TrueFalseAnswerSubmission struct {
 	SubmissionID  uint     `gorm:"type:integer;not null" json:"submission_id" csv:"submission_id"`
 	StudentAnswer bool     `gorm:"type:boolean;not null" json:"student_answer" csv:"student_answer"`
 }
-
-func (s *TrueFalseAnswerSubmission) SetQuestionID(id uint) {
-	s.QuestionID = id
-}
-
-func (s *TrueFalseAnswerSubmission) GetQuestionID() uint {
-	return s.QuestionID
-}
-
-func (s *TrueFalseAnswerSubmission) SetSubmmissionID(id uint) {
-	s.SubmissionID = id
-}
-
-func (s *TrueFalseAnswerSubmission) GetSubmissionID() uint {
-	return s.SubmissionID
-}

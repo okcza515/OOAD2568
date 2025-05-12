@@ -74,6 +74,12 @@ func (handler AddRoomHandlerStrategy) Execute() error {
 		Supply:             nil,
 	}
 
+	if err := room.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		util.PressEnterToContinue()
+		return err
+	}
+
 	fmt.Println("-------- Room details --------")
 	fmt.Println("Room Name:", room.RoomName)
 	fmt.Println("Room Type:", room.RoomType)
