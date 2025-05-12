@@ -80,7 +80,7 @@ func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment st
 }
 
 func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) error {
-	csvPath := filepath.Join("data", "quiz", "Evaluation.csv")
+	csvPath := "../../data/quiz/Evaluation.csv"
 
 	// Create directory if not exists
 	dir := filepath.Dir(csvPath)
@@ -110,6 +110,10 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 		if err := writer.Write(headers); err != nil {
 			return fmt.Errorf("failed to write headers: %v", err)
 		}
+		writer.Flush()
+		if err := writer.Error(); err != nil {
+			return fmt.Errorf("failed to flush headers: %v", err)
+		}
 	}
 
 	// Write evaluation data
@@ -125,12 +129,16 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 	if err := writer.Write(record); err != nil {
 		return fmt.Errorf("failed to write record: %v", err)
 	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("failed to flush record: %v", err)
+	}
 
 	return nil
 }
 
 func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) error {
-	csvPath := filepath.Join("data", "quiz", "Evaluation.csv")
+	csvPath := "../../data/quiz/Evaluation.csv"
 
 	// Create directory if not exists
 	dir := filepath.Dir(csvPath)
@@ -175,6 +183,10 @@ func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) erro
 	writer := csv.NewWriter(file)
 	if err := writer.WriteAll(records); err != nil {
 		return fmt.Errorf("failed to write records: %v", err)
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("failed to flush records: %v", err)
 	}
 
 	return nil
