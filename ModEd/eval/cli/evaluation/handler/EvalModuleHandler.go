@@ -27,6 +27,7 @@ type EvalModuleMenuStateHandler struct {
 	wrapper *controller.EvalModuleWrapper
 
 	AssignmentMenuStateHandler *AssignmentMenuStateHandler
+	QuizMenuStateHandler       *QuizMenuStateHandler
 	ProgressMenuStateHandler   *ProgressMenuStateHandler
 	EvaluationMenuStateHandler *EvaluationMenuStateHandler
 	handler                    *handler.HandlerContext
@@ -109,10 +110,11 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 
 	evalModuleHandler.ProgressMenuStateHandler = NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
 	evalModuleHandler.AssignmentMenuStateHandler = NewAssignmentMenuStateHandler(manager, wrapper, evalModuleHandler)
+	evalModuleHandler.QuizMenuStateHandler = NewQuizMenuStateHandler(manager, wrapper, evalModuleHandler)
 	evalModuleHandler.EvaluationMenuStateHandler = NewEvaluationMenuStateHandler(manager, wrapper, evalModuleHandler)
 
 	evalModuleHandler.Manager.AddMenu("1", evalModuleHandler.AssignmentMenuStateHandler)
-	evalModuleHandler.Manager.AddMenu("2", evalModuleHandler.AssignmentMenuStateHandler)
+	evalModuleHandler.Manager.AddMenu("2", evalModuleHandler.QuizMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("3", evalModuleHandler.ProgressMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("4", evalModuleHandler.EvaluationMenuStateHandler)
 	loadCmd := NewLoadEvalCommand(manager, evalModuleHandler)
