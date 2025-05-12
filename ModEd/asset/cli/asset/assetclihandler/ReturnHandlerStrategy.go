@@ -1,4 +1,4 @@
-package handlerr
+package assetclihandler
 
 // MEP-1012 Asset
 import (
