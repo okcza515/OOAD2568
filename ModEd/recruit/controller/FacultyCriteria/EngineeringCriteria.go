@@ -1,5 +1,5 @@
 // MEP-1003 Student Recruitment
-package controller
+package facultyCriteria
 
 import "ModEd/recruit/model"
 

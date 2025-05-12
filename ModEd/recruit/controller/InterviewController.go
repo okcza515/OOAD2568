@@ -39,33 +39,6 @@ func (c *InterviewController) GetFilteredInterviews(condition map[string]interfa
 	)
 }
 
-func GetApplicationStatus(db *gorm.DB, applicantID uint) (string, error) {
-	var interview model.Interview
-
-	err := db.Where("applicant_id = ?", applicantID).First(&interview).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return "", errors.New("ไม่พบข้อมูลสัมภาษณ์ของผู้สมัคร")
-		}
-		return "", err
-	}
-
-	return string(interview.InterviewStatus), nil
-}
-
-func (c *InterviewController) GetAllInterviews() ([]*model.Interview, error) {
-	var interviews []*model.Interview
-	err := c.DB.
-		Preload("Instructor").
-		Preload("ApplicationReport").
-		Preload("ApplicationReport.Applicant").
-		Find(&interviews).Error
-	if err != nil {
-		return nil, err
-	}
-	return interviews, nil
-}
-
 func (c *InterviewController) GetInterviewByApplicationReportID(reportID uint) ([]*model.Interview, error) {
 	condition := map[string]interface{}{
 		"application_report_id": reportID,
