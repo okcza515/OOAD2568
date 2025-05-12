@@ -92,7 +92,7 @@ func (h *createCourseHandler) Execute() error {
 	fmt.Printf("Status: %s\n", model.CourseStatusLabel[course.CourseStatus])
 
 	confirm := utils.GetUserInput("\nConfirm creation? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Creation cancelled.")
 		return nil
 	}
