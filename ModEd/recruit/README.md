@@ -166,3 +166,34 @@ go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLI
 ```go
 go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLIFunction.go --database="data/ModEd.bin" --database="data/ModEd.bin" --database="data/ModEd.bin" --database="data/ModEd.bin" --path="data/common/DepartmentList.csv"
 ```
+---
+### Summary Design Patterns Used
+
+### - Strategy Pattern
+We use the Strategy Pattern to encapsulate and switch between interchangeable behaviors:
+
+- **Registration Form**: Different registration fields (e.g., portfolio, scholarship)
+- **Criteria**: Different selection criteria
+- **Interview Evaluation**: Different evaluation strategies for interviews
+- **Mini Login**: Pluggable permission check strategies based on user roles
+
+### - Builder Pattern
+Used for constructing complex criteria objects step by step:
+
+- **Criteria Builder**: Enables flexible configuration of admission criteria
+
+### - Template Method
+Used for reports that follow a similar structure:
+
+- **All Reports**: Share common reporting template (getdata by condition, display)
+
+
+### - SOLID Principles
+
+The project adopts a **Service Layer** to separate core business logic from CLI or controller logic, enabling:
+
+- **SRP (Single Responsibility Principle)**: Each class/module has one clear responsibility
+- **DIP (Dependency Inversion Principle)**: High-level modules depend on abstractions, not concrete implementations
+- **OCP (Open/Closed Principle)**: Components are open to extension, but closed to modification
+
+---
