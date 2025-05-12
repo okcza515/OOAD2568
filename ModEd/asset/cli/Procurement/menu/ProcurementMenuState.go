@@ -34,6 +34,31 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	handlerContext.AddHandler("1", "Create TOR and Procurement", handler.FuncStrategy{
 		Action: func() error {
 			fmt.Println("Create TOR and Procurement")
+			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
+			if err != nil {
+				fmt.Println("Failed to list Instrument Requests:", err)
+				util.PressEnterToContinue()
+				return err
+			}
+
+			approvedRequests := []model.InstrumentRequest{}
+			for _, req := range *requests {
+				if req.Status == model.InstrumentRequestStatusApproved {
+					approvedRequests = append(approvedRequests, req)
+				}
+			}
+
+			if len(approvedRequests) == 0 {
+				fmt.Println("No approved Instrument Requests available. Please complete Budget Approvals first.")
+				util.PressEnterToContinue()
+				return nil
+			}
+
+			fmt.Println("\n--- Approved Instrument Requests ---")
+			for _, req := range approvedRequests {
+				fmt.Printf("  ID: %d | Department ID: %d | Status: %s\n",
+					req.InstrumentRequestID, req.DepartmentID, req.Status)
+			}
 			// Get Input
 			requestID := util.GetUintInput("Enter Instrument Request ID: ")
 			scope := util.GetStringInput("Enter TOR Scope: ")
@@ -50,7 +75,7 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				WithCreatedAt(time.Now()).
 				Build()
 
-			err := facade.TOR.CreateTOR(tor)
+			err = facade.TOR.CreateTOR(tor)
 			if err != nil {
 				fmt.Println("Failed to create TOR:", err)
 				util.PressEnterToContinue()
