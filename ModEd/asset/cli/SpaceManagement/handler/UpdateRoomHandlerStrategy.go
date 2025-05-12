@@ -57,6 +57,7 @@ func (handler UpdateRoomHandlerStrategy) Execute() error {
 	fmt.Println("Is the room out of service? (true/false):")
 	isOutOfServiceStr := util.GetCommandInput()
 	isOutOfService := isOutOfServiceStr == "true"
+
 	room := &model.Room{
 		RoomName:           roomName,
 		RoomType:           roomType,
@@ -70,14 +71,20 @@ func (handler UpdateRoomHandlerStrategy) Execute() error {
 		Supply:             nil,
 	}
 	room.ID = uint(roomId)
+
+	if err := room.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
 	err = handler.controller.UpdateByID(*room)
 	if err != nil || errFloor != nil || errCapacity != nil {
 		fmt.Println("Failed to update Room", err, errFloor, errCapacity)
 		util.PressEnterToContinue()
 	} else {
 		fmt.Println("Room updated successfully")
+		util.PressEnterToContinue()
 	}
-	util.PressEnterToContinue()
 
 	return nil
 }

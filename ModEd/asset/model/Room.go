@@ -6,20 +6,22 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Room struct {
 	core.BaseModel
-	RoomName           string                 `gorm:"type:varchar(255);not null" json:"room_name" csv:"room_name"`
-	RoomType           RoomTypeEnum           `gorm:"type:text;not null" json:"room_type" csv:"room_type"`
-	Description        string                 `gorm:"type:text" json:"description,omitempty" csv:"description,omitempty"`
-	Floor              int                    `gorm:"type:integer;not null" json:"floor" csv:"floor"`
-	Building           string                 `gorm:"type:varchar(255);not null" json:"building" csv:"building"`
-	Location           string                 `gorm:"type:text" json:"location,omitempty" csv:"location,omitempty"`
-	Capacity           int                    `gorm:"type:integer;not null" json:"capacity" csv:"capacity"`
-	IsRoomOutOfService bool                   `gorm:"type:boolean;not null" json:"is_room_out_of_service" csv:"is_room_out_of_service"`
-	Instrument         []InstrumentManagement `gorm:"foreignKey:RoomID" json:"instruments,omitempty" csv:"instruments,omitempty"`
-	Supply             []SupplyManagement     `gorm:"foreignKey:RoomID" json:"supplies,omitempty" csv:"supplies,omitempty"`
+	RoomName           string                 `gorm:"type:varchar(255);not null" json:"room_name" csv:"room_name" validate:"required"`
+	RoomType           RoomTypeEnum           `gorm:"type:text;not null" json:"room_type" csv:"room_type" validate:"required"`
+	Description        string                 `gorm:"type:text" json:"description,omitempty" csv:"description,omitempty" validate:"required"`
+	Floor              int                    `gorm:"type:integer;not null" json:"floor" csv:"floor" validate:"required"`
+	Building           string                 `gorm:"type:varchar(255);not null" json:"building" csv:"building" validate:"required"`
+	Location           string                 `gorm:"type:text" json:"location,omitempty" csv:"location,omitempty" validate:"required"`
+	Capacity           int                    `gorm:"type:integer;not null" json:"capacity" csv:"capacity" validate:"required"`
+	IsRoomOutOfService bool                   `gorm:"type:boolean;not null" json:"is_room_out_of_service" csv:"is_room_out_of_service" validate:"required"`
+	Instrument         []InstrumentManagement `gorm:"foreignKey:RoomID" json:"instruments,omitempty" csv:"instruments,omitempty" validate:"-"`
+	Supply             []SupplyManagement     `gorm:"foreignKey:RoomID" json:"supplies,omitempty" csv:"supplies,omitempty" validate:"-"`
 }
 
 func (room Room) ToString() string {
@@ -77,4 +79,12 @@ func (room Room) ToString() string {
 	result += headerBorder + "\n"
 
 	return result
+}
+
+func (room Room) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(room); err != nil {
+		return err
+	}
+	return nil
 }
