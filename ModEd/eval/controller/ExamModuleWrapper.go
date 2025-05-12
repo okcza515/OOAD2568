@@ -8,6 +8,7 @@ type ExamModuleWrapper struct {
 	ExamController                           *ExamController
 	QuestionController                       *QuestionController
 	ExamSectionController                    *ExamSectionController
+	SubmissionController					 *SubmissionController
 	MultipleChoiceAnswerController           *MultipleChoiceAnswerController
 	MultipleChoiceAnswerSubmissionController *MultipleChoiceAnswerSubmissionController
 	ShortAnswerController                    *ShortAnswerController
@@ -21,6 +22,7 @@ func NewExamModuleWrapper(db *gorm.DB) *ExamModuleWrapper {
 		ExamController:                           NewExamController(db),
 		QuestionController:                       NewQuestionController(db),
 		ExamSectionController:                    NewExamSectionController(db),
+		SubmissionController: 					  NewSubmissionController(db),	
 		MultipleChoiceAnswerController:           NewMultipleChoiceAnswerController(db),
 		MultipleChoiceAnswerSubmissionController: NewMultipleChoiceAnswerSubmissionController(db),
 		ShortAnswerController:               	  NewShortAnswerController(db),
