@@ -1,12 +1,10 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
+import "ModEd/core"
 
 // BaseStandardRequest holds fields common to Resignation and Raise requests
 type BaseStandardRequest struct {
-	gorm.Model
+	core.BaseModel
 	Reason string `gorm:"type:text"`
 	Status string `gorm:"default:Pending"`
 }

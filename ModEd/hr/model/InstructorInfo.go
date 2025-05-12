@@ -2,11 +2,13 @@ package model
 
 import (
 	"ModEd/common/model"
+	"ModEd/core"
 	"ModEd/hr/util"
 )
 
 type InstructorInfo struct {
 	model.Instructor
+	core.BaseModel
 	Gender             string             `csv:"Gender"`
 	CitizenID          string             `csv:"CitizenID"`
 	PhoneNumber        string             `csv:"PhoneNumber"`
