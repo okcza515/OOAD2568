@@ -23,7 +23,7 @@ func PromptUint(prompt string) (uint64, error) {
 
 func PromptDate(prompt string) (time.Time, error) {
 	text := PromptString(prompt)
-	return time.Parse("2006-01-02", text)
+	return time.Parse("2006-01-02 15:04:05", text)
 }
 
 func PromptFloat(prompt string) (float64, error) {
