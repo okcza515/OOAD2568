@@ -14,6 +14,8 @@ type InternshipResultEvaluationHandler struct {
 	InternshipInformation      *controller.InternshipInformationController
 	InternshipCriteria         *controller.InternshipCriteriaController
 	InternshipResultEvaluation *controller.InternshipResultEvaluationController
+
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternshipResultEvaluationHandler(
@@ -59,6 +61,7 @@ func (handler *InternshipResultEvaluationHandler) HandleUserInput(input string) 
 		return handler.EvaluateStudentInternship()
 	case "back":
 		fmt.Println("Returning to the previous menu...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")
@@ -143,6 +146,7 @@ func (handler *InternshipResultEvaluationHandler) listAllResultEvaluations() err
 }
 
 func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() error {
+
 	studentCode := utils.GetUserInput("Enter Student Code: ")
 	if studentCode == "" {
 		fmt.Println("Error: Student Code cannot be empty.")
@@ -154,14 +158,20 @@ func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() er
 		return fmt.Errorf("missing required controllers")
 	}
 
-	criteriaList, err := handler.InternshipCriteria.ListAllByStudentCode(studentCode)
+	internshipInfo, err := handler.InternshipInformation.GetByStudentCode(studentCode)
 	if err != nil {
-		fmt.Printf("Failed to retrieve criteria for student %s: %v\n", studentCode, err)
+		fmt.Printf("Failed to retrieve internship information for student %s: %v\n", studentCode, err)
+		return err
+	}
+
+	criteriaList, err := handler.InternshipCriteria.ListAllByInformationID(internshipInfo.ID)
+	if err != nil {
+		fmt.Printf("Failed to retrieve criteria for InternshipInformation ID %d: %v\n", internshipInfo.ID, err)
 		return err
 	}
 
 	if len(criteriaList) == 0 {
-		fmt.Printf("No criteria found for student %s.\n", studentCode)
+		fmt.Printf("No criteria found for InternshipInformation ID %d.\n", internshipInfo.ID)
 		return nil
 	}
 
@@ -192,7 +202,7 @@ func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() er
 		*handler.InternshipResultEvaluation,
 	)
 
-	err = facade.EvaluateInternship(studentCode, criteriaScores, comment)
+	err = facade.EvaluateInternship(internshipInfo.ID, criteriaScores, comment)
 	if err != nil {
 		fmt.Printf("Evaluation failed: %v\n", err)
 		return err

@@ -11,6 +11,8 @@ import (
 type InternshipInformationHandler struct {
 	manager    *cli.CLIMenuStateManager
 	controller *controller.InternshipInformationController
+
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternshipInformationHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipInformationController) *InternshipInformationHandler {
@@ -44,6 +46,7 @@ func (handler *InternshipInformationHandler) HandleUserInput(input string) error
 		return handler.listAllInternshipInformation()
 	case "back":
 		fmt.Println("Returning to the previous menu...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")

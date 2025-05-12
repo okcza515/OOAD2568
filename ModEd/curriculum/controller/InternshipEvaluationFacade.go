@@ -23,14 +23,14 @@ func NewInternshipEvaluationFacade(
 	}
 }
 
-func (f *InternshipEvaluationFacade) EvaluateInternship(studentCode string, criteriaScores map[uint]uint, comment string) error {
-	criteriaList, err := f.CriteriaController.ListAllByStudentCode(studentCode)
+func (f *InternshipEvaluationFacade) EvaluateInternship(informationID uint, criteriaScores map[uint]uint, comment string) error {
+	criteriaList, err := f.CriteriaController.ListAllByInformationID(informationID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve criteria for student %s: %w", studentCode, err)
+		return fmt.Errorf("failed to retrieve criteria for InternshipInformation ID %d: %w", informationID, err)
 	}
 
 	if len(criteriaList) == 0 {
-		return fmt.Errorf("no criteria found for student %s", studentCode)
+		return fmt.Errorf("no criteria found for InternshipInformation ID %d", informationID)
 	}
 
 	totalScore := uint(0)
@@ -48,7 +48,7 @@ func (f *InternshipEvaluationFacade) EvaluateInternship(studentCode string, crit
 		}
 
 		if targetCriteria == nil {
-			return fmt.Errorf("criteria ID %d not found for student %s", criteriaID, studentCode)
+			return fmt.Errorf("criteria ID %d not found for InternshipInformation ID %d", criteriaID, informationID)
 		}
 
 		targetCriteria.Score = score
@@ -59,15 +59,10 @@ func (f *InternshipEvaluationFacade) EvaluateInternship(studentCode string, crit
 		totalScore += score
 	}
 
-	internshipInfo, err := f.InfoController.GetByStudentCode(studentCode)
-	if err != nil {
-		return fmt.Errorf("failed to retrieve internship information for student %s: %w", studentCode, err)
-	}
-
 	result := &model.InternshipResultEvaluation{
 		Comment:                 comment,
 		Score:                   totalScore,
-		InternshipInformationId: internshipInfo.ID,
+		InternshipInformationId: informationID,
 	}
 
 	if err := f.ResultController.Create(result); err != nil {

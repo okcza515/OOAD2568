@@ -9,8 +9,9 @@ import (
 )
 
 type InternShipEvaluationCriteriaHandler struct {
-	manager    *cli.CLIMenuStateManager
-	controller *controller.InternshipCriteriaController
+	manager          *cli.CLIMenuStateManager
+	controller       *controller.InternshipCriteriaController
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternShipEvaluationCriteriaHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipCriteriaController) *InternShipEvaluationCriteriaHandler {
@@ -45,6 +46,7 @@ func (handler *InternShipEvaluationCriteriaHandler) HandleUserInput(input string
 		return handler.listAllEvaluationCriteria()
 	case "exit":
 		fmt.Println("Exiting the Internship Evaluation System...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")
@@ -65,12 +67,6 @@ func (handler *InternShipEvaluationCriteriaHandler) createEvaluationCriteria() e
 		return nil
 	}
 
-	score := utils.GetUserInputUint("Enter Evaluation Score (e.g., 100): ")
-	if score == 0 {
-		fmt.Println("Error: Score must be greater than 0.")
-		return nil
-	}
-
 	applicationID := utils.GetUserInputUint("Enter Internship Application ID: ")
 	if applicationID == 0 {
 		fmt.Println("Error: Internship Application ID must be valid.")
@@ -80,7 +76,7 @@ func (handler *InternShipEvaluationCriteriaHandler) createEvaluationCriteria() e
 	criteria := &model.InternshipCriteria{
 		Title:                   title,
 		Description:             description,
-		Score:                   score,
+		Score:                   0,
 		InternshipApplicationId: applicationID,
 	}
 
