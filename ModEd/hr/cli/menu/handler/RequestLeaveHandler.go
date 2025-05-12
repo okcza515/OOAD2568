@@ -27,7 +27,7 @@ func (handler RequestLeaveHandler) Execute() error {
 	id := validator.Field(validation.FieldConfig{Name: "id", Prompt: "Enter ID: "}).Required().GetInput()
 	leaveType := validator.Field(validation.FieldConfig{Name: "leaveType", Prompt: "Enter leave type: "}).Required().GetInput()
 	reason := validator.Field(validation.FieldConfig{Name: "reason", Prompt: "Enter reason: "}).Required().GetInput()
-	leaveDateStr := validator.Field(validation.FieldConfig{Name: "leaveDate", Prompt: "Enter leave date (YYYY-MM-DD): "}).Required().GetInput()
+	leaveDateStr := validator.Field(validation.FieldConfig{Name: "leaveDate", Prompt: "Enter leave date (YYYY-MM-DD): "}).Required().IsDate().GetInput()
 
 	err := handler.controllerFunc(id, leaveType, reason, leaveDateStr)
 	if err != nil {

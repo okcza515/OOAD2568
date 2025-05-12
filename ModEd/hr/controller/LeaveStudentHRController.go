@@ -44,7 +44,7 @@ func (c *LeaveStudentHRController) getByID(id uint) (*model.RequestLeaveStudent,
 }
 func (c *LeaveStudentHRController) getByStudentID(studentID string) ([]model.RequestLeaveStudent, error) {
 	var requests []model.RequestLeaveStudent
-	err := c.db.Where("student_id = ?", studentID).Find(&requests).Error
+	err := c.db.Where("student_code = ?", studentID).Find(&requests).Error
 	if err != nil {
 		return nil, err
 	}
