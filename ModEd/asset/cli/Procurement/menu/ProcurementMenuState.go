@@ -30,7 +30,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		handlerContext: handlerContext,
 	}
 
-	// Create TOR and Procurement
 	handlerContext.AddHandler("1", "Create TOR and Procurement", handler.FuncStrategy{
 		Action: func() error {
 			requests, err := facade.RequestedItem.ListAllInstrumentRequests()
@@ -107,7 +106,7 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				util.PressEnterToContinue()
 				return err
 			} else {
-				fmt.Println("Procurement created successfully!")
+				fmt.Println("Procurement created successfully with ID:", procurement.ProcurementID)
 			}
 
 			err = facade.RequestedItem.UpdateInstrumentRequestStatus(requestID, model.InstrumentRequestStatusProcessed)
@@ -120,7 +119,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// List All Procurements
 	handlerContext.AddHandler("2", "List All Procurements", handler.FuncStrategy{
 		Action: func() error {
 			procurements, err := facade.Procurement.ListAllProcurement()
@@ -130,7 +128,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 				return err
 			}
 
-			// Now the check is inside the helper
 			if len(*procurements) == 0 {
 				fmt.Println("No procurements available.")
 				util.PressEnterToContinue()
@@ -143,7 +140,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// Listing All TORs
 	handlerContext.AddHandler("3", "List All TORs", handler.FuncStrategy{
 		Action: func() error {
 			tors, err := facade.TOR.GetAllTORs()
@@ -159,7 +155,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// Viewing Procurement Details
 	handlerContext.AddHandler("4", "View Procurement Detail by ID", handler.FuncStrategy{
 		Action: func() error {
 			procurement, err := helper.SelectProcurement(facade)
@@ -178,7 +173,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// Viewing TOR Details
 	handlerContext.AddHandler("5", "View TOR Detail by ID", handler.FuncStrategy{
 		Action: func() error {
 			tor, err := helper.SelectTOR(facade)
@@ -199,7 +193,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// Deleting Procurement
 	handlerContext.AddHandler("6", "Delete Procurement", handler.FuncStrategy{
 		Action: func() error {
 			procurement, err := helper.SelectProcurement(facade)
@@ -210,7 +203,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 		},
 	})
 
-	// Deleting TOR
 	handlerContext.AddHandler("7", "Delete TOR", handler.FuncStrategy{
 		Action: func() error {
 			tor, err := helper.SelectTOR(facade)
@@ -224,7 +216,6 @@ func NewProcurementMenuState(manager *cli.CLIMenuStateManager) *ProcurementMenuS
 	manager.AddMenu(string(MENU_QUOTATION), NewQuotationMenuState(manager))
 	handlerContext.AddHandler("8", "Quotation Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_QUOTATION))))
 
-	// Back Handler
 	handlerContext.AddBackHandler(handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT_MAIN))))
 
 	return menu
