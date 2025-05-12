@@ -16,13 +16,37 @@ type SupplyManagement struct {
 	Quantity          int    `gorm:"not null" json:"quantity" csv:"quantity"`
 }
 
+
 func (sm SupplyManagement) ToString() string {
-	
-    return fmt.Sprintf("ID: %d | Supply ID: %d | Label: %s | Quantity: %d | Room ID: %d | Room Name: %s",
-        sm.ID,
-        sm.SupplyID,
-        sm.Supply.SupplyLabel,
-		sm.Supply.Quantity,
-        sm.RoomID,
-        sm.Room.RoomName)
+	// Local truncate function inside ToString
+	truncate := func(s string, width int) string {
+		r := []rune(s)
+		if len(r) > width {
+			return string(r[:width-3]) + "..."
+		}
+		// pad with spaces to the right
+		for len(r) < width {
+			r = append(r, ' ')
+		}
+		return string(r)
+	}
+
+	return fmt.Sprintf(`
+┌─────────────────────────────────────────────────────────────┐
+│                 Supply Management Info                      │
+├─────────────────────────────────────────────────────────────┤
+│ ID             : %-42s │
+│ Supply ID      : %-42s │
+│ Label          : %-42s │
+│ Quantity       : %-42s │
+│ Room ID        : %-42s │
+│ Room Name      : %-42s │
+└─────────────────────────────────────────────────────────────┘`,
+		truncate(fmt.Sprintf("%d", sm.ID), 42),
+		truncate(fmt.Sprintf("%d", sm.SupplyID), 42),
+		truncate(sm.Supply.SupplyLabel, 42),
+		truncate(fmt.Sprintf("%d", sm.Supply.Quantity), 42),
+		truncate(fmt.Sprintf("%d", sm.RoomID), 42),
+		truncate(sm.Room.RoomName, 42),
+	)
 }

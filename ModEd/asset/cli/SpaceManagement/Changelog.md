@@ -36,7 +36,9 @@
 
 Last update (before 13th May)
 
-- add seed data in migration
+- Asset Management (Instrument Management and Supply Management) 
+    - Fix UI in CLI
+    - Sync the data with connected table in database via foreign key
 
 - Permanent Schedule
     - All function can run.
