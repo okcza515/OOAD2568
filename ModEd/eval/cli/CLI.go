@@ -2,9 +2,7 @@ package main
 
 import (
 	"ModEd/core"
-
-	evalModel "ModEd/eval/model"
-
+	"ModEd/core/handler"
 	"ModEd/core/migration"
 
 	evaluation "ModEd/eval/cli/evaluation"
@@ -42,45 +40,6 @@ func (r *ResetDBCommand) Execute() error {
 	return resetDB()
 }
 
-type LoadEvalCommand struct{}
-
-func (l *LoadEvalCommand) Execute() error {
-	mgr := migration.GetInstance()
-	db := mgr.DB
-
-	if db == nil {
-		var err error
-		db, err = mgr.SetPathDB(defaultDBPath).
-			MigrateModule(core.MODULE_QUIZ).
-			MigrateModule(core.MODULE_COMMON).
-			BuildDB()
-		if err != nil {
-			return fmt.Errorf("failed to initialize database: %v", err)
-		}
-	}
-	fmt.Println("Deleting existing progress records...")
-	if err := db.Exec("DELETE FROM progresses").Error; err != nil {
-		return fmt.Errorf("failed to delete existing progress records: %v", err)
-	}
-
-	fmt.Println("Loading seed data from path: ../../data/quiz/Progress.csv")
-	var progresses []evalModel.Progress
-
-	mgr.AddSeedData("../../data/quiz/Progress.csv", &progresses)
-
-	err := mgr.LoadSeedData()
-	if err != nil {
-		return err
-	}
-
-	var count int64
-	db.Model(&evalModel.Progress{}).Count(&count)
-	fmt.Printf("Successfully loaded %d progress records\n", count)
-
-	fmt.Println("Seed data loaded successfully.")
-	return nil
-}
-
 type CommandExecutor struct {
 	commands map[string]Command
 }
@@ -95,9 +54,15 @@ func (ce *CommandExecutor) RegisterCommand(name string, command Command) {
 
 func (ce *CommandExecutor) ExecuteCommand(name string) error {
 	if command, exists := ce.commands[name]; exists {
+		ClearTerminal()
 		return command.Execute()
 	}
 	return fmt.Errorf("Command not found: %s", name)
+}
+
+// ClearTerminal clears the terminal screen
+func ClearTerminal() {
+	fmt.Print("\033[H\033[2J")
 }
 
 func main() {
@@ -119,7 +84,6 @@ func main() {
 	CommandExecutor := NewCommandExecutor()
 	CommandExecutor.RegisterCommand("1", &EvaluationCommand{db, evaluationController, progressController, assessmentController})
 	CommandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
-	CommandExecutor.RegisterCommand("loadeval", &LoadEvalCommand{})
 
 	for {
 		DisplayMainMenu()
@@ -137,12 +101,13 @@ func main() {
 }
 
 func DisplayMainMenu() {
-	fmt.Println("\nEvaluation Module Menu:")
-	fmt.Println("1. Evaluation Assignment & Quiz")
-	fmt.Println("2. Evaluation Examination")
-	fmt.Println("0. Exit")
-	fmt.Println("'resetdb' to re-initialize the database")
-	fmt.Println("'loadeval' to load evaluation seed data")
+	menuHandler := handler.NewHandlerContext()
+	menuHandler.SetMenuTitle("\nEvaluation Module Menu:")
+	menuHandler.AddHandler("1", "Evaluation Assignment & Quiz", handler.FuncStrategy{})
+	//// menuHandler.AddHandler("2", "Evaluation Examination", handler.FuncStrategy{})
+	menuHandler.AddHandler("0", "Exit", handler.FuncStrategy{})
+	menuHandler.AddHandler("resetdb", "Re-initialize the database", handler.FuncStrategy{})
+	menuHandler.ShowMenu()
 }
 
 func GetUserChoice() string {

@@ -326,14 +326,15 @@ func (menu *AssessmentMenuStateHandler) ChangeAssessmentStatus() error {
 	}).(string)
 
 	var newStatus model.AssessmentStatus
-	switch choice {
-	case "1":
-		newStatus = model.StatusDraft
-	case "2":
-		newStatus = model.StatusPublished
-	case "3":
-		newStatus = model.StatusClosed
-	default:
+	statusMap := map[string]model.AssessmentStatus{
+		"1": model.StatusDraft,
+		"2": model.StatusPublished,
+		"3": model.StatusClosed,
+	}
+
+	if status, ok := statusMap[choice]; ok {
+		newStatus = status
+	} else {
 		return errors.New("invalid status choice")
 	}
 
