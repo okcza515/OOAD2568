@@ -24,11 +24,11 @@ func NewEvaluationController(db *gorm.DB) *EvaluationController {
 }
 
 // CreateEvaluation creates a new evaluation
-func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assessmentId uint, score uint, comment string) error {
+func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
 	newEvaluation := evalModel.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssessmentId:   assessmentId,
+		AssignmentId:   assignmentId,
 		Score:          score,
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
@@ -38,7 +38,7 @@ func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode str
 
 // ViewAllEvaluations returns all evaluations with related data
 func (ec *EvaluationController) ViewAllEvaluations() ([]evalModel.Evaluation, error) {
-	return ec.List(nil, "Student", "Instructor", "Assessment")
+	return ec.List(nil, "Student", "Instructor", "Assignment")
 }
 
 // ViewEvaluationByID returns evaluation by student ID
@@ -46,12 +46,12 @@ func (ec *EvaluationController) ViewEvaluationByID(studentCode string) ([]evalMo
 	condition := map[string]interface{}{
 		"student_code": studentCode,
 	}
-	return ec.List(condition, "Student", "Instructor", "Assessment")
+	return ec.List(condition, "Student", "Instructor", "Assignment")
 }
 
 // UpdateEvaluation updates an existing evaluation
 func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment string) error {
-	evaluation, err := ec.RetrieveByID(id, "Student", "Instructor", "Assessment")
+	evaluation, err := ec.RetrieveByID(id, "Student", "Instructor", "Assignment")
 	if err != nil {
 		return err
 	}

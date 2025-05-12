@@ -30,10 +30,10 @@ func NewProgressMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *cont
 
 func (menu *ProgressMenuStateHandler) Render() {
 	menu.handler.SetMenuTitle("\nProgress tracking menu:")
-	menu.handler.AddHandler("1", "List all progress in each assessment.", handler.FuncStrategy{Action: menu.GetAllProgress})
+	menu.handler.AddHandler("1", "List all progress in each assignment.", handler.FuncStrategy{Action: menu.GetAllProgress})
 	menu.handler.AddHandler("2", "Get progress by student ID.", handler.FuncStrategy{Action: menu.GetProgressByStudentCode})
 	menu.handler.AddHandler("3", "Get progress by submission status.", handler.FuncStrategy{Action: menu.GetProgressByStatus})
-	menu.handler.AddHandler("4", "Get Assessment submit count.", handler.FuncStrategy{Action: menu.GetAssessmentSubmitCount})
+	menu.handler.AddHandler("4", "Get Assignment submit count.", handler.FuncStrategy{Action: menu.GetAssignmentSubmitCount})
 	menu.handler.AddBackHandler(menu.backhandler)
 	menu.handler.ShowMenu()
 }
@@ -51,7 +51,7 @@ func (menu *ProgressMenuStateHandler) HandleUserInput(input string) error {
 }
 
 func (menu *ProgressMenuStateHandler) getAllProgressTableHeader() {
-	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "ID", "Assessment ID", "Student Code", "Submitted", "Total Submit")
+	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "ID", "Assignment ID", "Student Code", "Submitted", "Total Submit")
 	fmt.Printf("\n%-5s %-10s %-15s %-15s %-10s", "---", "------------", "-----------", "---------", "-----------")
 }
 
@@ -65,7 +65,7 @@ func (menu *ProgressMenuStateHandler) printProgressTable(progressList []model.Pr
 	for _, progress := range progressList {
 		fmt.Printf("\n%-5d %-10d %-15s %-15v %-10d",
 			progress.ID,
-			progress.AssessmentId,
+			progress.AssignmentId,
 			progress.StudentCode,
 			progress.IsSubmitted,
 			progress.TotalSubmit)
@@ -74,27 +74,27 @@ func (menu *ProgressMenuStateHandler) printProgressTable(progressList []model.Pr
 }
 
 func (menu *ProgressMenuStateHandler) GetAllProgress() error {
-	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID: ",
-		FieldNameText: "Assessment ID",
+	assignmentId := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter Assignment ID: ",
+		FieldNameText: "Assignment ID",
 	}).(uint)
 
 	progressList, err := menu.wrapper.ProgressController.List(map[string]interface{}{
-		"assessment_id": assessmentId,
+		"assignment_id": assignmentId,
 	})
 	if err != nil {
 		return errors.New("failed to retrieve progress list")
 	}
 
-	fmt.Printf("\nAssessment %d Progress List:", assessmentId)
+	fmt.Printf("\nAssignment %d Progress List:", assignmentId)
 	menu.printProgressTable(progressList)
 	return nil
 }
 
 func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
-	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID: ",
-		FieldNameText: "Assessment ID",
+	assignmentId := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter Assignment ID: ",
+		FieldNameText: "Assignment ID",
 	}).(uint)
 
 	studentCode := core.ExecuteUserInputStep(core.StringInputStep{
@@ -103,22 +103,22 @@ func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 	}).(string)
 
 	progressList, err := menu.wrapper.ProgressController.List(map[string]interface{}{
-		"assessment_id": assessmentId,
+		"assignment_id": assignmentId,
 		"student_code":  studentCode,
 	})
 	if err != nil {
 		return errors.New("failed to retrieve progress list")
 	}
 
-	fmt.Printf("\nAssessment %d Progress List for Student %s:", assessmentId, studentCode)
+	fmt.Printf("\nAssignment %d Progress List for Student %s:", assignmentId, studentCode)
 	menu.printProgressTable(progressList)
 	return nil
 }
 
 func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
-	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID: ",
-		FieldNameText: "Assessment ID",
+	assignmentId := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter Assignment ID: ",
+		FieldNameText: "Assignment ID",
 	}).(uint)
 
 	statusStr := core.ExecuteUserInputStep(core.StringInputStep{
@@ -129,26 +129,26 @@ func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 	submitted := statusStr == "true"
 
 	progressList, err := menu.wrapper.ProgressController.List(map[string]interface{}{
-		"assessment_id": assessmentId,
+		"assignment_id": assignmentId,
 		"is_submitted":  submitted,
 	})
 	if err != nil {
 		return errors.New("failed to retrieve progress list")
 	}
 
-	fmt.Printf("\nAssessment %d Progress List with Submission Status %v:", assessmentId, submitted)
+	fmt.Printf("\nAssignment %d Progress List with Submission Status %v:", assignmentId, submitted)
 	menu.printProgressTable(progressList)
 	return nil
 }
 
-func (menu *ProgressMenuStateHandler) GetAssessmentSubmitCount() error {
-	assessmentId := core.ExecuteUserInputStep(core.UintInputStep{
-		PromptText:    "Enter Assessment ID: ",
-		FieldNameText: "Assessment ID",
+func (menu *ProgressMenuStateHandler) GetAssignmentSubmitCount() error {
+	assignmentId := core.ExecuteUserInputStep(core.UintInputStep{
+		PromptText:    "Enter Assignment ID: ",
+		FieldNameText: "Assignment ID",
 	}).(uint)
 
 	progressList, err := menu.wrapper.ProgressController.List(map[string]interface{}{
-		"assessment_id": assessmentId,
+		"assignment_id": assignmentId,
 	})
 	if err != nil {
 		return errors.New("failed to retrieve progress list")
@@ -159,7 +159,7 @@ func (menu *ProgressMenuStateHandler) GetAssessmentSubmitCount() error {
 		statusCount[progress.IsSubmitted]++
 	}
 
-	fmt.Printf("\nAssessment %d Submission Count:", assessmentId)
+	fmt.Printf("\nAssignment %d Submission Count:", assignmentId)
 	for submitted, count := range statusCount {
 		fmt.Printf("\nSubmitted: %v - Count: %d", submitted, count)
 	}

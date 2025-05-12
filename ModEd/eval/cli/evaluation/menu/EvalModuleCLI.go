@@ -15,7 +15,7 @@ import (
 func RunEvalModuleCLI(db *gorm.DB,
 	evaluationController *evalController.EvaluationController,
 	progressController *evalController.ProgressController,
-	assessmentController *evalController.AssessmentController,
+	assessmentController *evalController.AssignmentController,
 ) {
 	Manager := cli.NewCLIMenuManager()
 	wrapper := evalController.NewEvalModuleWrapper(db)

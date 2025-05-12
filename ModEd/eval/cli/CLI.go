@@ -26,11 +26,11 @@ type EvaluationCommand struct {
 	db                   *gorm.DB
 	evaluationController *controller.EvaluationController
 	progressController   *controller.ProgressController
-	assessmentController *controller.AssessmentController
+	assignmentController *controller.AssignmentController
 }
 
 func (e *EvaluationCommand) Execute() error {
-	evaluation.RunEvalModuleCLI(e.db, e.evaluationController, e.progressController, e.assessmentController)
+	evaluation.RunEvalModuleCLI(e.db, e.evaluationController, e.progressController, e.assignmentController)
 	return nil
 }
 
@@ -79,10 +79,10 @@ func main() {
 
 	evaluationController := controller.NewEvaluationController(db)
 	progressController := controller.NewProgressController(db)
-	assessmentController := controller.NewAssessmentController(db)
+	assignmentController := controller.NewAssignmentController(db)
 
 	CommandExecutor := NewCommandExecutor()
-	CommandExecutor.RegisterCommand("1", &EvaluationCommand{db, evaluationController, progressController, assessmentController})
+	CommandExecutor.RegisterCommand("1", &EvaluationCommand{db, evaluationController, progressController, assignmentController})
 	CommandExecutor.RegisterCommand("resetdb", &ResetDBCommand{})
 
 	for {

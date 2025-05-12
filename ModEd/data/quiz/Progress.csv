@@ -1,4 +1,4 @@
-student_code, Assessment_id, submitted, total_submit
+student_code, Assignment_id, submitted, total_submit
 "65070503445", 1, true, 0
 "65070503466", 1, false, 0
 "65070503469", 1, true, 0
