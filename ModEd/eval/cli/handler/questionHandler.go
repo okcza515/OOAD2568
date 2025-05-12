@@ -16,20 +16,20 @@ import (
 )
 
 type QuestionMenuStateHandler struct {
-	Manager                    *cli.CLIMenuStateManager
-	wrapper                    *controller.ExamModuleWrapper
-	EvalModuleMenuStateHandler cli.MenuState
-	handler                    *handler.HandlerContext
-	backhandler                *handler.ChangeMenuHandlerStrategy
+	Manager                        *cli.CLIMenuStateManager
+	wrapper                        *controller.ExamModuleWrapper
+	QuestionModuleMenuStateHandler cli.MenuState
+	handler                        *handler.HandlerContext
+	backhandler                    *handler.ChangeMenuHandlerStrategy
 }
 
-func NewQuestionMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, backhandler *handler.ChangeMenuHandlerStrategy) *QuestionMenuStateHandler {
+func NewQuestionMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, questionModuleMenuStateHandler cli.MenuState) *QuestionMenuStateHandler {
 	return &QuestionMenuStateHandler{
-		Manager:                    manager,
-		wrapper:                    wrapper,
-		EvalModuleMenuStateHandler: nil,
-		handler:                    handler.NewHandlerContext(),
-		backhandler:                backhandler,
+		Manager:                        manager,
+		wrapper:                        wrapper,
+		QuestionModuleMenuStateHandler: questionModuleMenuStateHandler,
+		handler:                        handler.NewHandlerContext(),
+		backhandler:                    handler.NewChangeMenuHandlerStrategy(manager, questionModuleMenuStateHandler),
 	}
 }
 
@@ -39,8 +39,6 @@ func (menu *QuestionMenuStateHandler) Render() {
 	menu.handler.AddHandler("2", "Delete a question.", handler.FuncStrategy{Action: menu.DeleteQuestion})
 	menu.handler.AddHandler("3", "Uadete questions.", handler.FuncStrategy{Action: menu.UpdateQuestion})
 	menu.handler.AddHandler("4", "Show correct answer By ID.", handler.FuncStrategy{Action: menu.ShowCorrectAnswerByQyestionID})
-	// menu.handler.AddHandler("4", "Update question details.", handler.FuncStrategy{Action: menu.UpdateQuestion})
-	// menu.handler.AddHandler("5", "Change question status.", handler.FuncStrategy{Action: menu.ChangeQuestionStatus})
 	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
 	menu.handler.ShowMenu()
 }
