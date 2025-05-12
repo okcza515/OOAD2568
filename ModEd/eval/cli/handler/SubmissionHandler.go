@@ -1,75 +1,86 @@
-// MEP-1007
 package handler
+
+// MEP-1007
 
 import (
 	"ModEd/eval/controller"
+	"ModEd/core/handler"
 	"ModEd/eval/model"
+	"ModEd/core/cli"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
-type SubmissionHandler struct {
-	db *gorm.DB
+type SubmissionMenuStateHandler struct {
+	Manager                          *cli.CLIMenuStateManager
+	wrapper                          *controller.ExamModuleWrapper
+	SubmissionModuleMenuStateHandler cli.MenuState
+	handler                          *handler.HandlerContext
+	backhandler                      *handler.ChangeMenuHandlerStrategy
 }
 
-func NewSubmissionHandler(db *gorm.DB) SubmissionHandler {
-	return SubmissionHandler{db: db}
+func NewSubmissionMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, submissionModuleMenuStateHandler cli.MenuState) *SubmissionMenuStateHandler {
+	return &SubmissionMenuStateHandler{
+		Manager:                          manager,
+		wrapper:                          wrapper,
+		SubmissionModuleMenuStateHandler: submissionModuleMenuStateHandler,
+		handler:                          handler.NewHandlerContext(),
+		backhandler:                      handler.NewChangeMenuHandlerStrategy(manager, submissionModuleMenuStateHandler),
+	}
 }
 
-type Back struct{}
-
-func (b Back) Execute() {
-	return
+func (menu *SubmissionMenuStateHandler) Render() {
+	menu.handler.SetMenuTitle("\nSubmission management menu:")
+	menu.handler.AddHandler("1", "Submit Exam", handler.FuncStrategy{Action: menu.SubmitExam})
+	menu.handler.AddHandler("2", "View Score", handler.FuncStrategy{Action: menu.ViewScore})
+	menu.handler.AddHandler("3", "List Submission", handler.FuncStrategy{Action: menu.ListSubmission})
+	menu.handler.AddHandler("4", "Update Submission", handler.FuncStrategy{Action: menu.UpdateSubmission})
+	menu.handler.AddHandler("5", "Delete Submission", handler.FuncStrategy{Action: menu.DeleteSubmission})
+	menu.handler.AddBackHandler(menu.backhandler)
+	menu.handler.ShowMenu()
 }
 
-type UnknownCommand struct{}
-
-func (u UnknownCommand) Execute() {
-	fmt.Println("Unknown command, please try again.")
+func (menu *SubmissionMenuStateHandler) HandleUserInput(input string) error {
+	return menu.handler.HandleInput(input)
 }
 
-func (s SubmissionHandler) Execute() {
-	menu := NewMenuHandler("Submission Options", true)
-	menu.Add("Submit Exam", SubmitExam{db: s.db})
-	menu.Add("View Score", ViewScore{db: s.db})
-	menu.Add("List Exam Submissions", ListSubmission{db: s.db})
-	menu.Add("Update Submission Score", UpdateSubmission{db: s.db})
-	menu.Add("Delete Submission", DeleteSubmission{db: s.db})
+// func (menu *QuizMenuStateHandler) getQuizTableHeader() {
+// 	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "ID", "Title", "Status", "Start Date", "End Date", "Attempts")
+// 	fmt.Printf("\n%-5s %-20s %-15s %-15s %-10s %-10s", "---", "-----", "------", "----------", "--------", "--------")
+// }
 
-	menu.SetBackHandler(Back{})
-	menu.SetDefaultHandler(UnknownCommand{})
-	menu.Execute()
-}
+// func (menu *QuizMenuStateHandler) printQuizTable(quizzes []*model.Quiz) {
+// 	if len(quizzes) == 0 {
+// 		fmt.Println("\nNo quizzes found.")
+// 		return
+// 	}
 
-type SubmitExam struct {
-	db *gorm.DB
-}
+// 	menu.getQuizTableHeader()
+// 	for _, quiz := range quizzes {
+// 		fmt.Printf("\n%-5d %-20s %-15s %-15s %-10s %-10d",
+// 			quiz.ID,
+// 			quiz.Title,
+// 			quiz.Status,
+// 			quiz.StartDate.Format("2006-01-02"),
+// 			quiz.EndDate.Format("2006-01-02"),
+// 			quiz.Attempts)
+// 	}
+// 	fmt.Println()
+// }
 
-func (s SubmitExam) Execute() {
-	ExamCtrl := controller.NewExamController(s.db)
-	ExamSectionCtrl := controller.NewExamSectionController(s.db)
-	QuestionCtrl := controller.NewQuestionController(s.db)
-	MCAnsCtrl := controller.NewMultipleChoiceAnswerController(s.db)
-
-	SubmissionCtrl := controller.NewSubmissionController(s.db)
-	MCAnsSubCtrl := controller.NewMultipleChoiceAnswerSubmissionController(s.db)
-	ShortAnsSubCtrl := controller.NewShortAnswerSubmissionController(s.db)
-	TFAnsSubCtrl := controller.NewTrueFalseAnswerSubmissionController(s.db)
-
+func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	var studentID uint
 	fmt.Print("Enter Student ID: ")
 	fmt.Scanln(&studentID)
 
-	exams, err := ExamCtrl.ListActiveExamsByStudentID(studentID)
+	exams, err := menu.wrapper.ExamController.ListActiveExamsByStudentID(studentID)
 	if err != nil {
 		fmt.Printf("Error: Exam with Student ID: %d not found: %v\n", studentID, err)
-		return
+		return err
 	}
 
 	if len(exams) == 0 {
 		fmt.Println("No exam found for submission.")
-		return
+		return err
 	}
 
 	fmt.Printf("\n===== Exam for Submission (Student ID: %d) =====\n", studentID)
@@ -92,19 +103,19 @@ func (s SubmitExam) Execute() {
 		ExamID:    exams[examNo-1].ID,
 		Score:     0,
 	}
-	err = SubmissionCtrl.Insert(data)
+	err = menu.wrapper.SubmissionController.Insert(data)
 	if err != nil {
-		return
+		return err
 	}
 
-	submission, err := SubmissionCtrl.RetrieveByCondition(map[string]interface{}{"student_id": studentID, "exam_id": exams[examNo-1].ID})
+	submission, err := menu.wrapper.SubmissionController.RetrieveByCondition(map[string]interface{}{"student_id": studentID, "exam_id": exams[examNo-1].ID})
 	if err != nil {
-		return
+		return err
 	}
 
-	sections, err := ExamSectionCtrl.List(map[string]interface{}{"exam_id": exams[examNo-1].ID})
+	sections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID})
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, section := range sections {
@@ -113,9 +124,9 @@ func (s SubmitExam) Execute() {
 		fmt.Printf("Number of Question: %d / Score: %f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------")
 
-		questions, err := QuestionCtrl.List(map[string]interface{}{"section_id": section.ID})
+		questions, err := menu.wrapper.QuestionController.List(map[string]interface{}{"section_id": section.ID})
 		if err != nil {
-			return
+			return err
 		}
 
 		count = 0
@@ -124,9 +135,9 @@ func (s SubmitExam) Execute() {
 			fmt.Printf("Q%d: %s\n", count, question.ActualQuestion)
 
 			if question.QuestionType == "MultipleChoiceQuestion" {
-				mcAnswers, err := MCAnsCtrl.List(map[string]interface{}{"question_id": question.ID})
+				mcAnswers, err := menu.wrapper.MultipleChoiceAnswerController.List(map[string]interface{}{"question_id": question.ID})
 				if err != nil {
-					return
+					return err
 				}
 
 				var choiceCount = 0
@@ -144,7 +155,7 @@ func (s SubmitExam) Execute() {
 					SubmissionID: submission.ID,
 					ChoiceID:     mcAnswers[answer-1].ID,
 				}
-				err = MCAnsSubCtrl.Insert(data)
+				err = menu.wrapper.MultipleChoiceAnswerSubmissionController.Insert(data)
 
 			} else if question.QuestionType == "ShortAnswerQuestion" {
 				var answer string
@@ -156,7 +167,7 @@ func (s SubmitExam) Execute() {
 					SubmissionID:  submission.ID,
 					StudentAnswer: answer,
 				}
-				err = ShortAnsSubCtrl.Insert(data)
+				err = menu.wrapper.ShortAnswerSubmissionController.Insert(data)
 
 			} else if question.QuestionType == "TrueFalseQuestion" {
 				var answer bool
@@ -168,75 +179,63 @@ func (s SubmitExam) Execute() {
 					SubmissionID:  submission.ID,
 					StudentAnswer: answer,
 				}
-				err = TFAnsSubCtrl.Insert(data)
+				err = menu.wrapper.TrueFalseAnswerSubmissionController.Insert(data)
 			}
 
 			fmt.Println("--------------------")
 		}
 	}
 
-	_, err = SubmissionCtrl.GradingSubmission(submission.ID)
+	_, err = menu.wrapper.SubmissionController.GradingSubmission(submission.ID)
 	if err != nil {
-		return
+		return err
 	}
 
 	fmt.Println("Exam Submitted")
-	return
+	return nil
 }
 
-type ViewScore struct {
-	db *gorm.DB
-}
-
-func (v ViewScore) Execute() {
-	ExamCtrl := controller.NewExamController(v.db)
-	SubmissionCtrl := controller.NewSubmissionController(v.db)
-
+func (menu *SubmissionMenuStateHandler) ViewScore() error {
 	var studentID uint
 	fmt.Print("Enter Student ID: ")
 	fmt.Scanln(&studentID)
 
-	submissions, err := SubmissionCtrl.List(map[string]interface{}{"student_id": studentID}, "Examination")
+	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"student_id": studentID})
 	if err != nil {
 		fmt.Printf("Error: Exam Submission with Student ID: %d not found: %v\n", studentID, err)
-		return
+		return err
 	}
 
 	fmt.Printf("\n===== Exam Submission (Student ID: %d) =====\n", studentID)
 	for _, submission := range submissions {
-		perfectScore, err := ExamCtrl.GetPerfectScoreByExamID(submission.ExamID)
+		perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(submission.ExamID)
 		if err != nil {
-			return
+			return err
 		}
 
-		fmt.Printf("Exam: %s\n", submission.Examination.ExamName)
+		exam, err := menu.wrapper.ExamController.RetrieveByID(submission.ExamID)
+
+		fmt.Printf("Exam: %s\n", exam.ExamName)
 		fmt.Printf("Score: %f/%f\n", submission.Score, perfectScore)
 		fmt.Println("--------------------")
 	}
 
-	return
+	return nil
 }
 
-type ListSubmission struct {
-	db *gorm.DB
-}
-
-func (l ListSubmission) Execute() {
-	ExamCtrl := controller.NewExamController(l.db)
-	SubmissionCtrl := controller.NewSubmissionController(l.db)
-
+func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scanln(&instructorID)
 
-	exams, err := ExamCtrl.List(map[string]interface{}{"instructor_id": instructorID})
+	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
-		return
+		return err
 	}
 
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID %d not found\n", instructorID)
-		return
+		return err
 	}
 
 	fmt.Printf("\n===== Exams List (Instructor ID: %d) =====\n", instructorID)
@@ -254,17 +253,17 @@ func (l ListSubmission) Execute() {
 	fmt.Print("Enter Exam No. for Submissions List: ")
 	fmt.Scanln(&examNo)
 
-	submissions, err := SubmissionCtrl.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
+	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
-		return
+		return err
 	}
-	
-	perfectScore, err := ExamCtrl.GetPerfectScoreByExamID(exams[examNo-1].ID)
+
+	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
-		return
+		return err
 	}
-	
+
 	fmt.Printf("\n===== Submission List (Exam: %s) =====\n", exams[examNo-1].ExamName)
 
 	count = 0
@@ -276,24 +275,17 @@ func (l ListSubmission) Execute() {
 		fmt.Println("--------------------")
 	}
 
-	return
+	return nil
 }
 
-type UpdateSubmission struct {
-	db *gorm.DB
-}
-
-func (l UpdateSubmission) Execute() {
-	ExamCtrl := controller.NewExamController(l.db)
-	SubmissionCtrl := controller.NewSubmissionController(l.db)
-
+func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scanln(&instructorID)
 
-	exams, err := ExamCtrl.List(map[string]interface{}{"instructor_id": instructorID})
+	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Printf("\n===== Exams List (Instructor ID: %d) =====\n", instructorID)
@@ -309,22 +301,22 @@ func (l UpdateSubmission) Execute() {
 
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
-		return
+		return nil
 	}
 
 	var examNo uint
 	fmt.Print("Enter Exam No. for Submissions List: ")
 	fmt.Scanln(&examNo)
 
-	submissions, err := SubmissionCtrl.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
+	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
-		return
+		return nil
 	}
 
-	perfectScore, err := ExamCtrl.GetPerfectScoreByExamID(exams[examNo-1].ID)
+	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Printf("\n===== Submission List (Exam: %s) =====\n", exams[examNo-1].ExamName)
@@ -347,30 +339,23 @@ func (l UpdateSubmission) Execute() {
 	fmt.Scanln(&newScore)
 
 	submissions[submissionNo-1].Score = newScore
-	err = SubmissionCtrl.UpdateByID(submissions[submissionNo-1])
+	err = menu.wrapper.SubmissionController.UpdateByID(submissions[submissionNo-1])
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Println("Update Successful")
-	return
+	return nil
 }
 
-type DeleteSubmission struct {
-	db *gorm.DB
-}
-
-func (l DeleteSubmission) Execute() {
-	ExamCtrl := controller.NewExamController(l.db)
-	SubmissionCtrl := controller.NewSubmissionController(l.db)
-
+func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 	var instructorID uint
 	fmt.Print("Enter Instructor ID: ")
 	fmt.Scanln(&instructorID)
 
-	exams, err := ExamCtrl.List(map[string]interface{}{"instructor_id": instructorID})
+	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Printf("\n===== Exams List (Instructor ID: %d) =====\n", instructorID)
@@ -386,22 +371,22 @@ func (l DeleteSubmission) Execute() {
 
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
-		return
+		return nil
 	}
 
 	var examNo uint
 	fmt.Print("Enter Exam No. for Submissions List: ")
 	fmt.Scanln(&examNo)
 
-	submissions, err := SubmissionCtrl.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
+	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
-		return
+		return nil
 	}
 
-	perfectScore, err := ExamCtrl.GetPerfectScoreByExamID(exams[examNo-1].ID)
+	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Printf("\n===== Submission List (Exam: %s) =====\n", exams[examNo-1].ExamName)
@@ -419,11 +404,11 @@ func (l DeleteSubmission) Execute() {
 	fmt.Print("Enter Submission No. for Delete: ")
 	fmt.Scanln(&submissionNo)
 
-	err = SubmissionCtrl.DeleteByID(submissions[submissionNo-1].ID)
+	err = menu.wrapper.SubmissionController.DeleteByID(submissions[submissionNo-1].ID)
 	if err != nil {
-		return
+		return nil
 	}
 
 	fmt.Println("Delete Successful")
-	return
+	return nil
 }

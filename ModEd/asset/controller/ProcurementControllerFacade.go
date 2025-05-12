@@ -19,8 +19,6 @@ type ProcurementControllerFacade struct {
 	TOR                         TORController
 	Acceptance                  AcceptanceApprovalController
 	Instrument                  AcceptedInstrumentController
-	// BudgetAllocation            BudgetAllocationController
-	//ProcurementApproval ProcurementApprovalController
 }
 
 func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
@@ -41,9 +39,7 @@ func CreateProcurementControllerFacade() (*ProcurementControllerFacade, error) {
 	facade.TOR = TORController{db: db}
 	facade.Acceptance = AcceptanceApprovalController{db: db}
 	facade.Instrument = *NewAcceptedInstrumentController(db)
-	// facade.BudgetAllocation = BudgetAllocationController{db: db}
 
-	// fmt.Println("I'm In Facade yippie!")
 	err = facade.migration.migrateToDB()
 	if err != nil {
 		return nil, errors.New("err: failed to migrate schema")

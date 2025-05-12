@@ -145,47 +145,57 @@ func (handler *InternshipResultEvaluationHandler) listAllResultEvaluations() err
 func (handler *InternshipResultEvaluationHandler) EvaluateStudentInternship() error {
 	studentCode := utils.GetUserInput("Enter Student Code: ")
 	if studentCode == "" {
-			fmt.Println("Error: Student Code cannot be empty.")
-			return nil
+		fmt.Println("Error: Student Code cannot be empty.")
+		return nil
+	}
+
+	if handler.InternshipInformation == nil || handler.InternshipCriteria == nil || handler.InternshipResultEvaluation == nil {
+		fmt.Println("Error: Missing required controllers for evaluation.")
+		return fmt.Errorf("missing required controllers")
+	}
+
+	criteriaList, err := handler.InternshipCriteria.ListAllByStudentCode(studentCode)
+	if err != nil {
+		fmt.Printf("Failed to retrieve criteria for student %s: %v\n", studentCode, err)
+		return err
+	}
+
+	if len(criteriaList) == 0 {
+		fmt.Printf("No criteria found for student %s.\n", studentCode)
+		return nil
+	}
+
+	fmt.Println("Criteria for the student:")
+	for _, criteria := range criteriaList {
+		fmt.Printf("Criteria ID: %d, Title: %s\n", criteria.ID, criteria.Title)
 	}
 
 	criteriaScores := map[uint]uint{}
-	fmt.Println("Enter Criteria Scores (Enter 0 for Criteria ID to finish):")
-	for {
-			criteriaID := utils.GetUserInputUint("Enter Criteria ID: ")
-			if criteriaID == 0 {
-					break
-			}
-			score := utils.GetUserInputUint("Enter Score for Criteria (1-5): ")
-			if score < 1 || score > 5 {
-					fmt.Println("Invalid score. Please enter a value between 1 and 5.")
-					continue
-			}
-			criteriaScores[criteriaID] = score
+	for _, criteria := range criteriaList {
+		score := utils.GetUserInputUint(fmt.Sprintf("Enter Score for Criteria ID %d (1-5): ", criteria.ID))
+		if score < 1 || score > 5 {
+			fmt.Println("Invalid score. Please enter a value between 1 and 5.")
+			continue
+		}
+		criteriaScores[criteria.ID] = score
 	}
 
 	comment := utils.GetUserInput("Enter Evaluation Comment: ")
 	if comment == "" {
-			fmt.Println("Error: Comment cannot be empty.")
-			return nil
-	}
-
-	// Ensure the facade is properly initialized
-	if handler.InternshipInformation == nil || handler.InternshipCriteria == nil || handler.InternshipResultEvaluation == nil {
-			fmt.Println("Error: Missing required controllers for evaluation.")
-			return fmt.Errorf("missing required controllers")
+		fmt.Println("Error: Comment cannot be empty.")
+		return nil
 	}
 
 	facade := controller.NewInternshipEvaluationFacade(
-			*handler.InternshipInformation,
-			*handler.InternshipCriteria,
-			*handler.InternshipResultEvaluation,
+		*handler.InternshipInformation,
+		*handler.InternshipCriteria,
+		*handler.InternshipResultEvaluation,
 	)
 
-	err := facade.EvaluateInternship(studentCode, criteriaScores, comment)
+	err = facade.EvaluateInternship(studentCode, criteriaScores, comment)
 	if err != nil {
-			fmt.Printf("Evaluation failed: %v\n", err)
-			return err
+		fmt.Printf("Evaluation failed: %v\n", err)
+		return err
 	}
 
 	fmt.Println("Evaluation completed successfully!")
