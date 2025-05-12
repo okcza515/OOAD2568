@@ -79,7 +79,7 @@ func NewPermanentScheduleState(db *gorm.DB, manager *cli.CLIMenuStateManager, sp
 	// listHandler := spaceManagementHandler.NewListPermanentSchedulesHandler(controllerInstance)
 	// getHandler := spaceManagementHandler.NewGetScheduleDetailsHandler(controllerInstance)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.PermanentSchedule](controllerInstance)
-	updateHandler := spaceManagementHandler.NewUpdateScheduleHandler(controllerInstance)
+	updateHandler := spaceManagementHandler.NewUpdatePermanentScheduleHandler(controllerInstance)
 	deleteHandler := spaceManagementHandler.NewDeleteScheduleHandler(controllerInstance)
 	//seedHandler := spaceManagementHandler.NewSeedAllSchedulesHandler(controllerInstance)
 	deleteAllHandler := spaceManagementHandler.NewDeleteAllSchedulesHandler(controllerInstance)

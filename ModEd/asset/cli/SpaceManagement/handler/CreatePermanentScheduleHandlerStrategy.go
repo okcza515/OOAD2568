@@ -27,12 +27,9 @@ func NewCreatePermanentScheduleHandler(controller interface {
 }
 
 func (handler *CreatePermanentScheduleHandler) Execute() error {
-	fmt.Println("===== Create New Permanent Schedule =====")
+	fmt.Println("------- Create New Permanent Schedule -------")
 
-	var schedule model.PermanentSchedule
-	schedule.TimeTable = model.TimeTable{}
-
-	fmt.Print("Enter Room ID: ")
+	fmt.Println("Please enter Room ID:")
 	roomIDStr := util.GetCommandInput()
 	roomID, err := strconv.ParseUint(roomIDStr, 10, 32)
 	if err != nil {
@@ -40,11 +37,10 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.TimeTable.RoomID = uint(roomID)
 
-	fmt.Print("Enter start date (YYYY-MM-DD): ")
+	fmt.Println("Please enter start date (YYYY-MM-DD):")
 	startDateStr := util.GetCommandInput()
-	fmt.Print("Enter start time (HH:MM): ")
+	fmt.Println("Please enter start time (HH:MM):")
 	startTimeStr := util.GetCommandInput()
 
 	startDateTime := startDateStr + " " + startTimeStr
@@ -54,11 +50,10 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.TimeTable.StartDate = startDate
 
-	fmt.Print("Enter end date (YYYY-MM-DD): ")
+	fmt.Println("Please enter end date (YYYY-MM-DD):")
 	endDateStr := util.GetCommandInput()
-	fmt.Print("Enter end time (HH:MM): ")
+	fmt.Println("Please enter end time (HH:MM):")
 	endTimeStr := util.GetCommandInput()
 
 	endDateTime := endDateStr + " " + endTimeStr
@@ -68,9 +63,8 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.TimeTable.EndDate = endDate
 
-	fmt.Print("Enter recurrence end date (YYYY-MM-DD): ")
+	fmt.Println("Please enter recurrence end date (YYYY-MM-DD):")
 	recurrenceEndDateStr := util.GetCommandInput()
 	recurrenceEndDate, err := time.Parse("2006-01-02", recurrenceEndDateStr)
 	if err != nil {
@@ -79,7 +73,7 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		return err
 	}
 
-	fmt.Print("Enter Course ID: ")
+	fmt.Println("Please enter Course ID:")
 	courseIDStr := util.GetCommandInput()
 	courseID, err := strconv.ParseUint(courseIDStr, 10, 32)
 	if err != nil {
@@ -87,9 +81,8 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.CourseId = uint(courseID)
 
-	fmt.Print("Enter Class ID: ")
+	fmt.Println("Please enter Class ID:")
 	classIDStr := util.GetCommandInput()
 	classID, err := strconv.ParseUint(classIDStr, 10, 32)
 	if err != nil {
@@ -97,9 +90,8 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.ClassId = uint(classID)
 
-	fmt.Print("Enter Faculty ID: ")
+	fmt.Println("Please enter Faculty ID:")
 	facultyIDStr := util.GetCommandInput()
 	facultyID, err := strconv.ParseUint(facultyIDStr, 10, 32)
 	if err != nil {
@@ -107,9 +99,8 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.FacultyID = uint(facultyID)
 
-	fmt.Print("Enter Department ID: ")
+	fmt.Println("Please enter Department ID:")
 	deptIDStr := util.GetCommandInput()
 	deptID, err := strconv.ParseUint(deptIDStr, 10, 32)
 	if err != nil {
@@ -117,9 +108,8 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.DepartmentID = uint(deptID)
 
-	fmt.Print("Enter Program Type ID: ")
+	fmt.Println("Please enter Program Type ID (0 for Regular, 1 for International):")
 	progTypeIDStr := util.GetCommandInput()
 	progTypeID, err := strconv.ParseUint(progTypeIDStr, 10, 32)
 	if err != nil {
@@ -127,15 +117,50 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		util.PressEnterToContinue()
 		return err
 	}
-	schedule.ProgramtypeID = uint(progTypeID)
+
+	schedule := &model.PermanentSchedule{
+		TimeTable: model.TimeTable{
+			RoomID:    uint(roomID),
+			StartDate: startDate,
+			EndDate:   endDate,
+		},
+		CourseId:      uint(courseID),
+		ClassId:       uint(classID),
+		FacultyID:     uint(facultyID),
+		DepartmentID:  uint(deptID),
+		ProgramtypeID: uint(progTypeID),
+	}
 
 	if err := schedule.Validate(); err != nil {
 		fmt.Println("Validation error:", err)
 		util.PressEnterToContinue()
+		return err
 	}
 
-	for startDate.Before(recurrenceEndDate) || startDate.Equal(recurrenceEndDate) {
-		isAvailable, err := handler.controller.CheckRoomAvailability(schedule.TimeTable.RoomID, startDate, endDate)
+	fmt.Println("-------- Permanent Schedule Details --------")
+	fmt.Println("Room ID:", schedule.TimeTable.RoomID)
+	fmt.Println("Start Date:", schedule.TimeTable.StartDate.Format("2006-01-02 15:04"))
+	fmt.Println("End Date:", schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
+	fmt.Println("Recurrence End Date:", recurrenceEndDateStr)
+	fmt.Println("Course ID:", schedule.CourseId)
+	fmt.Println("Class ID:", schedule.ClassId)
+	fmt.Println("Faculty ID:", schedule.FacultyID)
+	fmt.Println("Department ID:", schedule.DepartmentID)
+	fmt.Println("Program Type ID:", schedule.ProgramtypeID)
+
+	fmt.Println("\nDo you want to create this Permanent Schedule? (y/n)")
+	confirmStr := util.GetCommandInput()
+	if confirmStr != "y" {
+		fmt.Println("Permanent Schedule creation cancelled.")
+		util.PressEnterToContinue()
+		return nil
+	}
+
+	currentStartDate := startDate
+	currentEndDate := endDate
+	for currentStartDate.Before(recurrenceEndDate) || currentStartDate.Equal(recurrenceEndDate) {
+
+		isAvailable, err := handler.controller.CheckRoomAvailability(schedule.TimeTable.RoomID, currentStartDate, currentEndDate)
 		if err != nil {
 			fmt.Println("Error checking room availability:", err)
 			util.PressEnterToContinue()
@@ -143,26 +168,26 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 		}
 
 		if !isAvailable {
-			fmt.Printf("Room is not available for the time period starting on %s.\n", startDate.Format("2006-01-02 15:04"))
+			fmt.Printf("Room is not available for the time period starting on %s.\n", currentStartDate.Format("2006-01-02 15:04"))
 			util.PressEnterToContinue()
 			return fmt.Errorf("room not available")
 		}
 
-		schedule.TimeTable.StartDate = startDate
-		schedule.TimeTable.EndDate = endDate
+		schedule.TimeTable.StartDate = currentStartDate
+		schedule.TimeTable.EndDate = currentEndDate
 
-		err = handler.controller.Insert(schedule)
+		err = handler.controller.Insert(*schedule)
 		if err != nil {
 			fmt.Println("Failed to create schedule:", err)
 			util.PressEnterToContinue()
 			return err
 		}
 
-		startDate = startDate.AddDate(0, 0, 7)
-		endDate = endDate.AddDate(0, 0, 7)
+		currentStartDate = currentStartDate.AddDate(0, 0, 7)
+		currentEndDate = currentEndDate.AddDate(0, 0, 7)
 	}
 
-	fmt.Println("Recurring schedules created successfully!")
+	fmt.Println("Permanent Schedule created successfully!")
 	util.PressEnterToContinue()
 	return nil
 }

@@ -3,33 +3,35 @@
 package handler
 
 import (
-	"ModEd/asset/model"
+	model "ModEd/asset/model"
 	"ModEd/asset/util"
 	"fmt"
 	"strconv"
 	"time"
 )
 
-type UpdateScheduleHandler struct {
+type UpdatePermanentScheduleHandler struct {
 	controller interface {
 		RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 		UpdateByID(schedule model.PermanentSchedule) error
+		CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
 	}
 }
 
-func NewUpdateScheduleHandler(controller interface {
+func NewUpdatePermanentScheduleHandler(controller interface {
 	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 	UpdateByID(schedule model.PermanentSchedule) error
-}) *UpdateScheduleHandler {
-	return &UpdateScheduleHandler{
+	CheckRoomAvailability(roomID uint, startDate, endDate time.Time) (bool, error)
+}) *UpdatePermanentScheduleHandler {
+	return &UpdatePermanentScheduleHandler{
 		controller: controller,
 	}
 }
 
-func (h *UpdateScheduleHandler) Execute() error {
-	fmt.Println("===== Update Schedule =====")
+func (h *UpdatePermanentScheduleHandler) Execute() error {
+	fmt.Println("===== Update Permanent Schedule =====")
 
-	fmt.Print("Enter Schedule ID to update: ")
+	fmt.Print("Enter Permanent Schedule ID to update: ")
 	idStr := util.GetCommandInput()
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -70,41 +72,59 @@ func (h *UpdateScheduleHandler) Execute() error {
 	}
 
 	fmt.Printf("Current start date and time: %s\n", schedule.TimeTable.StartDate.Format("2006-01-02 15:04"))
-
-	fmt.Print("New start date (YYYY-MM-DD): ")
+	fmt.Print("New start date (YYYY-MM-DD, leave blank to skip): ")
 	startDateStr := util.GetCommandInput()
+	var newStartDate time.Time
 
 	if startDateStr != "" {
 		fmt.Print("New start time (HH:MM): ")
 		startTimeStr := util.GetCommandInput()
 
 		startDateTime := startDateStr + " " + startTimeStr
-		startDate, err := time.Parse("2006-01-02 15:04", startDateTime)
+		newStartDate, err = time.Parse("2006-01-02 15:04", startDateTime)
 		if err != nil {
 			fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
 			util.PressEnterToContinue()
 			return err
 		}
-		schedule.TimeTable.StartDate = startDate
+		schedule.TimeTable.StartDate = newStartDate
 	}
 
 	fmt.Printf("Current end date and time: %s\n", schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
-
-	fmt.Print("New end date (YYYY-MM-DD): ")
+	fmt.Print("New end date (YYYY-MM-DD, leave blank to skip): ")
 	endDateStr := util.GetCommandInput()
+	var newEndDate time.Time
 
 	if endDateStr != "" {
 		fmt.Print("New end time (HH:MM): ")
 		endTimeStr := util.GetCommandInput()
 
 		endDateTime := endDateStr + " " + endTimeStr
-		endDate, err := time.Parse("2006-01-02 15:04", endDateTime)
+		newEndDate, err = time.Parse("2006-01-02 15:04", endDateTime)
 		if err != nil {
 			fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
 			util.PressEnterToContinue()
 			return err
 		}
-		schedule.TimeTable.EndDate = endDate
+		schedule.TimeTable.EndDate = newEndDate
+	}
+
+	if input != "" || startDateStr != "" || endDateStr != "" {
+		isAvailable, err := h.controller.CheckRoomAvailability(
+			schedule.TimeTable.RoomID,
+			schedule.TimeTable.StartDate,
+			schedule.TimeTable.EndDate,
+		)
+		if err != nil {
+			fmt.Println("Error checking room availability:", err)
+			util.PressEnterToContinue()
+			return err
+		}
+		if !isAvailable {
+			fmt.Println("Room is not available for the specified time period")
+			util.PressEnterToContinue()
+			return fmt.Errorf("room not available")
+		}
 	}
 
 	fmt.Printf("Current Course ID: %d\n", schedule.CourseId)
@@ -158,6 +178,7 @@ func (h *UpdateScheduleHandler) Execute() error {
 		}
 		schedule.DepartmentID = uint(deptID)
 	}
+
 	fmt.Printf("Current Program Type ID: %d\n", schedule.ProgramtypeID)
 	fmt.Print("New Program Type ID: ")
 	input = util.GetCommandInput()
@@ -171,6 +192,12 @@ func (h *UpdateScheduleHandler) Execute() error {
 		schedule.ProgramtypeID = uint(progTypeID)
 	}
 
+	if err := schedule.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		util.PressEnterToContinue()
+		return err
+	}
+
 	err = h.controller.UpdateByID(schedule)
 	if err != nil {
 		fmt.Println("Failed to update schedule:", err)
@@ -178,7 +205,7 @@ func (h *UpdateScheduleHandler) Execute() error {
 		return err
 	}
 
-	fmt.Println("Schedule updated successfully!")
+	fmt.Println("Permanent Schedule updated successfully!")
 	util.PressEnterToContinue()
 	return nil
 }
