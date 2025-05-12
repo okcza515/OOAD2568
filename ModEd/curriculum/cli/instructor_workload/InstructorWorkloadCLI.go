@@ -32,12 +32,12 @@ func RunInstructorWorkloadModuleCLI(
 	curriculumController controller.CurriculumControllerInterface,
 ) {
 	menu := handler.NewMenuHandler("Instructor Workload Menu", true)
-	menu.Add("Load Seed Data", LoadSeedData{db: db})
-	menu.Add("Academic", handler.NewAcademicWorkloadHandler(db))
-	menu.Add("Adminstrative", handler.NewAdminstrativeWorkloadHandler(db))
-	menu.Add("Senior Project", handler.NewSeniorProjectWorkloadHandler(db))
-	menu.Add("Student Advisor", handler.NewStudentAdvisorWorkloadHandler(db))
-	menu.Add("Workload Report", handler.NewWorkloadReportHandler(db))
+	menu.Add(string(handler.MENU_LOAD_SEED_DATA), LoadSeedData{db: db})
+	menu.Add(string(handler.MENU_ACADEMIC), handler.NewAcademicWorkloadHandler(db))
+	menu.Add(string(handler.MENU_ADMINISTRATIVE), handler.NewAdminstrativeWorkloadHandler(db))
+	menu.Add(string(handler.MENU_SENIOR_PROJECT), handler.NewSeniorProjectWorkloadHandler(db))
+	menu.Add(string(handler.MENU_STUDENT_ADVISOR), handler.NewStudentAdvisorWorkloadHandler(db))
+	menu.Add(string(handler.MENU_WORKLOAD_REPORT), handler.NewWorkloadReportHandler(db))
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
 	menu.Execute()
