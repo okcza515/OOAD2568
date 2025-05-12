@@ -8,8 +8,14 @@ import (
 
 type QuotaCriteria struct{}
 
+const (
+	MinGpax = 3.0
+	Enum = 3.5
+)
+
 func (c *QuotaCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
 	data, err := applicant.GetRoundInfo()
+
 	if err != nil {
 		fmt.Println("Error retrieving Round Information:", err)
 		return false
@@ -27,12 +33,12 @@ func (c *QuotaCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
 		return false
 	}
 
-	if applicant.GPAX < 3 {
+	if applicant.GPAX < MinGpax {
 		return false
 	}
 
 	
-	if applicant.EnglishGrade < 3.5 || applicant.MathGrade < 3.5 || applicant.ScienceGrade < 3.5  {
+	if applicant.EnglishGrade < Enum || applicant.MathGrade < Enum || applicant.ScienceGrade < Enum  {
 		return false
 	}
 
