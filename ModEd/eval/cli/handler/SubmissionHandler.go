@@ -52,11 +52,15 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	exams, err := menu.wrapper.ExamController.ListActiveExamsByStudentID(studentID)
 	if err != nil {
 		fmt.Printf("Exam with Student ID: %d not found\n", studentID)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
 	if len(exams) == 0 {
 		fmt.Println("No exam found for submission.")
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -83,18 +87,24 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	err = menu.wrapper.SubmissionController.Insert(data)
 	if err != nil {
 		fmt.Printf("Error While Insert Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
 	submission, err := menu.wrapper.SubmissionController.RetrieveByCondition(map[string]interface{}{"student_id": studentID, "exam_id": exams[examNo-1].ID})
 	if err != nil {
 		fmt.Printf("Error While Retrieve Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
 	sections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID})
 	if err != nil {
 		fmt.Printf("Error While List Sections: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -107,6 +117,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 		questions, err := menu.wrapper.QuestionController.List(map[string]interface{}{"section_id": section.ID})
 		if err != nil {
 			fmt.Printf("Error While List Questions: %v\n", err)
+			assetUtil.PressEnterToContinue()
+			assetUtil.ClearScreen()
 			return err
 		}
 
@@ -119,6 +131,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 				mcAnswers, err := menu.wrapper.MultipleChoiceAnswerController.List(map[string]interface{}{"question_id": question.ID})
 				if err != nil {
 					fmt.Printf("Error While List Choices: %v\n", err)
+					assetUtil.PressEnterToContinue()
+					assetUtil.ClearScreen()
 					return err
 				}
 
@@ -140,6 +154,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 				err = menu.wrapper.MultipleChoiceAnswerSubmissionController.Insert(data)
 				if err != nil {
 					fmt.Printf("Error While Insert Multiple Choice Answer Submission: %v\n", err)
+					assetUtil.PressEnterToContinue()
+					assetUtil.ClearScreen()
 					return err
 				}
 
@@ -156,6 +172,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 				err = menu.wrapper.ShortAnswerSubmissionController.Insert(data)
 				if err != nil {
 					fmt.Printf("Error While Insert Short Answer Submission: %v\n", err)
+					assetUtil.PressEnterToContinue()
+					assetUtil.ClearScreen()
 					return err
 				}
 
@@ -172,6 +190,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 				err = menu.wrapper.TrueFalseAnswerSubmissionController.Insert(data)
 				if err != nil {
 					fmt.Printf("Error While Insert True False Answer Submission: %v\n", err)
+					assetUtil.PressEnterToContinue()
+					assetUtil.ClearScreen()
 					return err
 				}
 			}
@@ -183,6 +203,8 @@ func (menu *SubmissionMenuStateHandler) SubmitExam() error {
 	_, err = menu.wrapper.SubmissionController.GradingSubmission(submission.ID)
 	if err != nil {
 		fmt.Printf("Error While Grading Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -199,7 +221,16 @@ func (menu *SubmissionMenuStateHandler) ViewScore() error {
 
 	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"student_id": studentID})
 	if err != nil {
-		fmt.Printf("Submission with Student ID: %d not found:\n", studentID)
+		fmt.Printf("Error While List Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
+		return err
+	}
+
+	if len(submissions) == 0 {
+		fmt.Printf("Submission with Student ID: %d not found\n", studentID)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -208,12 +239,16 @@ func (menu *SubmissionMenuStateHandler) ViewScore() error {
 		perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(submission.ExamID)
 		if err != nil {
 			fmt.Printf("Error While Get Perfect Score: %v\n", err)
+			assetUtil.PressEnterToContinue()
+			assetUtil.ClearScreen()
 			return err
 		}
 
 		exam, err := menu.wrapper.ExamController.RetrieveByID(submission.ExamID)
 		if err != nil {
 			fmt.Printf("Error While Retrieve Exam: %v\n", err)
+			assetUtil.PressEnterToContinue()
+			assetUtil.ClearScreen()
 			return err
 		}
 
@@ -235,11 +270,15 @@ func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
 		fmt.Printf("Error While List Exams: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID %d not found\n", instructorID)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -261,12 +300,16 @@ func (menu *SubmissionMenuStateHandler) ListSubmission() error {
 	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
 		fmt.Printf("Error While Get Perfect Score: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return err
 	}
 
@@ -294,11 +337,15 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
 		fmt.Printf("Error While Get Perfect Score: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
-	
+
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
@@ -320,12 +367,16 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
 		fmt.Printf("Error While Get Perfect Score: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
@@ -352,6 +403,8 @@ func (menu *SubmissionMenuStateHandler) UpdateSubmission() error {
 	err = menu.wrapper.SubmissionController.UpdateByID(submissions[submissionNo-1])
 	if err != nil {
 		fmt.Printf("Error While Update Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
@@ -369,11 +422,15 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 	exams, err := menu.wrapper.ExamController.List(map[string]interface{}{"instructor_id": instructorID})
 	if err != nil {
 		fmt.Printf("Error While List Exams: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
 	if len(exams) == 0 {
 		fmt.Printf("Exam with Instructor ID: %d not found\n", instructorID)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
@@ -395,12 +452,16 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 	submissions, err := menu.wrapper.SubmissionController.List(map[string]interface{}{"exam_id": exams[examNo-1].ID}, "Student")
 	if len(submissions) == 0 {
 		fmt.Printf("Submission of Exam: %s not found\n", exams[examNo-1].ExamName)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
 	perfectScore, err := menu.wrapper.ExamController.GetPerfectScoreByExamID(exams[examNo-1].ID)
 	if err != nil {
 		fmt.Printf("Error While Get Perfect Score: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
@@ -422,6 +483,8 @@ func (menu *SubmissionMenuStateHandler) DeleteSubmission() error {
 	err = menu.wrapper.SubmissionController.DeleteByID(submissions[submissionNo-1].ID)
 	if err != nil {
 		fmt.Printf("Error While Delete Submission: %v\n", err)
+		assetUtil.PressEnterToContinue()
+		assetUtil.ClearScreen()
 		return nil
 	}
 
