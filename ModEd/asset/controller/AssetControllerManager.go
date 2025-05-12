@@ -41,8 +41,7 @@ func newAssetControllerManager() (*AssetControllerManager, error) {
 	if db == nil {
 		return nil, errors.New("err: db not initialized")
 	}
-
-	//manager.BorrowInstrument = &BorrowInstrumentController{db: db, BaseController: core.NewBaseController[model.BorrowInstrument]("BorrowInstrument", db)}
+	manager.BorrowInstrument = NewBorrowInstrumentController()
 	manager.Category = NewCategoryController()
 	manager.Instrument = NewInstrumentController()
 	manager.InstrumentLog = NewInstrumentLogController()
@@ -77,7 +76,7 @@ func (manager *AssetControllerManager) ResetAndLoadDB() error {
 
 	err = migration.GetInstance().
 		AddSeedData("data/asset/Category.csv", &[]model.Category{}).
-		//AddSeedData("data/asset/BorrowInstrument.csv", &[]model.BorrowInstrument{}).
+		AddSeedData("data/asset/BorrowInstrument.csv", &[]model.BorrowInstrument{}).
 		AddSeedData("data/asset/InstrumentList.csv", &[]model.Instrument{}).
 		//AddSeedData("data/asset/InstrumentLog.csv", &[]model.InstrumentLog{}).
 		AddSeedData("data/asset/SupplyList.csv", &[]model.Supply{}).
