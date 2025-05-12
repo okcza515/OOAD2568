@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 //MEP-1006
+=======
+//MEP-1006 Quiz and Assignment
+>>>>>>> Stashed changes
 
 package main
 
@@ -6,7 +10,7 @@ import (
 	"ModEd/core"
 	"ModEd/core/handler"
 	"ModEd/core/migration"
-	"ModEd/eval/cli/command"
+	"ModEd/eval/cli/evaluation/command"
 	controller "ModEd/eval/controller"
 	"fmt"
 )
