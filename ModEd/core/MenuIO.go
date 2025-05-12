@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -16,6 +17,13 @@ import (
 type MenuIO struct {
 	Reader *bufio.Reader
 	Writer io.Writer
+}
+
+func NewMenuIO() *MenuIO {
+	return &MenuIO{
+		Reader: bufio.NewReader(os.Stdin),
+		Writer: os.Stdout,
+	}
 }
 
 func (io *MenuIO) Println(msg string) {
