@@ -26,7 +26,7 @@ type EvalModuleMenuStateHandler struct {
 	Manager *cli.CLIMenuStateManager
 	wrapper *controller.EvalModuleWrapper
 
-	AssessmentMenuStateHandler *AssessmentMenuStateHandler
+	AssignmentMenuStateHandler *AssignmentMenuStateHandler
 	ProgressMenuStateHandler   *ProgressMenuStateHandler
 	EvaluationMenuStateHandler *EvaluationMenuStateHandler
 	handler                    *handler.HandlerContext
@@ -80,8 +80,8 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 
 	evalModuleHandler.ProgressMenuStateHandler = NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
 
-	evalModuleHandler.Manager.AddMenu("1", evalModuleHandler.AssessmentMenuStateHandler)
-	evalModuleHandler.Manager.AddMenu("2", evalModuleHandler.AssessmentMenuStateHandler)
+	evalModuleHandler.Manager.AddMenu("1", evalModuleHandler.AssignmentMenuStateHandler)
+	evalModuleHandler.Manager.AddMenu("2", evalModuleHandler.AssignmentMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("3", evalModuleHandler.ProgressMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("4", evalModuleHandler.EvaluationMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("Exit", nil)
@@ -91,7 +91,7 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 
 func (evalHandler *EvalModuleMenuStateHandler) Render() {
 	evalHandler.handler.SetMenuTitle("\nEvaluation Module Menu:")
-	evalHandler.handler.AddHandler("1", "Assessment", handler.FuncStrategy{})
+	evalHandler.handler.AddHandler("1", "Assignment", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("2", "Quiz", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("3", "Progress", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("4", "Evaluation", handler.FuncStrategy{})

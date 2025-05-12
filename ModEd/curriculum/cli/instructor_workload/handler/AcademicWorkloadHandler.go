@@ -35,11 +35,11 @@ func (u UnknownCommand) Execute() {
 
 func (c AcademicWorkloadHandler) Execute() {
 	academicMenu := NewMenuHandler("Academic Workload Menu", true)
-	academicMenu.Add("Curriculum", NewCurriculumHandler(c.db))
-	academicMenu.Add("Course", NewCourseHandler(c.db))
-	academicMenu.Add("Class", NewClassHandler(c.db))
-	academicMenu.Add("Class Material", NewClassMaterialHandler(c.db))
-	academicMenu.Add("Course Plan", NewCoursePlanHandler(c.db))
+	academicMenu.Add(string(MENU_CURRICULUM), NewCurriculumHandler(c.db))
+	academicMenu.Add(string(MENU_COURSE), NewCourseHandler(c.db))
+	academicMenu.Add(string(MENU_CLASS), NewClassHandler(c.db))
+	academicMenu.Add(string(MENU_CLASSMATERIAL), NewClassMaterialHandler(c.db))
+	academicMenu.Add(string(MENU_COURSEPLAN), NewCoursePlanHandler(c.db))
 	academicMenu.SetBackHandler(Back{})
 	academicMenu.SetDefaultHandler(UnknownCommand{})
 	academicMenu.Execute()
@@ -49,11 +49,11 @@ func (c AcademicWorkloadHandler) Execute() {
 func (h *CurriculumHandler) Execute() {
 	menu := NewMenuHandler("Curriculum Menu", true)
 
-	menu.Add("Insert", CreateCurriculum{db: h.db})
-	menu.Add("Retrieve", RetrieveCurriculum{db: h.db})
-	menu.Add("Update", UpdateCurriculum{db: h.db})
-	menu.Add("Delete", DeleteCurriculum{db: h.db})
-	menu.Add("List All", ListCurriculums{db: h.db})
+	menu.Add(string(MENU_CREATECURRICULUM), CreateCurriculum{db: h.db})
+    menu.Add(string(MENU_RETRIEVECURRICULUM), RetrieveCurriculum{db: h.db})
+    menu.Add(string(MENU_UPDATECURRICULUM), UpdateCurriculum{db: h.db})
+    menu.Add(string(MENU_DELETECURRICULUM), DeleteCurriculum{db: h.db})
+    menu.Add(string(MENU_LISTCURRICULUM), ListCurriculums{db: h.db})
 
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
@@ -173,11 +173,11 @@ func (l ListCurriculums) Execute() {
 func (h *CourseHandler) Execute() {
 	menu := NewMenuHandler("Course Menu", true)
 
-	menu.Add("Insert", CreateCourse{db: h.db})
-	menu.Add("Retrieve", RetrieveCourse{db: h.db})
-	menu.Add("Update", UpdateCourse{db: h.db})
-	menu.Add("Delete", DeleteCourse{db: h.db})
-	menu.Add("List All", ListCourses{db: h.db})
+	menu.Add(string(MENU_CREATECLASS), CreateCourse{db: h.db})
+    menu.Add(string(MENU_RETRIEVECLASS), RetrieveCourse{db: h.db})
+    menu.Add(string(MENU_UPDATECLASS), UpdateCourse{db: h.db})
+    menu.Add(string(MENU_DELETECLASS), DeleteCourse{db: h.db})
+    menu.Add(string(MENU_LISTCLASS), ListCourses{db: h.db})
 
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
@@ -291,11 +291,11 @@ func (l ListCourses) Execute() {
 func (h *ClassHandler) Execute() {
 	menu := NewMenuHandler("Class Menu", true)
 
-	menu.Add("Insert", CreateClass{db: h.db})
-	menu.Add("Retrieve", RetrieveClass{db: h.db})
-	menu.Add("Update", UpdateClass{db: h.db})
-	menu.Add("Delete", DeleteClass{db: h.db})
-	menu.Add("List All", ListClasses{db: h.db})
+	menu.Add(string(MENU_CREATECLASS), CreateClass{db: h.db})
+    menu.Add(string(MENU_RETRIEVECLASS), RetrieveClass{db: h.db})
+    menu.Add(string(MENU_UPDATECLASS), UpdateClass{db: h.db})
+    menu.Add(string(MENU_DELETECLASS), DeleteClass{db: h.db})
+    menu.Add(string(MENU_LISTCLASS), ListClasses{db: h.db})
 
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
@@ -402,11 +402,11 @@ func (l ListClasses) Execute() {
 func (h *ClassMaterialHandler) Execute() {
 	menu := NewMenuHandler("Class Material Menu", true)
 
-	menu.Add("Insert", CreateClassMaterial{db: h.db})
-	menu.Add("Retrieve", RetrieveClassMaterial{db: h.db})
-	menu.Add("Update", UpdateClassMaterial{db: h.db})
-	menu.Add("Delete", DeleteClassMaterial{db: h.db})
-	menu.Add("List All", ListClassMaterials{db: h.db})
+	menu.Add(string(MENU_CREATECLASSMATERIAL), CreateClassMaterial{db: h.db})
+    menu.Add(string(MENU_RETRIEVECLASSMATERIAL), RetrieveClassMaterial{db: h.db})
+    menu.Add(string(MENU_UPDATECLASSMATERIAL), UpdateClassMaterial{db: h.db})
+    menu.Add(string(MENU_DELETECLASSMATERIAL), DeleteClassMaterial{db: h.db})
+    menu.Add(string(MENU_LISTCLASSMATERIAL), ListClassMaterials{db: h.db})
 
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
@@ -524,13 +524,13 @@ func NewCoursePlanHandler(db *gorm.DB) CoursePlanHandler {
 
 func (c CoursePlanHandler) Execute() {
 	coursePlanMenu := NewMenuHandler("Course Plan Menu", true)
-	coursePlanMenu.Add("Create Course Plan", CreateCoursePlan{db: c.db})
-	coursePlanMenu.Add("Retrieve Course Plan", RetrieveCoursePlan{db: c.db})
-	coursePlanMenu.Add("Update Course Plan", UpdateCoursePlan{db: c.db})
-	coursePlanMenu.Add("Delete Course Plan", DeleteCoursePlan{db: c.db})
-	coursePlanMenu.Add("List All Course Plans", ListAllCoursePlans{db: c.db})
-	coursePlanMenu.Add("List Upcoming Course Plans", ListAllCoursePlans{db: c.db})
-	coursePlanMenu.SetBackHandler(Back{})
+	coursePlanMenu.Add(string(MENU_CREATECOURSEPLAN), CreateCoursePlan{db: c.db})
+    coursePlanMenu.Add(string(MENU_RETRIEVECOURSEPLAN), RetrieveCoursePlan{db: c.db})
+    coursePlanMenu.Add(string(MENU_UPDATECOURSEPLAN), UpdateCoursePlan{db: c.db})
+    coursePlanMenu.Add(string(MENU_UPDATECOURSEPLAN), DeleteCoursePlan{db: c.db})
+    coursePlanMenu.Add(string(MENU_LISTCOURSEPLAN), ListAllCoursePlans{db: c.db})
+    coursePlanMenu.Add(string(MENU_LISTUPCOMINGCOURSEPLANS), ListAllCoursePlans{db: c.db})
+    coursePlanMenu.SetBackHandler(Back{})
 	coursePlanMenu.SetDefaultHandler(UnknownCommand{})
 	coursePlanMenu.Execute()
 }
