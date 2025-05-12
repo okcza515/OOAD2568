@@ -5,7 +5,6 @@ import (
 	"ModEd/project/model"
 	"ModEd/project/utils"
 	"fmt"
-	"time"
 )
 
 func BuildPresentationMenu(presentationController *controller.PresentationController) *utils.MenuItem {
@@ -29,10 +28,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 					}
 
 					io.Println("Presentations (Based on Date):")
-					for _, p := range presentations {
-						io.Println(fmt.Sprintf("ID: %d | Project ID: %d | Type: %s | Date: %s",
-							p.ID, p.SeniorProjectId, p.PresentationType, p.Date.Format("2006-01-02")))
-					}
+					io.PrintTableFromSlice(presentations, []string{"ID", "SeniorProjectId", "PresentationType", "Date"})
 				},
 			},
 			{
@@ -124,15 +120,11 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 					}
 
 					io.Println(fmt.Sprintf("Current Date (%s): ", presentation.Date.Format("2006-01-02")))
-					newDateInput, _ := io.ReadInput()
-					if newDateInput != "" {
-						newDate, err := time.Parse("2006-01-02", newDateInput)
-						if err != nil {
-							io.Println(fmt.Sprintf("Invalid Date: %v", err))
-							return
-						}
-						presentation.Date = newDate
+					newDateInput, err := io.ReadInputTime()
+					if err != nil {
+						return
 					}
+					presentation.Date = newDateInput
 
 					err = presentationController.UpdatePresentation(presentation)
 					if err != nil {
