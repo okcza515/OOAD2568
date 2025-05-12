@@ -59,7 +59,7 @@ func (menu *ExamMenuStateHandler) PrintExamHeader() {
 }
 
 func (menu *ExamMenuStateHandler) PrintExamRow(exam *model.Exam) {
-	fmt.Printf("\n%-5s %-20s %-5s %-5s %-30s %-15s %-15s %-10s\n",
+	fmt.Printf("\n%-5d %-20s %-5d %-5d %-30s %-15s %-15s %-10s\n",
 		exam.ID,
 		truncateStr(exam.ExamName, 20),
 		exam.InstructorID,
@@ -231,7 +231,7 @@ func (menu *ExamMenuStateHandler) UpdateExam() error {
 	}
 
 	if exam.ExamStatus != model.Draft {
-		return errors.New("Exam is not in Draft status, cannot update.")
+		return errors.New("exam is not in Draft status, cannot update")
 	}
 
 	newExamName := evalUtil.PromptString("Enter Exam Name: ")
@@ -259,7 +259,7 @@ func (menu *ExamMenuStateHandler) UpdateExam() error {
 	}
 
 	if updatedExam.StartDate.After(updatedExam.EndDate) {
-		return errors.New("start date must be before end date.")
+		return errors.New("start date must be before end date")
 	}
 
 	err = menu.wrapper.ExamController.UpdateByID(updatedExam)
@@ -282,7 +282,7 @@ func (menu *ExamMenuStateHandler) UpdateExamSection() error {
 	if err != nil {
 		return errors.New("error retrieving sections: " + err.Error())
 	}
-	fmt.Println("Exam Sections of Exam ID [%d]: \n", examID)
+	fmt.Printf("Exam Sections of Exam ID [%d]: \n", examID)
 	for _, section := range sections.ExamSections {
 		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
@@ -343,7 +343,7 @@ func (menu *ExamMenuStateHandler) ListAllQuestionsByExamID() error {
 		assetUtil.ClearScreen()
 		return nil
 	}
-	fmt.Println("Questions for Exam ID [%d]: \n", examID)
+	fmt.Printf("Questions for Exam ID [%d]: \n", examID)
 	fmt.Println("--------------------------------------------------")
 	for _, q := range question {
 		fmt.Printf("[%d] Question: %s\n", q.Questions[q.ID].ID, q.Questions[q.ID].ActualQuestion)
@@ -388,7 +388,7 @@ func (menu *ExamMenuStateHandler) PublishExam() error {
 	}
 
 	if exam.ExamStatus != model.Draft {
-		return errors.New("exam is not in Draft status, cannot publish.")
+		return errors.New("exam is not in Draft status, cannot publish")
 	}
 
 	exam.ExamStatus = model.Publish
