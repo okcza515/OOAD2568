@@ -57,6 +57,11 @@ func (handler InsertInstrumentManagementStrategy) Execute() error {
         BorrowUserID:   borrowID,
     }
 
+    if err := instrumentManagement.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
     if err := handler.controller.Insert(instrumentManagement); err != nil {
         return fmt.Errorf("failed to create instrument management: %v", err)
     }

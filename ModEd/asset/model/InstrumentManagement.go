@@ -4,6 +4,7 @@ package model
 import (
 	"ModEd/core"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 )
 
 type InstrumentManagement struct {
@@ -49,4 +50,12 @@ func (im InstrumentManagement) ToString() string {
 		truncate(im.Room.RoomName, 42),
 		truncate(fmt.Sprintf("%d", im.BorrowUserID), 42),
 	)
+}
+
+func (im InstrumentManagement) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(im); err != nil {
+		return err
+	}
+	return nil
 }

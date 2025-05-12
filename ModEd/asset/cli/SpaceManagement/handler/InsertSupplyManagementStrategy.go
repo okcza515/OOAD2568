@@ -48,6 +48,11 @@ func (handler InsertSupplyManagementStrategy) Execute() error {
         SupplyID:  supplyID,
     }
 
+    if err := supplyManagement.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
     if err := handler.controller.Insert(supplyManagement); err != nil {
         return fmt.Errorf("failed to create supply management: %v", err)
     }

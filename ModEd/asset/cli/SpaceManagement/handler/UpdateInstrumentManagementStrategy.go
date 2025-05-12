@@ -71,6 +71,11 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         BorrowUserID:   borrowID,
     }
 
+    if err := instrumentManagement.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
     // Perform update
     if err := handler.controller.UpdateById(instrumentManagement); err != nil {
         return fmt.Errorf("failed to update instrument management: %v", err)

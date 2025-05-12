@@ -4,6 +4,7 @@ package model
 import (
 	"ModEd/core"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 )
 
 type SupplyManagement struct {
@@ -49,4 +50,12 @@ func (sm SupplyManagement) ToString() string {
 		truncate(fmt.Sprintf("%d", sm.RoomID), 42),
 		truncate(sm.Room.RoomName, 42),
 	)
+}
+
+func (sm SupplyManagement) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(sm); err != nil {
+		return err
+	}
+	return nil
 }

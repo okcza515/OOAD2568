@@ -61,6 +61,11 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
         SupplyID:  supplyID,
     }
 
+    if err := supplyManagement.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
+
     // Perform update
     if err := handler.controller.UpdateById(supplyManagement); err != nil {
         return fmt.Errorf("failed to update supply management: %v", err)
