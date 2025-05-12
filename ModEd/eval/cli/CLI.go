@@ -7,6 +7,7 @@ import (
 	"ModEd/core/handler"
 	"ModEd/core/migration"
 	"ModEd/eval/cli/evaluation/command"
+	examinationCommand "ModEd/eval/cli/command"
 	controller "ModEd/eval/controller"
 	"fmt"
 )
@@ -21,6 +22,8 @@ func main() {
 		SetPathDB(defaultDBPath).
 		MigrateModule(core.MODULE_QUIZ).
 		MigrateModule(core.MODULE_COMMON).
+		MigrateModule(core.MODULE_CURRICULUM).
+		MigrateModule(core.MODULE_EVAL).
 		BuildDB()
 
 	if err != nil {
@@ -31,12 +34,22 @@ func main() {
 	progressController := controller.NewProgressController(db)
 	assignmentController := controller.NewAssignmentController(db)
 
+	examController := controller.NewExamController(db)
+	questionController := controller.NewQuestionController(db)
+	submissionController := controller.NewSubmissionController(db)
+
 	commandExecutor := command.NewCommandExecutor()
 	commandExecutor.RegisterCommand("1", &command.EvaluationCommand{
 		DB:                   db,
 		EvaluationController: evaluationController,
 		ProgressController:   progressController,
 		AssignmentController: assignmentController,
+	})
+	commandExecutor.RegisterCommand("2", &examinationCommand.ExaminationCommand{
+		DB:                   db,
+		ExamController:       examController,
+		QuestionController:   questionController,
+		SubmissionController: submissionController,
 	})
 	commandExecutor.RegisterCommand("resetdb", &command.ResetDBCommand{})
 
@@ -59,7 +72,7 @@ func DisplayMainMenu() {
 	menuHandler := handler.NewHandlerContext()
 	menuHandler.SetMenuTitle("\nEvaluation Module Menu:")
 	menuHandler.AddHandler("1", "Evaluation Assignment & Quiz", handler.FuncStrategy{})
-	//// menuHandler.AddHandler("2", "Evaluation Examination", handler.FuncStrategy{})
+	menuHandler.AddHandler("2", "Exam Question & Submission", handler.FuncStrategy{})
 	menuHandler.AddHandler("0", "Exit", handler.FuncStrategy{})
 	menuHandler.AddHandler("resetdb", "Re-initialize the database", handler.FuncStrategy{})
 	menuHandler.ShowMenu()
