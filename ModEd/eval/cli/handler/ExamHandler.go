@@ -15,25 +15,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type ExamMenuStateHandler struct {
+type ExamMenuState struct {
 	Manager                    *cli.CLIMenuStateManager
 	wrapper                    *controller.ExamModuleWrapper
-	ExamModuleMenuStateHandler cli.MenuState
 	handler                    *handler.HandlerContext
 	backhandler                *handler.ChangeMenuHandlerStrategy
 }
 
-func NewExamMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, examModuleMenuHandler cli.MenuState) *ExamMenuStateHandler {
-	return &ExamMenuStateHandler{
+func NewExamMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, examModuleMenuHandler cli.MenuState) *ExamMenuState {
+	return &ExamMenuState{
 		Manager:                    manager,
 		wrapper:                    wrapper,
-		ExamModuleMenuStateHandler: examModuleMenuHandler,
 		handler:                    handler.NewHandlerContext(),
 		backhandler:                handler.NewChangeMenuHandlerStrategy(manager, examModuleMenuHandler),
 	}
 }
 
-func (menu *ExamMenuStateHandler) Render() {
+func (menu *ExamMenuState) Render() {
 	menu.handler.SetMenuTitle("Exam management:\n")
 	menu.handler.AddHandler("1", "Create a new exam.", handler.FuncStrategy{Action: menu.CreateExam})
 	menu.handler.AddHandler("2", "List all exams.", handler.FuncStrategy{Action: menu.ListAllExams})
@@ -48,18 +46,19 @@ func (menu *ExamMenuStateHandler) Render() {
 	menu.handler.ShowMenu()
 }
 
-func (menu *ExamMenuStateHandler) HandleUserInput(input string) error {
+func (menu *ExamMenuState) HandleUserInput(input string) error {
 	return menu.handler.HandleInput(input)
 }
 
-func (menu *ExamMenuStateHandler) PrintExamHeader() {
-	fmt.Printf("\n%-5s %-20s %-5s %-5s %-30s %-15s %-15s %-10s\n",
+func (menu *ExamMenuState) PrintExamHeader() {
+	fmt.Printf("\n%-5s %-20s %-15s %-15s %-30s %-25s %-25s %-10s\n",
 		"ID", "Exam Name", "Instructor ID", "Class ID", "Description", "Start Date", "End Date", "Status")
-	fmt.Println("-------------------------------------------------------------------------------------")
+	fmt.Printf("\n%-5s %-20s %-15s %-15s %-30s %-25s %-25s %-10s\n",
+	"-----", "-------------", "-------------", "----------", "------------------", "-----------------", "-----------------", "----------")
 }
 
-func (menu *ExamMenuStateHandler) PrintExamRow(exam *model.Exam) {
-	fmt.Printf("\n%-5d %-20s %-5d %-5d %-30s %-15s %-15s %-10s\n",
+func (menu *ExamMenuState) PrintExamRow(exam *model.Exam) {
+	fmt.Printf("\n%-5d %-20s %-15d %-15d %-30s %-25s %-25s %-10s\n",
 		exam.ID,
 		truncateStr(exam.ExamName, 20),
 		exam.InstructorID,
@@ -78,7 +77,7 @@ func truncateStr(s string, maxLen int) string {
 	return s[:maxLen-3] + "..."
 }
 
-func (menu *ExamMenuStateHandler) PrintExamList(exams []*model.Exam) {
+func (menu *ExamMenuState) PrintExamList(exams []*model.Exam) {
 	if len(exams) == 0 {
 		fmt.Println("\nNo exams found.")
 		return
@@ -91,7 +90,7 @@ func (menu *ExamMenuStateHandler) PrintExamList(exams []*model.Exam) {
 	fmt.Println()
 }
 
-func (menu *ExamMenuStateHandler) CreateExam() error {
+func (menu *ExamMenuState) CreateExam() error {
 	examName := evalUtil.PromptString("Enter Exam Name: ")
 	instructorID, err := evalUtil.PromptUint("Enter Instructor ID: ")
 	if err != nil {
@@ -179,7 +178,7 @@ func (menu *ExamMenuStateHandler) CreateExam() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) ListAllExams() error {
+func (menu *ExamMenuState) ListAllExams() error {
 	exams, err := menu.wrapper.ExamController.List(nil)
 	if err != nil {
 		return errors.New("error retrieving exams: " + err.Error())
@@ -190,7 +189,7 @@ func (menu *ExamMenuStateHandler) ListAllExams() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) RetrieveExamByID() error {
+func (menu *ExamMenuState) RetrieveExamByID() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to Retrieve: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
@@ -198,6 +197,10 @@ func (menu *ExamMenuStateHandler) RetrieveExamByID() error {
 	exam, err := menu.wrapper.ExamController.RetrieveByID(uint(examID))
 	if err != nil {
 		return errors.New("error retrieving exam: " + err.Error())
+	}
+	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exam.ID})
+	if err != nil {
+		return errors.New("error retrieving exam sections: " + err.Error())
 	}
 	fmt.Println("Exam Details:")
 	fmt.Println("--------------------------------------------------")
@@ -209,7 +212,7 @@ func (menu *ExamMenuStateHandler) RetrieveExamByID() error {
 	fmt.Printf("Start Date: %s\n", exam.StartDate.Format("2006-01-02 15:04:05"))
 	fmt.Printf("End Date: %s\n", exam.EndDate.Format("2006-01-02 15:04:05"))
 	fmt.Printf("Status: %s\n", exam.ExamStatus)
-	for _, section := range exam.ExamSections {
+	for _, section := range examSections {
 		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
@@ -219,7 +222,7 @@ func (menu *ExamMenuStateHandler) RetrieveExamByID() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) UpdateExam() error {
+func (menu *ExamMenuState) UpdateExam() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to update: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
@@ -236,7 +239,6 @@ func (menu *ExamMenuStateHandler) UpdateExam() error {
 
 	newExamName := evalUtil.PromptString("Enter Exam Name: ")
 	newDescription := evalUtil.PromptString("Enter Exam Description: ")
-	newExamStatus := evalUtil.PromptString("Enter Exam Status (Draft/Publish/Hidden): ")
 	newStartDate, err := evalUtil.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
 	if err != nil {
 		return errors.New("invalid date format")
@@ -253,7 +255,7 @@ func (menu *ExamMenuStateHandler) UpdateExam() error {
 		},
 		ExamName:    newExamName,
 		Description: newDescription,
-		ExamStatus:  model.ExamStatus(newExamStatus),
+		ExamStatus:  model.Draft,
 		StartDate:   newStartDate,
 		EndDate:     newEndDate,
 	}
@@ -273,17 +275,20 @@ func (menu *ExamMenuStateHandler) UpdateExam() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) UpdateExamSection() error {
+func (menu *ExamMenuState) UpdateExamSection() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to Retrieve: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
 	}
-	sections, err := menu.wrapper.ExamController.RetrieveByID(uint(examID), "ExamSections")
+	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
+	if err != nil {
+		return errors.New("error retrieving exam sections: " + err.Error())
+	}
 	if err != nil {
 		return errors.New("error retrieving sections: " + err.Error())
 	}
 	fmt.Printf("Exam Sections of Exam ID [%d]: \n", examID)
-	for _, section := range sections.ExamSections {
+	for _, section := range examSections {
 		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
@@ -293,7 +298,7 @@ func (menu *ExamMenuStateHandler) UpdateExamSection() error {
 	if err != nil {
 		return errors.New("invalid section ID")
 	}
-	for _, section := range sections.ExamSections {
+	for _, section := range examSections {
 		if section.ID != uint(sectionID) {
 			return errors.New("section ID not found")
 		}
@@ -328,7 +333,7 @@ func (menu *ExamMenuStateHandler) UpdateExamSection() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) ListAllQuestionsByExamID() error {
+func (menu *ExamMenuState) ListAllQuestionsByExamID() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to retrieve questions: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
@@ -354,7 +359,7 @@ func (menu *ExamMenuStateHandler) ListAllQuestionsByExamID() error {
     return nil
 }
 
-func (menu *ExamMenuStateHandler) DeleteExam() error {
+func (menu *ExamMenuState) DeleteExam() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to delete: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
@@ -376,7 +381,7 @@ func (menu *ExamMenuStateHandler) DeleteExam() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) PublishExam() error {
+func (menu *ExamMenuState) PublishExam() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to publish: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
@@ -404,7 +409,7 @@ func (menu *ExamMenuStateHandler) PublishExam() error {
 	return nil
 }
 
-func (menu *ExamMenuStateHandler) HideExam() error {
+func (menu *ExamMenuState) HideExam() error {
 	examID, err := evalUtil.PromptUint("Enter Exam ID to hide: ")
 	if err != nil {
 		return errors.New("invalid exam ID")
