@@ -50,7 +50,6 @@ func NewInstructorMenuState(
 	reviewResignationHandler := hrHandler.NewReviewHandlerStrategy(resignInstructorCtrl.ReviewInstructorResignRequest)
 	reviewRaiseHandler := hrHandler.NewReviewHandlerStrategy(raiseInstructorCtrl.ReviewInstructorRaiseRequest)
 	deleteInstructorHandler := hrHandler.NewDeleteInstructorStrategy(instructorCtrl)
-	// requestInstructorHandler := hrHandler.NewRequestInstructorLeaveStrategy(instructorCtrl)
 
 	handlerContext.AddHandler("1", "Add new instructor", addInstructorHandler)
 	handlerContext.AddHandler("2", "List instructor", listInstructorHandler)

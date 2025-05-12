@@ -39,7 +39,6 @@ func NewStudentMenuState(
 ) *StudentMenuState {
 	handlerContext := coreHandler.NewHandlerContext()
 
-	// Pass the controller to your strategy/handler
 	addStudentHandler := hrHandler.NewAddStudentStrategy(studentCtrl)
 	listStudentHandler := hrHandler.NewListStudentStrategy(studentCtrl)
 	deleteStudentHandler := hrHandler.NewDeleteStudentStrategy(studentCtrl)
@@ -48,6 +47,7 @@ func NewStudentMenuState(
 	requestStudentResignHandler := hrHandler.NewRequestResignationHandlerStrategy(resignStudentCtrl.SubmitResignationStudent)
 	reviewLeaveHandler := hrHandler.NewReviewHandlerStrategy(leaveStudentCtrl.ReviewStudentLeaveRequest)
 	reviewResignationHandler := hrHandler.NewReviewHandlerStrategy(resignStudentCtrl.ReviewStudentResignRequest)
+
 	handlerContext.AddHandler("1", "Add new student", addStudentHandler)
 	handlerContext.AddHandler("2", "List student", listStudentHandler)
 	handlerContext.AddHandler("3", "Update student Info", updateStudentInfoHandler)

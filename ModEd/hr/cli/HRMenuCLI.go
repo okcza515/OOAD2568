@@ -6,12 +6,7 @@ import (
 	"ModEd/core/migration"
 	"ModEd/hr/cli/menu"
 	hrController "ModEd/hr/controller"
-	"flag"
 	"fmt"
-)
-
-var (
-	databasePath = flag.String("database", "data/ModEd.bin", "Path to SQLite Database file")
 )
 
 type HRMenuCLI struct {

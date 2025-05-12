@@ -8,10 +8,6 @@ import (
 	"fmt"
 )
 
-// var (
-// 	databasePath = flag.String("database", "data/ModEd.bin", "Path of SQLite Database")
-// )
-
 type DatabaseMenuState struct {
 	manager        *cli.CLIMenuStateManager
 	handlerContext *handler.HandlerContext
