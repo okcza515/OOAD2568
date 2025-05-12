@@ -1,39 +1,38 @@
-package main
+package cli
 
 import (
 	"ModEd/common/cli/menu"
-	"ModEd/core/authentication"
-	"ModEd/core/cli"
-	"flag"
 	"fmt"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
+type CommonCLI struct {
+	db   *gorm.DB
+	path string
+}
+
+func NewCommonCLI(db *gorm.DB, path string) *CommonCLI {
+	return &CommonCLI{
+		db:   db,
+		path: path,
+	}
+}
+
+func (c *CommonCLI) Run() {
+	fmt.Println("Welcome to the Common CLI!")
+	fmt.Println("This CLI provides a simple interface to manage your data.")
+	fmt.Println()
+
+	mainMenu := menu.NewCommonCLIMenu(c.db, c.path)
+	mainMenu.Run()
+}
+
 func main() {
-	var (
-		database string
-		path     string
-	)
-	flag.StringVar(&database, "database", "data/ModEd.bin", "Path of SQLite Database.")
-	flag.StringVar(&path, "path", "", "Path to CSV or JSON.")
-	flag.Parse()
-
-	args := flag.Args()
-	fmt.Printf("args: %v\n", args)
-
-	db := ConnectDB()
-
-	authenticationCLI := authentication.NewAuthenticationCLI()
-	authenticationCLI.SetDB(db)
-	authenticationCLI.SetAllowedRoles([]string{"admin"})
-	authenticationCLI.ExecuteItem(args)
-
-	manager := cli.NewCLIMenuManager()
-	commonCLIMenu := menu.NewCommonMenuState(manager)
-
-	manager.SetState(commonCLIMenu)
+	db := initDB()
+	cli := NewCommonCLI(db, "data")
+	cli.Run()
 }
 
 func ConnectDB() *gorm.DB {
@@ -49,4 +48,12 @@ func confirmAction(prompt string) bool {
 	fmt.Print(prompt)
 	fmt.Scan(&response)
 	return response == "y" || response == "Y"
+}
+
+func initDB() *gorm.DB {
+	connector, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	return connector
 }

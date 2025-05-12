@@ -8,8 +8,10 @@ import (
 
 type CommonDataInterface interface {
 	TableName() string
+	Validate() error
 }
 
+// These functions are kept for backward compatibility but should be replaced with BaseController methods
 func CommonRegister[T CommonDataInterface](db *gorm.DB, records []*T) error {
 	for _, record := range records {
 		if err := db.Create(record).Error; err != nil {

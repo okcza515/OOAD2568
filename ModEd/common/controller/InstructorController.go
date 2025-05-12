@@ -2,6 +2,7 @@ package controller
 
 import (
 	"ModEd/common/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
@@ -9,40 +10,50 @@ import (
 )
 
 type InstructorController struct {
-	DB *gorm.DB
+	*core.BaseController[model.Instructor]
 }
 
 func NewInstructorController(db *gorm.DB) *InstructorController {
 	db.AutoMigrate(&model.Instructor{})
-	return &InstructorController{DB: db}
+	return &InstructorController{
+		BaseController: core.NewBaseController[model.Instructor](db),
+	}
 }
 
-func (c *InstructorController) GetAll() ([]*model.Instructor, error) {
-	return model.CommonModelGetAll[model.Instructor](c.DB)
+func (c *InstructorController) GetAll() ([]model.Instructor, error) {
+	return c.List(nil)
 }
 
-func (c *InstructorController) GetBy(field string, value interface{}) ([]*model.Instructor, error) {
-	return model.GetRecordByField[model.Instructor](c.DB, field, value)
+func (c *InstructorController) GetBy(field string, value interface{}) ([]model.Instructor, error) {
+	return c.List(map[string]interface{}{field: value})
 }
 
 func (c *InstructorController) Update(code string, updatedData map[string]any) error {
-	return model.UpdateInstructorByCode(c.DB, code, updatedData)
+	return c.UpdateByCondition(map[string]interface{}{
+		"instructor_code": code,
+	}, model.Instructor{})
 }
 
 func (c *InstructorController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
-	return model.UpdateRecordByField[model.Instructor](c.DB, field, value, updatedData, model.Instructor{})
+	return c.UpdateByCondition(map[string]interface{}{field: value}, model.Instructor{})
 }
 
 func (c *InstructorController) DeleteByCode(code string) error {
-	return model.DeleteInstructorByCode(c.DB, code)
+	return c.DeleteByCondition(map[string]interface{}{
+		"instructor_code": code,
+	})
 }
 
-func (c *InstructorController) Register(instructors []*model.Instructor) error {
-	return model.CommonRegister(c.DB, instructors)
+func (c *InstructorController) Register(instructors []model.Instructor) error {
+	return c.InsertMany(instructors)
+}
+
+func (c *InstructorController) Delete(field string, value interface{}) error {
+	return c.DeleteByCondition(map[string]interface{}{field: value})
 }
 
 func (c *InstructorController) Truncate() error {
-	return model.TruncateModel(c.DB, "instructors")
+	return c.DeleteByCondition(map[string]interface{}{})
 }
 
 func (c *InstructorController) ManualAddInstructor() error {
@@ -58,25 +69,52 @@ func (c *InstructorController) ManualAddInstructor() error {
 	fmt.Print("Enter Email: ")
 	var email string
 	fmt.Scan(&email)
-	fmt.Print("Enter StartDate: ")
+	fmt.Print("Enter StartDate (DD-MM-YYYY): ")
 	var startDate string
 	fmt.Scan(&startDate)
 	fmt.Print("Enter Department: ")
 	var department string
 	fmt.Scan(&department)
 
-	parseStartDate, err := time.Parse("02-01-2006", startDate)
-	if err != nil {
-		return fmt.Errorf("invalid date format: %w", err)
+	var parsedStartDate *time.Time
+	if startDate != "" {
+		parsed, err := time.Parse("02-01-2006", startDate)
+		if err == nil {
+			parsedStartDate = &parsed
+		}
 	}
 
-	instructor := &model.Instructor{
+	var departmentPtr *string
+	if department != "" {
+		departmentPtr = &department
+	}
+
+	instructor := model.Instructor{
 		InstructorCode: instructorCode,
 		FirstName:      firstname,
 		LastName:       lastname,
 		Email:          email,
-		StartDate:      &parseStartDate,
-		Department:     &department,
+		StartDate:      parsedStartDate,
+		Department:     departmentPtr,
 	}
-	return model.ManualAddInstructor(c.DB, instructor)
+	return c.Insert(instructor)
+}
+
+// Additional instructor-specific methods
+func (c *InstructorController) GetByInstructorCode(code string) (model.Instructor, error) {
+	return c.RetrieveByCondition(map[string]interface{}{
+		"instructor_code": code,
+	})
+}
+
+func (c *InstructorController) UpdateByInstructorCode(code string, instructor model.Instructor) error {
+	return c.UpdateByCondition(map[string]interface{}{
+		"instructor_code": code,
+	}, instructor)
+}
+
+func (c *InstructorController) DeleteByInstructorCode(code string) error {
+	return c.DeleteByCondition(map[string]interface{}{
+		"instructor_code": code,
+	})
 }

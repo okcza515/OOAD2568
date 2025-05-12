@@ -1,73 +1,44 @@
 package menu
 
 import (
-	"ModEd/asset/util"
-	"ModEd/core/cli"
-	"ModEd/core/handler"
-
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
-var MENU_COMMON = "common"
-var READ_FILE = "readfile"
-var REGISTER = "register"
-var RETRIEVE = "retrieve"
-var DELETE = "delete"
-var CLEAR_DB = "cleardb"
-var TEST = "test"
-
-type CommonMenuState struct {
-	manager        *cli.CLIMenuStateManager
-	handlerContext *handler.HandlerContext
+type CommonCLIMenu struct {
+	db   *gorm.DB
+	menu *MenuHandler
+	path string
 }
 
-func NewCommonMenuState(manager *cli.CLIMenuStateManager) *CommonMenuState {
-	handlerContext := handler.NewHandlerContext()
-	CommonMenu := &CommonMenuState{
-		manager:        manager,
-		handlerContext: handlerContext,
-	}
-	
-	manager.AddMenu(string(MENU_COMMON), CommonMenu)
-	manager.AddMenu(string(READ_FILE), 	ReadFileMenuState(manager))
-	manager.AddMenu(string(REGISTER), 	NewCommonModelMenuState(manager))
-	manager.AddMenu(string(RETRIEVE), 	NewCommonModelMenuState(manager))
-	manager.AddMenu(string(DELETE), 	NewCommonModelMenuState(manager))
-	manager.AddMenu(string(CLEAR_DB), 	NewCommonModelMenuState(manager))
-	manager.AddMenu(string(TEST), 		NewCommonModelMenuState(manager))
-
-	readFileHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(READ_FILE)))
-	registerHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(REGISTER)))
-	retrieveHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(RETRIEVE)))
-	deleteHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(DELETE)))
-	cleardbHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(CLEAR_DB)))
-	testHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(TEST)))
-
-	handlerContext.AddHandler("1", "Read file", readFileHandler)
-	handlerContext.AddHandler("2", "Register", registerHandler)
-	handlerContext.AddHandler("3", "Retrieve", retrieveHandler)
-	handlerContext.AddHandler("4", "Delete", deleteHandler)
-	handlerContext.AddHandler("5", "Clear Database", cleardbHandler)
-	handlerContext.AddHandler("6", "test", testHandler)
-
-	return CommonMenu
-}
-
-func (menu *CommonMenuState) Render() {
-	fmt.Println()
-	fmt.Println("Common CLI menu")
-	fmt.Println("Choose your action")
-	menu.handlerContext.ShowMenu()
-	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
-	fmt.Println()
-}
-
-func (menu *CommonMenuState) HandleUserInput(input string) error {
-	err := menu.handlerContext.HandleInput(input)
-	if err != nil {
-		fmt.Println("err: Invalid input, menu '" + input + "' doesn't exist")
-		util.PressEnterToContinue()
+func NewCommonCLIMenu(db *gorm.DB, path string) *CommonCLIMenu {
+	menu := NewMenuHandler()
+	cli := &CommonCLIMenu{
+		db:   db,
+		menu: menu,
+		path: path,
 	}
 
-	return nil
+	menu.AppendItem("1", "Read file", &ReadFileHandler{path: path})
+	menu.AppendItem("2", "Register", &RegisterHandler{db: db, path: path})
+	menu.AppendItem("3", "Retrieve", &RetrieveHandler{db: db})
+	menu.AppendItem("4", "Delete", &DeleteHandler{db: db})
+	menu.AppendItem("5", "Clear Database", &ClearDBHandler{db: db})
+	menu.AppendItem("6", "Test", &TestHandler{db: db})
+	menu.AppendItem("exit", "Exit", &ExitHandler{})
+
+	return cli
+}
+
+func (c *CommonCLIMenu) Run() {
+	for {
+		c.menu.DisplayMenu()
+		choice := c.menu.GetMenuChoice()
+		if choice == "exit" {
+			fmt.Println("Goodbye!")
+			return
+		}
+		c.menu.Execute(choice, nil)
+	}
 }

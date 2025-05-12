@@ -1,13 +1,16 @@
 package model
 
 import (
+	"errors"
 	"time"
+
+	"ModEd/core"
 
 	"gorm.io/gorm"
 )
 
 type Instructor struct {
-	gorm.Model
+	core.BaseModel
 	InstructorCode string     `gorm:"not null;unique" csv:"instructor_code" json:"instructor_code"`
 	FirstName      string     `gorm:"not null" csv:"first_name" json:"first_name"`
 	LastName       string     `gorm:"not null" csv:"last_name" json:"last_name"`
@@ -18,6 +21,22 @@ type Instructor struct {
 
 func (Instructor) TableName() string {
 	return "instructors"
+}
+
+func (i Instructor) Validate() error {
+	if i.InstructorCode == "" {
+		return errors.New("instructor code is required")
+	}
+	if i.FirstName == "" {
+		return errors.New("first name is required")
+	}
+	if i.LastName == "" {
+		return errors.New("last name is required")
+	}
+	if i.Email == "" {
+		return errors.New("email is required")
+	}
+	return nil
 }
 
 func UpdateInstructorByCode(db *gorm.DB, code string, updated map[string]any) error {

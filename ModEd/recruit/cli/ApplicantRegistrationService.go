@@ -113,7 +113,7 @@ func (s *applicantRegistrationService) RegisterManually(scanner *bufio.Scanner) 
 	if !s.handleRoundFormData(round, &applicant) {
 		return
 	}
-	
+
 	if err := s.applicantCtrl.RegisterApplicant(&applicant); err != nil {
 		fmt.Println("Registration failed:", err)
 		return
@@ -168,7 +168,7 @@ func (s *applicantRegistrationService) RegisterFromFile(scanner *bufio.Scanner) 
 			fmt.Printf("Skipping %s %s due to invalid form data.\n", a.FirstName, a.LastName)
 			continue
 		}
-	
+
 		if err := s.applicantCtrl.RegisterApplicant(&a); err != nil {
 			fmt.Printf("Failed to register %s %s: %v\n", a.FirstName, a.LastName, err)
 			continue
@@ -233,7 +233,7 @@ func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonMode
 		fmt.Println("Invalid faculty.")
 		return nil, nil
 	}
-	selectedFaculty := faculties[facultyChoice-1]
+	selectedFaculty := &faculties[facultyChoice-1]
 
 	departments, err := s.departmentCtrl.GetByFaculty(selectedFaculty.Name)
 	if err != nil || len(departments) == 0 {
@@ -252,7 +252,7 @@ func (s *applicantRegistrationService) SelectFacultyAndDepartment() (*commonMode
 		fmt.Println("Invalid department.")
 		return nil, nil
 	}
-	return selectedFaculty, departments[deptChoice-1]
+	return selectedFaculty, &departments[deptChoice-1]
 }
 
 func (s *applicantRegistrationService) SaveReportForApplicant(applicantID uint, roundID uint, faculty *commonModel.Faculty, department *commonModel.Department, program *commonModel.ProgramType, status string) {

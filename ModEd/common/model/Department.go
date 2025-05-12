@@ -1,11 +1,14 @@
 package model
 
 import (
+	"ModEd/core"
+	"errors"
+
 	"gorm.io/gorm"
 )
 
 type Department struct {
-	gorm.Model
+	core.BaseModel
 	Name    string `gorm:"not null" csv:"name" json:"name"`
 	Faculty string `gorm:"not null" csv:"faculty" json:"parent"`
 	Budget  int    `gorm:"default:0" csv:"budget" json:"budget"`
@@ -13,6 +16,19 @@ type Department struct {
 
 func (Department) TableName() string {
 	return "departments"
+}
+
+func (d Department) Validate() error {
+	if d.Name == "" {
+		return errors.New("department name is required")
+	}
+	if d.Faculty == "" {
+		return errors.New("faculty name is required")
+	}
+	if d.Budget < 0 {
+		return errors.New("budget cannot be negative")
+	}
+	return nil
 }
 
 func SetDepartmentBudget(db *gorm.DB, name string, newBudget int) error {

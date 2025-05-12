@@ -1,63 +1,37 @@
 package menu
 
 import (
-	"ModEd/core/cli"
-	"ModEd/core/handler"
-	"fmt"
+	"gorm.io/gorm"
 )
 
-type CommonModelMenuState struct {
-	manager        *cli.CLIMenuStateManager
-	handlerContext *handler.HandlerContext
+type CommonModelMenu struct {
+	db   *gorm.DB
+	menu *MenuHandler
 }
 
-func NewCommonModelMenuState(manager *cli.CLIMenuStateManager) *CommonModelMenuState {
-	handlerContext := handler.NewHandlerContext()
-	CommonModelMenu := &CommonModelMenuState{
-		manager:        manager,
-		handlerContext: handlerContext,
+func NewCommonModelMenu(db *gorm.DB) *CommonModelMenu {
+	menu := NewMenuHandler()
+	modelMenu := &CommonModelMenu{
+		db:   db,
+		menu: menu,
 	}
 
-	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_COMMON)))
+	menu.AppendItem("1", "Student", &RegisterModelHandler{db: db, modelType: 1})
+	menu.AppendItem("2", "Instructor", &RegisterModelHandler{db: db, modelType: 2})
+	menu.AppendItem("3", "Department", &RegisterModelHandler{db: db, modelType: 3})
+	menu.AppendItem("4", "Faculty", &RegisterModelHandler{db: db, modelType: 4})
+	menu.AppendItem("back", "Back", &BackHandler{})
 
-	handlerContext.AddHandler("1", "Student", readFileHandler)
-	handlerContext.AddHandler("2", "Instructor", registerHandler)
-	handlerContext.AddHandler("3", "Department", retrieveHandler)
-	handlerContext.AddHandler("4", "Faculty", deleteHandler)
-	handlerContext.AddHandler("5", "Back", backHandler)
-
-	return CommonModelMenu
+	return modelMenu
 }
 
-func (menu *CommonModelMenuState) Render() {
-	fmt.Println()
-	fmt.Println(":/asset/instrument")
-	fmt.Println()
-	fmt.Println("Instrument Management")
-	fmt.Println("Your options are...")
-	menu.handlerContext.ShowMenu()
-	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\\\_(ツ)_/¯)")
-	fmt.Println()
-}
-
-func (menu *CommonModelMenuState) HandleUserInput(input string) error {
-	validInputs := map[string]bool{
-		"1": true,
-		"2": true,
-		"3": true,
-		"4": true,
-		"5": true,
+func (m *CommonModelMenu) Run() {
+	for {
+		m.menu.DisplayMenu()
+		choice := m.menu.GetMenuChoice()
+		if choice == "back" {
+			return
+		}
+		m.menu.Execute(choice, nil)
 	}
-
-	if !validInputs[input] {
-		return fmt.Errorf("invalid input: '%s' — please choose between 1 and 5", input)
-	}
-
-	err := menu.handlerContext.HandleInput(input)
-	if err != nil {
-		fmt.Println("Handler error:", err)
-		return err
-	}
-
-	return nil
 }

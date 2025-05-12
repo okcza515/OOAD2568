@@ -2,6 +2,7 @@ package controller
 
 import (
 	"ModEd/common/model"
+	"ModEd/core"
 	"fmt"
 	"time"
 
@@ -9,44 +10,50 @@ import (
 )
 
 type StudentController struct {
-	DB *gorm.DB
+	*core.BaseController[model.Student]
 }
 
 func NewStudentController(db *gorm.DB) *StudentController {
 	db.AutoMigrate(&model.Student{})
-	return &StudentController{DB: db}
+	return &StudentController{
+		BaseController: core.NewBaseController[model.Student](db),
+	}
 }
 
-func (c *StudentController) GetAll() ([]*model.Student, error) {
-	return model.CommonModelGetAll[model.Student](c.DB)
+func (c *StudentController) GetAll() ([]model.Student, error) {
+	return c.List(nil)
 }
 
-func (c *StudentController) GetBy(field string, value interface{}) ([]*model.Student, error) {
-	return model.GetRecordByField[model.Student](c.DB, field, value)
+func (c *StudentController) GetBy(field string, value interface{}) ([]model.Student, error) {
+	return c.List(map[string]interface{}{field: value})
 }
 
 func (c *StudentController) Update(code string, updatedData map[string]any) error {
-	return model.UpdateStudentByCode(c.DB, code, updatedData)
+	return c.UpdateByCondition(map[string]interface{}{
+		"student_code": code,
+	}, model.Student{})
 }
 
 func (c *StudentController) UpdateByField(field string, value interface{}, updatedData map[string]any) error {
-	return model.UpdateRecordByField[model.Student](c.DB, field, value, updatedData, model.Student{})
+	return c.UpdateByCondition(map[string]interface{}{field: value}, model.Student{})
 }
 
 func (c *StudentController) DeleteByCode(code string) error {
-	return model.DeleteStudentByCode(c.DB, code)
+	return c.DeleteByCondition(map[string]interface{}{
+		"student_code": code,
+	})
 }
 
-func (c *StudentController) Register(students []*model.Student) error {
-	return model.CommonRegister(c.DB, students)
+func (c *StudentController) Register(students []model.Student) error {
+	return c.InsertMany(students)
 }
 
 func (c *StudentController) Delete(field string, value interface{}) error {
-	return model.DeleteRecordByField[model.Student](c.DB, field, value, model.Student{})
+	return c.DeleteByCondition(map[string]interface{}{field: value})
 }
 
 func (c *StudentController) Truncate() error {
-	return model.TruncateModel(c.DB, "students")
+	return c.DeleteByCondition(map[string]interface{}{})
 }
 
 func (c *StudentController) ManualAddStudent() error {
@@ -62,10 +69,10 @@ func (c *StudentController) ManualAddStudent() error {
 	fmt.Print("Enter Email: ")
 	var email string
 	fmt.Scan(&email)
-	fmt.Print("Enter StartDate: ")
+	fmt.Print("Enter StartDate (DD-MM-YYYY): ")
 	var startDate string
 	fmt.Scan(&startDate)
-	fmt.Print("Enter BirthDate: ")
+	fmt.Print("Enter BirthDate (DD-MM-YYYY): ")
 	var birthDate string
 	fmt.Scan(&birthDate)
 	fmt.Print("Enter Program: ")
@@ -78,19 +85,53 @@ func (c *StudentController) ManualAddStudent() error {
 	var status model.StudentStatus
 	fmt.Scan(&status)
 
-	parseStartDate, _ := time.Parse("02-01-2006", startDate)
-	parseBirthDate, _ := time.Parse("02-01-2006", birthDate)
+	var parsedStartDate time.Time
+	var parsedBirthDate time.Time
+	var err error
 
-	student := &model.Student{
+	if startDate != "" {
+		parsedStartDate, err = time.Parse("02-01-2006", startDate)
+		if err != nil {
+			return fmt.Errorf("invalid start date format: %w", err)
+		}
+	}
+
+	if birthDate != "" {
+		parsedBirthDate, err = time.Parse("02-01-2006", birthDate)
+		if err != nil {
+			return fmt.Errorf("invalid birth date format: %w", err)
+		}
+	}
+
+	student := model.Student{
 		StudentCode: studentCode,
 		FirstName:   firstname,
 		LastName:    lastname,
 		Email:       email,
-		StartDate:   parseStartDate,
-		BirthDate:   parseBirthDate,
+		StartDate:   parsedStartDate,
+		BirthDate:   parsedBirthDate,
 		Program:     program,
 		Department:  department,
 		Status:      &status,
 	}
-	return model.ManualAddStudent(c.DB, student)
+	return c.Insert(student)
+}
+
+// Additional student-specific methods
+func (c *StudentController) GetByStudentCode(code string) (model.Student, error) {
+	return c.RetrieveByCondition(map[string]interface{}{
+		"student_code": code,
+	})
+}
+
+func (c *StudentController) UpdateByStudentCode(code string, student model.Student) error {
+	return c.UpdateByCondition(map[string]interface{}{
+		"student_code": code,
+	}, student)
+}
+
+func (c *StudentController) DeleteByStudentCode(code string) error {
+	return c.DeleteByCondition(map[string]interface{}{
+		"student_code": code,
+	})
 }

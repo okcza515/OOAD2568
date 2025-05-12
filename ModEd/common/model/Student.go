@@ -1,13 +1,16 @@
 package model
 
 import (
+	"errors"
 	"time"
+
+	"ModEd/core"
 
 	"gorm.io/gorm"
 )
 
 type Student struct {
-	gorm.Model
+	core.BaseModel
 	StudentCode string         `gorm:"not null;unique" csv:"student_code" json:"student_code"`
 	FirstName   string         `csv:"first_name" json:"first_name"`
 	LastName    string         `csv:"last_name" json:"last_name"`
@@ -21,6 +24,13 @@ type Student struct {
 
 func (Student) TableName() string {
 	return "students"
+}
+
+func (s Student) Validate() error {
+	if s.StudentCode == "" {
+		return errors.New("student code is required")
+	}
+	return nil
 }
 
 func UpdateStudentByCode(db *gorm.DB, code string, updated map[string]interface{}) error {

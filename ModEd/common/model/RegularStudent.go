@@ -1,8 +1,14 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"ModEd/core"
+)
 
 type RegularStudent struct {
-	gorm.Model
+	core.BaseModel
 	Student
+}
+
+func (rs RegularStudent) Validate() error {
+	return rs.Student.Validate()
 }
