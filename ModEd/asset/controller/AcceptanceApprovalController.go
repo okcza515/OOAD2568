@@ -33,6 +33,18 @@ func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApp
 		Preload("Procurement").
 		Preload("Approver").
 		Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
+		Where("procurements.procurement_id IS NOT NULL").
+		Find(&approvals).Error
+
+	return approvals, err
+}
+
+func (c *AcceptanceApprovalController) ListAllPendingApprovals() ([]model.AcceptanceApproval, error) {
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
+		Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
 		Where("procurements.procurement_id IS NOT NULL AND acceptance_approvals.status = ?", "pending").
 		Find(&approvals).Error
 

@@ -34,6 +34,15 @@ func (c *BudgetApprovalController) ShowBudgetRequestList(instrumentRequestID uin
 func (c *BudgetApprovalController) ListAllApprovals() ([]model.BudgetApproval, error) {
 	var approvals []model.BudgetApproval
 	err := c.db.
+		Preload("Approver").
+		Preload("InstrumentRequest").
+		Find(&approvals).Error
+	return approvals, err
+}
+
+func (c *BudgetApprovalController) ListAllPendingApprovals() ([]model.BudgetApproval, error) {
+	var approvals []model.BudgetApproval
+	err := c.db.
 		Where("status = ?", "pending").
 		Preload("Approver").
 		Preload("InstrumentRequest").

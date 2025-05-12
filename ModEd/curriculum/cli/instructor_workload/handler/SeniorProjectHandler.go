@@ -23,9 +23,9 @@ func NewSeniorProjectWorkloadHandler(db *gorm.DB) SeniorProjectWorkloadHandler {
 
 func (s SeniorProjectWorkloadHandler) Execute() {
 	seniorProjectMenu := NewMenuHandler("Senior Project Workload Menu", true)
-	seniorProjectMenu.Add("View Advising Project", ViewAdvisingProject{db: s.db})
-	seniorProjectMenu.Add("View Committee Project", nil)
-	seniorProjectMenu.Add("Evaluate Project", EvaluateProject{db: s.db})
+	seniorProjectMenu.Add(string(MENU_SENIOR_PROJECT_VIEW_ADVISOR_PROJECT), ViewAdvisingProject{db: s.db})
+	seniorProjectMenu.Add(string(MENU_SENIOR_PROJECT_VIEW_COMMITTEE_PROJECT), ViewCommitteeProject{db: s.db})
+	seniorProjectMenu.Add(string(MENU_SENIOR_PROJECT_EVALUATE_PROJECT), EvaluateProject{db: s.db})
 	seniorProjectMenu.SetBackHandler(Back{})
 	seniorProjectMenu.SetDefaultHandler(UnknownCommand{})
 	seniorProjectMenu.Execute()
