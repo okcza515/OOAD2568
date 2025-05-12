@@ -4,22 +4,24 @@ package handler
 
 import (
 	"ModEd/core"
+	"ModEd/curriculum/cli/instructor_workload/handler"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/eval/util"
 	"fmt"
-	"time"
 
 	"gorm.io/gorm"
 )
 
 type ExamHandler struct {
 	ExamCtrl *controller.ExamController
+	ExamSectionCtrl *controller.ExamSectionController
 }
 
 func NewExamHandler(db *gorm.DB) ExamHandler {
 	return ExamHandler{
 		ExamCtrl: controller.NewExamController(db),
+		ExamSectionCtrl: controller.NewExamSectionController(db),
 	}
 }
 
@@ -36,15 +38,16 @@ func (u UnknownCommand) Execute() {
 }
 
 func (e ExamHandler) Execute() {
-	menu := NewMenuHandler("Exam Options", true)
-	menu.Add("List Published Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Publish"})
-	menu.Add("List Draft Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Draft"})
-	menu.Add("List Closed Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: "Hidden"})
+	menu := handler.NewMenuHandler("Exam Menu", true)
+	menu.Add("List Published Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: model.Publish})
+	menu.Add("List Draft Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: model.Draft})
+	menu.Add("List Closed Exams", &ListExamByStatusCommand{ExamCtrl: e.ExamCtrl, status: model.Hidden})
 	menu.Add("Publish Exam", &PublishExamCommand{ExamCtrl: e.ExamCtrl})
 	menu.Add("Hidden Exam", &HiddenExamCommand{ExamCtrl: e.ExamCtrl})
-	menu.Add("Retrieve Exam", RetrieveExamCommand{ExamCtrl: e.ExamCtrl})
-	menu.Add("Create Exam", CreateExamCommand{ExamCtrl: e.ExamCtrl})
+	menu.Add("Retrieve Exam", RetrieveExamCommand{ExamCtrl: e.ExamCtrl , ExamSectionCtrl: e.ExamSectionCtrl})
+	menu.Add("Create Exam", CreateExamCommand{ExamCtrl: e.ExamCtrl , ExamSectionCtrl: e.ExamSectionCtrl})
 	menu.Add("Update Exam", &UpdateExamCommand{ExamCtrl: e.ExamCtrl})
+	menu.Add("Update Exam Section", &UpdateExamSectionCommand{ExamSectionCtrl: e.ExamSectionCtrl})
 	menu.Add("Delete Exam", &DeleteExamCommand{ExamCtrl: e.ExamCtrl})
 
 	menu.SetBackHandler(Back{})
@@ -73,6 +76,7 @@ func (c *ListExamByStatusCommand) Execute() {
 
 type RetrieveExamCommand struct {
 	ExamCtrl *controller.ExamController
+	ExamSectionCtrl *controller.ExamSectionController
 }
 
 func (c RetrieveExamCommand) Execute() {
@@ -86,39 +90,124 @@ func (c RetrieveExamCommand) Execute() {
 		fmt.Println("Error retrieving exam:", err)
 		return
 	}
+	examSection , err := c.ExamSectionCtrl.RetrieveByExamID(exam.ID)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 	fmt.Println("Retrieved Exam:")
 	fmt.Printf("Exam Name         : %s\n", exam.ExamName)
 	fmt.Printf("Exam Description  : %s\n", exam.Description)
 	fmt.Printf("Exam Start        : %s\n", exam.StartDate)
 	fmt.Printf("Exam End          : %s\n", exam.EndDate)
+	fmt.Printf("Exam Status       : %s\n", exam.ExamStatus)
+	fmt.Println("Exam Sections:")
+	for _, section := range examSection {
+		fmt.Printf("Section No        : %d\n", section.SectionNo)
+		fmt.Printf("Section Description: %s\n", section.Description)
+		fmt.Printf("Number of Questions: %d\n", section.NumQuestions)
+		fmt.Printf("Score             : %.2f\n", section.Score)
+	}
 }
 
 type CreateExamCommand struct {
 	ExamCtrl *controller.ExamController
+	ExamSectionCtrl *controller.ExamSectionController
 }
 
 func (c CreateExamCommand) Execute() {
-	newExam := &model.Exam{
-		ExamName: "Midterm",
-		InstructorID: 1,
-		ClassID: 1,
-		Description: "this is midterm",
-		ExamStatus: "Draft",
-		Attempt: 1,
-		StartDate: func() time.Time {
-			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 10:00:00")
-			return t
-		}(),
-		EndDate: func() time.Time {
-			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 12:00:00")
-			return t
-		}(),
+	examName := util.PromptString("Enter Exam Name: ")
+	instructorID, err := util.PromptUint("Enter Instructor ID: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
 	}
-	err := c.ExamCtrl.Insert(newExam)
+	classID, err := util.PromptUint("Enter class ID: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	description := util.PromptString("Enter Exam Description: ")
+	startDate, err := util.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	endDate, err := util.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	numSections, err := util.PromptUint("Enter number of sections: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	sectionDescriptions := make([]string, numSections)
+	for i := 0; i < int(numSections); i++ {
+		sectionDescriptions[i] = util.PromptString(fmt.Sprintf("Enter description for section %d: ", i+1))
+	}
+
+	sectionNumQuestions := make([]int, numSections)
+	for i := 0; i < int(numSections); i++ {
+		numQuestions, err := util.PromptUint(fmt.Sprintf("Enter number of questions for section %d: ", i+1))
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		sectionNumQuestions[i] = int(numQuestions)
+	}
+
+	sectionScores := make([]float64, numSections)
+	for i := 0; i < int(numSections); i++ {
+		score, err := util.PromptFloat(fmt.Sprintf("Enter score for section %d: ", i+1))
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+		sectionScores[i] = score
+	}
+
+	newExam := &model.Exam{
+		ExamName: examName,
+		InstructorID: uint(instructorID),
+		ClassID: uint(classID),
+		Description: description,
+		ExamStatus: model.ExamStatus("Draft"),
+		Attempt: 1,
+		StartDate: startDate,
+		EndDate: endDate,
+	}
+
+	if newExam.StartDate.After(newExam.EndDate) {
+		fmt.Println("Start date must be before end date.")
+		return
+	}
+
+	newExamSection := make([]*model.ExamSection, numSections)
+	for i := 0; i < int(numSections); i++ {
+		newExamSection[i] = &model.ExamSection{
+			ExamID: newExam.ID,
+			SectionNo: uint(i + 1),
+			Description: sectionDescriptions[i],
+			NumQuestions: sectionNumQuestions[i],
+			Score: sectionScores[i],
+		}
+	}
+
+	err = c.ExamCtrl.Insert(newExam)
 	if err != nil {
 		println("Error creating exam:", err.Error())
 		return
 	}
+	err = c.ExamSectionCtrl.InsertMany(newExamSection)
+	if err != nil {
+		println("Error creating section:", err.Error())
+		return
+	}
+
 	println("Exam created successfully.")
 }
 
@@ -138,8 +227,23 @@ func (c *UpdateExamCommand) Execute() {
 		fmt.Println("Error:", err)
 		return
 	}
-	if exam.ExamStatus != "Draft" {
+
+	if exam.ExamStatus != model.ExamStatus("Draft") {
 		fmt.Println("Exam is not in Draft status, cannot update.")
+		return
+	}
+
+	newExamName := util.PromptString("Enter Exam Name: ")
+	newDescription := util.PromptString("Enter Exam Description: ")
+	newExamStatus := util.PromptString("Enter Exam Status (Draft/Publish/Hidden): ")
+	newStartDate, err := util.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	newEndDate, err := util.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	if err != nil {
+		fmt.Println("Error:", err)
 		return
 	}
 
@@ -148,18 +252,18 @@ func (c *UpdateExamCommand) Execute() {
 		BaseModel: core.BaseModel{
 			Model: gorm.Model{ID: exam.ID},
 		},
-		Description: "Updated description",
-		ExamName:    "Updated Exam Name",
-		ExamStatus:  "Draft",
-		StartDate:   func() time.Time {
-			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 09:00:00")
-			return t
-		}(),
-		EndDate:     func() time.Time {
-			t, _ := time.Parse("2006-01-02 15:04:05", "2023-10-01 12:00:00")
-			return t
-		}(),
+		ExamName:    newExamName,
+		Description: newDescription,
+		ExamStatus:  model.ExamStatus(newExamStatus),
+		StartDate:   newStartDate,
+		EndDate:     newEndDate,
 	}
+
+	if updatedExam.StartDate.After(updatedExam.EndDate) {
+		fmt.Println("Start date must be before end date.")
+		return
+	}
+
 	err = c.ExamCtrl.UpdateByID(updatedExam)
 	if err != nil {
 		fmt.Println("Update failed:", err)
@@ -168,8 +272,72 @@ func (c *UpdateExamCommand) Execute() {
 	fmt.Println("Exam updated successfully.")
 }
 
+type UpdateExamSectionCommand struct {
+	ExamSectionCtrl *controller.ExamSectionController
+}
+
+func (c *UpdateExamSectionCommand) Execute() {
+	examID, err := util.PromptUint("Enter Exam ID to Retrieve: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	sections, err := c.ExamSectionCtrl.RetrieveByExamID(uint(examID))
+	if err != nil {
+		fmt.Println("Error retrieving sections:", err)
+		return
+	}
+	fmt.Println("Exam Sections of Exam ID [%d]: \n", examID)
+	for _, section := range sections {
+		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
+		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
+		fmt.Println("--------------------------------------------------")
+	}
+
+	sectionID, err := util.PromptUint("Enter Section ID to update: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	for _, section := range sections {
+		if section.ID != uint(sectionID) {
+			fmt.Println("Section ID not found.")
+			return
+		}
+	}
+	newDescription := util.PromptString("Enter new description: ")
+	newNumQuestions, err := util.PromptUint("Enter new number of questions: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	newScore, err := util.PromptFloat("Enter new score: ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	updateSection := &model.ExamSection{
+		BaseModel: core.BaseModel{
+			Model: gorm.Model{ID: uint(sectionID)},
+		},
+		ExamID: uint(examID),
+		SectionNo: uint(sectionID),
+		Description: newDescription,
+		NumQuestions: int(newNumQuestions),
+		Score: newScore,
+	}
+	err = c.ExamSectionCtrl.UpdateByID(updateSection)
+	if err != nil {
+		fmt.Println("Error updating section:", err)
+		return
+	}
+	fmt.Println("Section updated successfully.")
+}
+
 type DeleteExamCommand struct {
 	ExamCtrl *controller.ExamController
+	ExamSectionCtrl *controller.ExamSectionController
 }
 
 func (c *DeleteExamCommand) Execute(){
@@ -177,6 +345,20 @@ func (c *DeleteExamCommand) Execute(){
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
+	}
+
+	sections, err := c.ExamSectionCtrl.RetrieveByExamID(uint(examID))
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	
+	for _, section := range sections {
+		err = c.ExamSectionCtrl.DeleteByID(section.ID)
+		if err != nil {
+			fmt.Println("Error deleting section:", err)
+			return
+		}
 	}
 
 	err = c.ExamCtrl.DeleteByID(uint(examID))
@@ -203,20 +385,11 @@ func (c *PublishExamCommand) Execute() {
 		return
 	}
 	
-	if exam.ExamStatus != "Draft" {
+	if exam.ExamStatus != model.ExamStatus("Draft") {
 		fmt.Println("Exam is not in Draft status, cannot publish.")
 		return
 	}
-	if exam.StartDate.IsZero() || exam.EndDate.IsZero() || exam.Attempt == 0 {
-		fmt.Println("Cannot publish: Please set start/end date and attempt > 0.")
-		return
-	}
-	if exam.StartDate.After(exam.EndDate) {
-		fmt.Println("Cannot publish: start date is after end date.")
-		return
-	}
 
-	// อัปเดตสถานะ
 	exam.ExamStatus = model.ExamStatus("Publish")
 
 	err = c.ExamCtrl.UpdateByID(exam)
