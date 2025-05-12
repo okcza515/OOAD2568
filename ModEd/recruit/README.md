@@ -26,6 +26,44 @@ go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLI
 
 go run common/cli/CommonDataCLI.go common/cli/MenuItemHandlers.go common/cli/CLIFunction.go --database="data/ModEd.bin"  --database="data/ModEd.bin" --database="data/ModEd.bin" --database="data/ModEd.bin" --path="data/common/DepartmentList.csv"
 
+## User guide
+
+### Admin role
+#### Select `Admin` role on the start menu:
+
+#### Login with: 
+- Username: `admin`
+- password: `1234`
+
+#### Then, you will see the `Admin menu`:
+
+    Admin Menu:
+    1. View Application Report
+    2. Schedule Interview
+    3. Delete Interview
+    4. Transfer Confirmed Applicants to Students
+ --> Select `1:Application Report` for view Applicant infomations, the functions will show up.
+
+    1. view All Applicatoin Reports
+    2. View Interview Reports
+    3. View Application Reports by Status:
+
+`remark`: you can search by status  <span style="color:yellow">Pending</span>, 
+<span style="color:green">Accepted</span>, 
+<span style="color:red">Rejected</span>, 
+etc
+
+
+--> Select `2:Schedule Interview` for Schedule Applicant and Instructor to interview. By enter both ID and Interview date and time to create interview schedule.
+
+--> Select `3:Delete Interview` for Delete the interview that in Student recruit system, By enter interview ID.
+
+--> Select `4:Transfer Confirm Applicant to student` for Transfer applicant that confirmed recruitment to student 
+
+### User role
+
+### Instructor role
+
 
 ### process flow
 1. Registration Form
