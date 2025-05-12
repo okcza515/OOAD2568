@@ -21,10 +21,8 @@ func main() {
 		util.ClearScreen()
 		util.PrintBanner()
 
-		// Render the current menu
 		manager.Render()
 
-		// Get user input
 		manager.UserInput = util.GetCommandInput()
 		if manager.UserInput == "exit" {
 			break
@@ -32,7 +30,6 @@ func main() {
 
 		util.ClearScreen()
 
-		// Handle the user input
 		err := manager.HandleUserInput()
 		if err != nil {
 			fmt.Println("Error handling user input:", err)

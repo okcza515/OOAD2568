@@ -1,4 +1,4 @@
-// File: helper/ProcurementHelper.go
+// MEP-1014
 package helper
 
 import (
@@ -53,7 +53,6 @@ func SelectProcurement(facade *controller.ProcurementControllerFacade) (*model.P
 	DisplayProcurementList(*procurements)
 	procurementID := util.GetUintInput("\nEnter Procurement ID: ")
 
-	// Fetch by ID
 	return facade.Procurement.GetProcurementByID(procurementID)
 }
 
@@ -68,14 +67,12 @@ func SelectTOR(facade *controller.ProcurementControllerFacade) (*model.TOR, erro
 	DisplayTORList(tors)
 	torID := util.GetUintInput("\nEnter TOR ID: ")
 
-	// Fetch by ID
 	return facade.TOR.GetTORByID(torID)
 }
 
 func DeleteEntity(deleteFunc func(uint) error, entityName string, id uint) error {
 	fmt.Printf("Delete %s\n", entityName)
 
-	// Call the delete function
 	err := deleteFunc(id)
 	if err != nil {
 		fmt.Printf("Failed to delete %s: %v\n", entityName, err)

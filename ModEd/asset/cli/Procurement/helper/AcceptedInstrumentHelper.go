@@ -1,3 +1,4 @@
+// MEP-1014
 package helper
 
 import (
@@ -36,85 +37,78 @@ func HandleInstrumentOption(facade *controller.ProcurementControllerFacade) {
 }
 
 func PrintInstrumentList(facade *controller.ProcurementControllerFacade) {
-    instruments, err := facade.Instrument.ListAllInstruments()
-    if err != nil {
-        fmt.Println("Failed to fetch instruments:", err)
-        return
-    }
+	instruments, err := facade.Instrument.ListAllInstruments()
+	if err != nil {
+		fmt.Println("Failed to fetch instruments:", err)
+		return
+	}
 
-    if len(instruments) == 0 {
-        fmt.Println("No instruments found.")
-        return
-    }
+	if len(instruments) == 0 {
+		fmt.Println("No instruments found.")
+		return
+	}
 
-    fmt.Println("Available Instruments:")
-    fmt.Println("---------------------------------------------------------------------------------------------")
-    fmt.Printf("%-5s | %-25s | %-15s | %-10s | %-15s\n", "ID", "Label", "Code", "Status", "Location")
-    fmt.Println("---------------------------------------------------------------------------------------------")
-    for _, inst := range instruments {
-        fmt.Printf("%-5d | %-25s | %-15s | %-10s | %-15s\n",
-            inst.ID,
-            inst.InstrumentLabel,
-            inst.InstrumentCode,
-            inst.InstrumentStatus,
-            inst.Location,
-        )
-    }
-    fmt.Println("---------------------------------------------------------------------------------------------")
+	fmt.Println("Available Instruments:")
+	fmt.Println("---------------------------------------------------------------------------------------------")
+	fmt.Printf("%-5s | %-25s | %-15s | %-10s | %-15s\n", "ID", "Label", "Code", "Status", "Location")
+	fmt.Println("---------------------------------------------------------------------------------------------")
+	for _, inst := range instruments {
+		fmt.Printf("%-5d | %-25s | %-15s | %-10s | %-15s\n",
+			inst.ID,
+			inst.InstrumentLabel,
+			inst.InstrumentCode,
+			inst.InstrumentStatus,
+			inst.Location,
+		)
+	}
+	fmt.Println("---------------------------------------------------------------------------------------------")
 }
-
 
 func HandleInstrumentDetails(facade *controller.ProcurementControllerFacade) {
-    id := util.GetUintInput("Enter Instrument ID: ")
+	id := util.GetUintInput("Enter Instrument ID: ")
 
-    // 🔎 Try making a safe call to the database
-    if _, err := facade.Instrument.ListAllInstruments(); err != nil {
-        fmt.Println("Instrument Controller is not initialized or database connection failed:", err)
-        util.PressEnterToContinue()
-        return
-    }
+	if _, err := facade.Instrument.ListAllInstruments(); err != nil {
+		fmt.Println("Instrument Controller is not initialized or database connection failed:", err)
+		util.PressEnterToContinue()
+		return
+	}
 
-    // ✅ Now we can safely retrieve the instrument
-    fmt.Println("Attempting to fetch instrument details...") // <-- Logging
-    instrument, err := facade.Instrument.RetrieveByID(id)
-    
-    // 🔍 Check for errors during retrieval
-    if err != nil {
-        fmt.Println("Failed to retrieve instrument:", err)
-        util.PressEnterToContinue()
-        return
-    }
-    
-    // 🔎 Instead of nil, we check if it is "zero-valued"
-    if instrument.ID == 0 {
-        fmt.Println("Instrument not found.")
-        util.PressEnterToContinue()
-        return
-    }
+	fmt.Println("Attempting to fetch instrument details...")
+	instrument, err := facade.Instrument.RetrieveByID(id)
 
-    // ✅ Display Instrument Details
+	if err != nil {
+		fmt.Println("Failed to retrieve instrument:", err)
+		util.PressEnterToContinue()
+		return
+	}
+
+	if instrument.ID == 0 {
+		fmt.Println("Instrument not found.")
+		util.PressEnterToContinue()
+		return
+	}
+
 	util.ClearScreen()
-    fmt.Println("Instrument Details:")
-    fmt.Printf("  ID: %d\n", instrument.ID)
-    fmt.Printf("  Label: %s\n", instrument.InstrumentLabel)
-    fmt.Printf("  Code: %s\n", instrument.InstrumentCode)
-    fmt.Printf("  Status: %s\n", instrument.InstrumentStatus)
-    fmt.Printf("  Room ID: %s\n", instrument.RoomID)
-    fmt.Printf("  Location: %s\n", instrument.Location)
-    fmt.Printf("  Category ID: %d\n", instrument.CategoryID)
-    fmt.Printf("  Cost: %.2f\n", instrument.Cost)
-    fmt.Printf("  Budget Year: %d\n", instrument.BudgetYear)
-    
-    if instrument.InstrumentBrand != nil {
-        fmt.Printf("  Brand: %s\n", *instrument.InstrumentBrand)
-    }
-    if instrument.InstrumentModel != nil {
-        fmt.Printf("  Model: %s\n", *instrument.InstrumentModel)
-    }
+	fmt.Println("Instrument Details:")
+	fmt.Printf("  ID: %d\n", instrument.ID)
+	fmt.Printf("  Label: %s\n", instrument.InstrumentLabel)
+	fmt.Printf("  Code: %s\n", instrument.InstrumentCode)
+	fmt.Printf("  Status: %s\n", instrument.InstrumentStatus)
+	fmt.Printf("  Room ID: %s\n", instrument.RoomID)
+	fmt.Printf("  Location: %s\n", instrument.Location)
+	fmt.Printf("  Category ID: %d\n", instrument.CategoryID)
+	fmt.Printf("  Cost: %.2f\n", instrument.Cost)
+	fmt.Printf("  Budget Year: %d\n", instrument.BudgetYear)
 
-    util.PressEnterToContinue()
+	if instrument.InstrumentBrand != nil {
+		fmt.Printf("  Brand: %s\n", *instrument.InstrumentBrand)
+	}
+	if instrument.InstrumentModel != nil {
+		fmt.Printf("  Model: %s\n", *instrument.InstrumentModel)
+	}
+
+	util.PressEnterToContinue()
 }
-
 
 func HandleImportInstrument(facade *controller.ProcurementControllerFacade) {
 	filename := util.GetStringInput("Enter path to the CSV file (data/instruments.csv): ")
@@ -129,7 +123,7 @@ func HandleImportInstrument(facade *controller.ProcurementControllerFacade) {
 }
 
 func ImportInstrumentsFromCSV(db *gorm.DB, filename string) error {
-	
+
 	file, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %v", err)
@@ -201,12 +195,12 @@ func parseInt(value string) int {
 
 func HandleCreateInstrumentFromAcceptance(facade *controller.ProcurementControllerFacade) {
 	fmt.Println("List of Approved Accepted Requests:")
-	
+
 	PrintAcceptanceList(facade)
-	
+
 	acceptanceID := util.GetUintInput("Enter Acceptance Approval ID: ")
 
-	util.ClearScreen()  
+	util.ClearScreen()
 
 	err := facade.Instrument.CreateInstrumentsFromAcceptance(acceptanceID)
 	if err != nil {
@@ -224,7 +218,6 @@ func HandleCreateInstrumentFromAcceptance(facade *controller.ProcurementControll
 
 	util.PressEnterToContinue()
 }
-
 
 func PrintAcceptanceList(facade *controller.ProcurementControllerFacade) {
 	acceptedRequests, err := facade.Acceptance.ListAllApprovals()
