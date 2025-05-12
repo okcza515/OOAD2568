@@ -4,7 +4,7 @@ package examination
 
 import (
 	newMenuHandler "ModEd/curriculum/cli/instructor_workload/handler"
-	"ModEd/eval/cli/examination/handler"
+	examMenu "ModEd/eval/cli/examination/menu"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"ModEd/utils/deserializer"
@@ -33,7 +33,7 @@ func RunExamModuleCLI(
 ) {
 	menu := newMenuHandler.NewMenuHandler("Exam Module", true)
 	menu.Add("Load Seed Data", LoadSeedData{db: db})
-	menu.Add("Manage Exams", handler.ExamHandler{ExamCtrl: examCtrl, ExamSectionCtrl: examSectionCtrl})
+	menu.Add("Manage Exams", examMenu.ExamMenu{ExamCtrl: examCtrl, ExamSectionCtrl: examSectionCtrl})
 	menu.SetBackHandler(Back{})
 	menu.SetDefaultHandler(UnknownCommand{})
 	menu.Execute()
