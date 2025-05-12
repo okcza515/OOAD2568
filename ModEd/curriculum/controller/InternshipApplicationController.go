@@ -44,12 +44,20 @@ func (repo InternshipApplicationController) RegisterInternshipApplications(appli
 	return nil
 }
 
-func (repo InternshipApplicationController) GetInternshipApplicationByID(id string) (*model.InternshipApplication, error) {
-	application := &model.InternshipApplication{}
-	result := repo.Connector.Preload("InternshipReport").
-		Preload("SupervisorReview").
-		First(application, id)
-	return application, result.Error
+func (repo InternshipApplicationController) GetInternshipApplicationByID(id uint) (*model.InternshipApplication, error) {
+	var application model.InternshipApplication
+	if err := repo.Connector.First(&application, id).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve application record with ID %d: %w", id, err)
+	}
+	return &application, nil
+}
+
+func (repo InternshipApplicationController) GetByStudentCode(studentCode string) (*model.InternshipApplication, error) {
+	var application model.InternshipApplication
+	if err := repo.Connector.Where("student_code = ?", studentCode).First(&application).Error; err != nil {
+			return nil, fmt.Errorf("failed to retrieve application record with Student Code %s: %w", studentCode, err)
+	}
+	return &application, nil
 }
 
 func (repo InternshipApplicationController) GetApplicationStatusByID(id string) (string, error) {
@@ -122,7 +130,13 @@ type UniversityToCompanyStrategy struct{Connector *gorm.DB}
 
 func (s *UniversityToCompanyStrategy) Execute(app *model.InternshipApplication) error {
 	controller := InternshipApplicationController{Connector: s.Connector}
-	application, err := controller.GetInternshipApplicationByID(fmt.Sprint(app.ID))
+
+	studentCode := utils.GetUserInput("Enter Student Code: ")
+	if len(studentCode) != 11 {
+		fmt.Println("Student Code cannot be empty.")
+	}
+
+	application, err := controller.GetByStudentCode(studentCode)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve internship application: %w", err)
 	}
@@ -143,7 +157,13 @@ type CompanyToUniversityStrategy struct{Connector *gorm.DB}
 
 func (s *CompanyToUniversityStrategy) Execute(app *model.InternshipApplication) error {
 	controller := InternshipApplicationController{Connector: s.Connector}
-	application, err := controller.GetInternshipApplicationByID(fmt.Sprint(app.ID))
+	ApprovedController := ApprovedController{Connector: s.Connector}
+	studentCode := utils.GetUserInput("Enter Student Code: ")
+	if len(studentCode) != 11 {
+		fmt.Println("Student Code cannot be empty.")
+	}
+
+	application, err := controller.GetByStudentCode(studentCode)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve internship application: %w", err)
 	}
@@ -157,6 +177,7 @@ func (s *CompanyToUniversityStrategy) Execute(app *model.InternshipApplication) 
 	if err := s.Connector.Save(app).Error; err != nil {
 		return fmt.Errorf("failed to update internship application: %w", err)
 	}
+	ApprovedController.UpdateApprovalStatuses(app.StudentCode, app.ApprovalUniversityStatus, app.ApprovalCompanyStatus)
 	fmt.Println("Company responded to university")
 	return nil
 }
@@ -176,17 +197,17 @@ func (e *SubmissionExecutor) Execute(app *model.InternshipApplication) error {
 	return e.Strategy.Execute(app)
 }
 
-func SubmitApplication(app *model.InternshipApplication, role string) error {
+func SubmitApplication(app *model.InternshipApplication, role string, connector *gorm.DB) error {
 	executor := &SubmissionExecutor{}
 	switch role {
-	case "student":
-		executor.SetStrategy(&StudentToUniversityStrategy{})
-	case "university":
-		executor.SetStrategy(&UniversityToCompanyStrategy{})
-	case "company":
-		executor.SetStrategy(&CompanyToUniversityStrategy{})
+	case string(model.RoleStudent):
+			executor.SetStrategy(&StudentToUniversityStrategy{Connector: connector})
+	case string(model.RoleUniversity):
+			executor.SetStrategy(&UniversityToCompanyStrategy{Connector: connector})
+	case string(model.RoleCompany):
+			executor.SetStrategy(&CompanyToUniversityStrategy{Connector: connector})
 	default:
-		return errors.New("invalid role")
+			return errors.New("invalid role")
 	}
 
 	return executor.Execute(app)
