@@ -224,8 +224,24 @@ func (c *StudentHRController) ImportStudents(filepath string) error {
 	return err
 }
 
-func (c *StudentHRController) ExportStudents(tx *gorm.DB, filePath string, format string) error {
-	// TODO: Implement export functionality
+func (c *StudentHRController) ExportStudents(filePath string) error {
+	students, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve students: %w", err)
+	}
+
+	studentMapper, err := core.CreateMapper[model.StudentInfo](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create student mapper: %w", err)
+	}
+
+	err = studentMapper.Serialize(students)
+	if err != nil {
+		return fmt.Errorf("failed to serialize students: %w", err)
+	}
+
+	fmt.Printf("Exported %d students to %s\n", len(students), filePath)
+
 	return nil
 }
 

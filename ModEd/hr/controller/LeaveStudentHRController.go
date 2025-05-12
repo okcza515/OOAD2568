@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -26,8 +27,8 @@ func (c *LeaveStudentHRController) update(request *model.RequestLeaveStudent) er
 func (c *LeaveStudentHRController) delete(request *model.RequestLeaveStudent) error {
 	return c.db.Delete(request).Error
 }
-func (c *LeaveStudentHRController) getAll() ([]model.RequestLeaveStudent, error) {
-	var requests []model.RequestLeaveStudent
+func (c *LeaveStudentHRController) getAll() ([]*model.RequestLeaveStudent, error) {
+	var requests []*model.RequestLeaveStudent
 	err := c.db.Find(&requests).Error
 	if err != nil {
 		return nil, err
@@ -99,4 +100,24 @@ func (c *LeaveStudentHRController) ReviewStudentLeaveRequest(requestID, action, 
 			return c.db.Save(r).Error
 		},
 	)
+}
+
+func (c *LeaveStudentHRController) ExportStudentLeaveRequests(filePath string) error {
+	requests, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve student leave requests: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.RequestLeaveStudent](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create student leave request mapper: %w", err)
+	}
+
+	err = mapper.Serialize(requests)
+	if err != nil {
+		return fmt.Errorf("failed to serialize student leave requests: %w", err)
+	}
+
+	fmt.Printf("Exported %d student leave requests to %s\n", len(requests), filePath)
+	return nil
 }

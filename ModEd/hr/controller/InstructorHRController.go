@@ -256,3 +256,24 @@ func (c *InstructorHRController) DeleteInstructor(instructorID string) error {
 	})
 	return err
 }
+
+func (c *InstructorHRController) ExportInstructors(filePath string) error {
+	instuctors, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve instuctors: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.InstructorInfo](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create instuctors mapper: %w", err)
+	}
+
+	err = mapper.Serialize(instuctors)
+	if err != nil {
+		return fmt.Errorf("failed to serialize instuctors: %w", err)
+	}
+
+	fmt.Printf("Exported %d instuctors to %s\n", len(instuctors), filePath)
+
+	return nil
+}

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -29,6 +30,12 @@ func (c *ResignationInstructorHRController) getByID(id uint) (*model.RequestResi
 		return nil, err
 	}
 	return &request, nil
+}
+
+func (c *ResignationInstructorHRController) getAll() ([]*model.RequestResignationInstructor, error) {
+	var requests []*model.RequestResignationInstructor
+	err := c.db.Find(&requests).Error
+	return requests, err
 }
 
 func (c *ResignationInstructorHRController) getByInstructorID(id string) (*model.RequestResignationInstructor, error) {
@@ -89,4 +96,25 @@ func (c *ResignationInstructorHRController) ReviewInstructorResignRequest(reques
 			return c.db.Save(r).Error
 		},
 	)
+}
+
+func (c *ResignationInstructorHRController) ExportInstructorResignRequests(filePath string) error {
+	resignationInstructors, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve resignation requests: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.RequestResignationInstructor](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create resignation instructor mapper: %w", err)
+	}
+
+	err = mapper.Serialize(resignationInstructors)
+	if err != nil {
+		return fmt.Errorf("failed to serialize resignation instructor: %w", err)
+	}
+
+	fmt.Printf("Exported %d resignation instructor requests to %s\n", len(resignationInstructors), filePath)
+
+	return nil
 }
