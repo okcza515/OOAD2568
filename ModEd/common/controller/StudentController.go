@@ -117,7 +117,6 @@ func (c *StudentController) ManualAddStudent() error {
 	return c.Insert(student)
 }
 
-// Additional student-specific methods
 func (c *StudentController) GetByStudentCode(code string) (model.Student, error) {
 	return c.RetrieveByCondition(map[string]interface{}{
 		"student_code": code,

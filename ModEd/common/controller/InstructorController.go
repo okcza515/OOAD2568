@@ -100,7 +100,6 @@ func (c *InstructorController) ManualAddInstructor() error {
 	return c.Insert(instructor)
 }
 
-// Additional instructor-specific methods
 func (c *InstructorController) GetByInstructorCode(code string) (model.Instructor, error) {
 	return c.RetrieveByCondition(map[string]interface{}{
 		"instructor_code": code,

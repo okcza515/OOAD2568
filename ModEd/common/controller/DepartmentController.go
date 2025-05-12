@@ -76,7 +76,6 @@ func (c *DepartmentController) GetByFaculty(faculty string) ([]model.Department,
 	})
 }
 
-// Additional department-specific methods
 func (c *DepartmentController) GetByName(name string) (model.Department, error) {
 	return c.RetrieveByCondition(map[string]interface{}{
 		"name": name,

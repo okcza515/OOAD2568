@@ -63,7 +63,6 @@ func (c *FacultyController) Truncate() error {
 	return c.DeleteByCondition(map[string]interface{}{})
 }
 
-// Additional faculty-specific methods
 func (c *FacultyController) GetByName(name string) (model.Faculty, error) {
 	return c.RetrieveByCondition(map[string]interface{}{
 		"name": name,
