@@ -5,25 +5,25 @@ import (
 	"ModEd/common/model"
 
 	"ModEd/core"
+	"ModEd/core/validation"
 	"fmt"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
 type Curriculum struct {
-	CurriculumId uint              `gorm:"primaryKey;unique" csv:"curriculum_id" json:"curriculum_id" validate:"-"`
-	Name         string            `gorm:"not null" csv:"name" json:"name" validate:"required"`
-	StartYear    int               `gorm:"not null" csv:"start_year" json:"start_year" validate:"required"`
-	EndYear      int               `gorm:"not null" csv:"end_year" json:"end_year" validate:"required,gtefield=StartYear"`
-	DepartmentId uint              `gorm:"not null" csv:"department_id" json:"department_id" validate:"required"`
-	Department   model.Department  `gorm:"foreignKey:ID;references:DepartmentId" csv:"-" json:"-" validate:"-"`
-	ProgramType  model.ProgramType `gorm:"type:text;not null" csv:"program_type" json:"program_type" validate:"required"`
-	CourseList   []Course          `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-" validate:"-"`
-	CreatedAt    time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at" validate:"-"`
-	UpdatedAt    time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at" validate:"-"`
-	DeletedAt    gorm.DeletedAt    `csv:"-" json:"-" validate:"-"`
+	CurriculumId uint              `gorm:"primaryKey;unique" csv:"curriculum_id" json:"curriculum_id"`
+	Name         string            `gorm:"not null" csv:"name" json:"name"`
+	StartYear    int               `gorm:"not null" csv:"start_year" json:"start_year"`
+	EndYear      int               `gorm:"not null" csv:"end_year" json:"end_year"`
+	DepartmentId uint              `gorm:"not null" csv:"department_id" json:"department_id"`
+	Department   model.Department  `gorm:"foreignKey:ID;references:DepartmentId" csv:"-" json:"-"`
+	ProgramType  model.ProgramType `gorm:"type:text;not null" csv:"program_type" json:"program_type"`
+	CourseList   []Course          `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-"`
+	CreatedAt    time.Time         `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
+	UpdatedAt    time.Time         `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
+	DeletedAt    gorm.DeletedAt    `csv:"-" json:"-"`
 	*core.SerializableRecord
 }
 
@@ -34,12 +34,12 @@ func (c *Curriculum) ToString() string {
 	return fmt.Sprintf("%+v", c)
 }
 func (c *Curriculum) Validate() error {
-	validate := validator.New()
+	modelValidator := validation.NewModelValidator()
 
-	// Validate struct fields using v10 validator
-	if err := validate.Struct(c); err != nil {
+	if err := modelValidator.ModelValidate(c); err != nil {
 		return err
 	}
+
 	return nil
 }
 
