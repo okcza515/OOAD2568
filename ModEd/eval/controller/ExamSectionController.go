@@ -19,11 +19,3 @@ func NewExamSectionController(db *gorm.DB) *ExamSectionController {
 		BaseController: core.NewBaseController[*model.ExamSection](db),
 	}
 }
-
-func (c *ExamSectionController) RetrieveByExamID(examID uint) ([]*model.ExamSection, error) {
-	var examSections []*model.ExamSection
-	if err := c.db.Where("exam_id = ?", examID).Find(&examSections).Error; err != nil {
-		return nil, err
-	}
-	return examSections, nil
-}
