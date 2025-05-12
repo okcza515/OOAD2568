@@ -5,7 +5,7 @@ import (
 	"ModEd/core/handler"
 	"ModEd/core/migration"
 
-	evaluation "ModEd/eval/cli/evaluation"
+	evaluation "ModEd/eval/cli/evaluation/menu"
 
 	"fmt"
 

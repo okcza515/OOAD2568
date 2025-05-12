@@ -1,4 +1,4 @@
-package evaluation
+package menu
 
 import (
 	"ModEd/core/cli"
