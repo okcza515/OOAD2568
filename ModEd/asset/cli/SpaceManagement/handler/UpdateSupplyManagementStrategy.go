@@ -44,30 +44,25 @@ func (handler UpdateSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Room ID format: %v", err)
     }
 
-    // Get new supply label
-    fmt.Print("Enter new Supply Label: ")
-    label := util.GetCommandInput()
-
-    // Get new quantity
-    fmt.Print("Enter new Quantity: ")
-    var quantity int
-    _, err = fmt.Sscan(util.GetCommandInput(), &quantity)
+    // Get new supply ID
+    fmt.Print("Enter new Supply ID: ")
+    var supplyID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &supplyID)
     if err != nil {
-        return fmt.Errorf("invalid quantity: %v", err)
+        return fmt.Errorf("invalid Supply ID format: %v", err)
     }
 
     // Create update payload
-    supply := &model.SupplyManagement{
+    supplyManagement := &model.SupplyManagement{
         BaseModel: core.BaseModel{
             Model: gorm.Model{ID: id},
         },
-        RoomID: roomID,
-        SupplyLabel: label,
-        Quantity: quantity,
+        RoomID:    roomID,
+        SupplyID:  supplyID,
     }
 
     // Perform update
-    if err := handler.controller.UpdateById(supply); err != nil {
+    if err := handler.controller.UpdateById(supplyManagement); err != nil {
         return fmt.Errorf("failed to update supply management: %v", err)
     }
 
