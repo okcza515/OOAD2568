@@ -23,11 +23,11 @@ type Assessment struct {
 	Description    string `gorm:"type:varchar(255);"`
 	PublishDate    time.Time
 	DueDate        time.Time
-	Status         AssessmentStatus
+	Status         AssessmentStatus       `gorm:"type:varchar(20);not null;default:'drafted'"`
 	ClassId        curriculumModel.Class  `gorm:"foreignKey:ClassId;references:ClassId"`
 	InstructorCode commonModel.Instructor `gorm:"foreignKey:InstructorCode;references:InstructorCode"`
-	Submission     []AssessmentSubmission
-	State          AssessmentState
+	Submission     []AssessmentSubmission `gorm:"foreignKey:AssessmentId"`
+	State          AssessmentState        `gorm:"-"`
 }
 
 type AssessmentState interface {
