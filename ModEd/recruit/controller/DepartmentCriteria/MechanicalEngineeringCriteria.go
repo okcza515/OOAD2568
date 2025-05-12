@@ -5,8 +5,8 @@ import "ModEd/recruit/model"
 type MechanicalEngineeringCriteria struct{}
 
 const (
+	minGPAX_Mechanical  = 3.0
 	minTPAT1_Mechanical = 70.0
-	minGPAX_Mechanical  = 65.0
 	minTGAT1_Mechanical = 75.0
 	minTGAT2_Mechanical = 80.0
 )

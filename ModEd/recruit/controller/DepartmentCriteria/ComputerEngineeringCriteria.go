@@ -6,8 +6,8 @@ import "ModEd/recruit/model"
 type ComputerEngineeringCriteria struct{}
 
 const (
+	minGPAX_Computer  = 3.0
 	minTPAT1_Computer = 90.0
-	minGPAX_Computer  = 90.0
 	minTGAT1_Computer = 90.0
 	minTGAT2_Computer = 90.0
 )
