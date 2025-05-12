@@ -24,22 +24,13 @@ func NewInternshipEvaluationFacade(
 }
 
 func (f *InternshipEvaluationFacade) EvaluateInternship(studentCode string, criteriaScores map[uint]uint, comment string) error {
-
-	allInfos, err := f.InfoController.ListAll()
+	criteriaList, err := f.CriteriaController.ListAllByStudentCode(studentCode)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to retrieve criteria for student %s: %w", studentCode, err)
 	}
 
-	var targetInfo *model.InternshipInformation
-	for _, info := range allInfos {
-		if info.StudentCode == studentCode {
-			targetInfo = &info
-			break
-		}
-	}
-
-	if targetInfo == nil {
-		return fmt.Errorf("student %s not found", studentCode)
+	if len(criteriaList) == 0 {
+		return fmt.Errorf("no criteria found for student %s", studentCode)
 	}
 
 	totalScore := uint(0)
@@ -48,27 +39,39 @@ func (f *InternshipEvaluationFacade) EvaluateInternship(studentCode string, crit
 			return fmt.Errorf("invalid score %d for criteria ID %d", score, criteriaID)
 		}
 
-		criteria, err := f.CriteriaController.RetrieveByID(criteriaID)
-		if err != nil {
-			return err
+		var targetCriteria *model.InternshipCriteria
+		for _, criteria := range criteriaList {
+			if criteria.ID == criteriaID {
+				targetCriteria = &criteria
+				break
+			}
 		}
 
-		criteria.Score = score
-		if err := f.CriteriaController.Update(criteria); err != nil {
-			return err
+		if targetCriteria == nil {
+			return fmt.Errorf("criteria ID %d not found for student %s", criteriaID, studentCode)
+		}
+
+		targetCriteria.Score = score
+		if err := f.CriteriaController.Update(targetCriteria); err != nil {
+			return fmt.Errorf("failed to update criteria ID %d: %w", criteriaID, err)
 		}
 
 		totalScore += score
 	}
 
+	internshipInfo, err := f.InfoController.GetByStudentCode(studentCode)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve internship information for student %s: %w", studentCode, err)
+	}
+
 	result := &model.InternshipResultEvaluation{
 		Comment:                 comment,
 		Score:                   totalScore,
-		InternshipInformationId: targetInfo.ID,
+		InternshipInformationId: internshipInfo.ID,
 	}
 
 	if err := f.ResultController.Create(result); err != nil {
-		return err
+		return fmt.Errorf("failed to create result evaluation: %w", err)
 	}
 
 	return nil

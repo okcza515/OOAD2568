@@ -56,3 +56,13 @@ func (c *InternshipCriteriaController) ListAll() ([]model.InternshipCriteria, er
 	}
 	return criteriaList, nil
 }
+
+func (c *InternshipCriteriaController) ListAllByStudentCode(studentCode string) ([]model.InternshipCriteria, error) {
+	var criteriaList []model.InternshipCriteria
+	if err := c.Connector.Joins("JOIN internship_informations ON internship_criteria.internship_information_id = internship_informations.id").
+		Where("internship_informations.student_code = ?", studentCode).
+		Find(&criteriaList).Error; err != nil {
+		return nil, fmt.Errorf("failed to list InternshipCriteria records for student code '%s': %w", studentCode, err)
+	}
+	return criteriaList, nil
+}
