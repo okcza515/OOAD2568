@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -29,6 +30,7 @@ func NewProgressMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *cont
 }
 
 func (menu *ProgressMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nProgress tracking menu:")
 	menu.handler.AddHandler("1", "List all progress in each assignment.", handler.FuncStrategy{Action: menu.GetAllProgress})
 	menu.handler.AddHandler("2", "Get progress by student ID.", handler.FuncStrategy{Action: menu.GetProgressByStudentCode})
@@ -39,6 +41,7 @@ func (menu *ProgressMenuStateHandler) Render() {
 }
 
 func (menu *ProgressMenuStateHandler) HandlerUserInput(input string) error {
+	util.ClearScreen()
 	err := menu.handler.HandleInput(input)
 	if err != nil {
 		return err
@@ -47,6 +50,7 @@ func (menu *ProgressMenuStateHandler) HandlerUserInput(input string) error {
 }
 
 func (menu *ProgressMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 

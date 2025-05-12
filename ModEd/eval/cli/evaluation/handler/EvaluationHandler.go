@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/eval/controller"
@@ -27,6 +28,7 @@ func NewEvaluationMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *co
 }
 
 func (menu *EvaluationMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nEvaluation Menu")
 	menu.handler.AddHandler("1", "Evaluation Assignment", handler.FuncStrategy{Action: menu.CreateEvaluation})
 	menu.handler.AddHandler("2", "View All Evaluations", handler.FuncStrategy{Action: menu.ViewAllEvaluations})
@@ -37,6 +39,7 @@ func (menu *EvaluationMenuStateHandler) Render() {
 }
 
 func (menu *EvaluationMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 

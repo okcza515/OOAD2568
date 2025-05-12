@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -30,6 +31,7 @@ func NewAssignmentSubmissionMenuStateHandler(manager *cli.CLIMenuStateManager, w
 }
 
 func (menu *AssignmentSubmissionMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nAssignment Submission Menu")
 	menu.handler.AddHandler("1", "View Available Assignments", handler.FuncStrategy{Action: menu.ViewPublishedAssignments})
 	menu.handler.AddHandler("2", "Create/Update Draft Submission", handler.FuncStrategy{Action: menu.CreateDraftSubmission})
@@ -42,6 +44,7 @@ func (menu *AssignmentSubmissionMenuStateHandler) Render() {
 }
 
 func (menu *AssignmentSubmissionMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 

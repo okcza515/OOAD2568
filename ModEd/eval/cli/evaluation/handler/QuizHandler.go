@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -30,6 +31,7 @@ func NewQuizMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controll
 }
 
 func (menu *QuizMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nQuiz management menu:")
 	menu.handler.AddHandler("1", "Create new quiz", handler.FuncStrategy{Action: menu.CreateQuiz})
 	menu.handler.AddHandler("2", "Update quiz", handler.FuncStrategy{Action: menu.UpdateQuiz})
@@ -41,6 +43,7 @@ func (menu *QuizMenuStateHandler) Render() {
 }
 
 func (menu *QuizMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 

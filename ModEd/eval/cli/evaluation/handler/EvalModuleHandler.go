@@ -95,6 +95,7 @@ func (l *LoadEvalCommand) HandleUserInput(input string) error {
 		fmt.Printf("Error loading seed data: %v\n", err)
 	}
 	util.PressEnterToContinue()
+	util.ClearScreen()
 	l.manager.SetState(l.mainMenu)
 	return nil
 }
@@ -122,6 +123,7 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 }
 
 func (evalHandler *EvalModuleMenuStateHandler) Render() {
+	util.ClearScreen()
 	evalHandler.handler.SetMenuTitle("\nEvaluation Module Menu:")
 	evalHandler.handler.AddHandler("1", "Assignment", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("2", "Quiz", handler.FuncStrategy{})
@@ -133,6 +135,7 @@ func (evalHandler *EvalModuleMenuStateHandler) Render() {
 }
 
 func (handler *EvalModuleMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	err := handler.Manager.GoToMenu(input)
 
 	if err != nil {

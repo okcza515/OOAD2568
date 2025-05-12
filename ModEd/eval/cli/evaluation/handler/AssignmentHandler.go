@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
@@ -32,6 +33,7 @@ func NewAssignmentMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *co
 }
 
 func (menu *AssignmentMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nAssignment management menu:")
 	menu.handler.AddHandler("1", "Create a new assignment.", handler.FuncStrategy{Action: menu.CreateAssignment})
 	menu.handler.AddHandler("2", "View all assignments.", handler.FuncStrategy{Action: menu.ViewAllAssignments})
@@ -45,6 +47,7 @@ func (menu *AssignmentMenuStateHandler) Render() {
 }
 
 func (menu *AssignmentMenuStateHandler) HandleUserInput(input string) error {
+	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 
