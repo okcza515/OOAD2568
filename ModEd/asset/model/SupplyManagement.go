@@ -7,14 +7,15 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+
 type SupplyManagement struct {
 	core.BaseModel
-	RoomID            uint   `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id"`
-	Room              Room   `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
-	SupplyID          uint   `gorm:"type:integer;not null;index" json:"supply_id" csv:"supply_id"`
-	Supply            Supply `gorm:"foreignKey:SupplyID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"supply"`
-	SupplyLabel       string `gorm:"type:text;not null" json:"supply_label" csv:"supply_label"`
-	Quantity          int    `gorm:"not null" json:"quantity" csv:"quantity"`
+	RoomID            uint   `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id" validate:"required"`
+	Room              Room   `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room" validate:"-"`
+	SupplyID          uint   `gorm:"type:integer;not null;index" json:"supply_id" csv:"supply_id" validate:"required"`
+	Supply            Supply `gorm:"foreignKey:SupplyID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"supply" validate:"-"`
+	SupplyLabel       string `gorm:"type:text;not null" json:"supply_label" csv:"supply_label" validate:"-"`
+	Quantity          int    `gorm:"not null" json:"quantity" csv:"quantity" validate:"-"`
 }
 
 

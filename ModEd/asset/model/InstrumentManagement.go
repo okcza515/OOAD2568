@@ -9,13 +9,13 @@ import (
 
 type InstrumentManagement struct {
 	core.BaseModel
-	BorrowUserID     uint              `gorm:"type:integer" json:"borrow_id" csv:"borrow_id"`
-	BorrowInstrument BorrowInstrument  `gorm:"foreignKey:BorrowUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"borrow_instrument"`
-	RoomID           uint              `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id"`
-	Room             Room              `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room"`
-	InstrumentID     uint              `gorm:"type:integer;not null;index" json:"instrument_id" csv:"instrument_id"`
-	Instrument       Instrument        `gorm:"foreignKey:InstrumentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"instrument"`
-	InstrumentLabel  string            `gorm:"type:text;not null" json:"instrument_label" csv:"instrument_label"`
+	BorrowUserID     uint              `gorm:"type:integer" json:"borrow_id" csv:"borrow_id" validate:"required"`
+	BorrowInstrument BorrowInstrument  `gorm:"foreignKey:BorrowUserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"borrow_instrument" validate:"-"`
+	RoomID           uint              `gorm:"type:integer;not null;index" json:"room_id" csv:"room_id" validate:"required"`
+	Room             Room              `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room" validate:"-"`
+	InstrumentID     uint              `gorm:"type:integer;not null;index" json:"instrument_id" csv:"instrument_id" validate:"required"`
+	Instrument       Instrument        `gorm:"foreignKey:InstrumentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"instrument" validate:"-"`
+	InstrumentLabel  string            `gorm:"type:text;not null" json:"instrument_label" csv:"instrument_label" validate:"-"`
 }
 
 func (im InstrumentManagement) ToString() string {
