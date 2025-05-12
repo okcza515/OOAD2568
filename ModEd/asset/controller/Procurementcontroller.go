@@ -23,26 +23,27 @@ func (c *ProcurementController) CreateProcurement(body *model.Procurement) error
 
 func (c *ProcurementController) ListAllProcurement() (*[]model.Procurement, error) {
 	var procurements []model.Procurement
-	err := c.db.Find(&procurements).Error
+	err := c.db.
+		Where("status = ?", "pending").
+		Find(&procurements).Error
 	return &procurements, err
 }
 
 func (c *ProcurementController) ListSelectedProcurements() (*[]model.Procurement, error) {
-    var procurements []model.Procurement
+	var procurements []model.Procurement
 
-    err := c.db.Preload("Approver").
-        Preload("TOR").
-        Joins("JOIN tors ON tors.tor_id = procurements.tor_id").
-        Where("tors.status = ?", "selected").
-        Find(&procurements).Error
+	err := c.db.Preload("Approver").
+		Preload("TOR").
+		Joins("JOIN tors ON tors.tor_id = procurements.tor_id").
+		Where("tors.status = ?", "selected").
+		Find(&procurements).Error
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return &procurements, nil
+	return &procurements, nil
 }
-
 
 func (c *ProcurementController) GetProcurementByID(id uint) (*model.Procurement, error) {
 	var procurement model.Procurement
@@ -96,7 +97,7 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 		err := tx.Where("procurement_id = ?", id).
 			First(&existingApproval).Error
 
-		if err == nil {		
+		if err == nil {
 			if err := tx.Model(&existingApproval).
 				Updates(map[string]interface{}{
 					"status":        model.AcceptanceStatusPending,
@@ -106,7 +107,7 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 				return err
 			}
 			fmt.Printf("Updated existing Acceptance Approval with ID %d for Procurement ID %d\n", existingApproval.AcceptanceApprovalID, id)
-		} else if err == gorm.ErrRecordNotFound {			
+		} else if err == gorm.ErrRecordNotFound {
 			newApproval := model.AcceptanceApproval{
 				ProcurementID: id,
 				Status:        model.AcceptanceStatusPending,
@@ -126,14 +127,12 @@ func (c *ProcurementController) OnApproved(id uint, approverID uint) error {
 	})
 }
 
-
 func (c *ProcurementController) OnRejected(id uint, approverID uint) error {
 	return c.db.Model(&model.Procurement{}).
 		Where("procurement_id = ?", id).
 		Updates(map[string]interface{}{
-			"status":      model.ProcurementStatusRejected,
-			"approver_id": approverID,
+			"status":        model.ProcurementStatusRejected,
+			"approver_id":   approverID,
 			"approval_time": time.Now(),
 		}).Error
 }
-
