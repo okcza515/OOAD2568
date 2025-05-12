@@ -41,6 +41,7 @@ func (menu *AssignmentMenuStateHandler) Render() {
 	menu.handler.AddHandler("4", "Update assignment details.", handler.FuncStrategy{Action: menu.UpdateAssignment})
 	menu.handler.AddHandler("5", "Change assignment status.", handler.FuncStrategy{Action: menu.ChangeAssignmentStatus})
 	menu.handler.AddHandler("6", "Delete an assignment.", handler.FuncStrategy{Action: menu.DeleteAssignment})
+	menu.handler.AddHandler("7", "Assignment Submission Menu", handler.FuncStrategy{Action: menu.GoToSubmissionMenu})
 	menu.handler.AddHandler("back", "Back to previous menu.", menu.backhandler)
 
 	menu.handler.ShowMenu()
@@ -380,5 +381,14 @@ func (menu *AssignmentMenuStateHandler) DeleteAssignment() error {
 	}
 
 	fmt.Println("\nAssignment deleted successfully")
+	return nil
+}
+
+func (menu *AssignmentMenuStateHandler) GoToSubmissionMenu() error {
+	util.ClearScreen()
+	// Create the assignment submission menu handler
+	submissionHandler := NewAssignmentSubmissionMenuStateHandler(menu.Manager, menu.wrapper, menu)
+	// Set it as the current state
+	menu.Manager.SetState(submissionHandler)
 	return nil
 }
