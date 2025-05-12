@@ -48,7 +48,7 @@ func (app *HRMenuCLI) Run() {
 }
 
 func main() {
-	db, err := migration.
+	_, err := migration.
 		GetInstance().
 		MigrateModule(core.MODULE_HR).
 		BuildDB()
@@ -58,21 +58,16 @@ func main() {
 		return
 	}
 
-	manager := cli.NewCLIMenuManager()
+	cliManager := cli.NewCLIMenuManager()
 
-	mainMenu := menu.NewHRMainMenuState(manager,
-		hrController.NewStudentHRController(db),
-		hrController.NewInstructorHRController(db),
-		hrController.NewLeaveStudentHRController(db),
-		hrController.NewLeaveInstructorHRController(db),
-		hrController.NewResignationStudentHRController(db),
-		hrController.NewResignationInstructorHRController(db),
-		hrController.NewRaiseHRController(db),
-	)
+	hrManager := hrController.GetHRInstance()
 
-	manager.SetState(mainMenu)
+    mainMenu := menu.NewHRMainMenuState(cliManager, hrManager)
 
-	app := NewHRMenuCLI(manager)
+
+	cliManager.SetState(mainMenu)
+
+	app := NewHRMenuCLI(cliManager)
 
 	app.Run()
 }
