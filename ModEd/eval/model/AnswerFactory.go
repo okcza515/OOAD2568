@@ -1,0 +1,19 @@
+package model
+
+type AnswerFactory interface {
+	SetQuestionID(id uint)
+	GetQuestionID() uint
+}
+
+func NewAnswerByFactory(questionType QuestionType) AnswerFactory {
+	switch questionType {
+	case MultipleChoiceQuestion:
+		return &MultipleChoiceAnswer{}
+	case ShortAnswerQuestion:
+		return &ShortAnswer{}
+	case TrueFalseQuestion:
+		return &TrueFalseAnswer{}
+	default:
+		return nil
+	}
+}

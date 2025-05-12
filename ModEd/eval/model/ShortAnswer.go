@@ -9,3 +9,11 @@ type ShortAnswer struct {
 	Question       Question `gorm:"foreignKey:QuestionID;references:ID" json:"question" csv:"question"`
 	ExpectedAnswer string   `gorm:"type:text;not null" json:"expected_answer" csv:"expected_answer"`
 }
+
+func (a *ShortAnswer) SetQuestionID(id uint) {
+	a.QuestionID = id
+}
+
+func (a *ShortAnswer) GetQuestionID() uint {
+	return a.QuestionID
+}
