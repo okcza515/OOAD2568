@@ -131,6 +131,6 @@ func (handler *ExamModuleMenuStateHandler) HandleUserInput(input string) error {
 		fmt.Println("Invalid input. Please try again.")
 		util.PressEnterToContinue()
 	}
-
+	util.ClearScreen()
 	return nil
 }
