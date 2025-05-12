@@ -32,7 +32,17 @@ type EvalModuleMenuStateHandler struct {
 	handler                    *handler.HandlerContext
 }
 
-type LoadEvalCommand struct{}
+type LoadEvalCommand struct {
+	manager  *cli.CLIMenuStateManager
+	mainMenu cli.MenuState
+}
+
+func NewLoadEvalCommand(manager *cli.CLIMenuStateManager, mainMenu cli.MenuState) *LoadEvalCommand {
+	return &LoadEvalCommand{
+		manager:  manager,
+		mainMenu: mainMenu,
+	}
+}
 
 func (l *LoadEvalCommand) Execute() error {
 	mgr := migration.GetInstance()
@@ -71,6 +81,24 @@ func (l *LoadEvalCommand) Execute() error {
 	return nil
 }
 
+// Render implements cli.MenuState interface
+func (l *LoadEvalCommand) Render() {
+	fmt.Println("\nLoading Seed Data:")
+	fmt.Println("This will load progress seed data from CSV files.")
+	fmt.Println("Press Enter to return to the main menu.")
+}
+
+// HandleUserInput implements cli.MenuState interface
+func (l *LoadEvalCommand) HandleUserInput(input string) error {
+	err := l.Execute()
+	if err != nil {
+		fmt.Printf("Error loading seed data: %v\n", err)
+	}
+	util.PressEnterToContinue()
+	l.manager.SetState(l.mainMenu)
+	return nil
+}
+
 func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.EvalModuleWrapper) *EvalModuleMenuStateHandler {
 	evalModuleHandler := &EvalModuleMenuStateHandler{
 		Manager: manager,
@@ -79,11 +107,15 @@ func NewEvalModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 	}
 
 	evalModuleHandler.ProgressMenuStateHandler = NewProgressMenuStateHandler(manager, wrapper, evalModuleHandler)
+	evalModuleHandler.AssignmentMenuStateHandler = NewAssignmentMenuStateHandler(manager, wrapper, evalModuleHandler)
+	evalModuleHandler.EvaluationMenuStateHandler = NewEvaluationMenuStateHandler(manager, wrapper, evalModuleHandler)
 
 	evalModuleHandler.Manager.AddMenu("1", evalModuleHandler.AssignmentMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("2", evalModuleHandler.AssignmentMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("3", evalModuleHandler.ProgressMenuStateHandler)
 	evalModuleHandler.Manager.AddMenu("4", evalModuleHandler.EvaluationMenuStateHandler)
+	loadCmd := NewLoadEvalCommand(manager, evalModuleHandler)
+	evalModuleHandler.Manager.AddMenu("Load", loadCmd)
 	evalModuleHandler.Manager.AddMenu("Exit", nil)
 
 	return evalModuleHandler
@@ -95,6 +127,7 @@ func (evalHandler *EvalModuleMenuStateHandler) Render() {
 	evalHandler.handler.AddHandler("2", "Quiz", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("3", "Progress", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("4", "Evaluation", handler.FuncStrategy{})
+	evalHandler.handler.AddHandler("Load", "Load Seed Data", handler.FuncStrategy{})
 	evalHandler.handler.AddHandler("Exit", "Exit the Evaluation Module", handler.FuncStrategy{})
 	evalHandler.handler.ShowMenu()
 }
