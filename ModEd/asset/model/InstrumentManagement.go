@@ -50,6 +50,3 @@ func (im InstrumentManagement) ToString() string {
 		truncate(fmt.Sprintf("%d", im.BorrowUserID), 42),
 	)
 }
-
-
-

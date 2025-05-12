@@ -1,12 +1,13 @@
 // MEP-1013
 package handler
 
-import(
+import (
 	"ModEd/asset/model"
 	"ModEd/asset/util"
 	"ModEd/core"
-	"gorm.io/gorm"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type UpdateInstrumentManagementStrategy struct{
@@ -44,21 +45,34 @@ func (handler UpdateInstrumentManagementStrategy) Execute() error {
         return fmt.Errorf("invalid Room ID format: %v", err)
     }
 
-    // Get new instrument label
-    fmt.Print("Enter new instrument management Label: ")
-    label := util.GetCommandInput()
+    // Get new instrument ID
+    fmt.Print("Enter new Instrument ID: ")
+    var instrumentID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &instrumentID)
+    if err != nil {
+        return fmt.Errorf("invalid Instrument ID format: %v", err)
+    }
+
+    // Get new borrow ID
+    fmt.Print("Enter new Borrow ID: ")
+    var borrowID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &borrowID)
+    if err != nil {
+        return fmt.Errorf("invalid Borrow ID format: %v", err)
+    }
 
     // Create update payload
-    instrument := &model.InstrumentManagement{
+    instrumentManagement := &model.InstrumentManagement{
         BaseModel: core.BaseModel{
-        Model: gorm.Model{ID: id},
-    },
-        RoomID: roomID,
-        InstrumentLabel: label,
+            Model: gorm.Model{ID: id},
+        },
+        RoomID:         roomID,
+        InstrumentID:   instrumentID,
+        BorrowUserID:   borrowID,
     }
 
     // Perform update
-    if err := handler.controller.UpdateById(instrument); err != nil {
+    if err := handler.controller.UpdateById(instrumentManagement); err != nil {
         return fmt.Errorf("failed to update instrument management: %v", err)
     }
 
