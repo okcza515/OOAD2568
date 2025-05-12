@@ -7,11 +7,10 @@ import (
 
 type ShortAnswerSubmission struct {
 	core.BaseModel
-	QuestionID    uint             `gorm:"type:integer;not null" json:"question_id" csv:"question_id"`
-	Question      Question         `gorm:"foreignKey:QuestionID;references:ID" json:"-" csv:"-"`
-	SubmissionID  uint             `gorm:"type:integer;not null" json:"submission_id" csv:"submission_id"`
-	Submission    AnswerSubmission `gorm:"foreignKey:SubmissionID;references:ID" json:"-" csv:"-"`
-	StudentAnswer string           `gorm:"type:text;not null" json:"student_answer" csv:"student_answer"`
+	QuestionID    uint     `gorm:"type:integer;not null" json:"question_id" csv:"question_id"`
+	Question      Question `gorm:"foreignKey:QuestionID;references:ID" json:"-" csv:"-"`
+	SubmissionID  uint     `gorm:"type:integer;not null" json:"submission_id" csv:"submission_id"`
+	StudentAnswer string   `gorm:"type:text;not null" json:"student_answer" csv:"student_answer"`
 }
 
 func (s *ShortAnswerSubmission) SetQuestionID(id uint) {
@@ -23,9 +22,9 @@ func (s *ShortAnswerSubmission) GetQuestionID() uint {
 }
 
 func (s *ShortAnswerSubmission) SetSubmmissionID(id uint) {
-	s.QuestionID = id
+	s.SubmissionID = id
 }
 
 func (s *ShortAnswerSubmission) GetSubmissionID() uint {
-	return s.QuestionID
+	return s.SubmissionID
 }
