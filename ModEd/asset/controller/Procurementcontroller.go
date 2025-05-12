@@ -23,6 +23,12 @@ func (c *ProcurementController) CreateProcurement(body *model.Procurement) error
 
 func (c *ProcurementController) ListAllProcurement() (*[]model.Procurement, error) {
 	var procurements []model.Procurement
+	err := c.db.Find(&procurements).Error
+	return &procurements, err
+}
+
+func (c *ProcurementController) ListAllPendingProcurement() (*[]model.Procurement, error) {
+	var procurements []model.Procurement
 	err := c.db.
 		Where("status = ?", "pending").
 		Find(&procurements).Error
