@@ -14,8 +14,6 @@ type SupplyManagement struct {
 	Room              Room   `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room" validate:"-"`
 	SupplyID          uint   `gorm:"type:integer;not null;index" json:"supply_id" csv:"supply_id" validate:"required"`
 	Supply            Supply `gorm:"foreignKey:SupplyID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"supply" validate:"-"`
-	SupplyLabel       string `gorm:"type:text;not null" json:"supply_label" csv:"supply_label" validate:"-"`
-	Quantity          int    `gorm:"not null" json:"quantity" csv:"quantity" validate:"-"`
 }
 
 

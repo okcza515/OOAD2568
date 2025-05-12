@@ -41,10 +41,14 @@ func (handler RetrieveInstrumentManagementByRoomIdStrategy) Execute() error {
         fmt.Println("No instrument managements found in this room")
     } else {
         for _, instrumentManagement := range *instrumentManagements {
-            fmt.Printf("ID: %d | Label: %s | Room ID: %d\n",
+            fmt.Printf(" ID: %d \n Instrument ID: %d \n Label: %s \n Room ID: %d \n Room Name: %s \n Borrow User ID: %d \n ---------------------------------------",
                 instrumentManagement.GetID(),
-                instrumentManagement.InstrumentLabel,
-                instrumentManagement.RoomID)
+                instrumentManagement.InstrumentID,
+                instrumentManagement.Instrument.InstrumentLabel,
+                instrumentManagement.RoomID,
+                instrumentManagement.Room.RoomName,
+                instrumentManagement.BorrowUserID,
+            )
         }
     }
 

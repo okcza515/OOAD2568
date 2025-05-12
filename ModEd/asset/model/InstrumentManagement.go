@@ -15,7 +15,6 @@ type InstrumentManagement struct {
 	Room             Room              `gorm:"foreignKey:RoomID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"room" validate:"-"`
 	InstrumentID     uint              `gorm:"type:integer;not null;index" json:"instrument_id" csv:"instrument_id" validate:"required"`
 	Instrument       Instrument        `gorm:"foreignKey:InstrumentID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"instrument" validate:"-"`
-	InstrumentLabel  string            `gorm:"type:text;not null" json:"instrument_label" csv:"instrument_label" validate:"-"`
 }
 
 func (im InstrumentManagement) ToString() string {
