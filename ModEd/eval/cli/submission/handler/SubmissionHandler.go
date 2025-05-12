@@ -196,7 +196,7 @@ func (v ViewScore) Execute() {
 	fmt.Print("Enter Student ID: ")
 	fmt.Scanln(&studentID)
 
-	submissions, err := SubmissionCtrl.List(map[string]interface{}{"student_id": studentID}, "Exam")
+	submissions, err := SubmissionCtrl.List(map[string]interface{}{"student_id": studentID}, "Examination")
 	if err != nil {
 		fmt.Printf("Error: Exam Submission with Student ID: %d not found: %v\n", studentID, err)
 		return
