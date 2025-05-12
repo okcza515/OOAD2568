@@ -63,7 +63,7 @@ func ImportCsv(filePath string) [][]string {
 	return records
 }
 
-func PrintTitle(title string) {
+func MenuTitle(title string) {
 	fmt.Println("==========================================================")
 	fmt.Printf("                   🎓 %s                  \n", title)
 	fmt.Println("==========================================================")

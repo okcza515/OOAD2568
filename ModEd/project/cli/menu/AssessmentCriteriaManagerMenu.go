@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
@@ -32,8 +33,8 @@ func BuildAssessmentCriteriaManagerMenu(
 	}
 }
 
-func defineAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func defineAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("Defining Assessment Criteria...")
 		io.Print("Enter Criteria Name (-1 to cancel): ")
 		criteriaName, err := io.ReadInput()
@@ -50,8 +51,8 @@ func defineAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 	}
 }
 
-func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("Listing All Assessment Criteria...")
 		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {
@@ -66,8 +67,8 @@ func listAllAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fu
 	}
 }
 
-func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("All Criteria:")
 		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {
@@ -107,8 +108,8 @@ func updateAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) fun
 	}
 }
 
-func deleteAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func deleteAssessmentCriteria(ctrl *controller.AssessmentCriteriaController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("All Criteria:")
 		criteriaList, err := ctrl.List(map[string]interface{}{})
 		if err != nil {

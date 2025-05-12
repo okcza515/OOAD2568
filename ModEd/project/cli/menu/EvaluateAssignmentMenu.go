@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -16,7 +17,7 @@ func BuildEvaluateAssignmentMenu(
 		Children: []*utils.MenuItem{
 			{
 				Title: "Insert Score For Advisor",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Evaluating Assignment for Advisor...")
 
 					io.Print("Enter Assignment ID (-1 to cancel): ")
@@ -54,7 +55,7 @@ func BuildEvaluateAssignmentMenu(
 			},
 			{
 				Title: "Insert Score For Committee",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Evaluating Assignment for Committee...")
 
 					io.Print("Enter Assignment ID (-1 to cancel): ")
@@ -88,7 +89,7 @@ func BuildEvaluateAssignmentMenu(
 			},
 			{
 				Title: "Check Score",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Checking Scores for Assignment...")
 
 					io.Print("Enter Assignment ID (-1 to cancel): ")

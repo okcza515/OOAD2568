@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -15,7 +16,7 @@ func BuildCommitteeMenu(
 		Children: []*utils.MenuItem{
 			{
 				Title: "Add Committee Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Adding Committee Member...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
@@ -45,7 +46,7 @@ func BuildCommitteeMenu(
 			},
 			{
 				Title: "List Committee Members by Project",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Listing Committee Members by Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
@@ -73,7 +74,7 @@ func BuildCommitteeMenu(
 			},
 			{
 				Title: "List Projects by Committee Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Listing Projects by Committee Member...")
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")
@@ -99,7 +100,7 @@ func BuildCommitteeMenu(
 			},
 			{
 				Title: "Remove Committee Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Removing Committee Member...")
 
 					io.Print("Enter Committee ID (-1 to cancel): ")

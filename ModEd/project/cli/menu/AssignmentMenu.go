@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
@@ -12,7 +13,7 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 		Children: []*utils.MenuItem{
 			{
 				Title: "View All Assignments",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					assignments, err := assignmentController.List(map[string]interface{}{})
 					if err != nil {
 						io.Println(fmt.Sprintf("Error retrieving assignments: %v", err))
@@ -27,7 +28,7 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 			},
 			{
 				Title: "Add New Assignment",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter Senior Project ID: ")
 					projectID, err := io.ReadInputID()
 					if err != nil {
@@ -57,7 +58,7 @@ func BuildAssignmentMenu(assignmentController *controller.AssignmentController) 
 			},
 			{
 				Title: "Delete Assignment",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter Assignment ID to delete: ")
 					id, err := io.ReadInputID()
 					if err != nil {

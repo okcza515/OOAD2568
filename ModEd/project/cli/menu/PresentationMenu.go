@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -13,7 +14,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 		Children: []*utils.MenuItem{
 			{
 				Title: "View All Presentations",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing Presentations...")
 
 					presentations, err := presentationController.ListAllPresentations()
@@ -33,7 +34,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 			},
 			{
 				Title: "Add New Presentation",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Adding New Presentation...")
 
 					io.Print("Enter Senior Project ID: ")
@@ -72,7 +73,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 			},
 			{
 				Title: "View Presentation by ID",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing Presentation by ID...")
 
 					io.Print("Enter Presentation ID: ")
@@ -93,7 +94,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 			},
 			{
 				Title: "Update Presentation",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Updating Presentation...")
 
 					io.Print("Enter Presentation ID to update: ")
@@ -136,7 +137,7 @@ func BuildPresentationMenu(presentationController *controller.PresentationContro
 			},
 			{
 				Title: "Delete Presentation",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Deleting Presentation...")
 
 					io.Print("Enter Presentation ID to delete: ")

@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
@@ -12,7 +13,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 		Children: []*utils.MenuItem{
 			{
 				Title: "View All Reports",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing Report...")
 
 					formattedReports, err := reportController.GetFormattedReportList()
@@ -32,7 +33,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 			},
 			{
 				Title: "Add New Report",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Adding New Report...")
 
 					io.Print("Enter Senior Project ID: ")
@@ -65,7 +66,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 			},
 			{
 				Title: "View Report by ID",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing Report by ID...")
 					io.Print("Enter Report ID: ")
 
@@ -84,7 +85,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 			},
 			{
 				Title: "Update Report",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Updating Report...")
 					io.Print("Enter Report ID to update: ")
 
@@ -110,7 +111,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 			},
 			{
 				Title: "Delete Report",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Deleting Report...")
 					io.Print("Enter Report ID to delete: ")
 
@@ -129,7 +130,7 @@ func BuildReportMenu(reportController *controller.ReportController) *utils.MenuI
 			},
 			{
 				Title: "Submit Report",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Submitting Report...")
 					io.Print("Enter Report ID to submit: ")
 

@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
@@ -12,7 +13,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 		Children: []*utils.MenuItem{
 			{
 				Title: "View All Progress",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing All Progress...")
 
 					formattedList, err := progressController.GetFormattedProgressList()
@@ -34,7 +35,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "Add New Progress",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Adding New Progress...")
 
 					io.Print("Enter Assignment ID: ")
@@ -60,7 +61,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "View Progress by ID",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Viewing Progress by ID...")
 					io.Print("Enter Progress ID: ")
 
@@ -81,7 +82,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "Update Progress Name",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Updating Progress Name...")
 					io.Print("Enter Progress ID: ")
 
@@ -107,7 +108,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "Delete Progress",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Deleting Progress...")
 					io.Print("Enter Progress ID to delete: ")
 
@@ -126,7 +127,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "Mark Progress as Completed",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Marking Progress as Completed...")
 					io.Print("Enter Progress ID: ")
 
@@ -145,7 +146,7 @@ func BuildProgressMenu(progressController *controller.ProgressController) *utils
 			},
 			{
 				Title: "Mark Progress as Incomplete",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Marking Progress as Incomplete...")
 					io.Print("Enter Progress ID: ")
 

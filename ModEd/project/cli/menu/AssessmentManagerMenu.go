@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -62,8 +63,8 @@ func BuildAssessmentManagerMenu(
 	}
 }
 
-func listCriteriaLinkedToAssessment(criteriaCtrl *controller.AssessmentCriteriaController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func listCriteriaLinkedToAssessment(criteriaCtrl *controller.AssessmentCriteriaController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
 		input, err := io.ReadInput()
 		if err != nil {
@@ -106,8 +107,8 @@ func listCriteriaLinkedToAssessment(criteriaCtrl *controller.AssessmentCriteriaC
 	}
 }
 
-func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaController, assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaController, assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("Linking Criteria to Assessment...")
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
 		input, err := io.ReadInput()
@@ -179,8 +180,8 @@ func linkCriteriaToAssessment(criteriaCtrl *controller.AssessmentCriteriaControl
 	}
 }
 
-func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("Updating Assessment Criteria...")
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
 
@@ -262,8 +263,8 @@ func updateCriteriaLink(criteriaCtrl *controller.AssessmentCriteriaController, a
 	}
 }
 
-func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController, criteriaCtrl *controller.AssessmentCriteriaController) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+func deleteCriteriaLink(assessmentCtrl *controller.AssessmentController, linkCtrl *controller.AssessmentCriteriaLinkController, criteriaCtrl *controller.AssessmentCriteriaController) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Println("Deleting Criteria Link from Assessment...")
 		io.Print("Enter Senior Project ID (-1 to cancel): ")
 		seniorProjectID, err := io.ReadInputID()

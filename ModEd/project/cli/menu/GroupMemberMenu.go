@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -13,7 +14,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 		Children: []*utils.MenuItem{
 			{
 				Title: "View All Group Members",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Listing All Group Members...")
 					members, err := groupMemberController.List(map[string]interface{}{})
 					if err != nil {
@@ -29,7 +30,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 			},
 			{
 				Title: "Add Group Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter Student ID (number): ")
 					studentId, err := io.ReadInputID()
 					if err != nil {
@@ -56,7 +57,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 			},
 			{
 				Title: "Update Group Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter Group Member ID to update: ")
 					id, _ := io.ReadInputID()
 
@@ -89,7 +90,7 @@ func GroupMemberMenu(groupMemberController *controller.GroupMemberController) *u
 			},
 			{
 				Title: "Delete Group Member",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter Group Member ID to delete: ")
 					id, err := io.ReadInputID()
 					if err != nil {

@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/utils"
 	"fmt"
@@ -12,7 +13,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 		Children: []*utils.MenuItem{
 			{
 				Title: "Assign Advisor to Project",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Assigning Advisor to Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
@@ -43,7 +44,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 			},
 			{
 				Title: "Update Advisor Role",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Updating Advisor Role...")
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
@@ -68,7 +69,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 			},
 			{
 				Title: "Remove Advisor",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Removing Advisor...")
 
 					io.Print("Enter Advisor ID (-1 to cancel): ")
@@ -87,7 +88,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 			},
 			{
 				Title: "List Advisors by Project",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Listing Advisors by Project...")
 
 					io.Print("Enter Project ID (-1 to cancel): ")
@@ -115,7 +116,7 @@ func BuildAdvisorMenu(advisorController *controller.AdvisorController) *utils.Me
 			},
 			{
 				Title: "List Projects by Instructor",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Println("Listing Projects by Instructor...")
 
 					io.Print("Enter Instructor ID (-1 to cancel): ")

@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -53,8 +54,8 @@ func viewProjectScores(
 	criteriaCtrl *controller.AssessmentCriteriaController,
 	advisorScoreCtrl *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor],
 	committeeScoreCtrl *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee],
-) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Print("Enter Senior Project ID to view scores: ")
 		projectId, _ := io.ReadInputID()
 
@@ -88,8 +89,8 @@ func submitAdvisorScore(
 	scoreCtrl *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor],
 	assessmentCtrl *controller.AssessmentController,
 	linkCtrl *controller.AssessmentCriteriaLinkController,
-) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Print("Enter Senior Project ID: ")
 		projectId, _ := io.ReadInputID()
 
@@ -134,8 +135,8 @@ func submitCommitteeScore(
 	scoreCtrl *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee],
 	assessmentCtrl *controller.AssessmentController,
 	linkCtrl *controller.AssessmentCriteriaLinkController,
-) func(*utils.MenuIO) {
-	return func(io *utils.MenuIO) {
+) func(*core.MenuIO) {
+	return func(io *core.MenuIO) {
 		io.Print("Enter Senior Project ID: ")
 		projectId, _ := io.ReadInputID()
 
@@ -174,7 +175,7 @@ func submitCommitteeScore(
 	}
 }
 
-func displayAdvisorScore(io *utils.MenuIO, scoreCtrl *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor], linkId uint) {
+func displayAdvisorScore(io *core.MenuIO, scoreCtrl *controller.ScoreAdvisorController[*model.ScoreAssessmentAdvisor], linkId uint) {
 	advisorScore, err := scoreCtrl.RetrieveByCondition(
 		map[string]interface{}{"assessment_criteria_link_id": linkId},
 	)
@@ -190,7 +191,7 @@ func displayAdvisorScore(io *utils.MenuIO, scoreCtrl *controller.ScoreAdvisorCon
 	}
 }
 
-func displayCommitteeScores(io *utils.MenuIO, scoreCtrl *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee], linkId uint) {
+func displayCommitteeScores(io *core.MenuIO, scoreCtrl *controller.ScoreCommitteeController[*model.ScoreAssessmentCommittee], linkId uint) {
 	committeeScores, err := scoreCtrl.List(map[string]interface{}{"assessment_criteria_link_id": linkId})
 	if err != nil {
 		io.Println("  Committee Scores: -")

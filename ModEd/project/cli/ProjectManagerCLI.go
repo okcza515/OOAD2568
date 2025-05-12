@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ModEd/core"
 	"ModEd/project/cli/menu"
 	"ModEd/project/controller"
 	"ModEd/project/model"
@@ -28,8 +29,7 @@ func main() {
 	scoreAssessmentAdvisorController := controller.NewScoreAdvisorController[*model.ScoreAssessmentAdvisor](db)
 	scoreAssessmentCommitteeController := controller.NewScoreCommitteeController[*model.ScoreAssessmentCommittee](db)
 
-	utils.PrintTitle("Senior Project CLI")
-
+	utils.MenuTitle("Senior Project CLI")
 	builder := utils.NewMenuBuilder(&utils.MenuItem{
 		Title: "Main Menu",
 		Children: []*utils.MenuItem{
@@ -70,7 +70,7 @@ func main() {
 					),
 					{
 						Title: "Assessment Manager",
-						Action: func(io *utils.MenuIO) {
+						Action: func(io *core.MenuIO) {
 							menu.BuildAssessmentManagerMenu(
 								assessmentCriteriaController,
 								assessmentController,
@@ -87,7 +87,7 @@ func main() {
 
 	builder.AddMenuChild([]string{"Main Menu"}, &utils.MenuItem{
 		Title:  "Example",
-		Action: func(io *utils.MenuIO) {},
+		Action: func(io *core.MenuIO) {},
 	})
 
 	builder.Show()

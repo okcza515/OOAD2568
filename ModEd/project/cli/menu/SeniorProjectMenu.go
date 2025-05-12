@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"ModEd/project/utils"
@@ -12,7 +13,7 @@ func BuildSeniorProjectMenu(seniorProjectController *controller.SeniorProjectCon
 		Children: []*utils.MenuItem{
 			{
 				Title: "Create Senior Project",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					io.Print("Enter the group name (-1 to cancel): ")
 					groupNameStr, err := io.ReadInput()
 					if err != nil || groupNameStr == "-1" {
@@ -30,7 +31,7 @@ func BuildSeniorProjectMenu(seniorProjectController *controller.SeniorProjectCon
 			},
 			{
 				Title: "List Senior Projects",
-				Action: func(io *utils.MenuIO) {
+				Action: func(io *core.MenuIO) {
 					records, err := seniorProjectController.List(map[string]interface{}{})
 					if err != nil {
 						io.Println(err.Error())
