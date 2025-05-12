@@ -38,7 +38,7 @@ func (s *adminShowApplicationReportsService) GetApplicationReport(applicantionRe
 		"application_report_id": applicantionReportID,
 	}
 
-	filteredData, err := report.GetFilteredApplication(condition)
+	filteredData, err := report.GetFilteredReport(condition)
 	if err != nil {
 		println("can't get report")
 		return nil, err
@@ -48,7 +48,7 @@ func (s *adminShowApplicationReportsService) GetApplicationReport(applicantionRe
 
 func (s *adminShowApplicationReportsService) GetAllApplicationReports() ([]*model.ApplicationReport, error) {
 	report := controller.ApplicationReport{Controller: s.ApplicantReportCtrl}
-	return report.GetFilteredApplication(nil)
+	return report.GetFilteredReport(nil)
 }
 
 func (s *adminShowApplicationReportsService) GetApplicationReportsByStatus(status string) ([]*model.ApplicationReport, error) {
@@ -56,7 +56,7 @@ func (s *adminShowApplicationReportsService) GetApplicationReportsByStatus(statu
 	condition := map[string]interface{}{
 		"application_statuses": status,
 	}
-	return report.GetFilteredApplication(condition)
+	return report.GetFilteredReport(condition)
 }
 
 func (s *adminShowApplicationReportsService) DisplayOnlyApplicationReport(reports []*model.ApplicationReport) {
@@ -79,7 +79,7 @@ func (s *adminShowApplicationReportsService) DisplayOnlyInterviews(reports []*mo
 			condition := map[string]interface{}{
 				"application_report_id": r.ApplicationReportID,
 			}
-			interviews, err := interview.GetFilteredInterviews(condition)
+			interviews, err := interview.GetFilteredReport(condition)
 			if err != nil || len(interviews) == 0 {
 				fmt.Println("\nNo interview report found for applicant:", r.ApplicantID)
 				continue
@@ -110,7 +110,7 @@ func (s *adminShowApplicationReportsService) DisplayReport(reports []*model.Appl
 				"application_report_id": r.ApplicationReportID,
 			}
 
-			interviews, err := interview.GetFilteredInterviews(condition)
+			interviews, err := interview.GetFilteredReport(condition)
 			if err != nil || len(interviews) == 0 {
 				println("No interview report found.")
 				continue

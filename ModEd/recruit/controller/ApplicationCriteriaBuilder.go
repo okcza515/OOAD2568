@@ -4,6 +4,7 @@ package controller
 import (
 	departmentCriteria "ModEd/recruit/controller/DepartmentCriteria"
 	facultyCriteria "ModEd/recruit/controller/FacultyCriteria"
+	roundCriteria "ModEd/recruit/controller/RoundCriteria"
 )
 
 type ApplicationCriteriaBuilder struct {
@@ -17,13 +18,13 @@ func NewApplicationCriteriaBuilder() *ApplicationCriteriaBuilder {
 func (b *ApplicationCriteriaBuilder) AddRoundCriteria(roundName string) *ApplicationCriteriaBuilder {
 	switch roundName {
 	case "Portfolio":
-		b.criteriaList = append(b.criteriaList, &PortfolioCriteria{})
+		b.criteriaList = append(b.criteriaList, &roundCriteria.PortfolioCriteria{})
 	case "Scholarship":
-		b.criteriaList = append(b.criteriaList, &ScholarshipCriteria{})
+		b.criteriaList = append(b.criteriaList, &roundCriteria.ScholarshipCriteria{})
 	case "Quota":
-		b.criteriaList = append(b.criteriaList, &QuotaCriteria{})
+		b.criteriaList = append(b.criteriaList, &roundCriteria.QuotaCriteria{})
 	case "Admission":
-		b.criteriaList = append(b.criteriaList, &AdmissionCriteria{})
+		b.criteriaList = append(b.criteriaList, &roundCriteria.AdmissionCriteria{})
 	}
 	return b
 }
@@ -39,9 +40,7 @@ func (b *ApplicationCriteriaBuilder) AddFacultyCriteria(facultyName string) *App
 	case "Business":
 		b.criteriaList = append(b.criteriaList, &facultyCriteria.BusinessCriteria{})
 	}
-
 	return b
-
 }
 
 func (b *ApplicationCriteriaBuilder) AddDepartmentCriteria(departmentName string) *ApplicationCriteriaBuilder {
@@ -63,7 +62,6 @@ func (b *ApplicationCriteriaBuilder) AddDepartmentCriteria(departmentName string
 	case "Urban Planning":
 		b.criteriaList = append(b.criteriaList, &departmentCriteria.UrbanCriteria{})
 	}
-
 	return b
 }
 

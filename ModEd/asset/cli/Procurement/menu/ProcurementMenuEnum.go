@@ -10,5 +10,6 @@ const (
 	MENU_QUOTATION          ProcurementMenuEnum = "quotation"
 	MENU_ACCEPTANCE         ProcurementMenuEnum = "acceptance"
 	MENU_TOR                ProcurementMenuEnum = "tor"
-	MENU_ACCEPTEDINSTRUMENT  ProcurementMenuEnum = "accepted-instrument"
+	MENU_ACCEPTEDINSTRUMENT ProcurementMenuEnum = "accepted-instrument"
+	MENU_IMPORTFILE         ProcurementMenuEnum = "import-file"
 )

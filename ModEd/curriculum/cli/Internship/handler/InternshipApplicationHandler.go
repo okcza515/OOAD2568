@@ -24,8 +24,14 @@ func NewInternshipApplicationHandler(manager *cli.CLIMenuStateManager, wrapper *
 
 func (handler *InternshipApplicationHandler) handleApplicationByRole() error {
 	application := &model.InternshipApplication{}
-	role := utils.GetUserInput("Role: (student/university/company) :")
-	controller.SubmitApplication(application, role)
+	role := utils.GetUserInput("Role: (student/university/company): ")
+
+	err := controller.SubmitApplication(application, role, handler.wrapper.InternshipApplication.Connector)
+	if err != nil {
+			return fmt.Errorf("failed to submit application: %w", err)
+	}
+
+	fmt.Println("Application submitted successfully!")
 	return nil
 }
 

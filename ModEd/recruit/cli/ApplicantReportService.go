@@ -37,7 +37,7 @@ func (s *applicantReportService) GetApplicationReport(applicantionReportID uint)
 		"application_report_id": applicantionReportID,
 	}
 
-	filteredData, err := report.GetFilteredApplication(condition)
+	filteredData, err := report.GetFilteredReport(condition)
 	if err != nil {
 		println("can't get report")
 		return nil, err

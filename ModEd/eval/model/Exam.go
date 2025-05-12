@@ -20,6 +20,8 @@ type Exam struct {
 	Attempt      uint                       `gorm:"type:integer;not null" json:"attempt" csv:"attempt"`
 	StartDate    time.Time                  `gorm:"type:timestamp;not null" json:"start_date" csv:"start_date"`
 	EndDate      time.Time                  `gorm:"type:timestamp;not null" json:"end_date" csv:"end_date"`
+	QuizID       uint                       `gorm:"type:integer" json:"quiz_id" csv:"quiz_id"`
+	Quiz         *Quiz                      `gorm:"foreignKey:QuizID;references:ID" json:"quiz" csv:"quiz"`
 	Submissions  []AnswerSubmission         `gorm:"foreignKey:ExamID" json:"submissions" csv:"submissions"`
 	ExamSections []ExamSection              `gorm:"foreignKey:ExamID" json:"exam_sections" csv:"exam_sections"`
 }
