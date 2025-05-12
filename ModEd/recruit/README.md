@@ -1,3 +1,21 @@
+##  How to Run
+
+1. Install Go (if not installed): [https://go.dev/dl/](https://go.dev/dl/)
+2. Run the application using terminal:
+```bash
+cd recruit
+go run RecruitMain.go
+```
+
+##  Key Files
+
+- `RecruitMain.go` - Program entry point
+- `cli/InstructorCLI.go` - Command Line Interface for instructors
+- `util/*` - General utility functions
+
+
+## Additional Notes
+
 // MEP-1003 Student Recruitment
 
 remark: Initiate the data(Faculty, Department, Instructors) by using common (\ModEd\common\cli\README.md)

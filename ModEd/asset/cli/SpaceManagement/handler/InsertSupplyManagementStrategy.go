@@ -34,23 +34,18 @@ func (handler InsertSupplyManagementStrategy) Execute() error {
         return fmt.Errorf("invalid room ID: %v", err)
     }
 
-    // Get Supply Label
-    fmt.Print("Enter Supply Label: ")
-    label := util.GetCommandInput()
-    
-    // Get Quantity
-    fmt.Print("Enter Quantity: ")
-    var quantity int
-    _, err = fmt.Sscan(util.GetCommandInput(), &quantity)
+    // Get Supply ID
+    fmt.Print("Enter Supply ID: ")
+    var supplyID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &supplyID)
     if err != nil {
-        return fmt.Errorf("invalid quantity: %v", err)
+        return fmt.Errorf("invalid supply ID: %v", err)
     }
     
     // Create supply management record
     supplyManagement := &model.SupplyManagement{
-        RoomID: roomID,
-        SupplyLabel: label,
-        Quantity: quantity,
+        RoomID:    roomID,
+        SupplyID:  supplyID,
     }
 
     if err := handler.controller.Insert(supplyManagement); err != nil {
