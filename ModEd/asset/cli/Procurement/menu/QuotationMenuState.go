@@ -1,11 +1,11 @@
 package menu
 
 import (
+	"ModEd/asset/cli/Procurement/helper"
 	"ModEd/asset/controller"
 	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
-	"ModEd/asset/cli/Procurement/helper"
 	"fmt"
 )
 
@@ -64,6 +64,14 @@ func NewQuotationMenuState(manager *cli.CLIMenuStateManager) *QuotationMenuState
 	handlerContext.AddHandler("4", "Quotation Selection", handler.FuncStrategy{
 		Action: func() error {
 			helper.SelectQuotation(facade.GetDB())
+			util.PressEnterToContinue()
+			return nil
+		},
+	})
+	handlerContext.AddHandler("5", "Import Department", handler.FuncStrategy{
+		Action: func() error {
+			path := util.GetStringInput("Insert Your Department.csv path: ")
+			helper.SeedDepartmentsFromCSV(facade.GetDB(), path)
 			util.PressEnterToContinue()
 			return nil
 		},

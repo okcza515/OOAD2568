@@ -1,5 +1,5 @@
 // MEP-1003 Student Recruitment
-package controller
+package roundCriteria
 
 import (
 	"ModEd/recruit/model"
@@ -10,7 +10,7 @@ type QuotaCriteria struct{}
 
 const (
 	MinGpax = 3.0
-	Enum = 3.5
+	Enum    = 3.5
 )
 
 func (c *QuotaCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
@@ -37,8 +37,7 @@ func (c *QuotaCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
 		return false
 	}
 
-	
-	if applicant.EnglishGrade < Enum || applicant.MathGrade < Enum || applicant.ScienceGrade < Enum  {
+	if applicant.EnglishGrade < Enum || applicant.MathGrade < Enum || applicant.ScienceGrade < Enum {
 		return false
 	}
 

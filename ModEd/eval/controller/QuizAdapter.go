@@ -25,6 +25,7 @@ func (a *QuizAdapter) ToExamination() *model.Exam {
 		InstructorID: a.quiz.InstructorID,
 		ClassID:      a.quiz.CourseID,
 		Attempt:      uint(a.quiz.Attempts),
+		QuizID:       a.quiz.ID,
 	}
 }
 
@@ -37,6 +38,7 @@ func (a *QuizAdapter) FromExamination(exam *model.Exam) {
 	a.quiz.InstructorID = exam.InstructorID
 	a.quiz.CourseID = exam.ClassID
 	a.quiz.Attempts = uint(exam.Attempt)
+	a.quiz.ID = exam.QuizID
 }
 
 func (a *QuizAdapter) GetQuiz() *model.Quiz {
