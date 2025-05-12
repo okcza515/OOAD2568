@@ -27,7 +27,7 @@ type PermanentSchedule struct {
 	Class         curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId" validate:"-"`
 }
 
-func (ps *PermanentSchedule) Validate() error {
+func (ps PermanentSchedule) Validate() error {
 	validate := validator.New()
 
 	// Validate struct fields using v10 validator

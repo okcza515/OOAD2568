@@ -129,6 +129,11 @@ func (handler *CreatePermanentScheduleHandler) Execute() error {
 	}
 	schedule.ProgramtypeID = uint(progTypeID)
 
+	if err := schedule.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		util.PressEnterToContinue()
+	}
+
 	for startDate.Before(recurrenceEndDate) || startDate.Equal(recurrenceEndDate) {
 		isAvailable, err := handler.controller.CheckRoomAvailability(schedule.TimeTable.RoomID, startDate, endDate)
 		if err != nil {
