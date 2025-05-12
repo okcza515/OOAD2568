@@ -1,32 +1,88 @@
 package util
 
 import (
-	"bufio"
+	"ModEd/asset/util"
 	"fmt"
-	"os"
-	"strconv"
+	"reflect"
 	"strings"
 	"time"
 )
 
-func PromptString(prompt string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(prompt)
-	text, _ := reader.ReadString('\n')
-	return strings.TrimSpace(text)
+func GetDateTimeInput(prompt string) (time.Time, error) {
+	text := util.GetStringInput(prompt)
+	parsedTime, err := time.Parse("2006-01-02 15:04:05", text)
+	if err != nil {
+		fmt.Println("Invalid date format.")
+		return time.Time{}, err
+	}
+	return parsedTime, nil
 }
 
-func PromptUint(prompt string) (uint64, error) {
-	text := PromptString(prompt)
-	return strconv.ParseUint(text, 10, 64)
+func truncateStr(str string, maxLen int) string {
+	if len(str) > maxLen {
+		return str[:maxLen-3] + "..."
+	}
+	return str
 }
 
-func PromptDate(prompt string) (time.Time, error) {
-	text := PromptString(prompt)
-	return time.Parse("2006-01-02 15:04:05", text)
+type ColumnConfig struct {
+	Header    string
+	FieldName string
+	Width     int
+	Truncate  bool
+	DateFmt   string
 }
 
-func PromptFloat(prompt string) (float64, error) {
-	text := PromptString(prompt)
-	return strconv.ParseFloat(text, 64)
+func PrintHeader(columns []ColumnConfig) {
+	for _, col := range columns {
+		fmt.Printf("%-*s ", col.Width, col.Header)
+	}
+	fmt.Println()
+	for _, col := range columns {
+		fmt.Printf("%-*s ", col.Width, strings.Repeat("-", len(col.Header)))
+	}
+	fmt.Println()
+}
+
+func PrintRow(data interface{}, columns []ColumnConfig) {
+	v := reflect.ValueOf(data)
+
+	for _, col := range columns {
+		field := v.FieldByName(col.FieldName)
+		if !field.IsValid() {
+			fmt.Printf("%-*s ", col.Width, "")
+			continue
+		}
+
+		var strVal string
+		switch field.Kind() {
+		case reflect.String:
+			strVal = field.String()
+		case reflect.Int, reflect.Int64:
+			strVal = fmt.Sprintf("%d", field.Int())
+		case reflect.Float64:
+			strVal = fmt.Sprintf("%.2f", field.Float())
+		case reflect.Struct:
+			if t, ok := field.Interface().(time.Time); ok && col.DateFmt != "" {
+				strVal = t.Format(col.DateFmt)
+			}
+		default:
+			strVal = fmt.Sprintf("%v", field.Interface())
+		}
+
+		if col.Truncate {
+			strVal = truncateStr(strVal, col.Width)
+		}
+		fmt.Printf("%-*s ", col.Width, strVal)
+	}
+	fmt.Println()
+}
+
+func ManageScreenWrapper(fn func() error) func() error {
+	return func() error {
+		err := fn()
+		util.PressEnterToContinue()
+		util.ClearScreen()
+		return err
+	}
 }

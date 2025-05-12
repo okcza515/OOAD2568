@@ -20,7 +20,7 @@ type ExamModuleMenuStateHandler struct {
 	Manager *cli.CLIMenuStateManager
 	wrapper *controller.ExamModuleWrapper
 
-	ExamMenuStateHandler	   *ExamMenuState
+	ExamMenuState	   *ExamMenuState
 	QuestionMenuStateHandler   *QuestionMenuStateHandler
 	SubmissionMenuStateHandler *SubmissionMenuStateHandler
 	handler                    *handler.HandlerContext
@@ -100,11 +100,11 @@ func NewExamModuleHandler(manager *cli.CLIMenuStateManager, wrapper *controller.
 		handler: handler.NewHandlerContext(),
 	}
 
-	examModuleHandler.ExamMenuStateHandler = NewExamMenuStateHandler(manager, wrapper, examModuleHandler)
+	examModuleHandler.ExamMenuState = NewExamMenuState(manager, wrapper, examModuleHandler)
 	examModuleHandler.QuestionMenuStateHandler = NewQuestionMenuStateHandler(manager, wrapper, examModuleHandler)
 	examModuleHandler.SubmissionMenuStateHandler = NewSubmissionMenuStateHandler(manager, wrapper, examModuleHandler)
 
-	examModuleHandler.Manager.AddMenu("1", examModuleHandler.ExamMenuStateHandler)
+	examModuleHandler.Manager.AddMenu("1", examModuleHandler.ExamMenuState)
 	examModuleHandler.Manager.AddMenu("2", examModuleHandler.QuestionMenuStateHandler)
 	examModuleHandler.Manager.AddMenu("3", examModuleHandler.SubmissionMenuStateHandler)
 	loadCmd := NewLoadExamCommand(manager, examModuleHandler)

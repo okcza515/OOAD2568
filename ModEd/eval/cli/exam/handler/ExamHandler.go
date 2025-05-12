@@ -2,15 +2,13 @@ package handler
 
 import (
 	assetUtil "ModEd/asset/util"
+	evalUtil "ModEd/eval/util"
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
-	evalUtil "ModEd/eval/util"
 	"fmt"
-
-	"errors"
 
 	"gorm.io/gorm"
 )
@@ -22,7 +20,7 @@ type ExamMenuState struct {
 	backhandler                *handler.ChangeMenuHandlerStrategy
 }
 
-func NewExamMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, examModuleMenuHandler cli.MenuState) *ExamMenuState {
+func NewExamMenuState(manager *cli.CLIMenuStateManager, wrapper *controller.ExamModuleWrapper, examModuleMenuHandler cli.MenuState) *ExamMenuState {
 	return &ExamMenuState{
 		Manager:                    manager,
 		wrapper:                    wrapper,
@@ -33,16 +31,16 @@ func NewExamMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *controll
 
 func (menu *ExamMenuState) Render() {
 	menu.handler.SetMenuTitle("Exam management:\n")
-	menu.handler.AddHandler("1", "Create a new exam.", handler.FuncStrategy{Action: menu.CreateExam})
-	menu.handler.AddHandler("2", "List all exams.", handler.FuncStrategy{Action: menu.ListAllExams})
-	menu.handler.AddHandler("3", "Retrieve an exam by ID.", handler.FuncStrategy{Action: menu.RetrieveExamByID})
-	menu.handler.AddHandler("4", "Update an exam.", handler.FuncStrategy{Action: menu.UpdateExam})
-	menu.handler.AddHandler("5", "Update exam section.", handler.FuncStrategy{Action: menu.UpdateExamSection})
-	menu.handler.AddHandler("6", "List all questions by exam ID.", handler.FuncStrategy{Action: menu.ListAllQuestionsByExamID})
-	menu.handler.AddHandler("7", "Delete an exam.", handler.FuncStrategy{Action: menu.DeleteExam})
-	menu.handler.AddHandler("8", "Publish an exam.", handler.FuncStrategy{Action: menu.PublishExam})
-	menu.handler.AddHandler("9", "Hide an exam.", handler.FuncStrategy{Action: menu.HideExam})
-	menu.handler.AddHandler("back", "Back to previous menu.", menu.backhandler)
+	menu.handler.AddHandler("1", "Create a new exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.CreateExam)})
+	menu.handler.AddHandler("2", "List all exams.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.ListAllExams)})
+	menu.handler.AddHandler("3", "Retrieve an exam by ID.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.RetrieveExamByID)})
+	menu.handler.AddHandler("4", "Update an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.UpdateExam)})
+	menu.handler.AddHandler("5", "Update exam section.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.UpdateExamSection)})
+	menu.handler.AddHandler("6", "List all questions by exam ID.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.ListAllQuestionsByExamID)})
+	menu.handler.AddHandler("7", "Delete an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.DeleteExam)})
+	menu.handler.AddHandler("8", "Publish an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.PublishExam)})
+	menu.handler.AddHandler("9", "Hide an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.HideExam)})
+	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
 	menu.handler.ShowMenu()
 }
 
@@ -50,98 +48,62 @@ func (menu *ExamMenuState) HandleUserInput(input string) error {
 	return menu.handler.HandleInput(input)
 }
 
-func (menu *ExamMenuState) PrintExamHeader() {
-	fmt.Printf("\n%-5s %-20s %-15s %-15s %-30s %-25s %-25s %-10s\n",
-		"ID", "Exam Name", "Instructor ID", "Class ID", "Description", "Start Date", "End Date", "Status")
-	fmt.Printf("\n%-5s %-20s %-15s %-15s %-30s %-25s %-25s %-10s\n",
-	"-----", "-------------", "-------------", "----------", "------------------", "-----------------", "-----------------", "----------")
-}
-
-func (menu *ExamMenuState) PrintExamRow(exam *model.Exam) {
-	fmt.Printf("\n%-5d %-20s %-15d %-15d %-30s %-25s %-25s %-10s\n",
-		exam.ID,
-		truncateStr(exam.ExamName, 20),
-		exam.InstructorID,
-		exam.ClassID,
-		truncateStr(exam.Description, 30),
-		exam.StartDate.Format("2006-01-02 15:04:05"),
-		exam.EndDate.Format("2006-01-02 15:04:05"),
-		exam.ExamStatus,
-	)
-}
-
-func truncateStr(s string, maxLen int) string {
-	if len(s) <= maxLen {
-		return s
-	}
-	return s[:maxLen-3] + "..."
-}
-
-func (menu *ExamMenuState) PrintExamList(exams []*model.Exam) {
+func (menu *ExamMenuState) PrintExamLists(exams []*model.Exam) {
 	if len(exams) == 0 {
-		fmt.Println("\nNo exams found.")
+		fmt.Println("No exams found.")
 		return
 	}
 
-	menu.PrintExamHeader()
-	for _, exam := range exams {
-		menu.PrintExamRow(exam)
+	columns := []evalUtil.ColumnConfig{
+		{Header: "ID", FieldName: "ID", Width: 5},
+		{Header: "Exam Name", FieldName: "ExamName", Width: 20, Truncate: true},
+		{Header: "Instructor ID", FieldName: "InstructorID", Width: 15},
+		{Header: "Class ID", FieldName: "ClassID", Width: 10},
+		{Header: "Description", FieldName: "Description", Width: 30, Truncate: true},
+		{Header: "Status", FieldName: "ExamStatus", Width: 10},
+		{Header: "Start Date", FieldName: "StartDate", Width: 20, DateFmt: "2006-01-02 15:04:05"},
+		{Header: "End Date", FieldName: "EndDate", Width: 20, DateFmt: "2006-01-02 15:04:05"},
 	}
-	fmt.Println()
+
+	evalUtil.PrintHeader(columns)
+	for _, exam := range exams {
+		evalUtil.PrintRow(exam, columns)
+	}
+	fmt.Println("--------------------------------------------------")
 }
 
 func (menu *ExamMenuState) CreateExam() error {
-	examName := evalUtil.PromptString("Enter Exam Name: ")
-	instructorID, err := evalUtil.PromptUint("Enter Instructor ID: ")
+	examName := assetUtil.GetStringInput("Enter Exam Name: ")
+	instructorID := assetUtil.GetUintInput("Enter Instructor ID: ")
+	classID := assetUtil.GetUintInput("Enter Class ID: ")
+	description := assetUtil.GetStringInput("Enter Exam Description: ")
+	startDate, err := evalUtil.GetDateTimeInput("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
 	if err != nil {
-		return errors.New("invalid instructor ID")
+		fmt.Println("Invalid start date:", err)
+		return nil
 	}
-	classID, err := evalUtil.PromptUint("Enter class ID: ")
+	endDate, err := evalUtil.GetDateTimeInput("Enter Exam End Date (YYYY-MM-DD H:M:S): ")
 	if err != nil {
-		return errors.New("invalid class ID")
-	}
-	description := evalUtil.PromptString("Enter Exam Description: ")
-	startDate, err := evalUtil.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
-	if err != nil {
-		return errors.New("invalid invalid date format")
-	}
-	endDate, err := evalUtil.PromptDate("Enter Exam End Date (YYYY-MM-DD H:M:S): ")
-	if err != nil {
-		return errors.New("invalid invalid date format")
+		fmt.Println("Invalid end date:", err)
+		return nil
 	}
 
-	numSections, err := evalUtil.PromptUint("Enter number of sections: ")
-	if err != nil {
-		return errors.New("invalid number of sections")
-	}
-
+	numSections := assetUtil.GetUintInput("Enter number of sections: ")
 	sectionDescriptions := make([]string, numSections)
-	for i := 0; i < int(numSections); i++ {
-		sectionDescriptions[i] = evalUtil.PromptString(fmt.Sprintf("Enter description for section %d: ", i+1))
-	}
-
-	sectionNumQuestions := make([]int, numSections)
-	for i := 0; i < int(numSections); i++ {
-		numQuestions, err := evalUtil.PromptUint(fmt.Sprintf("Enter number of questions for section %d: ", i+1))
-		if err != nil {
-			return errors.New("invalid number of questions")
-		}
-		sectionNumQuestions[i] = int(numQuestions)
-	}
-
+	sectionNumQuestions := make([]uint, numSections)
 	sectionScores := make([]float64, numSections)
 	for i := 0; i < int(numSections); i++ {
-		score, err := evalUtil.PromptFloat(fmt.Sprintf("Enter score for section %d: ", i+1))
-		if err != nil {
-			return errors.New("invalid score")
-		}
+		sectionDescriptions[i] = assetUtil.GetStringInput(fmt.Sprintf("Enter description for section %d: ", i+1))
+		numQuestions := assetUtil.GetUintInput(fmt.Sprintf("Enter number of questions for section %d: ", i+1))
+		sectionNumQuestions[i] = numQuestions
+		score := assetUtil.GetFloatInput(fmt.Sprintf("Enter score for section %d: ", i+1))
 		sectionScores[i] = score
 	}
 
 	newExam := &model.Exam{
 		ExamName:     examName,
-		InstructorID: uint(instructorID),
-		ClassID:      uint(classID),
+		InstructorID: instructorID,
+		ClassID:      classID,
 		Description:  description,
 		ExamStatus:   model.Draft,
 		Attempt:      1,
@@ -150,7 +112,8 @@ func (menu *ExamMenuState) CreateExam() error {
 	}
 
 	if newExam.StartDate.After(newExam.EndDate) {
-		return errors.New("start date cannot be after end date")
+		fmt.Println("Start date must be before end date.")
+		return nil
 	}
 
 	newExamSection := make([]*model.ExamSection, numSections)
@@ -159,96 +122,87 @@ func (menu *ExamMenuState) CreateExam() error {
 			ExamID:       newExam.ID,
 			SectionNo:    uint(i + 1),
 			Description:  sectionDescriptions[i],
-			NumQuestions: uint(sectionNumQuestions[i]),
+			NumQuestions: sectionNumQuestions[i],
 			Score:        sectionScores[i],
 		}
 	}
 
 	err = menu.wrapper.ExamController.Insert(newExam)
 	if err != nil {
-		return errors.New("error creating exam: " + err.Error())
+		fmt.Println("Error creating exam:", err)
+		return nil
 	}
 	err = menu.wrapper.ExamSectionController.InsertMany(newExamSection)
 	if err != nil {
-		return errors.New("error creating exam sections: " + err.Error())
+		fmt.Println("Error creating exam sections:", err)
+		return nil
 	}
 	println("Exam created successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) ListAllExams() error {
 	exams, err := menu.wrapper.ExamController.List(nil)
 	if err != nil {
-		return errors.New("error retrieving exams: " + err.Error())
+		fmt.Println("Error retrieving exams:", err)
+		return nil
 	}
-	menu.PrintExamList(exams)
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
+	if len(exams) == 0 {
+		fmt.Println("No exams found.")
+		return nil
+	}
+	menu.PrintExamLists(exams)
 	return nil
 }
 
 func (menu *ExamMenuState) RetrieveExamByID() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to Retrieve: ")
+	examID := assetUtil.GetUintInput("Enter Exam ID to retrieve: ")
+	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
 	if err != nil {
-		return errors.New("invalid exam ID")
-	}
-	exam, err := menu.wrapper.ExamController.RetrieveByID(uint(examID))
-	if err != nil {
-		return errors.New("error retrieving exam: " + err.Error())
+		fmt.Println("Error retrieving exam:", err)
+		return nil
 	}
 	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exam.ID})
 	if err != nil {
-		return errors.New("error retrieving exam sections: " + err.Error())
+		fmt.Println("Error retrieving exam sections:", err)
+		return nil
 	}
 	fmt.Println("Exam Details:")
-	fmt.Println("--------------------------------------------------")
-	fmt.Printf("Exam ID: %d\n", exam.ID)
-	fmt.Printf("Exam Name: %s\n", exam.ExamName)
-	fmt.Printf("Instructor ID: %d\n", exam.InstructorID)
-	fmt.Printf("Class ID: %d\n", exam.ClassID)
-	fmt.Printf("Description: %s\n", exam.Description)
-	fmt.Printf("Start Date: %s\n", exam.StartDate.Format("2006-01-02 15:04:05"))
-	fmt.Printf("End Date: %s\n", exam.EndDate.Format("2006-01-02 15:04:05"))
-	fmt.Printf("Status: %s\n", exam.ExamStatus)
+	menu.PrintExamLists([]*model.Exam{exam})
 	for _, section := range examSections {
 		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
 	}
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) UpdateExam() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to update: ")
+	examID :=  assetUtil.GetUintInput("Enter Exam ID to update: ")
+	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
 	if err != nil {
-		return errors.New("invalid exam ID")
-	}
-
-	exam, err := menu.wrapper.ExamController.RetrieveByID(uint(examID))
-	if err != nil {
-		return errors.New("error retrieving exam: " + err.Error())
+		fmt.Println("Error retrieving exam:", err)
+		return nil
 	}
 
 	if exam.ExamStatus != model.Draft {
-		return errors.New("exam is not in Draft status, cannot update")
+		fmt.Println("Exam is not in Draft status, cannot update")
+		return nil
 	}
 
-	newExamName := evalUtil.PromptString("Enter Exam Name: ")
-	newDescription := evalUtil.PromptString("Enter Exam Description: ")
-	newStartDate, err := evalUtil.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	newExamName := assetUtil.GetStringInput("Enter Exam Name: ")
+	newDescription := assetUtil.GetStringInput("Enter Exam Description: ")
+	newStartDate, err := evalUtil.GetDateTimeInput("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
 	if err != nil {
-		return errors.New("invalid date format")
+		fmt.Println("Invalid start date:", err)
+		return nil
 	}
-	newEndDate, err := evalUtil.PromptDate("Enter Exam Start Date (YYYY-MM-DD H:M:S): ")
+	newEndDate, err := evalUtil.GetDateTimeInput("Enter Exam End Date (YYYY-MM-DD H:M:S): ")
 	if err != nil {
-		return errors.New("invalid date format")
+		fmt.Println("Invalid end date:", err)
+		return nil
 	}
 
-	// mock up
 	updatedExam := &model.Exam{
 		BaseModel: core.BaseModel{
 			Model: gorm.Model{ID: exam.ID},
@@ -261,91 +215,73 @@ func (menu *ExamMenuState) UpdateExam() error {
 	}
 
 	if updatedExam.StartDate.After(updatedExam.EndDate) {
-		return errors.New("start date must be before end date")
+		fmt.Println("Start date must be before end date.")
+		return nil
 	}
 
 	err = menu.wrapper.ExamController.UpdateByID(updatedExam)
 	if err != nil {
-		return errors.New("error updating exam: " + err.Error())
+		fmt.Println("Error updating exam:", err)
+		return nil
 	}
 
 	fmt.Println("Exam updated successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) UpdateExamSection() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to Retrieve: ")
-	if err != nil {
-		return errors.New("invalid exam ID")
-	}
+	examID :=  assetUtil.GetUintInput("Enter Exam ID to update section: ")
 	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
 	if err != nil {
-		return errors.New("error retrieving exam sections: " + err.Error())
-	}
-	if err != nil {
-		return errors.New("error retrieving sections: " + err.Error())
+		fmt.Println("Error retrieving exam sections:", err)
+		return nil
 	}
 	fmt.Printf("Exam Sections of Exam ID [%d]: \n", examID)
 	for _, section := range examSections {
-		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
-		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
+		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
+		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
 	}
 
-	sectionID, err := evalUtil.PromptUint("Enter Section ID to update: ")
-	if err != nil {
-		return errors.New("invalid section ID")
-	}
+	sectionID := assetUtil.GetUintInput("Enter Section ID to update: ")
 	for _, section := range examSections {
-		if section.ID != uint(sectionID) {
-			return errors.New("section ID not found")
+		if section.ID != sectionID {
+			fmt.Println("Section ID not found.")
+			return nil
 		}
 	}
-	newDescription := evalUtil.PromptString("Enter new description: ")
-	newNumQuestions, err := evalUtil.PromptUint("Enter new number of questions: ")
-	if err != nil {
-		return errors.New("invalid number of questions")
-	}
-	newScore, err := evalUtil.PromptFloat("Enter new score: ")
-	if err != nil {
-		return errors.New("invalid score")
-	}
+	newDescription := assetUtil.GetStringInput("Enter new description: ")
+	newNumQuestions := assetUtil.GetUintInput("Enter new number of questions: ")
+	newScore := assetUtil.GetFloatInput("Enter new score: ")
 
 	updateSection := &model.ExamSection{
 		BaseModel: core.BaseModel{
-			Model: gorm.Model{ID: uint(sectionID)},
+			Model: gorm.Model{ID: sectionID},
 		},
-		ExamID: uint(examID),
-		SectionNo: uint(sectionID),
+		ExamID: examID,
+		SectionNo: sectionID,
 		Description: newDescription,
-		NumQuestions: uint(newNumQuestions),
+		NumQuestions: newNumQuestions,
 		Score: newScore,
 	}
 	err = menu.wrapper.ExamSectionController.UpdateByID(updateSection)
 	if err != nil {
-		return errors.New("error updating section: " + err.Error())
+		fmt.Println("Error updating section:", err)
+		return nil
 	}
 	fmt.Println("Section updated successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) ListAllQuestionsByExamID() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to retrieve questions: ")
-	if err != nil {
-		return errors.New("invalid exam ID")
-	}
+	examID := assetUtil.GetUintInput("Enter Exam ID to retrieve questions: ")
 	question, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID}, "Questions")
 	if err != nil {
-		return errors.New("error retrieving questions: " + err.Error())
+		fmt.Println("Error retrieving questions:", err)
+		return nil
 	}
 	if len(question) == 0 {
 		fmt.Println("No questions found for this exam.")
-		assetUtil.PressEnterToContinue()
-		assetUtil.ClearScreen()
 		return nil
 	}
 	fmt.Printf("Questions for Exam ID [%d]: \n", examID)
@@ -354,81 +290,71 @@ func (menu *ExamMenuState) ListAllQuestionsByExamID() error {
 		fmt.Printf("[%d] Question: %s\n", q.Questions[q.ID].ID, q.Questions[q.ID].ActualQuestion)
 	}
 	fmt.Println("--------------------------------------------------")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
     return nil
 }
 
 func (menu *ExamMenuState) DeleteExam() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to delete: ")
-	if err != nil {
-		return errors.New("invalid exam ID")
-	}
+	examID :=  assetUtil.GetUintInput("Enter Exam ID to delete: ")
 
-	err = menu.wrapper.ExamController.DeleteByID(uint(examID))
+	err := menu.wrapper.ExamController.DeleteByID(examID)
 	if err != nil {
-		return errors.New("error deleting exam: " + err.Error())
+		fmt.Printf("Error deleting exam: %s\n", err.Error())
+		return nil
 	}
 
 	err = menu.wrapper.ExamSectionController.DeleteByCondition(map[string]interface{}{"exam_id": examID})
 	if err != nil {
-		return errors.New("error deleting exam sections: " + err.Error())
+		fmt.Printf("Error deleting exam sections: %s\n", err.Error())
+		return nil
 	}
 
 	fmt.Println("Exam deleted successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) PublishExam() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to publish: ")
-	if err != nil {
-		return errors.New("invalid exam ID")
-	}
+	examID := assetUtil.GetUintInput("Enter Exam ID to publish: ")
 
-	exam, err := menu.wrapper.ExamController.RetrieveByID(uint(examID))
+	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
 	if err != nil {
-		return errors.New("error retrieving exam: " + err.Error())
+		fmt.Println("Error retrieving exam:", err)
+		return nil
 	}
 
 	if exam.ExamStatus != model.Draft {
-		return errors.New("exam is not in Draft status, cannot publish")
+		fmt.Println("Exam is not in Draft status, cannot publish")
+		return nil
 	}
 
 	exam.ExamStatus = model.Publish
 
 	err = menu.wrapper.ExamController.UpdateByID(exam)
 	if err != nil {
-		return errors.New("error publishing exam: " + err.Error())
+		fmt.Println("Error publishing exam:", err)
+		return nil
 	}
 
 	fmt.Println("Exam published successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
 func (menu *ExamMenuState) HideExam() error {
-	examID, err := evalUtil.PromptUint("Enter Exam ID to hide: ")
-	if err != nil {
-		return errors.New("invalid exam ID")
-	}
+	examID := assetUtil.GetUintInput("Enter Exam ID to hide: ")
 
-	exam, err := menu.wrapper.ExamController.RetrieveByID(uint(examID))
+	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
 	if err != nil {
-		return errors.New("error retrieving exam: " + err.Error())
+		fmt.Println("Error retrieving exam:", err)
+		return nil
 	}
 
 	exam.ExamStatus = model.Hidden
 
 	err = menu.wrapper.ExamController.UpdateByID(exam)
 	if err != nil {
-		return errors.New("error hiding exam: " + err.Error())
+		fmt.Println("Error hiding exam:", err)
+		return nil
 	}
 
 	fmt.Println("Exam hidden successfully.")
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
