@@ -4,6 +4,7 @@ package cli
 import (
 	"ModEd/recruit/controller"
 	"ModEd/recruit/model"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -41,6 +42,10 @@ func (s *applicantReportService) GetApplicationReport(applicantionReportID uint)
 		println("can't get report")
 		return nil, err
 	}
+	if len(filteredData) == 0 {
+		return nil, errors.New("no report found")
+	}
+
 	return filteredData[0], nil
 
 }

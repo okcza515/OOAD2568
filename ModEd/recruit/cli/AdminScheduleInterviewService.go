@@ -13,8 +13,8 @@ type AdminScheduleInterviewService interface {
 }
 
 type adminScheduleInterviewService struct {
-	interviewCtrl           *controller.InterviewController
-	applicationReportCtrl   *controller.ApplicationReportController
+	interviewCtrl         *controller.InterviewController
+	applicationReportCtrl *controller.ApplicationReportController
 }
 
 func NewAdminScheduleInterviewService(interviewCtrl *controller.InterviewController, applicationReportCtrl *controller.ApplicationReportController) AdminScheduleInterviewService {
@@ -25,11 +25,16 @@ func NewAdminScheduleInterviewService(interviewCtrl *controller.InterviewControl
 }
 
 func (s *adminScheduleInterviewService) ScheduleInterview(instructorID uint, applicationReportID uint, scheduledTime string) error {
-	applicationReport, err := s.applicationReportCtrl.GetApplicationReportByID(applicationReportID)
+	applicationReports, err := s.applicationReportCtrl.GetApplicationReportByID(applicationReportID)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve ApplicationReport: %w", err)
 	}
 
+	if len(applicationReports) == 0 {
+		return fmt.Errorf("no ApplicationReport found with ID %d", applicationReportID)
+	}
+
+	applicationReport := applicationReports[0]
 	if applicationReport.ApplicationStatuses != "Pending" {
 		return fmt.Errorf("you cannot assign interview details at this stage. Current status: %s", applicationReport.ApplicationStatuses)
 	}
@@ -48,7 +53,7 @@ func (s *adminScheduleInterviewService) ScheduleInterview(instructorID uint, app
 		EvaluatedAt:          time.Time{},
 		InterviewStatus:      model.Pending,
 	}
-	
+
 	err = s.interviewCtrl.CreateInterview(interview)
 	if err != nil {
 		return fmt.Errorf("failed to create interview: %w", err)

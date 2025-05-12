@@ -12,6 +12,8 @@ type InterviewEvaluate interface {
 var evaluationStrategies = map[string]InterviewEvaluate{
 	"Portfolio":   PortfolioEvaluationStrategy{},
 	"Scholarship": ScholarshipEvaluationStrategy{},
+	"Quota":       QuotaEvaluationStrategy{},
+	"Admission":   AdmissionEvaluationStrategy{},
 }
 
 func GetStrategyByRoundName(roundName string) (InterviewEvaluate, error) {

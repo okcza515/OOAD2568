@@ -25,7 +25,7 @@ func createTestDataMC(db *gorm.DB) (*model.Question, *model.MultipleChoiceAnswer
 	exam := model.Exam{
 		ExamName:     "Test Exam",
 		InstructorID: 1,
-		CourseID:     1,
+		ClassID:      1,
 		Description:  "desc",
 		ExamStatus:   model.Draft,
 		Attempt:      1,

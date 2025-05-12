@@ -5,7 +5,6 @@ import (
 	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
-	curriculumModel "ModEd/curriculum/model"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 
@@ -98,7 +97,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 	}).(string)
 	publishDate, err := time.Parse("2006-01-02", publishDateStr)
 	if err != nil {
-		return errors.New("Invalid date format for publish date")
+		return errors.New("invalid date format for publish date")
 	}
 
 	dueDateStr := core.ExecuteUserInputStep(core.StringInputStep{
@@ -107,7 +106,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 	}).(string)
 	dueDate, err := time.Parse("2006-01-02", dueDateStr)
 	if err != nil {
-		return errors.New("Invalid date format for due date")
+		return errors.New("invalid date format for due date")
 	}
 
 	classIdStr := core.ExecuteUserInputStep(core.StringInputStep{
@@ -116,7 +115,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 	}).(string)
 	classIdUint, err := strconv.ParseUint(classIdStr, 10, 64)
 	if err != nil {
-		return errors.New("Invalid class ID")
+		return errors.New("invalid class ID")
 	}
 
 	instructorCode := core.ExecuteUserInputStep(core.StringInputStep{
@@ -133,9 +132,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 		State:       &controller.DraftState{},
 	}
 
-	var classObj curriculumModel.Class
-	classObj.ClassId = uint(classIdUint)
-	assessment.ClassId = classObj
+	assessment.ClassId = uint(classIdUint)
 
 	var instructorObj commonModel.Instructor
 	instructorObj.InstructorCode = instructorCode
@@ -143,7 +140,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 
 	assessmentId, err := menu.wrapper.AssessmentController.CreateAssessment(assessment)
 	if err != nil {
-		return errors.New("Failed to create assessment: " + err.Error())
+		return errors.New("failed to create assessment: " + err.Error())
 	}
 
 	fmt.Printf("\nAssessment created successfully with ID: %d\n", assessmentId)
@@ -153,7 +150,7 @@ func (menu *AssessmentMenuStateHandler) CreateAssessment() error {
 func (menu *AssessmentMenuStateHandler) ViewAllAssessments() error {
 	assessments, err := menu.wrapper.AssessmentController.GetAssessments()
 	if err != nil {
-		return errors.New("Failed to retrieve assessments: " + err.Error())
+		return errors.New("failed to retrieve assessments: " + err.Error())
 	}
 
 	fmt.Println("\nAll Assessments:")
@@ -169,12 +166,12 @@ func (menu *AssessmentMenuStateHandler) ViewAssessmentByID() error {
 
 	assessmentId, err := strconv.ParseUint(assessmentIdStr, 10, 64)
 	if err != nil {
-		return errors.New("Invalid assessment ID")
+		return errors.New("invalid assessment ID")
 	}
 
 	assessment, err := menu.wrapper.AssessmentController.GetAssessment(uint(assessmentId))
 	if err != nil {
-		return errors.New("Failed to retrieve assessment: " + err.Error())
+		return errors.New("failed to retrieve assessment: " + err.Error())
 	}
 
 	fmt.Printf("\nAssessment Details (ID: %d):\n", assessmentId)
@@ -196,12 +193,12 @@ func (menu *AssessmentMenuStateHandler) UpdateAssessment() error {
 
 	assessmentId, err := strconv.ParseUint(assessmentIdStr, 10, 64)
 	if err != nil {
-		return errors.New("Invalid assessment ID")
+		return errors.New("invalid assessment ID")
 	}
 
 	assessment, err := menu.wrapper.AssessmentController.GetAssessment(uint(assessmentId))
 	if err != nil {
-		return errors.New("Failed to retrieve assessment: " + err.Error())
+		return errors.New("failed to retrieve assessment: " + err.Error())
 	}
 
 	fmt.Printf("Current title: %s\n", assessment.Title)
@@ -233,7 +230,7 @@ func (menu *AssessmentMenuStateHandler) UpdateAssessment() error {
 		var err error
 		publishDate, err = time.Parse("2006-01-02", publishDateStr)
 		if err != nil {
-			return errors.New("Invalid date format for publish date")
+			return errors.New("invalid date format for publish date")
 		}
 	}
 
@@ -248,7 +245,7 @@ func (menu *AssessmentMenuStateHandler) UpdateAssessment() error {
 		var err error
 		dueDate, err = time.Parse("2006-01-02", dueDateStr)
 		if err != nil {
-			return errors.New("Invalid date format for due date")
+			return errors.New("invalid date format for due date")
 		}
 	}
 
@@ -262,12 +259,9 @@ func (menu *AssessmentMenuStateHandler) UpdateAssessment() error {
 	if classIdStr != "" {
 		classIdUint, err := strconv.ParseUint(classIdStr, 10, 64)
 		if err != nil {
-			return errors.New("Invalid class ID")
+			return errors.New("invalid class ID")
 		}
-
-		var classObj curriculumModel.Class
-		classObj.ClassId = uint(classIdUint)
-		classId = classObj
+		classId = uint(classIdUint)
 	}
 
 	fmt.Printf("Current instructor code: %v\n", assessment.InstructorCode)
@@ -297,7 +291,7 @@ func (menu *AssessmentMenuStateHandler) UpdateAssessment() error {
 
 	_, err = menu.wrapper.AssessmentController.UpdateAssessment(updatedAssessment)
 	if err != nil {
-		return errors.New("Failed to update assessment: " + err.Error())
+		return errors.New("failed to update assessment: " + err.Error())
 	}
 
 	fmt.Println("\nAssessment updated successfully")
@@ -312,7 +306,7 @@ func (menu *AssessmentMenuStateHandler) ChangeAssessmentStatus() error {
 
 	assessmentId, err := strconv.ParseUint(assessmentIdStr, 10, 64)
 	if err != nil {
-		return errors.New("Invalid assessment ID")
+		return errors.New("invalid assessment ID")
 	}
 
 	assessment, err := menu.wrapper.AssessmentController.GetAssessment(uint(assessmentId))
@@ -340,12 +334,12 @@ func (menu *AssessmentMenuStateHandler) ChangeAssessmentStatus() error {
 	case "3":
 		newStatus = model.StatusClosed
 	default:
-		return errors.New("Invalid status choice")
+		return errors.New("invalid status choice")
 	}
 
 	err = menu.wrapper.AssessmentController.UpdateAssessmentStatus(uint(assessmentId), newStatus)
 	if err != nil {
-		return errors.New("Failed to update assessment status: " + err.Error())
+		return errors.New("failed to update assessment status: " + err.Error())
 	}
 
 	fmt.Printf("\nAssessment status updated to: %s\n", newStatus)
@@ -360,7 +354,7 @@ func (menu *AssessmentMenuStateHandler) DeleteAssessment() error {
 
 	assessmentId, err := strconv.ParseUint(assessmentIdStr, 10, 64)
 	if err != nil {
-		return errors.New("Invalid assessment ID")
+		return errors.New("invalid assessment ID")
 	}
 
 	confirmation := core.ExecuteUserInputStep(core.StringInputStep{

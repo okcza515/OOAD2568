@@ -1,6 +1,7 @@
 package testing
 
 import (
+	curriculumModel "ModEd/curriculum/model"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	"testing"
@@ -15,7 +16,7 @@ func setupTestDBQuestion(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
-	err = db.AutoMigrate(&model.Exam{}, &model.ExamSection{}, &model.Question{})
+	err = db.AutoMigrate(&model.Exam{}, &model.ExamSection{}, &model.Question{}, &curriculumModel.Class{})
 	assert.NoError(t, err)
 
 	return db
@@ -24,13 +25,13 @@ func setupTestDBQuestion(t *testing.T) *gorm.DB {
 func TestCreateQuestion(t *testing.T) {
 	db := setupTestDBQuestion(t)
 
-	ctrlExam := controller.NewExaminationController(db)
+	ctrlExam := controller.NewExamController(db)
 	ctrlExamSec := controller.NewExamSectionController(db)
 	ctrlQuestion := controller.NewQuestionController(db)
 
 	exam := &model.Exam{
 		ExamName:     "Test Exam",
-		CourseID:     1,
+		ClassID:      1,
 		InstructorID: 1,
 		ExamStatus:   "DRAFT",
 		Description:  "Sample description",
@@ -73,13 +74,13 @@ func TestCreateQuestion(t *testing.T) {
 func TestUpdateQuestion(t *testing.T) {
 	db := setupTestDBQuestion(t)
 
-	ctrlExam := controller.NewExaminationController(db)
+	ctrlExam := controller.NewExamController(db)
 	ctrlExamSec := controller.NewExamSectionController(db)
 	ctrlQuestion := controller.NewQuestionController(db)
 
 	exam := &model.Exam{
 		ExamName:     "Test Exam",
-		CourseID:     1,
+		ClassID:      1,
 		InstructorID: 1,
 		ExamStatus:   "DRAFT",
 		StartDate:    time.Now(),
@@ -120,13 +121,13 @@ func TestUpdateQuestion(t *testing.T) {
 func TestDeleteQuestion(t *testing.T) {
 	db := setupTestDBQuestion(t)
 
-	ctrlExam := controller.NewExaminationController(db)
+	ctrlExam := controller.NewExamController(db)
 	ctrlExamSec := controller.NewExamSectionController(db)
 	ctrlQuestion := controller.NewQuestionController(db)
 
 	exam := &model.Exam{
 		ExamName:     "Test Exam",
-		CourseID:     1,
+		ClassID:      1,
 		InstructorID: 1,
 		ExamStatus:   "DRAFT",
 		StartDate:    time.Now(),
@@ -163,63 +164,63 @@ func TestDeleteQuestion(t *testing.T) {
 	assert.Equal(t, gorm.ErrRecordNotFound, err)
 }
 
-// func TestGetQuestionsByExamID(t *testing.T) {
-// 	db := setupTestDBQuestion(t)
+func TestGetQuestionsByExamID(t *testing.T) {
+	db := setupTestDBQuestion(t)
 
-// 	ctrlExam := controller.NewExaminationController(db)
-// 	ctrlExamSec := controller.NewExamSectionController(db)
-// 	ctrlQuestion := controller.NewQuestionController(db)
+	ctrlExam := controller.NewExamController(db)
+	ctrlExamSec := controller.NewExamSectionController(db)
+	ctrlQuestion := controller.NewQuestionController(db)
 
-// 	exam := &model.Exam{
-// 		ExamName:     "Test Exam",
-// 		CourseID:     1,
-// 		InstructorID: 1,
-// 		ExamStatus:   "DRAFT",
-// 		StartDate:    time.Now(),
-// 		EndDate:      time.Now().Add(2 * time.Hour),
-// 	}
-// 	err := ctrlExam.Insert(exam)
-// 	assert.NoError(t, err)
+	exam := &model.Exam{
+		ExamName:     "Test Exam",
+		ClassID:      1,
+		InstructorID: 1,
+		ExamStatus:   "DRAFT",
+		StartDate:    time.Now(),
+		EndDate:      time.Now().Add(2 * time.Hour),
+	}
+	err := ctrlExam.Insert(exam)
+	assert.NoError(t, err)
 
-// 	section := &model.ExamSection{
-// 		ExamID:       exam.ID,
-// 		SectionNo:    1,
-// 		Description:  "Section 1",
-// 		NumQuestions: 2,
-// 		Score:        20.0,
-// 	}
-// 	err = ctrlExamSec.Insert(section)
-// 	assert.NoError(t, err)
+	section := &model.ExamSection{
+		ExamID:       exam.ID,
+		SectionNo:    1,
+		Description:  "Section 1",
+		NumQuestions: 2,
+		Score:        20.0,
+	}
+	err = ctrlExamSec.Insert(section)
+	assert.NoError(t, err)
 
-// 	q1 := &model.Question{
-// 		SectionID:      section.ID,
-// 		Score:          10.0,
-// 		ActualQuestion: "What is 2 + 2?",
-// 		QuestionType:   "ShortAnswerQuestion",
-// 	}
-// 	q2 := &model.Question{
-// 		SectionID:      section.ID,
-// 		Score:          10.0,
-// 		ActualQuestion: "What is the capital of Spain?",
-// 		QuestionType:   "MultipleChoiceQuestion",
-// 	}
-// 	err = ctrlQuestion.Insert(q1)
-// 	assert.NoError(t, err)
-// 	err = ctrlQuestion.Insert(q2)
-// 	assert.NoError(t, err)
+	q1 := &model.Question{
+		SectionID:      section.ID,
+		Score:          10.0,
+		ActualQuestion: "What is 2 + 2?",
+		QuestionType:   "ShortAnswerQuestion",
+	}
+	q2 := &model.Question{
+		SectionID:      section.ID,
+		Score:          10.0,
+		ActualQuestion: "What is the capital of Spain?",
+		QuestionType:   "MultipleChoiceQuestion",
+	}
+	err = ctrlQuestion.Insert(q1)
+	assert.NoError(t, err)
+	err = ctrlQuestion.Insert(q2)
+	assert.NoError(t, err)
 
-// 	//log preload question->examsection-
-// 	questions, err := ctrlQuestion.List(map[string]interface{}{"exam_id": exam.ID}, "Section", "Exam")
-// 	assert.NoError(t, err)
-// 	assert.Len(t, questions, 2)
+	//log preload question->examsection-<
+	questions, err := ctrlQuestion.List(map[string]interface{}{"exam_id": exam.ID}, "Section", "Exam")
+	assert.NoError(t, err)
+	assert.Len(t, questions, 2)
 
-// 	foundQuestions := map[string]bool{
-// 		q1.ActualQuestion: false,
-// 		q2.ActualQuestion: false,
-// 	}
-// 	for _, q := range questions {
-// 		_, exists := foundQuestions[q.ActualQuestion]
-// 		assert.True(t, exists)
-// 		foundQuestions[q.ActualQuestion] = true
-// 	}
-// }
+	foundQuestions := map[string]bool{
+		q1.ActualQuestion: false,
+		q2.ActualQuestion: false,
+	}
+	for _, q := range questions {
+		_, exists := foundQuestions[q.ActualQuestion]
+		assert.True(t, exists)
+		foundQuestions[q.ActualQuestion] = true
+	}
+}
