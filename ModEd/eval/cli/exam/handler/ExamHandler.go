@@ -31,15 +31,15 @@ func NewExamMenuState(manager *cli.CLIMenuStateManager, wrapper *controller.Exam
 
 func (menu *ExamMenuState) Render() {
 	menu.handler.SetMenuTitle("Exam management:\n")
-	menu.handler.AddHandler("1", "Create a new exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.CreateExam)})
-	menu.handler.AddHandler("2", "List all exams.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.ListAllExams)})
-	menu.handler.AddHandler("3", "Retrieve an exam by ID.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.RetrieveExamByID)})
-	menu.handler.AddHandler("4", "Update an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.UpdateExam)})
-	menu.handler.AddHandler("5", "Update exam section.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.UpdateExamSection)})
-	menu.handler.AddHandler("6", "List all questions by exam ID.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.ListAllQuestionsByExamID)})
-	menu.handler.AddHandler("7", "Delete an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.DeleteExam)})
-	menu.handler.AddHandler("8", "Publish an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.PublishExam)})
-	menu.handler.AddHandler("9", "Hide an exam.", handler.FuncStrategy{Action: evalUtil.ManageScreenWrapper(menu.HideExam)})
+	menu.handler.AddHandler("1", "Create a new exam.", handler.FuncStrategy{Action: menu.CreateExam})
+	menu.handler.AddHandler("2", "List all exams.", handler.FuncStrategy{Action: menu.ListAllExams})
+	menu.handler.AddHandler("3", "Retrieve an exam by ID.", handler.FuncStrategy{Action: menu.RetrieveExamByID})
+	menu.handler.AddHandler("4", "Update an exam.", handler.FuncStrategy{Action: menu.UpdateExam})
+	menu.handler.AddHandler("5", "Update exam section.", handler.FuncStrategy{Action: menu.UpdateExamSection})
+	menu.handler.AddHandler("6", "List all questions by exam ID.", handler.FuncStrategy{Action: menu.ListAllQuestionsByExamID})
+	menu.handler.AddHandler("7", "Delete an exam.", handler.FuncStrategy{Action: menu.DeleteExam})
+	menu.handler.AddHandler("8", "Publish an exam.", handler.FuncStrategy{Action: menu.PublishExam})
+	menu.handler.AddHandler("9", "Hide an exam.", handler.FuncStrategy{Action: menu.HideExam})
 	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
 	menu.handler.ShowMenu()
 }
@@ -53,22 +53,23 @@ func (menu *ExamMenuState) PrintExamLists(exams []*model.Exam) {
 		fmt.Println("No exams found.")
 		return
 	}
-
-	columns := []evalUtil.ColumnConfig{
-		{Header: "ID", FieldName: "ID", Width: 5},
-		{Header: "Exam Name", FieldName: "ExamName", Width: 20, Truncate: true},
-		{Header: "Instructor ID", FieldName: "InstructorID", Width: 15},
-		{Header: "Class ID", FieldName: "ClassID", Width: 10},
-		{Header: "Description", FieldName: "Description", Width: 30, Truncate: true},
-		{Header: "Status", FieldName: "ExamStatus", Width: 10},
-		{Header: "Start Date", FieldName: "StartDate", Width: 20, DateFmt: "2006-01-02 15:04:05"},
-		{Header: "End Date", FieldName: "EndDate", Width: 20, DateFmt: "2006-01-02 15:04:05"},
-	}
-
-	evalUtil.PrintHeader(columns)
+	columns := []string{"ID", "Exam Name", "Instructor ID", "Class ID", "Description", "Status", "Attempt", "Start Date", "End Date"}
+	data := [][]string{}
 	for _, exam := range exams {
-		evalUtil.PrintRow(exam, columns)
+		row := []string{
+			fmt.Sprintf("%d", exam.ID),
+			exam.ExamName,
+			fmt.Sprintf("%d", exam.InstructorID),
+			fmt.Sprintf("%d", exam.ClassID),
+			exam.Description,
+			string(exam.ExamStatus),
+			fmt.Sprintf("%d", exam.Attempt),
+			exam.StartDate.Format("2006-01-02 15:04:05"),
+			exam.EndDate.Format("2006-01-02 15:04:05"),
+		}
+		data = append(data, row)
 	}
+	core.NewMenuIO().PrintTable(columns, data)
 	fmt.Println("--------------------------------------------------")
 }
 
@@ -162,7 +163,7 @@ func (menu *ExamMenuState) RetrieveExamByID() error {
 		fmt.Println("Error retrieving exam:", err)
 		return nil
 	}
-	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": exam.ID})
+	examSections, err := menu.wrapper.ExamSectionController.RetrieveByExamID(examID)
 	if err != nil {
 		fmt.Println("Error retrieving exam sections:", err)
 		return nil
