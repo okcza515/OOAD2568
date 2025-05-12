@@ -46,7 +46,7 @@ func (s *instructorViewInterviewDetailsService) ViewInterviewDetails(
 		}
 	}
 
-	filteredData, err := report.GetFilteredInterviews(condition)
+	filteredData, err := report.GetFilteredReport(condition)
 	if err != nil {
 		println("can't get report")
 		return nil, err
