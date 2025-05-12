@@ -5,15 +5,17 @@ import "ModEd/recruit/model"
 type MechanicalEngineeringCriteria struct{}
 
 const (
-	minGPAX_Mechanical  = 3.0
-	minTPAT1_Mechanical = 70.0
-	minTGAT1_Mechanical = 75.0
-	minTGAT2_Mechanical = 80.0
+	minGPAX_Mechanical  = 2.5
+	minTGAT1_Mechanical = 50.0
+	minTGAT2_Mechanical = 50.0
+	minTGAT3_Mechanical = 50.0
+	minTPAT3_Mechanical = 65.0
 )
 
 func (m *MechanicalEngineeringCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
-	return applicant.TPAT1 >= minTPAT1_Mechanical &&
-		applicant.GPAX >= minGPAX_Mechanical &&
+	return applicant.GPAX >= minGPAX_Mechanical &&
 		applicant.TGAT1 >= minTGAT1_Mechanical &&
-		applicant.TGAT2 >= minTGAT2_Mechanical
+		applicant.TGAT2 >= minTGAT2_Mechanical &&
+		applicant.TGAT3 >= minTGAT3_Mechanical &&
+		applicant.TPAT3 >= minTPAT3_Mechanical
 }
