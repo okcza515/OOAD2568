@@ -39,7 +39,6 @@ func (menu *EvaluationMenuStateHandler) Render() {
 }
 
 func (menu *EvaluationMenuStateHandler) HandleUserInput(input string) error {
-	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 
@@ -65,6 +64,8 @@ func (menu *EvaluationMenuStateHandler) CreateEvaluation() error {
 	}
 
 	fmt.Println("Evaluation created successfully!")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -77,6 +78,8 @@ func (menu *EvaluationMenuStateHandler) ViewAllEvaluations() error {
 
 	if len(evaluations) == 0 {
 		fmt.Println("No evaluations found.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -84,6 +87,8 @@ func (menu *EvaluationMenuStateHandler) ViewAllEvaluations() error {
 	for _, eval := range evaluations {
 		menu.displayEvaluation(eval)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -100,6 +105,8 @@ func (menu *EvaluationMenuStateHandler) ViewEvaluationByID() error {
 
 	if len(evaluations) == 0 {
 		fmt.Println("No evaluations found for this student.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -107,6 +114,8 @@ func (menu *EvaluationMenuStateHandler) ViewEvaluationByID() error {
 	for _, eval := range evaluations {
 		menu.displayEvaluation(eval)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -129,6 +138,8 @@ func (menu *EvaluationMenuStateHandler) UpdateEvaluation() error {
 	}
 
 	fmt.Println("Evaluation updated successfully!")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 

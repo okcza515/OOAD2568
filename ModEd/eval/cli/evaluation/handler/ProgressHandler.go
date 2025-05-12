@@ -50,7 +50,6 @@ func (menu *ProgressMenuStateHandler) HandlerUserInput(input string) error {
 }
 
 func (menu *ProgressMenuStateHandler) HandleUserInput(input string) error {
-	util.ClearScreen()
 	return menu.handler.HandleInput(input)
 }
 
@@ -92,6 +91,8 @@ func (menu *ProgressMenuStateHandler) GetAllProgress() error {
 
 	fmt.Printf("\nAssignment %d Progress List:", assignmentId)
 	menu.printProgressTable(progressList)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -116,6 +117,8 @@ func (menu *ProgressMenuStateHandler) GetProgressByStudentCode() error {
 
 	fmt.Printf("\nAssignment %d Progress List for Student %s:", assignmentId, studentCode)
 	menu.printProgressTable(progressList)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -142,6 +145,8 @@ func (menu *ProgressMenuStateHandler) GetProgressByStatus() error {
 
 	fmt.Printf("\nAssignment %d Progress List with Submission Status %v:", assignmentId, submitted)
 	menu.printProgressTable(progressList)
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -168,5 +173,7 @@ func (menu *ProgressMenuStateHandler) GetAssignmentSubmitCount() error {
 		fmt.Printf("\nSubmitted: %v - Count: %d", submitted, count)
 	}
 	fmt.Println()
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
