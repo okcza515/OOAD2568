@@ -55,8 +55,6 @@ func (b *TORBuilder) Build() *model.TOR {
 	return b.tor
 }
 
-// --- ProcurementBuilder ---
-
 type ProcurementBuilder struct {
 	procurement *model.Procurement
 }
@@ -96,7 +94,6 @@ func (b *ProcurementBuilder) Build() *model.Procurement {
 	return b.procurement
 }
 
-// Optional: Combined builder return if needed
 func (b *ProcurementBuilder) BuildWithTOR(tor *model.TOR) (*model.TOR, *model.Procurement) {
 	b.procurement.TORID = tor.TORID
 	return tor, b.procurement
