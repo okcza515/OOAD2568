@@ -19,17 +19,3 @@ func NewMultipleChoiceAnswerSubmissionController(db *gorm.DB) *MultipleChoiceAns
 		BaseController: core.NewBaseController[*model.MultipleChoiceAnswerSubmission](db),
 	}
 }
-
-func (c *MultipleChoiceAnswerSubmissionController) GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) (mcAnsSubs []*model.MultipleChoiceAnswerSubmission, err error) {
-	err = c.db.
-		Where("submission_id = ?", submissionID).
-		Preload("Question").
-		Preload("Choice").
-		Find(&mcAnsSubs).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	return mcAnsSubs, err
-}
