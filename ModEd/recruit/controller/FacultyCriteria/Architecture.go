@@ -3,7 +3,7 @@ package facultyCriteria
 
 import "ModEd/recruit/model"
 
-type ArchitechtureCriteria struct{}
+type ArchitectureCriteria struct{}
 
 const (
 	minGPAX_Achitechture  = 2
@@ -13,7 +13,7 @@ const (
 	minTPAT4_Achitechture = 40.0
 )
 
-func (c *ArchitechtureCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
+func (c *ArchitectureCriteria) IsSatisfiedBy(applicant model.Applicant) bool {
 	return applicant.GPAX >= minGPAX_Achitechture &&
 		applicant.TGAT1 >= minTGAT1_Achitechture &&
 		applicant.TGAT2 >= minTGAT2_Achitechture &&

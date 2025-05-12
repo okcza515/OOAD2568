@@ -34,10 +34,10 @@ func (b *ApplicationCriteriaBuilder) AddFacultyCriteria(facultyName string) *App
 		b.criteriaList = append(b.criteriaList, &facultyCriteria.EngineeringCriteria{})
 	case "Science":
 		b.criteriaList = append(b.criteriaList, &facultyCriteria.ScienceCriteria{})
+	case "Architecture":
+		b.criteriaList = append(b.criteriaList, &facultyCriteria.ArchitectureCriteria{})
 	case "Business":
 		b.criteriaList = append(b.criteriaList, &facultyCriteria.BusinessCriteria{})
-	case "Architechture":
-		b.criteriaList = append(b.criteriaList, &facultyCriteria.ArchitechtureCriteria{})
 	}
 
 	return b
