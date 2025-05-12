@@ -9,34 +9,48 @@ import (
 	"gorm.io/gorm"
 )
 
+type RegisterFunc func()
+
 func GenericRegister(choice int, db *gorm.DB, path string) {
-	switch choice {
-	case 0:
+	actions := map[int]RegisterFunc{
+		1: func() {
+			RegisterModel(db, path,
+				controller.NewStudentController(db),
+				[]*model.Student{},
+				"student")
+		},
+		2: func() {
+			RegisterModel(db, path,
+				controller.NewInstructorController(db),
+				[]*model.Instructor{},
+				"instructor")
+		},
+		3: func() {
+			RegisterModel(db, path,
+				controller.NewDepartmentController(db),
+				[]*model.Department{},
+				"department")
+		},
+		4: func() {
+			RegisterModel(db, path,
+				controller.NewFacultyController(db),
+				[]*model.Faculty{},
+				"faculty")
+		},
+	}
+
+	if choice == 0 {
 		fmt.Println("Exit")
 		return
-	case 1:
-		RegisterModel(db, path,
-			controller.NewStudentController(db),
-			[]*model.Student{},
-			"student")
-	case 2:
-		RegisterModel(db, path,
-			controller.NewInstructorController(db),
-			[]*model.Instructor{},
-			"instructor")
-	case 3:
-		RegisterModel(db, path,
-			controller.NewDepartmentController(db),
-			[]*model.Department{},
-			"department")
-	case 4:
-		RegisterModel(db, path,
-			controller.NewFacultyController(db),
-			[]*model.Faculty{},
-			"faculty")
-	default:
-		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
 	}
+
+	action, ok := actions[choice]
+	if !ok {
+		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
+		return
+	}
+
+	action()
 }
 
 func RegisterModel[T model.CommonDataInterface](db *gorm.DB, path string,
@@ -58,22 +72,36 @@ func RegisterModel[T model.CommonDataInterface](db *gorm.DB, path string,
 	fmt.Printf("Complete task. (on %s)\n", modelName)
 }
 
+type RetrieveFunc func()
+
 func GenericRetrieve(choice int, db *gorm.DB) {
-	switch choice {
-	case 0:
+	actions := map[int]RetrieveFunc{
+		1: func() {
+			RetrieveModel(db, controller.NewStudentController(db))
+		},
+		2: func() {
+			RetrieveModel(db, controller.NewInstructorController(db))
+		},
+		3: func() {
+			RetrieveModel(db, controller.NewDepartmentController(db))
+		},
+		4: func() {
+			RetrieveModel(db, controller.NewFacultyController(db))
+		},
+	}
+
+	if choice == 0 {
 		fmt.Println("Exit")
 		return
-	case 1:
-		RetrieveModel(db, controller.NewStudentController(db))
-	case 2:
-		RetrieveModel(db, controller.NewInstructorController(db))
-	case 3:
-		RetrieveModel(db, controller.NewDepartmentController(db))
-	case 4:
-		RetrieveModel(db, controller.NewFacultyController(db))
-	default:
-		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
 	}
+
+	action, ok := actions[choice]
+	if !ok {
+		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
+		return
+	}
+
+	action()
 }
 
 func RetrieveModel[T model.CommonDataInterface](db *gorm.DB,
@@ -91,39 +119,48 @@ func RetrieveModel[T model.CommonDataInterface](db *gorm.DB,
 	}
 }
 
+type DeleteFunc func(key string)
+
 func GenericDelete(choice int, db *gorm.DB) {
-
-	var field string
-	fmt.Print("Enter model's field: ")
-	fmt.Scan(&field)
-
 	var key string
-	fmt.Print("Which record is to be deleted: ")
+	fmt.Print("Enter key to delete: ")
 	fmt.Scan(&key)
 
-	switch choice {
-	case 0:
+	actions := map[int]DeleteFunc{
+		1: func(key string) {
+			if err := model.DeleteStudentByCode(db, key); err != nil {
+				fmt.Printf("Error deleting student: %v\n", err)
+				return
+			}
+			fmt.Printf("Student with ID %s deleted successfully.\n", key)
+		},
+		2: func(key string) {
+			if err := model.DeleteInstructorByCode(db, key); err != nil {
+				fmt.Printf("Error deleting instructor: %v\n", err)
+				return
+			}
+			fmt.Printf("Instructor with ID %s deleted successfully.\n", key)
+		},
+		3: func(key string) {
+			fmt.Println("Department deletion not implemented. Use CLEAR_DB to reset all departments.")
+		},
+		4: func(key string) {
+			fmt.Println("Faculty deletion not implemented. Use CLEAR_DB to reset all faculties.")
+		},
+	}
+
+	if choice == 0 {
+		fmt.Println("Exit")
 		return
-	case 1: // Student
-		if err := model.DeleteStudentByCode(db, key); err != nil {
-			fmt.Printf("Error deleting student: %v\n", err)
-			return
-		}
-		fmt.Printf("Student with ID %s deleted successfully.\n", key)
-	case 2: // Instructor
-		if err := model.DeleteInstructorByCode(db, key); err != nil {
-			fmt.Printf("Error deleting instructor: %v\n", err)
-			return
-		}
-		fmt.Printf("Instructor with ID %s deleted successfully.\n", key)
-	case 3: // Department
-		fmt.Println("Department deletion not implemented. Use CLEAR_DB to reset all departments.")
-	case 4: // Faculty
-		fmt.Println("Faculty deletion not implemented. Use CLEAR_DB to reset all faculties.")
-	default:
+	}
+
+	action, ok := actions[choice]
+	if !ok {
 		fmt.Println("Invalid choice. Please select a number between 0 and 4.")
 		return
 	}
+
+	action(key)
 }
 
 func Delete[T model.CommonDataInterface](db *gorm.DB, controller interface {
