@@ -4,7 +4,11 @@ import (
 	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
+	"encoding/csv"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
 )
 
 type AssessmentScoreHandler struct {
@@ -53,7 +57,7 @@ func (h *AssessmentScoreHandler) SubmitAdvisorScore(io *core.MenuIO) {
 
 	assessment, err := h.instanceStorer.Assessment.RetrieveAssessmentBySeniorProjectId(projectId)
 	if err != nil {
-		io.Println("Project not found")
+		io.Println(err.Error())
 		return
 	}
 
@@ -150,4 +154,139 @@ func (h *AssessmentScoreHandler) displayCommitteeScores(io *core.MenuIO, linkId 
 
 	io.Println("  Committee Scores:")
 	io.PrintTableFromSlice(scores, []string{"Score", "CommitteeId"})
+}
+
+func (h *AssessmentScoreHandler) ImportCSV(io *core.MenuIO) {
+	io.Println("Importing Assessment Scores from CSV...")
+	cwd, _ := os.Getwd()
+	io.Println(fmt.Sprintf("Current directory: %s", cwd))
+	io.Print("Enter CSV file path (-1 to cancel): ")
+	filePath, err := io.ReadInput()
+	if err != nil || filePath == "-1" {
+		io.Println("Cancelled.")
+		return
+	}
+
+	// Convert to absolute path
+	absPath, err := filepath.Abs(filePath)
+	if err != nil {
+		io.Println(fmt.Sprintf("Error resolving path: %v", err))
+		return
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(absPath); os.IsNotExist(err) {
+		io.Println("Error: File does not exist.")
+		return
+	}
+
+	file, err := os.Open(absPath)
+	if err != nil {
+		io.Println(fmt.Sprintf("Error opening file: %v", err))
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		io.Println(fmt.Sprintf("Error reading CSV: %v", err))
+		return
+	}
+
+	successCount := 0
+	for i, record := range records {
+		// Skip header row if present
+		if i == 0 && (record[0] == "ProjectID" || record[0] == "project_id") {
+			continue
+		}
+
+		if len(record) < 5 {
+			io.Println(fmt.Sprintf("Row %d: Invalid format, expected at least 5 columns", i+1))
+			continue
+		}
+
+		// Parse CSV fields
+		projectID, err := strconv.ParseUint(record[0], 10, 32)
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Invalid Project ID", i+1))
+			continue
+		}
+
+		criteriaID, err := strconv.ParseUint(record[1], 10, 32)
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Invalid Criteria ID", i+1))
+			continue
+		}
+
+		scoreType := record[2] // "advisor" or "committee"
+		evaluatorID, err := strconv.ParseUint(record[3], 10, 32)
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Invalid Evaluator ID", i+1))
+			continue
+		}
+
+		score, err := strconv.ParseFloat(record[4], 64)
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Invalid Score", i+1))
+			continue
+		}
+
+		// Validate score range
+		if score < 0 || score > 100 {
+			io.Println(fmt.Sprintf("Row %d: Score must be between 0 and 100", i+1))
+			continue
+		}
+
+		// Check if assessment exists
+		assessment, err := h.instanceStorer.Assessment.RetrieveAssessmentBySeniorProjectId(uint(projectID))
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Project not found", i+1))
+			continue
+		}
+
+		// Check if criteria link exists
+		link, err := h.instanceStorer.AssessmentCriteriaLink.RetrieveAssessmentCriteriaLink(assessment.ID, uint(criteriaID))
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Criteria not linked to project", i+1))
+			io.Println(fmt.Sprintf("Row %d: Trying to auto create link...(only possible if the criteria exists)", i+1))
+			//auto create link
+			err = h.instanceStorer.AssessmentCriteriaLink.Insert(&model.AssessmentCriteriaLink{
+				AssessmentId:         assessment.ID,
+				AssessmentCriteriaId: uint(criteriaID),
+			})
+			if err != nil {
+				io.Println(fmt.Sprintf("Row %d: Failed to insert link: %v", i+1, err))
+				continue
+			}
+			continue
+		}
+
+		// Insert score based on type
+		switch scoreType {
+		case "advisor":
+			err = h.instanceStorer.ScoreAssessmentAdvisor.Insert(&model.ScoreAssessmentAdvisor{
+				AssessmentCriteriaLinkId: link.ID,
+				AdvisorId:                uint(evaluatorID),
+				Score:                    score,
+			})
+		case "committee":
+			err = h.instanceStorer.ScoreAssessmentCommittee.Insert(&model.ScoreAssessmentCommittee{
+				AssessmentCriteriaLinkId: link.ID,
+				CommitteeId:              uint(evaluatorID),
+				Score:                    score,
+			})
+		default:
+			io.Println(fmt.Sprintf("Row %d: Invalid score type (must be 'advisor' or 'committee')", i+1))
+			continue
+		}
+
+		if err != nil {
+			io.Println(fmt.Sprintf("Row %d: Failed to submit score: %v", i+1, err))
+		} else {
+			successCount++
+		}
+	}
+
+	io.Println(fmt.Sprintf("Import complete. Successfully imported %d scores.", successCount))
 }

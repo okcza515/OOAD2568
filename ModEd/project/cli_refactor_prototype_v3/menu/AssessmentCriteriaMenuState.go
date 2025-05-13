@@ -11,17 +11,18 @@ import (
 	"fmt"
 )
 
-type AssessmentCriteriaMenuState struct {
+type AssessmentCriteriaLinkMenuState struct {
 	manager        *cli.CLIMenuStateManager
 	handlerContext *handler.HandlerContext
 }
 
-func NewAssessmentCriteriaMenuState(manager *cli.CLIMenuStateManager, storer *controller.InstanceStorer) *AssessmentCriteriaMenuState {
+func NewAssessmentCriteriaMenuState(manager *cli.CLIMenuStateManager, storer *controller.InstanceStorer) *AssessmentCriteriaLinkMenuState {
 	handlerContext := handler.NewHandlerContext()
 	handlerContext.SetMenuTitle("Assessment Criteria Management")
 
 	io := core.NewMenuIO()
 	h := handlers.NewAssessmentCriteriaHandler(storer)
+	linkHandler := handlers.NewAssessmentCriteriaLinkHandler(storer)
 
 	handlerContext.AddHandler("1", "Define New Criteria", handler.FuncStrategy{
 		Action: func() error {
@@ -51,26 +52,47 @@ func NewAssessmentCriteriaMenuState(manager *cli.CLIMenuStateManager, storer *co
 		},
 	})
 
+	handlerContext.AddHandler("5", "Link Criteria to Assessment", handler.FuncStrategy{
+		Action: func() error {
+			linkHandler.LinkCriteriaToAssessment(io)
+			return nil
+		},
+	})
+
+	handlerContext.AddHandler("6", "Update Criteria Link (change criteria link of an Assessment)", handler.FuncStrategy{
+		Action: func() error {
+			linkHandler.UpdateLink(io)
+			return nil
+		},
+	})
+
+	handlerContext.AddHandler("7", "List Linked Criteria of an Assessment", handler.FuncStrategy{
+		Action: func() error {
+			linkHandler.ListCriteriaLinkedToAssessment(io)
+			return nil
+		},
+	})
+
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState("MAIN"))
 	handlerContext.AddBackHandler(backHandler)
 
-	return &AssessmentCriteriaMenuState{
+	return &AssessmentCriteriaLinkMenuState{
 		manager:        manager,
 		handlerContext: handlerContext,
 	}
 }
 
-func (menu *AssessmentCriteriaMenuState) Render() {
+func (menu *AssessmentCriteriaLinkMenuState) Render() {
 	fmt.Println()
-	fmt.Println("::/project/assessment-criteria")
+	fmt.Println("::/project/assessment-criteria-link")
 	fmt.Println()
-	fmt.Println("Assessment Criteria Management Menu")
+	fmt.Println("Assessment Criteria Link Management Menu")
 	menu.handlerContext.ShowMenu()
 	fmt.Println("  exit:\tExit the program (or Ctrl+C is fine ¯\\_(ツ)_/¯)")
 	fmt.Println()
 }
 
-func (menu *AssessmentCriteriaMenuState) HandleUserInput(input string) error {
+func (menu *AssessmentCriteriaLinkMenuState) HandleUserInput(input string) error {
 	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println("Error:", err)

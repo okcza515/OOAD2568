@@ -26,11 +26,12 @@ func NewProjectMainMenuState(manager *cli.CLIMenuStateManager, storer *controlle
 	handlerContext.AddHandler("5", "Assignment Management", handler.NewChangeMenuHandlerStrategy(manager, NewAssignmentMenuState(manager, storer)))
 	handlerContext.AddHandler("6", "Presentation Management", handler.NewChangeMenuHandlerStrategy(manager, NewPresentationMenuState(manager, storer)))
 	handlerContext.AddHandler("7", "Report Management", handler.NewChangeMenuHandlerStrategy(manager, NewReportMenuState(manager, storer)))
-	handlerContext.AddHandler("8", "Progress Tracking", handler.NewChangeMenuHandlerStrategy(manager, NewProgressMenuState(manager, storer)))
-	handlerContext.AddHandler("9", "Assessment Scores", handler.NewChangeMenuHandlerStrategy(manager, NewAssessmentCriteriaLinkMenuState(manager, storer)))
-	handlerContext.AddHandler("10", "Assignment Scores", handler.NewChangeMenuHandlerStrategy(manager, NewAssignmentScoreMenuState(manager, storer)))
-	handlerContext.AddHandler("11", "Presentation Scores", handler.NewChangeMenuHandlerStrategy(manager, NewPresentationScoreMenuState(manager, storer)))
-	handlerContext.AddHandler("12", "Report Scores", handler.NewChangeMenuHandlerStrategy(manager, NewReportScoreMenuState(manager, storer)))
+	handlerContext.AddHandler("8", "Assessment Criteria Management", handler.NewChangeMenuHandlerStrategy(manager, NewAssessmentCriteriaMenuState(manager, storer)))
+	handlerContext.AddHandler("9", "Progress Tracking", handler.NewChangeMenuHandlerStrategy(manager, NewProgressMenuState(manager, storer)))
+	handlerContext.AddHandler("10", "Assessment Scores", handler.NewChangeMenuHandlerStrategy(manager, NewAssessmentScoreMenuState(manager, storer)))
+	handlerContext.AddHandler("11", "Assignment Scores", handler.NewChangeMenuHandlerStrategy(manager, NewAssignmentScoreMenuState(manager, storer)))
+	handlerContext.AddHandler("12", "Presentation Scores", handler.NewChangeMenuHandlerStrategy(manager, NewPresentationScoreMenuState(manager, storer)))
+	handlerContext.AddHandler("13", "Report Scores", handler.NewChangeMenuHandlerStrategy(manager, NewReportScoreMenuState(manager, storer)))
 
 	return menustate
 }

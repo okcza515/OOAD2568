@@ -42,6 +42,12 @@ func NewAssessmentScoreMenuState(manager *cli.CLIMenuStateManager, storer *contr
 			return nil
 		},
 	})
+	handlerContext.AddHandler("4", "Import Assessment Scores from CSV", handler.FuncStrategy{
+		Action: func() error {
+			scoreHandler.ImportCSV(io)
+			return nil
+		},
+	})
 
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState("MAIN"))
 	handlerContext.AddBackHandler(backHandler)

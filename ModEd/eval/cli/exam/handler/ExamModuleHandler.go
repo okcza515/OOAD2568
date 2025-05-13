@@ -120,7 +120,7 @@ func (examHandler *ExamModuleMenuStateHandler) Render() {
 	examHandler.handler.AddHandler("2", "Question", handler.FuncStrategy{})
 	examHandler.handler.AddHandler("3", "Submission", handler.FuncStrategy{})
 	examHandler.handler.AddHandler("Load", "Load Seed Data", handler.FuncStrategy{})
-	examHandler.handler.AddHandler("Exit", "Exit the Evaluation Module", handler.FuncStrategy{})
+	examHandler.handler.AddHandler("Exit", "Exit the Examination Module", handler.FuncStrategy{})
 	examHandler.handler.ShowMenu()
 }
 

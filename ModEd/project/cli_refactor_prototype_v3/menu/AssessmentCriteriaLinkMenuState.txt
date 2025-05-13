@@ -52,7 +52,14 @@ func NewAssessmentCriteriaLinkMenuState(manager *cli.CLIMenuStateManager, storer
 		},
 	})
 
-	handlerContext.AddHandler("5", "List Linked Criteria to Assessment", handler.FuncStrategy{
+	handlerContext.AddHandler("5", "Link Criteria to Assessment", handler.FuncStrategy{
+		Action: func() error {
+			linkHandler.LinkCriteriaToAssessment(io)
+			return nil
+		},
+	})
+
+	handlerContext.AddHandler("5", "List Linked Criteria of a Assessment", handler.FuncStrategy{
 		Action: func() error {
 			linkHandler.ListCriteriaLinkedToAssessment(io)
 			return nil
