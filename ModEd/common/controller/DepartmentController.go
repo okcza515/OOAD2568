@@ -12,7 +12,8 @@ type DepartmentController struct {
 	*core.BaseController[model.Department]
 }
 
-func NewDepartmentController(db *gorm.DB) *DepartmentController {
+// newDepartmentController creates a new instance of DepartmentController (private constructor)
+func newDepartmentController(db *gorm.DB) *DepartmentController {
 	db.AutoMigrate(&model.Department{})
 	return &DepartmentController{
 		BaseController: core.NewBaseController[model.Department](db),
@@ -67,7 +68,7 @@ func (c *DepartmentController) Delete(field string, value interface{}) error {
 }
 
 func (c *DepartmentController) Truncate() error {
-	return c.DeleteByCondition(map[string]interface{}{})
+	return c.BaseController.Truncate()
 }
 
 func (c *DepartmentController) GetByFaculty(faculty string) ([]model.Department, error) {
