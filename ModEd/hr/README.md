@@ -2,9 +2,38 @@
 
 ## Changelogs 13/05/2025
 
+### Structure
+
+- #### CLI
+
+  - Change all command cli to menu based using core module.
+  - Use strategy, state, singleton.
+  - CLI version is still there to be compared to.
+  - Using new field validator.
+  - All handler now uses Strategy design pattern where controller function is injected into handler, allowing different behaviors to be injected dynamically.
+  - All menu is working.
+    - CRUD StudentInfo, Instructor
+    - Request Raise|Leave|Resign
+    - Review Raise|Leave|Resign
+    - Pull data from common
+    - Import data from file
+    - Export data to file
+
+- #### Controller
+
+  - Centralized all controller access and initialization using HRControllerManager using Facade
+  - Add Export Method
+    - Implement Serializer in CSVMapper and JSONMapper and fix typo in DataMapper regarding .json length.
+
+- #### Model
+
+  - Add model validation rule.
+
 ### Issues
 
-- Still incorrect convention on common module?
+- Lastest issues is common change controller name last minute. So all method that are using common is not working.
+- Incorrect convention on common module.
+  - Using Map string instead of object.
 
 ## Changelogs 06/05/2025
 
