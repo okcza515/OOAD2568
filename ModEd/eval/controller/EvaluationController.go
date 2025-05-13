@@ -106,7 +106,7 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 
 	// Write headers if file is new
 	if !fileExists {
-		headers := []string{"student_code", "Instructor_code", "Assignment_id", "score", "comment", "evaluated_at"}
+		headers := []string{"student_code", "Instructor_code", "Assignment_id", "score", "comment", "evaluated_at\n"}
 		if err := writer.Write(headers); err != nil {
 			return fmt.Errorf("failed to write headers: %v", err)
 		}
