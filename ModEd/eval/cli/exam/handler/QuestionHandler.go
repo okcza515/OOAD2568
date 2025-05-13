@@ -43,7 +43,15 @@ func (menu *QuestionMenuState) Render() {
 }
 
 func (menu *QuestionMenuState) HandleUserInput(input string) error {
-	return menu.handler.HandleInput(input)
+	menu.handler.HandleInput(input)
+	if input == "back" {
+		assetUtil.ClearScreen()
+		return nil
+	}
+
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
+	return nil
 }
 
 func (menu *QuestionMenuState) CreateQuestion() error {
@@ -120,9 +128,6 @@ func (menu *QuestionMenuState) CreateQuestion() error {
 			}
 		}
 	}
-
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -132,8 +137,6 @@ func (menu *QuestionMenuState) DeleteQuestion() error {
 	if err := menu.wrapper.QuestionController.DeleteByQuestionID(questionID); err != nil {
 		return fmt.Errorf("failed to delete question: %w", err)
 	}
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -221,8 +224,6 @@ func (menu *QuestionMenuState) UpdateQuestion() error {
 		}
 	}
 }
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 
@@ -253,8 +254,6 @@ func (menu *QuestionMenuState) ShowCorrectAnswerByQuestionID() error {
 		}
 		fmt.Printf("Correct answer for question %s: %s\n", question.ActualQuestion, getanswer)
 	}
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 
 }
@@ -293,9 +292,6 @@ func (menu *QuestionMenuState) ShowQuestionByQuestionID() error {
 		}
 		fmt.Printf("- Correct Answer: %v\n", answer.IsExpected)
 	}
-
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
 

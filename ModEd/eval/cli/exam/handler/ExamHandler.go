@@ -47,7 +47,15 @@ func (menu *ExamMenuState) Render() {
 }
 
 func (menu *ExamMenuState) HandleUserInput(input string) error {
-	return menu.handler.HandleInput(input)
+	menu.handler.HandleInput(input)
+	if input == "back" {
+		assetUtil.ClearScreen()
+		return nil
+	}
+
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
+	return nil
 }
 
 func (menu *ExamMenuState) PrintExamLists(exams []*model.Exam) {
