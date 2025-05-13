@@ -28,7 +28,6 @@ func NewEvaluationController(db *gorm.DB) *EvaluationController {
 	}
 }
 
-// CreateEvaluation creates a new evaluation
 func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
 	newEvaluation := evalModel.Evaluation{
 		StudentCode:    studentCode,
@@ -43,16 +42,13 @@ func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode str
 		return err
 	}
 
-	// Save to CSV
 	return ec.saveToCSV(&newEvaluation)
 }
 
-// ViewAllEvaluations returns all evaluations with related data
 func (ec *EvaluationController) ViewAllEvaluations() ([]evalModel.Evaluation, error) {
 	return ec.List(nil, "Student", "Instructor", "Assignment")
 }
 
-// ViewEvaluationByID returns evaluation by student ID
 func (ec *EvaluationController) ViewEvaluationByID(studentCode string) ([]evalModel.Evaluation, error) {
 	condition := map[string]interface{}{
 		"student_code": studentCode,
@@ -60,7 +56,6 @@ func (ec *EvaluationController) ViewEvaluationByID(studentCode string) ([]evalMo
 	return ec.List(condition, "Student", "Instructor", "Assignment")
 }
 
-// UpdateEvaluation updates an existing evaluation
 func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment string) error {
 	evaluation := &evalModel.Evaluation{}
 	if err := ec.db.First(evaluation, id).Error; err != nil {
@@ -75,26 +70,22 @@ func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment st
 		return err
 	}
 
-	// Update CSV file
 	return ec.updateCSV(evaluation)
 }
 
 func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) error {
 	csvPath := "../../data/quiz/Evaluation.csv"
 
-	// Create directory if not exists
 	dir := filepath.Dir(csvPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
-	// Check if file exists
 	fileExists := true
 	if _, err := os.Stat(csvPath); os.IsNotExist(err) {
 		fileExists = false
 	}
 
-	// Open file in append mode
 	file, err := os.OpenFile(csvPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %v", err)
@@ -104,7 +95,6 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Write headers if file is new
 	if !fileExists {
 		headers := []string{"student_code", "Instructor_code", "Assignment_id", "score", "comment", "evaluated_at\n"}
 		if err := writer.Write(headers); err != nil {
@@ -116,7 +106,6 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 		}
 	}
 
-	// Write evaluation data
 	record := []string{
 		evaluation.StudentCode,
 		evaluation.InstructorCode,
@@ -140,13 +129,11 @@ func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) erro
 func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) error {
 	csvPath := "../../data/quiz/Evaluation.csv"
 
-	// Create directory if not exists
 	dir := filepath.Dir(csvPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %v", err)
 	}
 
-	// Read all records
 	file, err := os.OpenFile(csvPath, os.O_RDWR, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open CSV file: %v", err)
@@ -159,9 +146,8 @@ func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) erro
 		return fmt.Errorf("failed to read CSV file: %v", err)
 	}
 
-	// Update the record
 	for i, record := range records {
-		if i == 0 { // Skip header
+		if i == 0 {
 			continue
 		}
 		if record[0] == evaluation.StudentCode {
@@ -177,7 +163,6 @@ func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) erro
 		}
 	}
 
-	// Write back all records
 	file.Seek(0, 0)
 	file.Truncate(0)
 	writer := csv.NewWriter(file)
