@@ -16,12 +16,6 @@
 ### State Pattern
 - **การใช้งาน**: `MenuState`, `QuizMenuStateHandler`, `ExamMenuState`, `MenuStateManager`, `SubmissionMenuStateHandler`, `QuestionMenuState`
 
-### Factory Method Pattern
-- **การใช้งาน**: `NewExamMenuState`, `NewMenuStateManager`, `NewQuestionMenuStateHandler`, `NewSubmissionMenuStateHandler`
-
-### Composite Pattern
-- **การใช้งาน**: โครงสร้างเมนูในส่วนของ handlers ซึ่งรายการเมนูสามารถเป็นคำสั่งหรือเมนูย่อยได้
-
 ### Refactor
 - ทำการ refactor code โดยนำ core model และ core controller เพื่อให้ code อยู่ในมาตฐานเดียวกัน
 
