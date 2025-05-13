@@ -4,6 +4,9 @@
 
 ## 🎨 Design Patterns ที่ใช้
 
+### Adapter Pattern
+- **การใช้งาน**: `QuizAdapter` interface, `QuizAdapter`
+
 ### Command Pattern
 - **การใช้งาน**: `Command` interface, `CommandExecutor`, `EvaluationCommand`, `LoadExamCommand`
 
