@@ -12,11 +12,14 @@
 ### State Pattern
 - **การใช้งาน**: `MenuState`, `QuizMenuStateHandler`, `ExamMenuState`, `MenuStateManager`, `SubmissionMenuStateHandler`, `QuestionMenuState`
 
-### ดึง MenuState จาก core
+### Factory Method Pattern
 - **การใช้งาน**: `NewExamMenuState`, `NewMenuStateManager`, `NewQuestionMenuStateHandler`, `NewSubmissionMenuStateHandler`
 
 ### Composite Pattern
 - **การใช้งาน**: Menu hierarchy in handlers, where menu items can be commands or sub-menus
+
+### Composition over Inheritance
+- **การใช้งาน**: `BaseController` embedded in specialized controllers like `ProgressController`
 
 
 
