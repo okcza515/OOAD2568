@@ -38,7 +38,7 @@ func (menu *QuestionMenuState) Render() {
 	menu.handler.AddHandler("4", "Show correct answer by question ID.", handler.FuncStrategy{Action: menu.ShowCorrectAnswerByQuestionID})
 	menu.handler.AddHandler("5", "Show question by question ID.", handler.FuncStrategy{Action: menu.ShowQuestionByQuestionID})
 	menu.handler.AddHandler("6", "Show all questions.", handler.FuncStrategy{Action: menu.ShowAllQuestions})
-	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
+	menu.handler.AddBackHandler(menu.backhandler)
 	menu.handler.ShowMenu()
 }
 
