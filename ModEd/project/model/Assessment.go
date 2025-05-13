@@ -1,6 +1,9 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -16,25 +19,42 @@ func (p Assessment) GetID() uint {
 }
 
 func (p Assessment) ToString() string {
-	return ""
+	return fmt.Sprintf("Assessment ID: %v, SeniorProject ID: %v", p.ID, p.SeniorProjectId)
 }
 
 func (p Assessment) Validate() error {
+	if p.SeniorProjectId == 0 {
+		return fmt.Errorf("senior project id is required")
+	}
 	return nil
 }
 
 func (p Assessment) ToCSVRow() string {
-	return ""
+	return fmt.Sprintf("%d,%d\n", p.ID, p.SeniorProjectId)
 }
 
 func (p Assessment) FromCSV(raw string) error {
+	_, err := fmt.Sscanf(raw, "%d,%d\n", &p.ID, &p.SeniorProjectId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (p Assessment) ToJSON() string {
-	return ""
+	return fmt.Sprintf(`{"id":%d,"senior_project_id":%d}`, p.ID, p.SeniorProjectId)
 }
 
 func (p Assessment) FromJSON(raw string) error {
+	var data struct {
+		ID              uint `json:"id"`
+		SeniorProjectID uint `json:"senior_project_id"`
+	}
+	err := json.Unmarshal([]byte(raw), &data)
+	if err != nil {
+		return err
+	}
+	p.ID = data.ID
+	p.SeniorProjectId = data.SeniorProjectID
 	return nil
 }
