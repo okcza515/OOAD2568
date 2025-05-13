@@ -130,26 +130,14 @@ func (menu *ExamMenuState) CreateExam() error {
 		}
 	}
 
-	err = menu.wrapper.ExamController.Insert(newExam)
-	if err != nil {
-		fmt.Println("Error creating exam:", err)
-		return nil
-	}
-	err = menu.wrapper.ExamSectionController.InsertMany(newExamSection)
-	if err != nil {
-		fmt.Println("Error creating exam sections:", err)
-		return nil
-	}
+	menu.wrapper.ExamController.Insert(newExam)
+	menu.wrapper.ExamSectionController.InsertMany(newExamSection)
 	println("Exam created successfully.")
 	return nil
 }
 
 func (menu *ExamMenuState) ListAllExams() error {
-	exams, err := menu.wrapper.ExamController.List(nil)
-	if err != nil {
-		fmt.Println("Error retrieving exams:", err)
-		return nil
-	}
+	exams, _ := menu.wrapper.ExamController.List(nil)
 	if len(exams) == 0 {
 		fmt.Println("No exams found.")
 		return nil
@@ -160,24 +148,11 @@ func (menu *ExamMenuState) ListAllExams() error {
 
 func (menu *ExamMenuState) RetrieveExamByID() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to retrieve: ")
-	exam, err := menu.wrapper.ExamController.List(map[string]interface{}{"id": examID})
-	if err != nil {
-		fmt.Println("Error retrieving exam:", err)
-		return nil
-	}
-	sections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
-	if err != nil {
-		fmt.Println("Error retrieving exam sections:", err)
-		return nil
-	}
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID, "ExamSections")
 	fmt.Println("Exam Details:")
-	menu.PrintExamLists(exam)
-	if len(sections) == 0 {
-		fmt.Println("No sections found for this exam.")
-		return nil
-	}
+	menu.PrintExamLists([]*model.Exam{exam})
 	fmt.Println("Exam Sections:")
-	for _, section := range sections {
+	for _, section := range exam.ExamSections {
 		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
@@ -187,12 +162,7 @@ func (menu *ExamMenuState) RetrieveExamByID() error {
 
 func (menu *ExamMenuState) UpdateExam() error {
 	examID :=  assetUtil.GetUintInput("Enter Exam ID to update: ")
-	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
-	if err != nil {
-		fmt.Println("Error retrieving exam:", err)
-		return nil
-	}
-
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID)
 	if exam.ExamStatus != model.Draft {
 		fmt.Println("Exam is not in Draft status, cannot update")
 		return nil
@@ -227,41 +197,21 @@ func (menu *ExamMenuState) UpdateExam() error {
 		return nil
 	}
 
-	err = menu.wrapper.ExamController.UpdateByID(updatedExam)
-	if err != nil {
-		fmt.Println("Error updating exam:", err)
-		return nil
-	}
-
+	menu.wrapper.ExamController.UpdateByID(updatedExam)
 	fmt.Println("Exam updated successfully.")
 	return nil
 }
 
 func (menu *ExamMenuState) UpdateExamSection() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to update section: ")
-	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
-	if err != nil {
-		fmt.Println("Error retrieving exam sections:", err)
-		return nil
-	}
-	if len(examSections) == 0 {
-		fmt.Println("No sections found for this exam.")
-		return nil
-	}
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID, "ExamSections")
 	fmt.Println("Exam Sections:")
-	for _, section := range examSections {
+	for _, section := range exam.ExamSections {
 		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
 		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
 	}
 	sectionID := assetUtil.GetUintInput("Enter Section ID to update: ")
-	for _, section := range examSections {
-		if section.ID != sectionID {
-			fmt.Println("Section ID not found.")
-			return nil
-		}
-	}
-	
 	newDescription := assetUtil.GetStringInput("Enter new description: ")
 	newNumQuestions := assetUtil.GetUintInput("Enter new number of questions: ")
 	newScore := assetUtil.GetFloatInput("Enter new score: ")
@@ -276,30 +226,25 @@ func (menu *ExamMenuState) UpdateExamSection() error {
 		NumQuestions: newNumQuestions,
 		Score: newScore,
 	}
-	err = menu.wrapper.ExamSectionController.UpdateByID(updateSection)
-	if err != nil {
-		fmt.Println("Error updating section:", err)
-		return nil
-	}
+	menu.wrapper.ExamSectionController.UpdateByID(updateSection)
 	fmt.Println("Section updated successfully.")
 	return nil
 }
 
 func (menu *ExamMenuState) ListAllQuestionsByExamID() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to retrieve questions: ")
-	question, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID}, "Questions")
-	if err != nil {
-		fmt.Println("Error retrieving questions:", err)
-		return nil
-	}
-	if len(question) == 0 {
-		fmt.Println("No questions found for this exam.")
-		return nil
-	}
-	fmt.Printf("Questions for Exam ID [%d]: \n", examID)
-	fmt.Println("--------------------------------------------------")
-	for _, q := range question {
-		fmt.Printf("[%d] Question: %s\n", q.Questions[q.ID].ID, q.Questions[q.ID].ActualQuestion)
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID, "ExamSections")
+	for _, section := range exam.ExamSections {
+		question, _ := menu.wrapper.ExamSectionController.RetrieveByID(section.SectionNo, "Questions")
+		if len(question.Questions) == 0 {
+			fmt.Printf("No questions found for section ID %d.\n", section.SectionNo)
+			continue
+		}
+		fmt.Printf("Questions for Exam ID [%d] in Section [%d]: \n", examID, section.SectionNo)
+		fmt.Println("--------------------------------------------------")
+		for _, q := range question.Questions {
+			fmt.Printf("[%d] Question: %s\n", q.ID, q.ActualQuestion)
+		}
 	}
 	fmt.Println("--------------------------------------------------")
     return nil
@@ -307,66 +252,30 @@ func (menu *ExamMenuState) ListAllQuestionsByExamID() error {
 
 func (menu *ExamMenuState) DeleteExam() error {
 	examID :=  assetUtil.GetUintInput("Enter Exam ID to delete: ")
-
-	err := menu.wrapper.ExamController.DeleteByID(examID)
-	if err != nil {
-		fmt.Printf("Error deleting exam: %s\n", err.Error())
-		return nil
-	}
-
-	err = menu.wrapper.ExamSectionController.DeleteByCondition(map[string]interface{}{"exam_id": examID})
-	if err != nil {
-		fmt.Printf("Error deleting exam sections: %s\n", err.Error())
-		return nil
-	}
-
+	menu.wrapper.ExamController.DeleteByID(examID)
+	menu.wrapper.ExamSectionController.DeleteByCondition(map[string]interface{}{"exam_id": examID})
 	fmt.Println("Exam deleted successfully.")
 	return nil
 }
 
 func (menu *ExamMenuState) PublishExam() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to publish: ")
-
-	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
-	if err != nil {
-		fmt.Println("Error retrieving exam:", err)
-		return nil
-	}
-
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID)
 	if exam.ExamStatus != model.Draft {
 		fmt.Println("Exam is not in Draft status, cannot publish")
 		return nil
 	}
-
 	exam.ExamStatus = model.Publish
-
-	err = menu.wrapper.ExamController.UpdateByID(exam)
-	if err != nil {
-		fmt.Println("Error publishing exam:", err)
-		return nil
-	}
-
+	menu.wrapper.ExamController.UpdateByID(exam)
 	fmt.Println("Exam published successfully.")
 	return nil
 }
 
 func (menu *ExamMenuState) HideExam() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to hide: ")
-
-	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
-	if err != nil {
-		fmt.Println("Error retrieving exam:", err)
-		return nil
-	}
-
+	exam, _ := menu.wrapper.ExamController.RetrieveByID(examID)
 	exam.ExamStatus = model.Hidden
-
-	err = menu.wrapper.ExamController.UpdateByID(exam)
-	if err != nil {
-		fmt.Println("Error hiding exam:", err)
-		return nil
-	}
-
+	menu.wrapper.ExamController.UpdateByID(exam)
 	fmt.Println("Exam hidden successfully.")
 	return nil
 }
