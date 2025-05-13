@@ -4,16 +4,12 @@ package handler
 
 import (
 	assetUtil "ModEd/asset/util"
-	"ModEd/core"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/eval/controller"
 	"ModEd/eval/model"
 	assetUtilLocal "ModEd/eval/util"
-	// "errors"
 	"fmt"
-	// "strconv"
-	// "time"
 )
 
 type QuestionMenuState struct {
@@ -39,8 +35,9 @@ func (menu *QuestionMenuState) Render() {
 	menu.handler.AddHandler("1", "Create a new question.", handler.FuncStrategy{Action: menu.CreateQuestion})
 	menu.handler.AddHandler("2", "Delete a question.", handler.FuncStrategy{Action: menu.DeleteQuestion})
 	menu.handler.AddHandler("3", "Uadete questions.", handler.FuncStrategy{Action: menu.UpdateQuestion})
-	menu.handler.AddHandler("4", "Show correct answer By ID.", handler.FuncStrategy{Action: menu.ShowCorrectAnswerByQyestionID})
-	menu.handler.AddHandler("5", "Show question by section ID.", handler.FuncStrategy{Action: menu.ShowQuestionBySectionID})
+	menu.handler.AddHandler("4", "Show correct answer by question ID.", handler.FuncStrategy{Action: menu.ShowCorrectAnswerByQuestionID})
+	menu.handler.AddHandler("5", "Show question by question ID.", handler.FuncStrategy{Action: menu.ShowQuestionByQuestionID})
+	menu.handler.AddHandler("6", "Show all questions.", handler.FuncStrategy{Action: menu.ShowAllQuestions})
 	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
 	menu.handler.ShowMenu()
 }
@@ -85,7 +82,7 @@ func (menu *QuestionMenuState) CreateQuestion() error {
 	fmt.Printf("Question created with ID: %d\n", question.ID)
 	switch questionType {
 	case model.ShortAnswerQuestion:
-		expectedAnswer := assetUtil.GetStringInput("Enter expected short answer: ")
+		expectedAnswer := assetUtilLocal.GetStringInput("Enter expected short answer: ")
 		answer := &model.ShortAnswer{
 			QuestionID:     question.ID,
 			ExpectedAnswer: expectedAnswer,
@@ -109,7 +106,7 @@ func (menu *QuestionMenuState) CreateQuestion() error {
 		numChoices := assetUtil.GetUintInput("How many choices? (e.g. 4): ")
 
 		for i := 0; i < int(numChoices); i++ {
-			label := assetUtil.GetStringInput(fmt.Sprintf("Enter choice #%d text: ", i+1))
+			label := assetUtilLocal.GetStringInput(fmt.Sprintf("Enter choice #%d text: ", i+1))
 			isExpectedStr := assetUtil.GetStringInput(fmt.Sprintf("Is this the correct answer for choice #%d? (true/false): ", i+1))
 			isExpected := isExpectedStr == "true"
 
@@ -132,7 +129,7 @@ func (menu *QuestionMenuState) CreateQuestion() error {
 func (menu *QuestionMenuState) DeleteQuestion() error {
 
 	questionID := assetUtil.GetUintInput("Enter question ID to delete: ")
-	if err := menu.wrapper.QuestionController.DeleteByID(questionID); err != nil {
+	if err := menu.wrapper.QuestionController.DeleteByQuestionID(questionID); err != nil {
 		return fmt.Errorf("failed to delete question: %w", err)
 	}
 	assetUtil.PressEnterToContinue()
@@ -141,59 +138,103 @@ func (menu *QuestionMenuState) DeleteQuestion() error {
 }
 
 func (menu *QuestionMenuState) UpdateQuestion() error {
-
 	questionID := assetUtil.GetUintInput("Enter question ID to update: ")
 
 	question, err := menu.wrapper.QuestionController.RetrieveByID(questionID)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve question: %w", err)
 	}
-	newQuestion := assetUtilLocal.GetStringInput("Enter new question text: ")
 
+	newQuestion := assetUtilLocal.GetStringInput("Enter new question text: ")
+	changeAnswer := assetUtil.GetStringInput("Do you want to change the answer? (yes/no): ")
+
+	if changeAnswer == "yes" {
 	fmt.Println(`Select question type:
 1 = Multiple Choice
 2 = Short Answer
 3 = True/False`)
 	selectType := assetUtil.GetStringInput("Enter choice: ")
-	var questionType model.QuestionType
+
+	var newQuestionType model.QuestionType
 	switch selectType {
 	case "1":
-		questionType = model.MultipleChoiceQuestion
+		newQuestionType = model.MultipleChoiceQuestion
 	case "2":
-		questionType = model.ShortAnswerQuestion
+		newQuestionType = model.ShortAnswerQuestion
 	case "3":
-		questionType = model.TrueFalseQuestion
+		newQuestionType = model.TrueFalseQuestion
 	default:
 		return fmt.Errorf("invalid selection for QuestionType")
 	}
 
 	question.ActualQuestion = newQuestion
-	question.QuestionType = questionType
+
+	if question.QuestionType != newQuestionType {
+		if err := menu.wrapper.QuestionController.UpdateQuestionType(newQuestionType, question); err != nil {
+			return err
+		}
+	}
 
 	if err := menu.wrapper.QuestionController.UpdateByID(question); err != nil {
 		return fmt.Errorf("failed to update question: %w", err)
 	}
+
+	fmt.Printf("Question updated with ID: %d\n", question.ID)
+	switch newQuestionType {
+	case model.ShortAnswerQuestion:
+		expectedAnswer := assetUtilLocal.GetStringInput("Enter expected short answer: ")
+		answer := &model.ShortAnswer{
+			QuestionID:     question.ID,
+			ExpectedAnswer: expectedAnswer,
+		}
+		if err := menu.wrapper.ShortAnswerController.Insert(answer); err != nil {
+			return fmt.Errorf("failed to insert short answer: %w", err)
+		}
+
+	case model.TrueFalseQuestion:
+		expectedStr := assetUtil.GetStringInput("Enter expected answer (true/false): ")
+		isExpected := expectedStr == "true"
+		answer := &model.TrueFalseAnswer{
+			QuestionID: question.ID,
+			IsExpected: isExpected,
+		}
+		if err := menu.wrapper.TrueFalseAnswerController.Insert(answer); err != nil {
+			return fmt.Errorf("failed to insert true/false answer: %w", err)
+		}
+
+	case model.MultipleChoiceQuestion:
+		numChoices := assetUtil.GetUintInput("How many choices? (e.g. 4): ")
+
+		for i := 0; i < int(numChoices); i++ {
+			label := assetUtilLocal.GetStringInput(fmt.Sprintf("Enter choice #%d text: ", i+1))
+			isExpectedStr := assetUtil.GetStringInput(fmt.Sprintf("Is this the correct answer for choice #%d? (true/false): ", i+1))
+			isExpected := isExpectedStr == "true"
+
+			answer := &model.MultipleChoiceAnswer{
+				QuestionID:  question.ID,
+				AnswerLabel: label,
+				IsExpected:  isExpected,
+			}
+			if err := menu.wrapper.MultipleChoiceAnswerController.Insert(answer); err != nil {
+				return fmt.Errorf("failed to insert multiple choice answer: %w", err)
+			}
+		}
+	}
+}
 	assetUtil.PressEnterToContinue()
 	assetUtil.ClearScreen()
 	return nil
 }
 
-func (menu *QuestionMenuState) ShowCorrectAnswerByQyestionID() error {
-	questionIDRaw := core.ExecuteUserInputStep(core.StringInputStep{
-		PromptText:    "Enter question ID to view correct answer:",
-		FieldNameText: "QuestionID",
-	})
-	questionID, ok := questionIDRaw.(uint)
-	if !ok {
-		return fmt.Errorf("invalid input for QuestionID")
-	}
+func (menu *QuestionMenuState) ShowCorrectAnswerByQuestionID() error {
+	questionID := assetUtil.GetUintInput("Enter question ID to view correct answer: ")
 
 	question, err := menu.wrapper.QuestionController.RetrieveByID(questionID)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve question: %w", err)
 	}
 	question_type := question.QuestionType
-	if question_type == "MultiplechoiseQuestion" {
+	if question_type == model.MultipleChoiceQuestion {
 		ans, _ := menu.wrapper.QuestionController.RetrieveByID(questionID, "MultipleChoiceAnswers")
 		for _, result := range ans.MultipleChoiceAnswers {
 			if result.IsExpected {
@@ -201,10 +242,10 @@ func (menu *QuestionMenuState) ShowCorrectAnswerByQyestionID() error {
 			}
 		}
 
-	} else if question_type == "ShortAnswerQuestion" {
+	} else if question_type == model.ShortAnswerQuestion {
 		ans, _ := menu.wrapper.QuestionController.RetrieveByID(questionID, "ShortAnswerQuestion")
 		fmt.Printf("Correct answer for question %s: %s\n", question.ActualQuestion, ans.ShortAnswer.ExpectedAnswer)
-	} else if question_type == "TrueFalseAnswerQuestion" {
+	} else if question_type == model.TrueFalseQuestion {
 		ans, _ := menu.wrapper.QuestionController.RetrieveByID(questionID, "TruefalseAnswer")
 		getanswer := "True"
 		if !ans.TruefalseAnswer.IsExpected {
@@ -218,25 +259,59 @@ func (menu *QuestionMenuState) ShowCorrectAnswerByQyestionID() error {
 
 }
 
-func (menu *QuestionMenuState) ShowQuestionBySectionID() error {
-	sectionID := assetUtil.GetUintInput("Enter section ID: ")
+func (menu *QuestionMenuState) ShowQuestionByQuestionID() error {
+	questionID := assetUtil.GetUintInput("Enter question ID: ")
 
-	questions, err := menu.wrapper.QuestionController.RetrieveByID(sectionID)
+	question, err := menu.wrapper.QuestionController.RetrieveByID(questionID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve questions: %w", err)
+		return fmt.Errorf("failed to retrieve question: %w", err)
 	}
 
-	fmt.Printf("Question ID: %d, Question: %s QuestionType %s\n", questions.ID, questions.ActualQuestion, questions.QuestionType)
-	Answer, err := menu.wrapper.MultipleChoiceAnswerController.List(map[string]interface{}{
-		"question_id": questions.ID})
+	fmt.Printf("Question ID: %d\nQuestion: %s\nQuestionType: %s\n", question.ID, question.ActualQuestion, question.QuestionType)
 
-	for _, answer := range Answer {
-		fmt.Printf("Answer Label: %s\n", answer.AnswerLabel)
+	switch question.QuestionType {
+	case model.MultipleChoiceQuestion:
+		answers, err := menu.wrapper.MultipleChoiceAnswerController.List(map[string]interface{}{"question_id": question.ID})
+		if err != nil {
+			return fmt.Errorf("failed to retrieve multiple choice answers: %w", err)
+		}
+		for _, answer := range answers {
+			fmt.Printf("- Label: %s | IsCorrect: %v\n", answer.AnswerLabel, answer.IsExpected)
+		}
+
+	case model.ShortAnswerQuestion:
+		answer, err := menu.wrapper.ShortAnswerController.RetrieveByCondition(map[string]interface{}{"question_id": question.ID})
+		if err != nil {
+			return fmt.Errorf("failed to retrieve short answer: %w", err)
+		}
+		fmt.Printf("- Expected Answer: %s\n", answer.ExpectedAnswer)
+
+	case model.TrueFalseQuestion:
+		answer, err := menu.wrapper.TrueFalseAnswerController.RetrieveByCondition(map[string]interface{}{"question_id": question.ID})
+		if err != nil {
+			return fmt.Errorf("failed to retrieve true/false answer: %w", err)
+		}
+		fmt.Printf("- Correct Answer: %v\n", answer.IsExpected)
+	}
+
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
+	return nil
+}
+
+
+func (menu *QuestionMenuState) ShowAllQuestions() error {
+
+	questions, err := menu.wrapper.QuestionController.List(map[string]interface{}{})
+	if err != nil {
+		return fmt.Errorf("failed to list all  questions: %w", err)
+	}
+
+	for _, question := range questions {
+		fmt.Printf("Question ID: %d Question: %s\n", question.ID, question.ActualQuestion)
 	}
 	if err != nil {
 		return fmt.Errorf("failed to retrieve answers: %w", err)
 	}
-	assetUtil.PressEnterToContinue()
-	assetUtil.ClearScreen()
 	return nil
 }
