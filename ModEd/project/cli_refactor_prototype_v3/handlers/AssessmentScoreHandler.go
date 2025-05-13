@@ -4,10 +4,8 @@ import (
 	"ModEd/core"
 	"ModEd/project/controller"
 	"ModEd/project/model"
-	"encoding/csv"
+	"ModEd/project/utils"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strconv"
 )
 
@@ -157,40 +155,15 @@ func (h *AssessmentScoreHandler) displayCommitteeScores(io *core.MenuIO, linkId 
 }
 
 func (h *AssessmentScoreHandler) ImportCSV(io *core.MenuIO) {
+	importer := utils.NewCSVImporter(io)
 	io.Println("Importing Assessment Scores from CSV...")
-	cwd, _ := os.Getwd()
-	io.Println(fmt.Sprintf("Current directory: %s", cwd))
-	io.Print("Enter CSV file path (-1 to cancel): ")
-	filePath, err := io.ReadInput()
-	if err != nil || filePath == "-1" {
-		io.Println("Cancelled.")
-		return
-	}
 
-	// Convert to absolute path
-	absPath, err := filepath.Abs(filePath)
+	records, err := importer.ReadFile()
 	if err != nil {
-		io.Println(fmt.Sprintf("Error resolving path: %v", err))
+		io.Println(fmt.Sprintf("Error Reading CSV: %v", err))
 		return
 	}
-
-	// Check if file exists
-	if _, err := os.Stat(absPath); os.IsNotExist(err) {
-		io.Println("Error: File does not exist.")
-		return
-	}
-
-	file, err := os.Open(absPath)
-	if err != nil {
-		io.Println(fmt.Sprintf("Error opening file: %v", err))
-		return
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-	records, err := reader.ReadAll()
-	if err != nil {
-		io.Println(fmt.Sprintf("Error reading CSV: %v", err))
+	if records == nil {
 		return
 	}
 
