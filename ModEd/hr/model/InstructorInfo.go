@@ -5,7 +5,6 @@ import (
 	"ModEd/core"
 	"ModEd/core/validation"
 	"ModEd/hr/util"
-	"fmt"
 )
 
 type InstructorInfo struct {
@@ -20,7 +19,7 @@ type InstructorInfo struct {
 }
 
 func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary float64, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
-	InstructorInfo := &InstructorInfo{
+	return &InstructorInfo{
 		Instructor:         instr,
 		Gender:             Gender,
 		CitizenID:          CitizenID,
@@ -29,14 +28,6 @@ func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, 
 		AcademicPosition:   AcademicPosition,
 		DepartmentPosition: DepartmentPosition,
 	}
-
-	err := InstructorInfo.Validate()
-	if err != nil {
-		fmt.Printf("Error validating InstructorInfo: %v\n", err)
-		return nil
-	}
-
-	return InstructorInfo
 }
 
 func NewUpdatedInstructorInfo(
