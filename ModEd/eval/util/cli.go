@@ -14,3 +14,10 @@ func GetDateTimeInput(prompt string) (time.Time, error) {
 	text, _ := reader.ReadString('\n')
 	return time.Parse("2006-01-02 15:04:05", strings.TrimSpace(text))
 }
+
+func GetStringInput(prompt string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(prompt)
+	text, _ := reader.ReadString('\n')
+	return strings.TrimSpace(text)
+}
