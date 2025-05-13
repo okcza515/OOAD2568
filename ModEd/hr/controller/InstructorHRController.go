@@ -90,6 +90,12 @@ func (c *InstructorHRController) AddInstructor(
 		}
 
 		hrInstructor := model.NewInstructorInfo(*commonInstructor, gender, citizenID, phoneNumber, salary, academicPosition, departmentPosition)
+
+		err = hrInstructor.Validate()
+		if err != nil {
+			return fmt.Errorf("failed to validate instructor HR info: %w", err)
+		}
+
 		if updateErr := instructorController.update(hrInstructor); updateErr != nil {
 			return fmt.Errorf("failed to update instructor HR info: %w", updateErr)
 		}

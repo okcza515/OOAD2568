@@ -69,11 +69,18 @@ func (c *LeaveStudentHRController) SubmitStudentLeaveRequest(studentID, leaveTyp
 		}
 
 		reqInterface, err := requestFactory.CreateRequest(model.RoleInstructor, model.RequestTypeLeave, params)
+
 		if err != nil {
 			return fmt.Errorf("failed to create leave request using factory: %v", err)
 		}
 
 		req, ok := reqInterface.(*model.RequestLeaveStudent)
+
+		err = req.Validate()
+		if err != nil {
+			return fmt.Errorf("failed to validate leave request: %v", err)
+		}
+
 		if !ok {
 			return fmt.Errorf("factory returned unexpected type for student leave request")
 		}
