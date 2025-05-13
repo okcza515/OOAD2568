@@ -1,16 +1,18 @@
 package model
 
-import "github.com/go-playground/validator/v10"
+import "ModEd/core/validation"
 
 type RequestLeaveStudent struct {
 	BaseLeaveRequest
-	StudentCode string `gorm:"not null" validate:"required"`
+	StudentCode string `gorm:"not null" validation:"studentId"`
 }
 
-func (requestLeaveStudent RequestLeaveStudent) Validate() error {
-	validate := validator.New()
-	if err := validate.Struct(requestLeaveStudent); err != nil {
+func (r *RequestLeaveStudent) Validate() error {
+	modelValidator := validation.NewModelValidator()
+
+	if err := modelValidator.ModelValidate(r); err != nil {
 		return err
 	}
+
 	return nil
 }

@@ -11,7 +11,7 @@ import (
 	"fmt"
 )
 
-type AssessmentCriteriaLinkMenuState struct {
+type AssessmentCriteriaMenuState struct {
 	manager        *cli.CLIMenuStateManager
 	handlerContext *handler.HandlerContext
 }
@@ -82,7 +82,7 @@ func NewAssessmentCriteriaMenuState(manager *cli.CLIMenuStateManager, storer *co
 	}
 }
 
-func (menu *AssessmentCriteriaLinkMenuState) Render() {
+func (menu *AssessmentCriteriaMenuState) Render() {
 	fmt.Println()
 	fmt.Println("::/project/assessment-criteria-link")
 	fmt.Println()
@@ -92,7 +92,7 @@ func (menu *AssessmentCriteriaLinkMenuState) Render() {
 	fmt.Println()
 }
 
-func (menu *AssessmentCriteriaLinkMenuState) HandleUserInput(input string) error {
+func (menu *AssessmentCriteriaMenuState) HandleUserInput(input string) error {
 	err := menu.handlerContext.HandleInput(input)
 	if err != nil {
 		fmt.Println("Error:", err)

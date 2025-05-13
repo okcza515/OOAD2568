@@ -14,6 +14,8 @@ func (mapper *JSONMapper[T]) Deserialize() []*T {
 	return result
 }
 
+
+// Wrote by MEP-1004
 func (mapper *JSONMapper[T]) Serialize(data []*T) error {
 	file, err := os.OpenFile(mapper.Path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {

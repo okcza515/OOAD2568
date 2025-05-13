@@ -51,7 +51,6 @@ func NewMiddleware(provider AuthenticationProvider) *Middleware {
 	}
 }
 
-// SetAllowedRoles sets which roles are allowed to access the program
 func (m *Middleware) SetAllowedRoles(roles []string) {
 	m.allowedRoles = make(map[string]bool)
 	for _, role := range roles {

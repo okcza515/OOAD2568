@@ -99,14 +99,12 @@ func (h DeleteAccountHandler) Execute() error {
 	fmt.Print("Password: ")
 	fmt.Scanln(&password)
 
-	// Verify credentials directly with provider to bypass role check
 	provider := NewDBAuthProvider(h.state.middleware.provider.(*DBAuthProvider).db, 24*time.Hour)
 	_, err := provider.Authenticate(h.state.ctx, username, password)
 	if err != nil {
 		return fmt.Errorf("authentication failed: %v", err)
 	}
-
-	// Proceed with deletion
+	
 	err = h.state.middleware.DeleteUser(h.state.ctx, username)
 	if err != nil {
 		return fmt.Errorf("account deletion failed: %v", err)

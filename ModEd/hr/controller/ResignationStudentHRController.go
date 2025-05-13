@@ -67,6 +67,12 @@ func (c *ResignationStudentHRController) SubmitResignationStudent(studentID stri
 		}
 
 		req, ok := reqInterface.(*model.RequestResignationStudent)
+
+		err = req.Validate()
+		if err != nil {
+			return fmt.Errorf("failed to validate resignation request: %v", err)
+		}
+
 		if !ok {
 			return fmt.Errorf("factory returned unexpected type for instructor resignation request")
 		}

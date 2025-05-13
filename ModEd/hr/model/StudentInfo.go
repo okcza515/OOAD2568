@@ -3,27 +3,18 @@ package model
 import (
 	"ModEd/common/model"
 	"ModEd/core"
+	"ModEd/core/validation"
 	"ModEd/hr/util"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type StudentInfo struct {
 	model.Student
 	core.BaseModel
-	Gender      string           `csv:"Gender" json:"Gender" validate:"required"`
-	CitizenID   string           `csv:"CitizenID" json:"CitizenID" validate:"required"`
-	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber" validate:"required"`
-	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode" validate:"required"`
-	Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode" validate:"required"`
-}
-
-func (studentInfo StudentInfo) Validate() error {
-	validate := validator.New()
-	if err := validate.Struct(studentInfo); err != nil {
-		return err
-	}
-	return nil
+	Gender      string           `csv:"Gender" json:"Gender"`
+	CitizenID   string           `csv:"CitizenID" json:"CitizenID"`
+	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber"`
+	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode"`
+	Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`
 }
 
 func NewStudentInfo(Stu model.Student, Gender string, CitizenID string, PhoneNumber string, advisorCode string) *StudentInfo {
@@ -57,4 +48,18 @@ func NewUpdatedStudentInfo(
 		PhoneNumber: util.IfNotEmpty(phoneNumber, studentInfo.PhoneNumber),
 		AdvisorCode: studentInfo.AdvisorCode,
 	}
+}
+
+func (StudentInfo) TableName() string {
+	return "student_infos"
+}
+
+func (s *StudentInfo) Validate() error {
+	modelValidator := validation.NewModelValidator()
+
+	if err := modelValidator.ModelValidate(s); err != nil {
+		return err
+	}
+
+	return nil
 }

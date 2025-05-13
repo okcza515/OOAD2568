@@ -217,8 +217,3 @@ func (controller *BaseController[T]) FromCSV(path string) {
 		fmt.Println("InsertMany failed:", err)
 	}
 }
-
-func (controller *BaseController[T]) Truncate() error {
-	var record T
-	return controller.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&record).Error
-}
