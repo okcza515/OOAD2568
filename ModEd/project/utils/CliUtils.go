@@ -71,3 +71,10 @@ func MenuTitle(title string) {
 	fmt.Println("Use the menu below to navigate through the system.")
 	fmt.Println()
 }
+
+func PressEnterToContinue() {
+	fmt.Println()
+	fmt.Print("[Press Enter to Continue]")
+	var buffer string
+	_, _ = fmt.Scanln(&buffer)
+}
