@@ -170,10 +170,14 @@ func (menu *ProgressMenuStateHandler) GetAssignmentSubmitCount() error {
 		statusCount[progress.IsSubmitted]++
 	}
 
-	fmt.Printf("\nAssignment %d Submission Count:", assignmentId)
-	for submitted, count := range statusCount {
-		fmt.Printf("\nSubmitted: %v - Count: %d", submitted, count)
-	}
+	totalStudents := len(progressList)
+	submittedCount := statusCount[true]
+	notSubmittedCount := statusCount[false]
+
+	fmt.Printf("\nAssignment %d Submission Summary:", assignmentId)
+	fmt.Printf("\nTotal Students: %d", totalStudents)
+	fmt.Printf("\nSubmitted: %d", submittedCount)
+	fmt.Printf("\nNot Submitted: %d", notSubmittedCount)
 	fmt.Println()
 	util.PressEnterToContinue()
 	util.ClearScreen()

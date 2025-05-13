@@ -4,27 +4,17 @@ import (
 	"ModEd/common/model"
 	"ModEd/core"
 	"ModEd/hr/util"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type InstructorInfo struct {
 	model.Instructor
 	core.BaseModel
-	Gender             string             `csv:"Gender" validate:"required"`
-	CitizenID          string             `csv:"CitizenID" validate:"required"`
-	PhoneNumber        string             `csv:"PhoneNumber" validate:"required"`
-	Salary             float64            `csv:"Salary" default:"0" validate:"required"`
-	AcademicPosition   AcademicPosition   `csv:"AcademicPosition" default:"0" validate:"required"`
-	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition" default:"0" validate:"required"`
-}
-
-func (instructorInfo InstructorInfo) Validate() error {
-	validate := validator.New()
-	if err := validate.Struct(instructorInfo); err != nil {
-		return err
-	}
-	return nil
+	Gender             string             `csv:"Gender"`
+	CitizenID          string             `csv:"CitizenID"`
+	PhoneNumber        string             `csv:"PhoneNumber"`
+	Salary             float64            `csv:"Salary" default:"0"`
+	AcademicPosition   AcademicPosition   `csv:"AcademicPosition" default:"0"`
+	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition" default:"0"`
 }
 
 func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary float64, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
