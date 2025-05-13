@@ -172,6 +172,11 @@ func (c *StudentHRController) UpdateStudentInfo(
 		}
 
 		studentHRData := model.NewUpdatedStudentInfo(studentInfo, firstName, lastName, gender, citizenID, phoneNumber, email)
+		err = studentHRData.Validate()
+		if err != nil {
+			return fmt.Errorf("validation failed: %v", err)
+		}
+
 		if err := studentController.update(studentHRData); err != nil {
 			return fmt.Errorf("failed to update student HR info: %v", err)
 		}
@@ -219,6 +224,11 @@ func (c *StudentHRController) ImportStudents(filepath string) error {
 				studentInfo.Email,
 			)
 
+			err = importStudent.Validate()
+			if err != nil {
+				return fmt.Errorf("validation failed for student %s: %w", studentCode, err)
+			}
+
 			if err := studentController.update(importStudent); err != nil {
 				return fmt.Errorf("failed to update student %s: %w", importStudent.StudentCode, err)
 			}
@@ -263,6 +273,11 @@ func (c *StudentHRController) MigrateStudentRecords() error {
 				Gender:      "", // Initialize HR fields as empty
 				CitizenID:   "",
 				PhoneNumber: "",
+			}
+
+			err := studentInfo.Validate()
+			if err != nil {
+				return fmt.Errorf("validation failed for student %s: %w", s.StudentCode, err)
 			}
 
 			if err := tx.Where("student_code = ?", s.StudentCode).
