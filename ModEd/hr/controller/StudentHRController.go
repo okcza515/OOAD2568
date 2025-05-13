@@ -275,11 +275,6 @@ func (c *StudentHRController) MigrateStudentRecords() error {
 				PhoneNumber: "",
 			}
 
-			err := studentInfo.Validate()
-			if err != nil {
-				return fmt.Errorf("validation failed for student %s: %w", s.StudentCode, err)
-			}
-
 			if err := tx.Where("student_code = ?", s.StudentCode).
 				FirstOrCreate(&studentInfo).Error; err != nil {
 				return fmt.Errorf("failed to migrate student %s: %w", s.StudentCode, err)

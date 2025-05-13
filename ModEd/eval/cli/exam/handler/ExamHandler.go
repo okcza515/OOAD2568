@@ -42,12 +42,20 @@ func (menu *ExamMenuState) Render() {
 	menu.handler.AddHandler("7", "Delete an exam.", handler.FuncStrategy{Action: menu.DeleteExam})
 	menu.handler.AddHandler("8", "Publish an exam.", handler.FuncStrategy{Action: menu.PublishExam})
 	menu.handler.AddHandler("9", "Hide an exam.", handler.FuncStrategy{Action: menu.HideExam})
-	menu.handler.AddHandler("b", "Back to previous menu.", menu.backhandler)
+	menu.handler.AddBackHandler(menu.backhandler)
 	menu.handler.ShowMenu()
 }
 
 func (menu *ExamMenuState) HandleUserInput(input string) error {
-	return menu.handler.HandleInput(input)
+	menu.handler.HandleInput(input)
+	if input == "back" {
+		assetUtil.ClearScreen()
+		return nil
+	}
+
+	assetUtil.PressEnterToContinue()
+	assetUtil.ClearScreen()
+	return nil
 }
 
 func (menu *ExamMenuState) PrintExamLists(exams []*model.Exam) {
