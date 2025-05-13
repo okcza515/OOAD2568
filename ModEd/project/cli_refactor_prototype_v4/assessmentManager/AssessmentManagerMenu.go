@@ -2,8 +2,8 @@ package assessmentManager
 
 import (
 	"ModEd/core/handler"
-	"ModEd/project/cli_refactor_prototype_ver2/assessmentScoreManager"
-	"ModEd/project/cli_refactor_prototype_ver2/criteriaManager"
+	"ModEd/project/cli_refactor_prototype_v4/assessmentScoreManager"
+	"ModEd/project/cli_refactor_prototype_v4/criteriaManager"
 	"ModEd/project/controller"
 	"ModEd/project/model"
 	"fmt"
