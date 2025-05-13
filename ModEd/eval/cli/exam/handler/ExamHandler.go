@@ -170,6 +170,10 @@ func (menu *ExamMenuState) RetrieveExamByID() error {
 	}
 	fmt.Println("Exam Details:")
 	menu.PrintExamLists(exam)
+	if len(sections) == 0 {
+		fmt.Println("No sections found for this exam.")
+		return nil
+	}
 	fmt.Println("Exam Sections:")
 	for _, section := range sections {
 		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
@@ -238,18 +242,24 @@ func (menu *ExamMenuState) UpdateExamSection() error {
 		fmt.Println("Error retrieving exam sections:", err)
 		return nil
 	}
-	sectionID := assetUtil.GetUintInput("Enter Section ID to update: ")
-	var sectionToUpdate *model.ExamSection
-	for _, section := range examSections {
-		if section.ID == sectionID {
-			sectionToUpdate = section
-			break
-		}
-	}
-	if sectionToUpdate == nil {
-		fmt.Println("Section ID not found.")
+	if len(examSections) == 0 {
+		fmt.Println("No sections found for this exam.")
 		return nil
 	}
+	fmt.Println("Exam Sections:")
+	for _, section := range examSections {
+		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
+		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
+		fmt.Println("--------------------------------------------------")
+	}
+	sectionID := assetUtil.GetUintInput("Enter Section ID to update: ")
+	for _, section := range examSections {
+		if section.ID != sectionID {
+			fmt.Println("Section ID not found.")
+			return nil
+		}
+	}
+	
 	newDescription := assetUtil.GetStringInput("Enter new description: ")
 	newNumQuestions := assetUtil.GetUintInput("Enter new number of questions: ")
 	newScore := assetUtil.GetFloatInput("Enter new score: ")
