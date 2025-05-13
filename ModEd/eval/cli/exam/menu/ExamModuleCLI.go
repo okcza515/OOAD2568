@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/eval/cli/exam/handler"
 	"ModEd/eval/controller"
@@ -25,6 +26,7 @@ func RunExamModuleCLI(
 		Manager.UserInput = GetUserChoice()
 
 		if Manager.UserInput == "Exit" {
+			util.ClearScreen()
 			break
 		}
 
