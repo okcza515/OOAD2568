@@ -112,6 +112,10 @@ func (c *StudentHRController) AddStudent(
 		}
 
 		hrInfo := model.NewStudentInfo(*common, gender, citizenID, phoneNumber, advisorCode)
+		err = hrInfo.Validate()
+		if err != nil {
+			return fmt.Errorf("validation failed: %w", err)
+		}
 
 		if updateErr := studentController.update(hrInfo); updateErr != nil {
 			return fmt.Errorf("failed to update HR student info: %w", updateErr)

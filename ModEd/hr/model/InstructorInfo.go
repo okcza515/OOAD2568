@@ -3,7 +3,9 @@ package model
 import (
 	"ModEd/common/model"
 	"ModEd/core"
+	"ModEd/core/validation"
 	"ModEd/hr/util"
+	"fmt"
 )
 
 type InstructorInfo struct {
@@ -11,14 +13,14 @@ type InstructorInfo struct {
 	core.BaseModel
 	Gender             string             `csv:"Gender"`
 	CitizenID          string             `csv:"CitizenID"`
-	PhoneNumber        string             `csv:"PhoneNumber"`
+	PhoneNumber        string             `csv:"PhoneNumber" validation:"phone"`
 	Salary             float64            `csv:"Salary" default:"0"`
 	AcademicPosition   AcademicPosition   `csv:"AcademicPosition" default:"0"`
 	DepartmentPosition DepartmentPosition `csv:"DepartmentPosition" default:"0"`
 }
 
 func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, PhoneNumber string, Salary float64, AcademicPosition AcademicPosition, DepartmentPosition DepartmentPosition) *InstructorInfo {
-	return &InstructorInfo{
+	InstructorInfo := &InstructorInfo{
 		Instructor:         instr,
 		Gender:             Gender,
 		CitizenID:          CitizenID,
@@ -27,6 +29,14 @@ func NewInstructorInfo(instr model.Instructor, Gender string, CitizenID string, 
 		AcademicPosition:   AcademicPosition,
 		DepartmentPosition: DepartmentPosition,
 	}
+
+	err := InstructorInfo.Validate()
+	if err != nil {
+		fmt.Printf("Error validating InstructorInfo: %v\n", err)
+		return nil
+	}
+
+	return InstructorInfo
 }
 
 func NewUpdatedInstructorInfo(
@@ -54,4 +64,14 @@ func NewUpdatedInstructorInfo(
 
 func (InstructorInfo) TableName() string {
 	return "instructor_infos"
+}
+
+func (i *InstructorInfo) Validate() error {
+	modelValidator := validation.NewModelValidator()
+
+	if err := modelValidator.ModelValidate(i); err != nil {
+		return err
+	}
+
+	return nil
 }

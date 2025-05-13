@@ -3,6 +3,7 @@ package model
 import (
 	"ModEd/common/model"
 	"ModEd/core"
+	"ModEd/core/validation"
 	"ModEd/hr/util"
 )
 
@@ -11,7 +12,7 @@ type StudentInfo struct {
 	core.BaseModel
 	Gender      string           `csv:"Gender" json:"Gender"`
 	CitizenID   string           `csv:"CitizenID" json:"CitizenID"`
-	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber"`
+	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber" validation:"phone"`
 	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode"`
 	Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`
 }
@@ -49,3 +50,12 @@ func NewUpdatedStudentInfo(
 	}
 }
 
+func (s *StudentInfo) Validate() error {
+	modelValidator := validation.NewModelValidator()
+
+	if err := modelValidator.ModelValidate(s); err != nil {
+		return err
+	}
+
+	return nil
+}
