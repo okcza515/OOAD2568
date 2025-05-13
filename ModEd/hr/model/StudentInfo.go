@@ -50,6 +50,10 @@ func NewUpdatedStudentInfo(
 	}
 }
 
+func (StudentInfo) TableName() string {
+	return "student_infos"
+}
+
 func (s *StudentInfo) Validate() error {
 	modelValidator := validation.NewModelValidator()
 
