@@ -15,25 +15,25 @@ func GenericRegister(choice int, db *gorm.DB, path string) {
 	actions := map[int]RegisterFunc{
 		1: func() {
 			RegisterModel(db, path,
-				controller.NewStudentController(db),
+				controller.GetStudentController(db),
 				[]model.Student{},
 				"student")
 		},
 		2: func() {
 			RegisterModel(db, path,
-				controller.NewInstructorController(db),
+				controller.GetInstructorController(db),
 				[]model.Instructor{},
 				"instructor")
 		},
 		3: func() {
 			RegisterModel(db, path,
-				controller.NewDepartmentController(db),
+				controller.GetDepartmentController(db),
 				[]model.Department{},
 				"department")
 		},
 		4: func() {
 			RegisterModel(db, path,
-				controller.NewFacultyController(db),
+				controller.GetFacultyController(db),
 				[]model.Faculty{},
 				"faculty")
 		},
@@ -77,16 +77,16 @@ type RetrieveFunc func()
 func GenericRetrieve(choice int, db *gorm.DB) {
 	actions := map[int]RetrieveFunc{
 		1: func() {
-			RetrieveModel(db, controller.NewStudentController(db))
+			RetrieveModel(db, controller.GetStudentController(db))
 		},
 		2: func() {
-			RetrieveModel(db, controller.NewInstructorController(db))
+			RetrieveModel(db, controller.GetInstructorController(db))
 		},
 		3: func() {
-			RetrieveModel(db, controller.NewDepartmentController(db))
+			RetrieveModel(db, controller.GetDepartmentController(db))
 		},
 		4: func() {
-			RetrieveModel(db, controller.NewFacultyController(db))
+			RetrieveModel(db, controller.GetFacultyController(db))
 		},
 	}
 
@@ -128,7 +128,7 @@ func GenericDelete(choice int, db *gorm.DB) {
 
 	actions := map[int]DeleteFunc{
 		1: func(key string) {
-			studentController := controller.NewStudentController(db)
+			studentController := controller.GetStudentController(db)
 			if err := studentController.DeleteByStudentCode(key); err != nil {
 				fmt.Printf("Error deleting student: %v\n", err)
 				return
@@ -136,7 +136,7 @@ func GenericDelete(choice int, db *gorm.DB) {
 			fmt.Printf("Student with code %s deleted successfully.\n", key)
 		},
 		2: func(key string) {
-			instructorController := controller.NewInstructorController(db)
+			instructorController := controller.GetInstructorController(db)
 			if err := instructorController.DeleteByInstructorCode(key); err != nil {
 				fmt.Printf("Error deleting instructor: %v\n", err)
 				return
@@ -144,7 +144,7 @@ func GenericDelete(choice int, db *gorm.DB) {
 			fmt.Printf("Instructor with code %s deleted successfully.\n", key)
 		},
 		3: func(key string) {
-			departmentController := controller.NewDepartmentController(db)
+			departmentController := controller.GetDepartmentController(db)
 			if err := departmentController.DeleteByName(key); err != nil {
 				fmt.Printf("Error deleting department: %v\n", err)
 				return
@@ -152,7 +152,7 @@ func GenericDelete(choice int, db *gorm.DB) {
 			fmt.Printf("Department with name %s deleted successfully.\n", key)
 		},
 		4: func(key string) {
-			facultyController := controller.NewFacultyController(db)
+			facultyController := controller.GetFacultyController(db)
 			if err := facultyController.DeleteByName(key); err != nil {
 				fmt.Printf("Error deleting faculty: %v\n", err)
 				return

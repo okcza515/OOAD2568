@@ -1,8 +1,9 @@
-package cli
+package main
 
 import (
 	"ModEd/common/cli/menu"
 	"fmt"
+	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -25,29 +26,24 @@ func (c *CommonCLI) Run() {
 	fmt.Println("This CLI provides a simple interface to manage your data.")
 	fmt.Println()
 
-	mainMenu := menu.NewCommonCLIMenu(c.db, c.path)
-	mainMenu.Run()
-}
+	handlerContext := menu.NewCommonHandlerContext(c.db)
 
-func main() {
-	db := initDB()
-	cli := NewCommonCLI(db, "data")
-	cli.Run()
-}
+	for {
+		handlerContext.ShowMenu()
+		fmt.Print("\nEnter your choice: ")
+		var choice string
+		fmt.Scanln(&choice)
 
-func ConnectDB() *gorm.DB {
-	connector, err := gorm.Open(sqlite.Open("data/ModEd.bin"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
+		if choice == "exit" {
+			fmt.Println("Goodbye!")
+			os.Exit(0)
+		}
+
+		if err := handlerContext.HandleInput(choice); err != nil {
+			fmt.Printf("Error: %v\n", err)
+		}
+		fmt.Println()
 	}
-	return connector
-}
-
-func confirmAction(prompt string) bool {
-	var response string
-	fmt.Print(prompt)
-	fmt.Scan(&response)
-	return response == "y" || response == "Y"
 }
 
 func initDB() *gorm.DB {
@@ -56,4 +52,10 @@ func initDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 	return connector
+}
+
+func main() {
+	db := initDB()
+	cli := NewCommonCLI(db, "data")
+	cli.Run()
 }

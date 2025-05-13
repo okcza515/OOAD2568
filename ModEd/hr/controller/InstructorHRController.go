@@ -182,7 +182,7 @@ func (c *InstructorHRController) UpdateInstructorInfo(instructorID string, first
 			"Email":     email,
 		}
 
-		commonInstructorController := commonController.NewInstructorController(tx)
+		commonInstructorController := commonController.GetInstructorController(tx)
 		if err := commonInstructorController.Update(instructorID, instructorData); err != nil {
 			return fmt.Errorf("failed to update common instructor data: %v", err)
 		}
@@ -242,7 +242,7 @@ func (c *InstructorHRController) DeleteInstructor(instructorID string) error {
 	tm := &util.TransactionManager{DB: c.db}
 
 	err := tm.Execute(func(tx *gorm.DB) error {
-		commonInstructorController := commonController.NewInstructorController(tx)
+		commonInstructorController := commonController.GetInstructorController(tx)
 		if err := commonInstructorController.DeleteByCode(instructorID); err != nil {
 			return fmt.Errorf("failed to delete instructor from common data: %w", err)
 		}
