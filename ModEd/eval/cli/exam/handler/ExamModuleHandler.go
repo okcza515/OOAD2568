@@ -21,7 +21,7 @@ type ExamModuleMenuStateHandler struct {
 	wrapper *controller.ExamModuleWrapper
 
 	ExamMenuState	   *ExamMenuState
-	QuestionMenuStateHandler   *QuestionMenuStateHandler
+	QuestionMenuStateHandler   *QuestionMenuState
 	SubmissionMenuStateHandler *SubmissionMenuStateHandler
 	handler                    *handler.HandlerContext
 }
