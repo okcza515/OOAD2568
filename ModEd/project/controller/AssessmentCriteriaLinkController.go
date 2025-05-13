@@ -10,21 +10,26 @@ import (
 
 type AssessmentCriteriaLinkController struct {
 	*core.BaseController[*model.AssessmentCriteriaLink]
-	AssessmentBaseController *core.BaseController[*model.Assessment]
-	DB                       *gorm.DB
+	AssessmentController    *AssessmentController
+	SeniorProjectController *core.BaseController[*model.SeniorProject]
+	DB                      *gorm.DB
 }
 
 func NewAssessmentCriteriaLinkController(db *gorm.DB) *AssessmentCriteriaLinkController {
 	return &AssessmentCriteriaLinkController{
-		BaseController: core.NewBaseController[*model.AssessmentCriteriaLink](db),
-		DB:             db,
+		BaseController:          core.NewBaseController[*model.AssessmentCriteriaLink](db),
+		AssessmentController:    NewAssessmentController(db),
+		SeniorProjectController: core.NewBaseController[*model.SeniorProject](db),
+		DB:                      db,
 	}
 }
 
 func (c *AssessmentCriteriaLinkController) ListProjectAssessmentCriteriaLinks(seniorProjectId uint) ([]*model.AssessmentCriteriaLink, error) {
-	assessment, err := c.AssessmentBaseController.RetrieveByCondition(map[string]interface{}{
-		"senior_project_id": seniorProjectId,
-	})
+	//check if assessment exist, if not, auto create the assessment only once
+	assessment, err := c.AssessmentController.RetrieveAssessmentBySeniorProjectId(seniorProjectId)
+	if err != nil {
+		return nil, err
+	}
 
 	assessmentCriteriaLink, err := c.List(map[string]interface{}{"assessment_id": assessment.ID})
 	if err != nil {
