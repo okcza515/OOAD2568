@@ -158,21 +158,22 @@ func (menu *ExamMenuState) ListAllExams() error {
 
 func (menu *ExamMenuState) RetrieveExamByID() error {
 	examID := assetUtil.GetUintInput("Enter Exam ID to retrieve: ")
-	exam, err := menu.wrapper.ExamController.RetrieveByID(examID)
+	exam, err := menu.wrapper.ExamController.List(map[string]interface{}{"id": examID})
 	if err != nil {
 		fmt.Println("Error retrieving exam:", err)
 		return nil
 	}
-	examSections, err := menu.wrapper.ExamSectionController.RetrieveByExamID(examID)
+	sections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
 	if err != nil {
 		fmt.Println("Error retrieving exam sections:", err)
 		return nil
 	}
 	fmt.Println("Exam Details:")
-	menu.PrintExamLists([]*model.Exam{exam})
-	for _, section := range examSections {
-		fmt.Printf("Section ID: %d, Section No: %d, Description: %s\n", section.ID, section.SectionNo, section.Description)
-		fmt.Printf("Number of Questions: %d, Score: %.2f\n", section.NumQuestions, section.Score)
+	menu.PrintExamLists(exam)
+	fmt.Println("Exam Sections:")
+	for _, section := range sections {
+		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
+		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
 		fmt.Println("--------------------------------------------------")
 	}
 	return nil
@@ -231,25 +232,23 @@ func (menu *ExamMenuState) UpdateExam() error {
 }
 
 func (menu *ExamMenuState) UpdateExamSection() error {
-	examID :=  assetUtil.GetUintInput("Enter Exam ID to update section: ")
+	examID := assetUtil.GetUintInput("Enter Exam ID to update section: ")
 	examSections, err := menu.wrapper.ExamSectionController.List(map[string]interface{}{"exam_id": examID})
 	if err != nil {
 		fmt.Println("Error retrieving exam sections:", err)
 		return nil
 	}
-	fmt.Printf("Exam Sections of Exam ID [%d]: \n", examID)
-	for _, section := range examSections {
-		fmt.Printf("Section ID			: %d 	| Section No   : %d 	| Description: %s\n", section.ID, section.SectionNo, section.Description)
-		fmt.Printf("Number of Questions : %d 	| Score		   : %.2f\n", section.NumQuestions, section.Score)
-		fmt.Println("--------------------------------------------------")
-	}
-
 	sectionID := assetUtil.GetUintInput("Enter Section ID to update: ")
+	var sectionToUpdate *model.ExamSection
 	for _, section := range examSections {
-		if section.ID != sectionID {
-			fmt.Println("Section ID not found.")
-			return nil
+		if section.ID == sectionID {
+			sectionToUpdate = section
+			break
 		}
+	}
+	if sectionToUpdate == nil {
+		fmt.Println("Section ID not found.")
+		return nil
 	}
 	newDescription := assetUtil.GetStringInput("Enter new description: ")
 	newNumQuestions := assetUtil.GetUintInput("Enter new number of questions: ")
