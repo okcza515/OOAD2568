@@ -17,7 +17,6 @@ var (
 	departmentLock     sync.Once
 )
 
-// GetFacultyController returns the singleton instance of FacultyController
 func GetFacultyController(db *gorm.DB) *FacultyController {
 	facultyLock.Do(func() {
 		facultyInstance = newFacultyController(db)
@@ -25,7 +24,6 @@ func GetFacultyController(db *gorm.DB) *FacultyController {
 	return facultyInstance
 }
 
-// GetStudentController returns the singleton instance of StudentController
 func GetStudentController(db *gorm.DB) *StudentController {
 	studentLock.Do(func() {
 		studentInstance = newStudentController(db)
@@ -33,7 +31,6 @@ func GetStudentController(db *gorm.DB) *StudentController {
 	return studentInstance
 }
 
-// GetInstructorController returns the singleton instance of InstructorController
 func GetInstructorController(db *gorm.DB) *InstructorController {
 	instructorLock.Do(func() {
 		instructorInstance = newInstructorController(db)
@@ -41,7 +38,6 @@ func GetInstructorController(db *gorm.DB) *InstructorController {
 	return instructorInstance
 }
 
-// GetDepartmentController returns the singleton instance of DepartmentController
 func GetDepartmentController(db *gorm.DB) *DepartmentController {
 	departmentLock.Do(func() {
 		departmentInstance = newDepartmentController(db)

@@ -12,7 +12,6 @@ type FacultyController struct {
 	*core.BaseController[model.Faculty]
 }
 
-// newFacultyController creates a new instance of FacultyController (private constructor)
 func newFacultyController(db *gorm.DB) *FacultyController {
 	db.AutoMigrate(&model.Faculty{})
 	return &FacultyController{
@@ -60,8 +59,8 @@ func (c *FacultyController) Register(faculties []model.Faculty) error {
 	return c.InsertMany(faculties)
 }
 
-func (c *FacultyController) Truncate() error {
-	return c.BaseController.Truncate()
+func (c *FacultyController) Truncate(db *gorm.DB) error {
+	return model.TruncateModel(db, "faculties")
 }
 
 func (c *FacultyController) GetByName(name string) (model.Faculty, error) {

@@ -13,7 +13,6 @@ type StudentController struct {
 	*core.BaseController[model.Student]
 }
 
-// newStudentController creates a new instance of StudentController (private constructor)
 func newStudentController(db *gorm.DB) *StudentController {
 	db.AutoMigrate(&model.Student{})
 	return &StudentController{
@@ -53,8 +52,8 @@ func (c *StudentController) Delete(field string, value interface{}) error {
 	return c.DeleteByCondition(map[string]interface{}{field: value})
 }
 
-func (c *StudentController) Truncate() error {
-	return c.BaseController.Truncate()
+func (c *StudentController) Truncate(db *gorm.DB) error {
+	return model.TruncateModel(db, "students")
 }
 
 func (c *StudentController) ManualAddStudent() error {
