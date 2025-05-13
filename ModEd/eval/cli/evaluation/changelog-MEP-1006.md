@@ -16,10 +16,9 @@
 - **การใช้งาน**: `NewExamMenuState`, `NewMenuStateManager`, `NewQuestionMenuStateHandler`, `NewSubmissionMenuStateHandler`
 
 ### Composite Pattern
-- **การใช้งาน**: Menu hierarchy in handlers, where menu items can be commands or sub-menus
+- **การใช้งาน**: โครงสร้างเมนูในส่วนของ handlers ซึ่งรายการเมนูสามารถเป็นคำสั่งหรือเมนูย่อยได้
 
-### Composition over Inheritance
-- **การใช้งาน**: `BaseController` embedded in specialized controllers like `ProgressController`
+`
 
 
 
