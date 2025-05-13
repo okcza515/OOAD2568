@@ -12,7 +12,7 @@ type StudentInfo struct {
 	core.BaseModel
 	Gender      string           `csv:"Gender" json:"Gender"`
 	CitizenID   string           `csv:"CitizenID" json:"CitizenID"`
-	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber" validation:"phone"`
+	PhoneNumber string           `csv:"PhoneNumber" json:"PhoneNumber"`
 	AdvisorCode string           `csv:"AdvisorCode" json:"AdvisorCode"`
 	Advisor     model.Instructor `csv:"Advisor" json:"Advisor" gorm:"foreignKey:AdvisorCode;references:InstructorCode"`
 }
