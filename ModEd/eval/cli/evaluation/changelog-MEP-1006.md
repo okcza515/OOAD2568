@@ -22,7 +22,7 @@
 ### Refactor
 - ทำการ refactor code โดยนำ core model และ core controller เพื่อให้ code อยู่ในมาตฐานเดียวกัน
 
-## Migration
-
+### Migration
+- ทำการ Migrate module กับทาง core และ implement Migration ใน EvalModuleHandler
 
 
