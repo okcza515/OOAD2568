@@ -3,26 +3,26 @@ package model
 
 import (
 	"ModEd/core"
+	"ModEd/core/validation"
 	"fmt"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
 type Course struct {
-	CourseId     uint           `gorm:"primaryKey" csv:"course_id" json:"course_id" validate:"-"`
-	Name         string         `gorm:"not null" csv:"name" json:"name" validate:"required"`
-	Description  string         `gorm:"not null" csv:"description" json:"description" validate:"required"`
-	CurriculumId uint           `gorm:"not null" csv:"curriculum_id" json:"curriculum_id" validate:"required"`
-	Curriculum   Curriculum     `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-" validate:"-"`
+	CourseId     uint           `gorm:"primaryKey" csv:"course_id" json:"course_id"`
+	Name         string         `gorm:"not null" csv:"name" json:"name"`
+	Description  string         `gorm:"not null" csv:"description" json:"description"`
+	CurriculumId uint           `gorm:"not null" csv:"curriculum_id" json:"curriculum_id"`
+	Curriculum   Curriculum     `gorm:"foreignKey:CurriculumId;references:CurriculumId" csv:"-" json:"-"`
 	Optional     bool           `gorm:"not null" csv:"optional" json:"optional" validate:"required"`
-	CourseStatus CourseStatus   `gorm:"type:int;not null" csv:"course_status" json:"course_status" validate:"required"`
-	CreatedAt    time.Time      `gorm:"autoCreateTime" csv:"created_at" json:"created_at" validate:"-"`
-	UpdatedAt    time.Time      `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at" validate:"-"`
-	DeletedAt    gorm.DeletedAt `csv:"-" json:"-" validate:"-"`
-	ClassList    []Class        `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-" validate:"-"`
-	Prerequisite []Course       `gorm:"many2many:course_prerequisites;foreignKey:CourseId;joinForeignKey:CourseId;References:CourseId;joinReferences:PrerequisiteId" csv:"-" json:"-" validate:"-"`
+	CourseStatus CourseStatus   `gorm:"type:int;not null" csv:"course_status" json:"course_status"`
+	CreatedAt    time.Time      `gorm:"autoCreateTime" csv:"created_at" json:"created_at"`
+	UpdatedAt    time.Time      `gorm:"autoUpdateTime" csv:"updated_at" json:"updated_at"`
+	DeletedAt    gorm.DeletedAt `csv:"-" json:"-"`
+	ClassList    []Class        `gorm:"foreignKey:CourseId;references:CourseId" csv:"-" json:"-"`
+	Prerequisite []Course       `gorm:"many2many:course_prerequisites;foreignKey:CourseId;joinForeignKey:CourseId;References:CourseId;joinReferences:PrerequisiteId" csv:"-" json:"-"`
 	*core.SerializableRecord
 }
 
@@ -33,10 +33,9 @@ func (c *Course) ToString() string {
 	return fmt.Sprintf("%+v", c)
 }
 func (c *Course) Validate() error {
-	validate := validator.New()
+	modelValidator := validation.NewModelValidator()
 
-	// Validate struct fields using v10 validator
-	if err := validate.Struct(c); err != nil {
+	if err := modelValidator.ModelValidate(c); err != nil {
 		return err
 	}
 

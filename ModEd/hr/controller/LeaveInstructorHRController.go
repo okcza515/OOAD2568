@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -26,8 +27,8 @@ func (c *LeaveInstructorHRController) update(request *model.RequestLeaveInstruct
 func (c *LeaveInstructorHRController) delete(request *model.RequestLeaveInstructor) error {
 	return c.db.Delete(request).Error
 }
-func (c *LeaveInstructorHRController) getAll() ([]model.RequestLeaveInstructor, error) {
-	var requests []model.RequestLeaveInstructor
+func (c *LeaveInstructorHRController) getAll() ([]*model.RequestLeaveInstructor, error) {
+	var requests []*model.RequestLeaveInstructor
 	err := c.db.Find(&requests).Error
 	if err != nil {
 		return nil, err
@@ -44,7 +45,7 @@ func (c *LeaveInstructorHRController) getByID(id uint) (*model.RequestLeaveInstr
 }
 func (c *LeaveInstructorHRController) getByInstructorID(instructorID string) ([]model.RequestLeaveInstructor, error) {
 	var requests []model.RequestLeaveInstructor
-	err := c.db.Where("instructor_id = ?", instructorID).Find(&requests).Error
+	err := c.db.Where("instructor_code = ?", instructorID).Find(&requests).Error
 	if err != nil {
 		return nil, err
 	}
@@ -97,4 +98,24 @@ func (c *LeaveInstructorHRController) ReviewInstructorLeaveRequest(requestID, ac
 			return c.db.Save(r).Error
 		},
 	)
+}
+
+func (c *LeaveInstructorHRController) ExportInstructorLeaveRequests(filePath string) error {
+	requests, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve instructor leave requests: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.RequestLeaveInstructor](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create instructor leave request mapper: %w", err)
+	}
+
+	err = mapper.Serialize(requests)
+	if err != nil {
+		return fmt.Errorf("failed to serialize instructor leave requests: %w", err)
+	}
+
+	fmt.Printf("Exported %d instructor leave requests to %s\n", len(requests), filePath)
+	return nil
 }

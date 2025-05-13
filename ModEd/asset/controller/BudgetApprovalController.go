@@ -35,7 +35,16 @@ func (c *BudgetApprovalController) ListAllApprovals() ([]model.BudgetApproval, e
 	var approvals []model.BudgetApproval
 	err := c.db.
 		Preload("Approver").
-		// Preload("InstrumentRequest.Departments").
+		Preload("InstrumentRequest").
+		Find(&approvals).Error
+	return approvals, err
+}
+
+func (c *BudgetApprovalController) ListAllPendingApprovals() ([]model.BudgetApproval, error) {
+	var approvals []model.BudgetApproval
+	err := c.db.
+		Where("status = ?", "pending").
+		Preload("Approver").
 		Preload("InstrumentRequest").
 		Find(&approvals).Error
 	return approvals, err
@@ -69,8 +78,8 @@ func (c *BudgetApprovalController) OnApproved(id uint, approverID uint) error {
 		if err := tx.Model(&model.BudgetApproval{}).
 			Where("budget_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":      model.BudgetStatusApproved,
-				"approver_id": approverID,
+				"status":        model.BudgetStatusApproved,
+				"approver_id":   approverID,
 				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err
@@ -96,8 +105,8 @@ func (c *BudgetApprovalController) OnRejected(id uint, approverID uint) error {
 		if err := tx.Model(&model.BudgetApproval{}).
 			Where("budget_approval_id = ?", id).
 			Updates(map[string]interface{}{
-				"status":      model.BudgetStatusRejected,
-				"approver_id": approverID,
+				"status":        model.BudgetStatusRejected,
+				"approver_id":   approverID,
 				"approval_time": time.Now(),
 			}).Error; err != nil {
 			return err

@@ -2,51 +2,51 @@
   {
     "room_id": 1,
     "instrument_id": 1,
-    "instrument_borrow_id": 1
+    "borrow_id": 1
   },
   {
     "room_id": 2,
     "instrument_id": 2,
-    "instrument_borrow_id": 2
+    "borrow_id": 2
   },
   {
     "room_id": 3,
     "instrument_id": 3,
-    "instrument_borrow_id": 3
+    "borrow_id": 3
   },
   {
     "room_id": 4,
     "instrument_id": 4,
-    "instrument_borrow_id": 4
+    "borrow_id": 4
   },
   {
     "room_id": 5,
     "instrument_id": 5,
-    "instrument_borrow_id": 5
+    "borrow_id": 5
   },
   {
     "room_id": 6,
     "instrument_id": 6,
-    "instrument_borrow_id": 6
+    "borrow_id": 6
   },
   {
     "room_id": 7,
     "instrument_id": 7,
-    "instrument_borrow_id": 7
+    "borrow_id": 7
   },
   {
     "room_id": 8,
     "instrument_id": 8,
-    "instrument_borrow_id": 8
+    "borrow_id": 8
   },
   {
     "room_id": 9,
     "instrument_id": 9,
-    "instrument_borrow_id": 9
+    "borrow_id": 9
   },
   {
     "room_id": 10,
     "instrument_id": 10,
-    "instrument_borrow_id": 10
+    "borrow_id": 10
   }
 ]

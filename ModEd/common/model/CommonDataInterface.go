@@ -8,6 +8,7 @@ import (
 
 type CommonDataInterface interface {
 	TableName() string
+	Validate() error
 }
 
 func CommonRegister[T CommonDataInterface](db *gorm.DB, records []*T) error {

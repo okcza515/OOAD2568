@@ -1,6 +1,9 @@
+//MEP-1006 Quiz and Assignment
+
 package handler
 
 import (
+	"ModEd/asset/util"
 	"ModEd/core/cli"
 	"ModEd/core/handler"
 	"ModEd/eval/controller"
@@ -27,6 +30,7 @@ func NewEvaluationMenuStateHandler(manager *cli.CLIMenuStateManager, wrapper *co
 }
 
 func (menu *EvaluationMenuStateHandler) Render() {
+	util.ClearScreen()
 	menu.handler.SetMenuTitle("\nEvaluation Menu")
 	menu.handler.AddHandler("1", "Evaluation Assignment", handler.FuncStrategy{Action: menu.CreateEvaluation})
 	menu.handler.AddHandler("2", "View All Evaluations", handler.FuncStrategy{Action: menu.ViewAllEvaluations})
@@ -42,26 +46,28 @@ func (menu *EvaluationMenuStateHandler) HandleUserInput(input string) error {
 
 func (menu *EvaluationMenuStateHandler) CreateEvaluation() error {
 	var studentCode, instructorCode, comment string
-	var assessmentId, score uint
+	var assignmentId, score uint
 
 	fmt.Print("Enter Student Code: ")
 	fmt.Scanln(&studentCode)
 	fmt.Print("Enter Instructor Code: ")
 	fmt.Scanln(&instructorCode)
-	fmt.Print("Enter Assessment ID: ")
-	fmt.Scanln(&assessmentId)
+	fmt.Print("Enter Assignment ID: ")
+	fmt.Scanln(&assignmentId)
 	fmt.Print("Enter Score: ")
 	fmt.Scanln(&score)
 	fmt.Print("Enter Comment: ")
 	fmt.Scanln(&comment)
 
-	err := menu.wrapper.EvaluationController.CreateEvaluation(studentCode, instructorCode, assessmentId, score, comment)
+	err := menu.wrapper.EvaluationController.CreateEvaluation(studentCode, instructorCode, assignmentId, score, comment)
 	if err != nil {
 		fmt.Printf("Error creating evaluation: %v\n", err)
 		return err
 	}
 
 	fmt.Println("Evaluation created successfully!")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -74,6 +80,8 @@ func (menu *EvaluationMenuStateHandler) ViewAllEvaluations() error {
 
 	if len(evaluations) == 0 {
 		fmt.Println("No evaluations found.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -81,6 +89,8 @@ func (menu *EvaluationMenuStateHandler) ViewAllEvaluations() error {
 	for _, eval := range evaluations {
 		menu.displayEvaluation(eval)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -97,6 +107,8 @@ func (menu *EvaluationMenuStateHandler) ViewEvaluationByID() error {
 
 	if len(evaluations) == 0 {
 		fmt.Println("No evaluations found for this student.")
+		util.PressEnterToContinue()
+		util.ClearScreen()
 		return nil
 	}
 
@@ -104,6 +116,8 @@ func (menu *EvaluationMenuStateHandler) ViewEvaluationByID() error {
 	for _, eval := range evaluations {
 		menu.displayEvaluation(eval)
 	}
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
@@ -126,12 +140,14 @@ func (menu *EvaluationMenuStateHandler) UpdateEvaluation() error {
 	}
 
 	fmt.Println("Evaluation updated successfully!")
+	util.PressEnterToContinue()
+	util.ClearScreen()
 	return nil
 }
 
 func (menu *EvaluationMenuStateHandler) displayEvaluationTableHeader() {
 	fmt.Printf("\n%-5s %-15s %-15s %-10s %-10s %-20s %-20s",
-		"ID", "Student Code", "Instructor Code", "Score", "Assessment", "Comment", "Evaluated At")
+		"ID", "Student Code", "Instructor Code", "Score", "Assignment", "Comment", "Evaluated At")
 	fmt.Printf("\n%-5s %-15s %-15s %-10s %-10s %-20s %-20s",
 		"---", "------------", "--------------", "-----", "----------", "-------", "------------")
 }
@@ -143,7 +159,7 @@ func (menu *EvaluationMenuStateHandler) displayEvaluation(eval interface{}) {
 		evaluation.StudentCode,
 		evaluation.InstructorCode,
 		evaluation.Score,
-		evaluation.AssessmentId,
+		evaluation.AssignmentId,
 		evaluation.Comment,
 		evaluation.EvaluatedAt.Format("2006-01-02 15:04:05"))
 }

@@ -56,3 +56,20 @@ func (c *BorrowInstrumentController) InsertMany(data []model.BorrowInstrument) e
 	result := c.db.Create(&data)
 	return result.Error
 }
+
+func (c *BorrowInstrumentController) ListAll() ([]string, error) {
+	instruments := new([]model.BorrowInstrument)
+	result := c.db.Find(&instruments)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	var resultList []string
+
+	for _, instrument := range *instruments {
+		resultList = append(resultList, instrument.ToString())
+	}
+
+	return resultList, result.Error
+}

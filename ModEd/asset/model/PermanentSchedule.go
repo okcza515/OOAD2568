@@ -7,22 +7,35 @@ import (
 	master "ModEd/common/model"
 	"ModEd/core"
 	curriculum "ModEd/curriculum/model"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type PermanentSchedule struct {
 	core.BaseModel
-	TimeTableID   uint               `gorm:"type:integer;not null;uniqueIndex" json:"time_table_id" csv:"time_table_id"`
-	TimeTable     TimeTable          `gorm:"foreignKey:TimeTableID;references:ID" json:"time_table"`
-	FacultyID     uint               `gorm:"type:integer;not null" json:"faculty_id" csv:"faculty_id"`
-	Faculty       master.Faculty     `gorm:"foreignKey:FacultyID;references:ID"`
-	DepartmentID  uint               `gorm:"type:integer;not null" json:"department_id" csv:"department_id"`
-	Department    master.Department  `gorm:"foreignKey:DepartmentID;references:ID"`
-	ProgramtypeID uint               `gorm:"type:integer;not null" json:"programtype_id" csv:"programtype_id"`
-	Programtype   master.ProgramType `gorm:"foreignKey:ProgramtypeID;references:ID"`
-	CourseId      uint               `gorm:"type:integer;not null" json:"course_id" csv:"course_id"`
-	Course        curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId"`
-	ClassId       uint               `gorm:"type:integer;not null" json:"class_id" csv:"class_id"`
-	Class         curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId"`
+	TimeTableID   uint               `gorm:"type:integer;not null;uniqueIndex" json:"time_table_id" csv:"time_table_id" validate:"-"`
+	TimeTable     TimeTable          `gorm:"foreignKey:TimeTableID;references:ID" json:"time_table" validate:"-"`
+	FacultyID     uint               `gorm:"type:integer;not null" json:"faculty_id" csv:"faculty_id" validate:"required"`
+	Faculty       master.Faculty     `gorm:"foreignKey:FacultyID;references:ID" validate:"-"`
+	DepartmentID  uint               `gorm:"type:integer;not null" json:"department_id" csv:"department_id" validate:"required"`
+	Department    master.Department  `gorm:"foreignKey:DepartmentID;references:ID" validate:"-"`
+	ProgramtypeID uint               `gorm:"type:integer;not null" json:"programtype_id" csv:"programtype_id" validate:"required"`
+	Programtype   master.ProgramType `gorm:"foreignKey:ProgramtypeID;references:ID" validate:"-"`
+	CourseId      uint               `gorm:"type:integer;not null" json:"course_id" csv:"course_id" validate:"required"`
+	Course        curriculum.Course  `gorm:"foreignKey:CourseId;references:CourseId" validate:"-"`
+	ClassId       uint               `gorm:"type:integer;not null" json:"class_id" csv:"class_id" validate:"required"`
+	Class         curriculum.Class   `gorm:"foreignKey:ClassId;references:ClassId" validate:"-"`
+}
+
+func (ps PermanentSchedule) Validate() error {
+	validate := validator.New()
+
+	// Validate struct fields using v10 validator
+	if err := validate.Struct(ps); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (ps PermanentSchedule) ToString() string {

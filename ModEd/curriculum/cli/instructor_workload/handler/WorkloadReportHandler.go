@@ -18,10 +18,10 @@ func NewWorkloadReportHandler(db *gorm.DB) WorkloadReportHandler {
 
 func (w WorkloadReportHandler) Execute() {
 	workloadReportMenu := NewMenuHandler("Workload Report Menu", true)
-	workloadReportMenu.Add("View Today Workload", DailyWorkloadHandler{db: w.db})
-	workloadReportMenu.Add("View Weekly Workload", WeeklyWorkloadHandler{db: w.db})
-	workloadReportMenu.Add("View Monthly Workload", MonthlyWorkloadHandler{db: w.db})
-	workloadReportMenu.Add("Generate Performance Report", GeneratePerformanceReportHandler{db: w.db})
+	workloadReportMenu.Add(string(MENU_WORKLOAD_REPORT_TODAY), DailyWorkloadHandler{db: w.db})
+	workloadReportMenu.Add(string(MENU_WORKLOAD_REPORT_WEEKLY), WeeklyWorkloadHandler{db: w.db})
+	workloadReportMenu.Add(string(MENU_WORKLOAD_REPORT_MONTHLY), MonthlyWorkloadHandler{db: w.db})
+	workloadReportMenu.Add(string(MENU_WORKLOAD_REPORT_GENERATE), GeneratePerformanceReportHandler{db: w.db})
 	workloadReportMenu.SetBackHandler(Back{})
 	workloadReportMenu.SetDefaultHandler(UnknownCommand{})
 	workloadReportMenu.Execute()

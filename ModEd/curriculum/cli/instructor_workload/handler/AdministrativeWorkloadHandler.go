@@ -24,8 +24,8 @@ func NewAdminstrativeWorkloadHandler(db *gorm.DB) AdminstrativeWorkloadHandler {
 // Adminstrative Menu
 func (a AdminstrativeWorkloadHandler) Execute() {
 	adminstrativeMenu := NewMenuHandler("Adminstrative Workload Menu", true)
-	adminstrativeMenu.Add("Meeting", NewMeetingWorkloadHandler(a.db))
-	adminstrativeMenu.Add("Student Request", nil)
+	adminstrativeMenu.Add(string(MENU_MEETING ), NewMeetingWorkloadHandler(a.db))
+	adminstrativeMenu.Add(string(MENU_STUDENT_REQUEST), nil)
 	adminstrativeMenu.SetBackHandler(Back{})
 	adminstrativeMenu.SetDefaultHandler(UnknownCommand{})
 	adminstrativeMenu.Execute()
@@ -34,14 +34,14 @@ func (a AdminstrativeWorkloadHandler) Execute() {
 // Submenu for MeetingHandler
 func (m MeetingWorkloadHandler) Execute() {
 	meetingMenu := NewMenuHandler("Academic Workload Menu", true)
-	meetingMenu.Add("List All meeting", ListAllMeeting{db: m.db})
-	meetingMenu.Add("Create Meeting", CreateMeeting{db: m.db})
-	meetingMenu.Add("Create External Meeting", CreateExternalMeeting{db: m.db})
-	meetingMenu.Add("Create Online Meeting", CreateOnlineMeeting{db: m.db})
-	meetingMenu.Add("Retrieve meeting by Id", RetrieveMeetingById{db: m.db})
-	meetingMenu.Add("Add Attendee", AddAttendee{db: m.db})
-	meetingMenu.Add("Update meeting by Id", UpdateMeetingById{db: m.db})
-	meetingMenu.Add("Delete meeting by Id", DeleteMeetingById{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_LIST), ListAllMeeting{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_CREATE), CreateMeeting{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_CREATE_EXTERNAL), CreateExternalMeeting{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_CREATE_ONLINE), CreateOnlineMeeting{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_RETRIEVE), RetrieveMeetingById{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_ADD_ATTENDEE), AddAttendee{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_UPDATE), UpdateMeetingById{db: m.db})
+	meetingMenu.Add(string(MENU_MEETING_DELETE), DeleteMeetingById{db: m.db})
 	meetingMenu.SetBackHandler(Back{})
 	meetingMenu.SetDefaultHandler(UnknownCommand{})
 	meetingMenu.Execute()

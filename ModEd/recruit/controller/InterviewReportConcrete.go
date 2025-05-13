@@ -10,7 +10,7 @@ type InterviewReport struct {
 	Controller *InterviewController
 }
 
-func (r *InterviewReport) GetFilteredInterviews(condition map[string]interface{}) ([]*model.Interview, error) {
+func (r *InterviewReport) GetFilteredReport(condition map[string]interface{}) ([]*model.Interview, error) {
 	return r.Controller.GetFilteredInterviews(condition)
 }
 

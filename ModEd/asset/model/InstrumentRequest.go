@@ -2,7 +2,6 @@
 package model
 
 import (
-	// master "ModEd/common/model"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,5 +17,4 @@ type InstrumentRequest struct {
 	UpdatedAt           time.Time
 	DepartmentID        uint
 	IsLinkedToTOR       bool `gorm:"default:false"`
-	// Department          *master.Department `gorm:"foreignKey:DepartmentID;references:ID"`
 }

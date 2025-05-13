@@ -30,7 +30,7 @@ func (h *deleteClassByIdHandler) Execute() error {
 	classId := utils.GetUserInputUint("Enter the class ID to delete: ")
 
 	confirm := utils.GetUserInput(fmt.Sprintf("Are you sure you want to delete class with Id %d? (y/n): ", classId))
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Deletion cancelled.")
 		return nil
 	}

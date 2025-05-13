@@ -19,10 +19,8 @@ type MainMenuParams struct {
 }
 
 func NewMainMenuState(manager *cli.CLIMenuStateManager, params *MainMenuParams) *MainMenuState {
-	// Create handler context
 	handlerContext := handler.NewHandlerContext()
 
-	// Create the main menu state
 	mainMenu := &MainMenuState{
 		manager:        manager,
 		handlerContext: handlerContext,

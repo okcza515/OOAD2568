@@ -18,7 +18,7 @@ func NewUpdateInstructorInfoStrategy(instructorCtrl *controller.InstructorHRCont
 func (handler UpdateInstructorInfoStrategy) Execute() error {
 	validator := validation.NewValidationChain(core.GetUserInput)
 
-	instructorID := validator.Field(validation.FieldConfig{Name: "instructorID", Prompt: "Enter instructor ID (11 digits): "}).Required().IsAllDigits().Length(11).GetInput()
+	instructorID := validator.Field(validation.FieldConfig{Name: "instructorID", Prompt: "Enter instructor ID (11 digits): "}).Required().IsAllDigits().GetInput()
 	firstName := validator.Field(validation.FieldConfig{Name: "firstName", Prompt: "Enter instructor first name: "}).Required().GetInput()
 	lastName := validator.Field(validation.FieldConfig{Name: "lastName", Prompt: "Enter instructor last name: "}).Required().GetInput()
 	email := validator.Field(validation.FieldConfig{Name: "email", Prompt: "Enter instructor email: "}).Required().IsEmail().GetInput()

@@ -56,3 +56,11 @@ func (c *InternshipInformationController) ListAll() ([]model.InternshipInformati
 	}
 	return infos, nil
 }
+
+func (c *InternshipInformationController) GetByStudentCode(studentCode string) (*model.InternshipInformation, error) {
+	var info model.InternshipInformation
+	if err := c.Connector.Where("student_code = ?", studentCode).First(&info).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve InternshipInformation for student code '%s': %w", studentCode, err)
+	}
+	return &info, nil
+}

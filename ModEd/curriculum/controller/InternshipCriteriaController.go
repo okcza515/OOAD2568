@@ -56,3 +56,12 @@ func (c *InternshipCriteriaController) ListAll() ([]model.InternshipCriteria, er
 	}
 	return criteriaList, nil
 }
+
+func (c *InternshipCriteriaController) ListAllByInformationID(informationID uint) ([]model.InternshipCriteria, error) {
+	var criteriaList []model.InternshipCriteria
+	if err := c.Connector.Where("internship_application_id = ?", informationID).
+		Find(&criteriaList).Error; err != nil {
+		return nil, fmt.Errorf("failed to list InternshipCriteria records for InternshipInformation ID '%d': %w", informationID, err)
+	}
+	return criteriaList, nil
+}

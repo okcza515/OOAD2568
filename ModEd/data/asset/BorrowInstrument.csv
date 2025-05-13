@@ -1,0 +1,11 @@
+id,staff_user_id,borrow_user_id,expected_return_date,borrow_date,return_date,instrument_id,description,borrow_objective
+1,101,201,2025-05-19,2025-05-12,,1,"For calibration","Research"
+2,102,202,2025-05-22,2025-05-12,,2,"Testing new signals","Lab Test"
+3,103,203,2025-05-17,2025-05-12,,3,,"Demo Setup"
+4,104,204,2025-05-15,2025-05-12,,4,"Daily usage","Routine Check"
+5,105,205,2025-05-26,2025-05-12,,5,,"Student Project"
+6,106,206,2025-05-18,2025-05-12,,6,"Measurement logging","Calibration"
+7,107,207,2025-05-20,2025-05-12,,7,,"Prototyping"
+8,108,208,2025-05-25,2025-05-12,,8,"Final year demo","Exhibition"
+9,109,209,2025-05-16,2025-05-12,,9,"Sensor accuracy test","Testing"
+10,110,210,2025-05-21,2025-05-12,,10,"Routine check","Maintenance"

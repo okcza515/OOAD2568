@@ -42,7 +42,7 @@ func main() {
 				Children: []*utils.MenuItem{
 					{
 						Title: "SayHi",
-						Action: func(io *utils.MenuIO) {
+						Action: func(io *core.MenuIO) {
 							io.Println("Hi")
 						},
 					},
@@ -51,7 +51,7 @@ func main() {
 		},
 	}, nil, nil)
 
-	builder.AddMenuPath([]string{"File", "New"}, func(io *utils.MenuIO) {
+	builder.AddMenuPath([]string{"File", "New"}, func(io *core.MenuIO) {
 		text, err := io.ReadInput()
 		if err != nil {
 			return
@@ -60,11 +60,11 @@ func main() {
 		io.Println(text)
 	})
 
-	builder.AddMenuPath([]string{"File", "Open"}, func(io *utils.MenuIO) {
+	builder.AddMenuPath([]string{"File", "Open"}, func(io *core.MenuIO) {
 		io.Println("File opened")
 	})
 
-	builder.AddMenuPath([]string{"Edit", "Undo"}, func(io *utils.MenuIO) {
+	builder.AddMenuPath([]string{"Edit", "Undo"}, func(io *core.MenuIO) {
 		io.Println("Undo action")
 	})
 

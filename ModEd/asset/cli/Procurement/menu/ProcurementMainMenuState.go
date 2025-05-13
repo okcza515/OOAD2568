@@ -1,3 +1,4 @@
+// MEP-1014
 package menu
 
 import (
@@ -18,22 +19,21 @@ func NewProcurementMainMenuState(manager *cli.CLIMenuStateManager) *ProcurementM
 		manager:        manager,
 		handlerContext: handlerContext,
 	}
-
-	// Register the Main Menu
 	manager.AddMenu(string(MENU_PROCUREMENT_MAIN), procurementMenu)
 
-	// Register Submenus (Commented out for now)
 	manager.AddMenu(string(MENU_INSTRUMENT_REQUEST), NewInstrumentRequestMenuState(manager))
 	manager.AddMenu(string(MENU_PROCUREMENT), NewProcurementMenuState(manager))
 	manager.AddMenu(string(MENU_ACCEPTANCE), NewAcceptanceTestMenuState(manager))
 	manager.AddMenu(string(MENU_APPROVAL), NewApprovalMenuState(manager))
-	manager.AddMenu(string(MENU_QUOTATION), NewQuotationMenuState(manager))
+	manager.AddMenu(string(MENU_ACCEPTEDINSTRUMENT), NewAcceptedInstrumentMenuState(manager))
+	manager.AddMenu(string(MENU_IMPORTFILE), NewImportFileMenuState(manager))
 
-	// Register Handlers for Navigation
 	handlerContext.AddHandler("1", "Instrument Request Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUMENT_REQUEST))))
 	handlerContext.AddHandler("2", "Procurement Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_PROCUREMENT))))
 	handlerContext.AddHandler("3", "Acceptance Test", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ACCEPTANCE))))
 	handlerContext.AddHandler("4", "Approval Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_APPROVAL))))
+	handlerContext.AddHandler("5", "Accepted Instrument Management", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_ACCEPTEDINSTRUMENT))))
+	handlerContext.AddHandler("6", "Import File", handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_IMPORTFILE))))
 
 	handlerContext.AddHandler("exit", "Exit the application", handler.FuncStrategy{
 		Action: func() error {

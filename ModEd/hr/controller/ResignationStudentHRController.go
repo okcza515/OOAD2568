@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -19,6 +20,12 @@ func NewResignationStudentHRController(db *gorm.DB) *ResignationStudentHRControl
 
 func (c *ResignationStudentHRController) insert(request *model.RequestResignationStudent) error {
 	return c.db.Create(request).Error
+}
+
+func (c *ResignationStudentHRController) getAll() ([]*model.RequestResignationStudent, error) {
+	var requests []*model.RequestResignationStudent
+	err := c.db.Find(&requests).Error
+	return requests, err
 }
 
 func (c *ResignationStudentHRController) getByID(id uint) (*model.RequestResignationStudent, error) {
@@ -87,4 +94,25 @@ func (c *ResignationStudentHRController) ReviewStudentResignRequest(requestID, a
 			return c.db.Save(r).Error
 		},
 	)
+}
+
+func (c *ResignationStudentHRController) ExportStudentResignRequests(filePath string) error {
+	resignationStudents, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve resignation requests: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.RequestResignationStudent](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create resignation student mapper: %w", err)
+	}
+
+	err = mapper.Serialize(resignationStudents)
+	if err != nil {
+		return fmt.Errorf("failed to serialize resignation students: %w", err)
+	}
+
+	fmt.Printf("Exported %d resignation student requests to %s\n", len(resignationStudents), filePath)
+
+	return nil
 }

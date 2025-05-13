@@ -1,3 +1,4 @@
+// MEP-1014
 package helper
 
 import (
@@ -52,7 +53,7 @@ func HandleApprovalOption(observer controller.ApprovalObserver) {
 func printApprovalList(observer controller.ApprovalObserver) {
 	switch o := observer.(type) {
 	case *controller.BudgetApprovalController:
-		approvals, err := o.ListAllApprovals()
+		approvals, err := o.ListAllPendingApprovals()
 		if err != nil {
 			fmt.Println("Failed to fetch budget approvals:", err)
 			return
@@ -72,7 +73,7 @@ func printApprovalList(observer controller.ApprovalObserver) {
 		}
 
 	case *controller.ProcurementController:
-		approvals, err := o.ListAllProcurement()
+		approvals, err := o.ListAllPendingProcurement()
 		if err != nil {
 			fmt.Println("Failed to fetch procurement approvals:", err)
 			return
@@ -92,7 +93,7 @@ func printApprovalList(observer controller.ApprovalObserver) {
 		}
 
 	case *controller.AcceptanceApprovalController:
-		approvals, err := o.ListAllApprovals()
+		approvals, err := o.ListAllPendingApprovals()
 		if err != nil {
 			fmt.Println("Failed to fetch acceptance approvals:", err)
 			return

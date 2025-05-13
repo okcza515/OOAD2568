@@ -3,6 +3,7 @@ package controller
 
 import (
 	model "ModEd/asset/model"
+	common "ModEd/common/model"
 	"fmt"
 	"time"
 
@@ -17,49 +18,50 @@ func (c *AcceptanceApprovalController) CreateAcceptanceRequest(req *model.Accept
 	return c.db.Create(req).Error
 }
 
-// func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApproval, error) {
-// 	var approvals []model.AcceptanceApproval
-// 	err := c.db.
-// 		Preload("Procurement").
-// 		Preload("Approver").
-// 		Find(&approvals).Error
-// 	return approvals, err
-// }
-
 func (c *AcceptanceApprovalController) ListAllApprovals() ([]model.AcceptanceApproval, error) {
-    var approvals []model.AcceptanceApproval
-    err := c.db.
-        Preload("Procurement").
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
 		Preload("Approver").
-        Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
-        Where("procurements.procurement_id IS NOT NULL").
-        Find(&approvals).Error
+		Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
+		Where("procurements.procurement_id IS NOT NULL").
+		Find(&approvals).Error
 
-    return approvals, err
+	return approvals, err
 }
 
+func (c *AcceptanceApprovalController) ListAllPendingApprovals() ([]model.AcceptanceApproval, error) {
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
+		Joins("LEFT JOIN procurements ON procurements.procurement_id = acceptance_approvals.procurement_id").
+		Where("procurements.procurement_id IS NOT NULL AND acceptance_approvals.status = ?", "pending").
+		Find(&approvals).Error
+
+	return approvals, err
+}
 
 func (c *AcceptanceApprovalController) ShowAcceptanceRequestList(procurementID uint) ([]model.AcceptanceApproval, error) {
-    var approvals []model.AcceptanceApproval
-    err := c.db.
-        Preload("Procurement").
-        Preload("Approver").
-        Where("procurement_id = ?", procurementID).
-        Find(&approvals).Error
-    
-    if err != nil {
-        return nil, err
-    }
+	var approvals []model.AcceptanceApproval
+	err := c.db.
+		Preload("Procurement").
+		Preload("Approver").
+		Where("procurement_id = ?", procurementID).
+		Find(&approvals).Error
 
-    for _, approval := range approvals {
-        if approval.Procurement == nil {
-            fmt.Printf("Missing Procurement for AcceptanceApprovalID: %d\n", approval.AcceptanceApprovalID)
-        }
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return approvals, nil
+	for _, approval := range approvals {
+		if approval.Procurement == nil {
+			fmt.Printf("Missing Procurement for AcceptanceApprovalID: %d\n", approval.AcceptanceApprovalID)
+		}
+	}
+
+	return approvals, nil
 }
-
 
 func (c *AcceptanceApprovalController) ShowAcceptanceRequestStatus(id uint) (*model.AcceptanceApproval, error) {
 	approval := new(model.AcceptanceApproval)
@@ -97,10 +99,32 @@ func (c *AcceptanceApprovalController) OnApproved(id uint, approverID uint) erro
 			}).Error; err != nil {
 			return err
 		}
+
+		var approval model.AcceptanceApproval
+		if err := tx.Preload("Procurement.TOR.InstrumentRequest").
+			First(&approval, id).Error; err != nil {
+			return fmt.Errorf("failed to load approval: %w", err)
+		}
+
+		torID := approval.Procurement.TORID
+		departmentID := approval.Procurement.TOR.InstrumentRequest.DepartmentID
+
+		var quotation model.Quotation
+		if err := tx.Where("tor_id = ? AND status = ?", torID, model.QuotationStatusApproved).
+			First(&quotation).Error; err != nil {
+			return fmt.Errorf("no approved quotation found for TOR %d: %w", torID, err)
+		}
+
+		if err := tx.Model(&common.Department{}).
+			Where("id = ?", departmentID).
+			Where("budget - ? >= 0", quotation.TotalOfferedPrice).
+			Update("budget", gorm.Expr("budget - ?", quotation.TotalOfferedPrice)).Error; err != nil {
+			return fmt.Errorf("failed to deduct department budget: %w", err)
+		}
+
 		return nil
 	})
 }
-
 
 func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) error {
 	return c.db.Transaction(func(tx *gorm.DB) error {
@@ -116,7 +140,6 @@ func (c *AcceptanceApprovalController) OnRejected(id uint, approverID uint) erro
 		return nil
 	})
 }
-
 
 func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurementID uint) ([]model.QuotationDetail, error) {
 	var procurement model.Procurement
@@ -141,59 +164,56 @@ func (c *AcceptanceApprovalController) GetQuotationDetailsByProcurement(procurem
 }
 
 func (c *AcceptanceApprovalController) PrintQuotationDetailsByProcurement(procurementID uint) {
-    details, err := c.GetQuotationDetailsByProcurement(procurementID)
-    if err != nil {
-        fmt.Println("Error:", err)
-        return
-    }
+	details, err := c.GetQuotationDetailsByProcurement(procurementID)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 
-    if len(details) == 0 {
-        fmt.Printf("No quotation details found for Procurement ID: %d\n", procurementID)
-        return
-    }
+	if len(details) == 0 {
+		fmt.Printf("No quotation details found for Procurement ID: %d\n", procurementID)
+		return
+	}
 
-    fmt.Printf("Quotation Details for Procurement ID: %d\n", procurementID)
-    for _, detail := range details {
-        fmt.Printf("QuotationDetailID: %d\n", detail.QuotationDetailID)
-        fmt.Printf("InstrumentLabel: %s\n", detail.InstrumentLabel)
-        if detail.Description != nil {
-            fmt.Printf("Description: %s\n", *detail.Description)
-        } else {
-            fmt.Println("Description: (none)")
-        }
-        fmt.Printf("CategoryID: %d\n", detail.CategoryID)
-        fmt.Printf("Quantity: %d\n", detail.Quantity)
-        fmt.Printf("Offered Price: %.2f\n", detail.OfferedPrice)
-        fmt.Println("------")
-    }
+	fmt.Printf("Quotation Details for Procurement ID: %d\n", procurementID)
+	for _, detail := range details {
+		fmt.Printf("QuotationDetailID: %d\n", detail.QuotationDetailID)
+		fmt.Printf("InstrumentLabel: %s\n", detail.InstrumentLabel)
+		if detail.Description != nil {
+			fmt.Printf("Description: %s\n", *detail.Description)
+		} else {
+			fmt.Println("Description: (none)")
+		}
+		fmt.Printf("CategoryID: %d\n", detail.CategoryID)
+		fmt.Printf("Quantity: %d\n", detail.Quantity)
+		fmt.Printf("Offered Price: %.2f\n", detail.OfferedPrice)
+		fmt.Println("------")
+	}
 }
 
 func (c *AcceptanceApprovalController) GetQuotationDetailsByAcceptance(acceptanceID uint) ([]model.QuotationDetail, error) {
-    var acceptance model.AcceptanceApproval
-    err := c.db.Preload("Procurement").First(&acceptance, acceptanceID).Error
-    if err != nil {
-        return nil, fmt.Errorf("failed to find Acceptance Request with ID %d: %w", acceptanceID, err)
-    }
+	var acceptance model.AcceptanceApproval
+	err := c.db.Preload("Procurement").First(&acceptance, acceptanceID).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to find Acceptance Request with ID %d: %w", acceptanceID, err)
+	}
 
-    if acceptance.Procurement == nil {
-        return nil, fmt.Errorf("no associated Procurement found for Acceptance Request ID: %d", acceptanceID)
-    }
+	if acceptance.Procurement == nil {
+		return nil, fmt.Errorf("no associated Procurement found for Acceptance Request ID: %d", acceptanceID)
+	}
 
-    var quotations []model.Quotation
-    err = c.db.Preload("Details").
-        Where("tor_id = ?", acceptance.Procurement.TORID).
-        Find(&quotations).Error
-    if err != nil {
-        return nil, fmt.Errorf("failed to get quotations for TOR ID %d: %w", acceptance.Procurement.TORID, err)
-    }
+	var quotations []model.Quotation
+	err = c.db.Preload("Details").
+		Where("tor_id = ?", acceptance.Procurement.TORID).
+		Find(&quotations).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to get quotations for TOR ID %d: %w", acceptance.Procurement.TORID, err)
+	}
 
-    var details []model.QuotationDetail
-    for _, quotation := range quotations {
-        details = append(details, quotation.Details...)
-    }
+	var details []model.QuotationDetail
+	for _, quotation := range quotations {
+		details = append(details, quotation.Details...)
+	}
 
-    return details, nil
+	return details, nil
 }
-
-
-

@@ -10,7 +10,7 @@ type ApplicationReport struct {
 	Controller *ApplicationReportController
 }
 
-func (r *ApplicationReport) GetFilteredApplication(condition map[string]interface{}) ([]*model.ApplicationReport, error) {
+func (r *ApplicationReport) GetFilteredReport(condition map[string]interface{}) ([]*model.ApplicationReport, error) {
 	return r.Controller.GetFilteredApplication(condition)
 }
 

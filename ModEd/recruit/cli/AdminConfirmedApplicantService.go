@@ -37,7 +37,7 @@ func (s *confirmedApplicantToStudentService) TransferConfirmedApplicants() error
 	}
 
 	activeStatus := commonModel.ACTIVE
-	var students []*commonModel.Student
+	var students []commonModel.Student
 	for _, report := range reports {
 		if report.ApplicationStatuses == model.Confirmed {
 			applicant := report.Applicant
@@ -47,7 +47,7 @@ func (s *confirmedApplicantToStudentService) TransferConfirmedApplicants() error
 			} else {
 				studentcode = fmt.Sprintf("680705340%02d", applicant.ApplicantID)
 			}
-			student := &commonModel.Student{
+			student := commonModel.Student{
 				StudentCode: studentcode,
 				FirstName:   applicant.FirstName,
 				LastName:    applicant.LastName,

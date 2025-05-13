@@ -14,5 +14,9 @@ func (s *InternshipMigrationStrategy) GetModels() []interface{} {
 		&model.SupervisorReview{},
 		&model.InternshipReport{},
 		&model.InternshipApplication{},
+		&model.InternshipMentor{},
+		&model.InternshipCriteria{},
+		&model.InternshipInformation{},
+		&model.InternshipResultEvaluation{},
 	}
 }

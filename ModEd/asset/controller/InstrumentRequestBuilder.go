@@ -1,3 +1,4 @@
+// MEP-1014
 package controller
 
 import (
@@ -37,9 +38,6 @@ func (b *InstrumentRequestBuilder) Build() *model.InstrumentRequest {
 	return b.req
 }
 
-// ---------------------------------------------
-// Sub-builder for InstrumentDetail (Optional)
-// ---------------------------------------------
 type InstrumentDetailBuilder struct {
 	detail   *model.InstrumentDetail
 	price    float64

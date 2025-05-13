@@ -23,7 +23,7 @@ func NewInsertInstrumentManagementStrategy(
     }
 }
 
-func (handler InsertInstrumentManagementStrategy) Execute() error { //Don't need ID because it is auto-gen by db
+func (handler InsertInstrumentManagementStrategy) Execute() error {
     fmt.Println("=== Create New Instrument Management ===")
     
     fmt.Print("Enter Room ID: ")
@@ -33,13 +33,30 @@ func (handler InsertInstrumentManagementStrategy) Execute() error { //Don't need
         return fmt.Errorf("invalid room ID: %v", err)
     }
 
-    fmt.Print("Enter Instrument Label: ")
-    label := util.GetCommandInput()
+    fmt.Print("Enter Instrument ID: ")
+    var instrumentID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &instrumentID)
+    if err != nil {
+        return fmt.Errorf("invalid instrument ID: %v", err)
+    }
+
+    fmt.Print("Enter Borrow ID: ")
+    var borrowID uint
+    _, err = fmt.Sscan(util.GetCommandInput(), &borrowID)
+    if err != nil {
+        return fmt.Errorf("invalid borrow ID: %v", err)
+    }
     
     instrumentManagement := &model.InstrumentManagement{
-        RoomID: roomID,
-        InstrumentLabel: label,
+        RoomID:         roomID,
+        InstrumentID:   instrumentID,
+        BorrowUserID:   borrowID,
     }
+
+    if err := instrumentManagement.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
+		return err
+	}
 
     if err := handler.controller.Insert(instrumentManagement); err != nil {
         return fmt.Errorf("failed to create instrument management: %v", err)

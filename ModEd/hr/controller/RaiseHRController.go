@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ModEd/core"
 	"ModEd/hr/model"
 	"ModEd/hr/util"
 	"fmt"
@@ -32,15 +33,16 @@ func (c *RaiseHRController) getByID(id uint) (*model.RequestRaiseInstructor, err
 	return &raise, err
 }
 
+func (c *RaiseHRController) getAll() ([]*model.RequestRaiseInstructor, error) {
+	var request []*model.RequestRaiseInstructor
+	err := c.db.Find(&request).Error
+	return request, err
+}
+
 func (c *RaiseHRController) updateStatus(id uint, status string) error {
 	return c.db.Model(&model.RequestRaiseInstructor{}).Where("id = ?", id).Update("status", status).Error
 }
 
-func (c *RaiseHRController) getAll() ([]model.RequestRaiseInstructor, error) {
-	var requests []model.RequestRaiseInstructor
-	err := c.db.Find(&requests).Error
-	return requests, err
-}
 func (c *RaiseHRController) getByInstructorID(instructorID string) ([]model.RequestRaiseInstructor, error) {
 	var requests []model.RequestRaiseInstructor
 	err := c.db.Where("instructor_code = ?", instructorID).Find(&requests).Error
@@ -96,4 +98,25 @@ func (c *RaiseHRController) ReviewInstructorRaiseRequest(requestID, action, reas
 			return c.db.Save(r).Error
 		},
 	)
+}
+
+func (c *RaiseHRController) ExportInstructorRaiseRequests(filePath string) error {
+	request, err := c.getAll()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve instructor raise requests: %w", err)
+	}
+
+	mapper, err := core.CreateMapper[model.RequestRaiseInstructor](filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create instructor raise request mapper: %w", err)
+	}
+
+	err = mapper.Serialize(request)
+	if err != nil {
+		return fmt.Errorf("failed to serialize instructor raise requests: %w", err)
+	}
+
+	fmt.Printf("Exported %d instructor raise requests to %s\n", len(request), filePath)
+
+	return nil
 }

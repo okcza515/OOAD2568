@@ -13,7 +13,6 @@ type InstructorMenuState struct {
 	handlerContext *coreHandler.HandlerContext
 }
 
-// HandleUserInput implements cli.MenuState.
 func (a *InstructorMenuState) HandleUserInput(input string) error {
 	err := a.handlerContext.HandleInput(input)
 	if err != nil {
@@ -23,34 +22,29 @@ func (a *InstructorMenuState) HandleUserInput(input string) error {
 	return nil
 }
 
-// Render implements cli.MenuState.
 func (a *InstructorMenuState) Render() {
 	fmt.Println("=== Instructor Menu ===")
 	a.handlerContext.ShowMenu()
-	// implement the remaining menu options
 	fmt.Println("exit:\tExit the program.")
+	fmt.Println()
 }
 
 func NewInstructorMenuState(
-	manager *cli.CLIMenuStateManager,
-	instructorCtrl *controller.InstructorHRController,
-	leaveInstructorCtrl *controller.LeaveInstructorHRController,
-	resignInstructorCtrl *controller.ResignationInstructorHRController,
-	raiseInstructorCtrl *controller.RaiseHRController,
+	cliManager *cli.CLIMenuStateManager,
+	hrManager *controller.HRControllerManager,
 ) *InstructorMenuState {
 	handlerContext := coreHandler.NewHandlerContext()
 
-	addInstructorHandler := hrHandler.NewAddInstructorStrategy(instructorCtrl)
-	listInstructorHandler := hrHandler.NewListInstructorStrategy(instructorCtrl)
-	updateInstructorHandler := hrHandler.NewUpdateInstructorInfoStrategy(instructorCtrl)
-	requestInstructorLeaveHandler := hrHandler.NewRequestLeaveHandlerStrategy(leaveInstructorCtrl.SubmitInstructorLeaveRequest)
-	requestInstructorResignHandler := hrHandler.NewRequestResignationHandlerStrategy(resignInstructorCtrl.SubmitResignationInstructor)
-	requestInstructorRaiseHandler := hrHandler.NewRequestRaiseHandlerStrategy(raiseInstructorCtrl)
-	reviewLeaveHandler := hrHandler.NewReviewHandlerStrategy(leaveInstructorCtrl.ReviewInstructorLeaveRequest)
-	reviewResignationHandler := hrHandler.NewReviewHandlerStrategy(resignInstructorCtrl.ReviewInstructorResignRequest)
-	reviewRaiseHandler := hrHandler.NewReviewHandlerStrategy(raiseInstructorCtrl.ReviewInstructorRaiseRequest)
-	deleteInstructorHandler := hrHandler.NewDeleteInstructorStrategy(instructorCtrl)
-	// requestInstructorHandler := hrHandler.NewRequestInstructorLeaveStrategy(instructorCtrl)
+	addInstructorHandler := hrHandler.NewAddInstructorStrategy(hrManager.InstructorCtrl)
+	listInstructorHandler := hrHandler.NewListInstructorStrategy(hrManager.InstructorCtrl)
+	updateInstructorHandler := hrHandler.NewUpdateInstructorInfoStrategy(hrManager.InstructorCtrl)
+	requestInstructorLeaveHandler := hrHandler.NewRequestLeaveHandlerStrategy(hrManager.LeaveInstructorCtrl.SubmitInstructorLeaveRequest)
+	requestInstructorResignHandler := hrHandler.NewRequestResignationHandlerStrategy(hrManager.ResignInstructorCtrl.SubmitResignationInstructor)
+	requestInstructorRaiseHandler := hrHandler.NewRequestRaiseHandlerStrategy(hrManager.RaiseCtrl)
+	reviewLeaveHandler := hrHandler.NewReviewHandlerStrategy(hrManager.LeaveInstructorCtrl.ReviewInstructorLeaveRequest)
+	reviewResignationHandler := hrHandler.NewReviewHandlerStrategy(hrManager.ResignInstructorCtrl.ReviewInstructorResignRequest)
+	reviewRaiseHandler := hrHandler.NewReviewHandlerStrategy(hrManager.RaiseCtrl.ReviewInstructorRaiseRequest)
+	deleteInstructorHandler := hrHandler.NewDeleteInstructorStrategy(hrManager.InstructorCtrl)
 
 	handlerContext.AddHandler("1", "Add new instructor", addInstructorHandler)
 	handlerContext.AddHandler("2", "List instructor", listInstructorHandler)
@@ -63,11 +57,12 @@ func NewInstructorMenuState(
 	handlerContext.AddHandler("9", "Review resignation", reviewResignationHandler)
 	handlerContext.AddHandler("10", "Review raise", reviewRaiseHandler)
 
-	backHandler := coreHandler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_HR)))
+	hrMainMenuState := cliManager.GetState(string(MENU_HR))
+	backHandler := coreHandler.NewChangeMenuHandlerStrategy(cliManager, hrMainMenuState)
 	handlerContext.AddHandler("0", "Back to main menu", backHandler)
 
 	return &InstructorMenuState{
-		manager:        manager,
+		manager:        cliManager,
 		handlerContext: handlerContext,
 	}
 }

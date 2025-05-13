@@ -41,10 +41,14 @@ func (handler RetrieveSupplyManagementByRoomIdStrategy) Execute() error {
         fmt.Println("No supply managements found in this room")
     } else {
         for _, supplyManagement := range *supplyManagements {
-            fmt.Printf("ID: %d | Label: %s | Room ID: %d\n",
+            fmt.Printf(" ID: %d \n Supply ID: %d \n Label: %s \n Quantity: %d \n Room ID: %d \n Room Name: %s \n ---------------------------------------\n",
                 supplyManagement.GetID(),
-                supplyManagement.SupplyLabel,
-                supplyManagement.RoomID)
+                supplyManagement.SupplyID,
+                supplyManagement.Supply.SupplyLabel,
+                supplyManagement.Supply.Quantity,
+                supplyManagement.RoomID,
+                supplyManagement.Room.RoomName,
+            )
         }
     }
 

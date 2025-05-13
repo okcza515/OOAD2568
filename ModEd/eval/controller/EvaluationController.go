@@ -6,6 +6,11 @@ package controller
 import (
 	"ModEd/core"
 	evalModel "ModEd/eval/model"
+	"encoding/csv"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -24,21 +29,27 @@ func NewEvaluationController(db *gorm.DB) *EvaluationController {
 }
 
 // CreateEvaluation creates a new evaluation
-func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assessmentId uint, score uint, comment string) error {
+func (ec *EvaluationController) CreateEvaluation(studentCode, instructorCode string, assignmentId uint, score uint, comment string) error {
 	newEvaluation := evalModel.Evaluation{
 		StudentCode:    studentCode,
 		InstructorCode: instructorCode,
-		AssessmentId:   assessmentId,
+		AssignmentId:   assignmentId,
 		Score:          score,
 		Comment:        comment,
 		EvaluatedAt:    time.Now(),
 	}
-	return ec.Insert(newEvaluation)
+
+	if err := ec.db.Create(&newEvaluation).Error; err != nil {
+		return err
+	}
+
+	// Save to CSV
+	return ec.saveToCSV(&newEvaluation)
 }
 
 // ViewAllEvaluations returns all evaluations with related data
 func (ec *EvaluationController) ViewAllEvaluations() ([]evalModel.Evaluation, error) {
-	return ec.List(nil, "Student", "Instructor", "Assessment")
+	return ec.List(nil, "Student", "Instructor", "Assignment")
 }
 
 // ViewEvaluationByID returns evaluation by student ID
@@ -46,13 +57,13 @@ func (ec *EvaluationController) ViewEvaluationByID(studentCode string) ([]evalMo
 	condition := map[string]interface{}{
 		"student_code": studentCode,
 	}
-	return ec.List(condition, "Student", "Instructor", "Assessment")
+	return ec.List(condition, "Student", "Instructor", "Assignment")
 }
 
 // UpdateEvaluation updates an existing evaluation
 func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment string) error {
-	evaluation, err := ec.RetrieveByID(id, "Student", "Instructor", "Assessment")
-	if err != nil {
+	evaluation := &evalModel.Evaluation{}
+	if err := ec.db.First(evaluation, id).Error; err != nil {
 		return err
 	}
 
@@ -60,5 +71,123 @@ func (ec *EvaluationController) UpdateEvaluation(id uint, score uint, comment st
 	evaluation.Comment = comment
 	evaluation.EvaluatedAt = time.Now()
 
-	return ec.UpdateByID(evaluation)
+	if err := ec.db.Save(evaluation).Error; err != nil {
+		return err
+	}
+
+	// Update CSV file
+	return ec.updateCSV(evaluation)
+}
+
+func (ec *EvaluationController) saveToCSV(evaluation *evalModel.Evaluation) error {
+	csvPath := "../../data/quiz/Evaluation.csv"
+
+	// Create directory if not exists
+	dir := filepath.Dir(csvPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	// Check if file exists
+	fileExists := true
+	if _, err := os.Stat(csvPath); os.IsNotExist(err) {
+		fileExists = false
+	}
+
+	// Open file in append mode
+	file, err := os.OpenFile(csvPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to open CSV file: %v", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write headers if file is new
+	if !fileExists {
+		headers := []string{"student_code", "Instructor_code", "Assignment_id", "score", "comment", "evaluated_at"}
+		if err := writer.Write(headers); err != nil {
+			return fmt.Errorf("failed to write headers: %v", err)
+		}
+		writer.Flush()
+		if err := writer.Error(); err != nil {
+			return fmt.Errorf("failed to flush headers: %v", err)
+		}
+	}
+
+	// Write evaluation data
+	record := []string{
+		evaluation.StudentCode,
+		evaluation.InstructorCode,
+		strconv.FormatUint(uint64(evaluation.AssignmentId), 10),
+		strconv.FormatUint(uint64(evaluation.Score), 10),
+		evaluation.Comment,
+		evaluation.EvaluatedAt.Format(time.RFC3339),
+	}
+
+	if err := writer.Write(record); err != nil {
+		return fmt.Errorf("failed to write record: %v", err)
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("failed to flush record: %v", err)
+	}
+
+	return nil
+}
+
+func (ec *EvaluationController) updateCSV(evaluation *evalModel.Evaluation) error {
+	csvPath := "../../data/quiz/Evaluation.csv"
+
+	// Create directory if not exists
+	dir := filepath.Dir(csvPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %v", err)
+	}
+
+	// Read all records
+	file, err := os.OpenFile(csvPath, os.O_RDWR, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to open CSV file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return fmt.Errorf("failed to read CSV file: %v", err)
+	}
+
+	// Update the record
+	for i, record := range records {
+		if i == 0 { // Skip header
+			continue
+		}
+		if record[0] == evaluation.StudentCode {
+			records[i] = []string{
+				evaluation.StudentCode,
+				evaluation.InstructorCode,
+				strconv.FormatUint(uint64(evaluation.AssignmentId), 10),
+				strconv.FormatUint(uint64(evaluation.Score), 10),
+				evaluation.Comment,
+				evaluation.EvaluatedAt.Format(time.RFC3339),
+			}
+			break
+		}
+	}
+
+	// Write back all records
+	file.Seek(0, 0)
+	file.Truncate(0)
+	writer := csv.NewWriter(file)
+	if err := writer.WriteAll(records); err != nil {
+		return fmt.Errorf("failed to write records: %v", err)
+	}
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		return fmt.Errorf("failed to flush records: %v", err)
+	}
+
+	return nil
 }

@@ -14,7 +14,7 @@ func (s *EvalStrategy) GetModels() []interface{} {
 		&model.MultipleChoiceAnswer{},
 		&model.ShortAnswer{},
 		&model.TrueFalseAnswer{},
-		&model.Submission{},
+		&model.AnswerSubmission{},
 		&model.MultipleChoiceAnswerSubmission{},
 		&model.ShortAnswerSubmission{},
 		&model.TrueFalseAnswerSubmission{},

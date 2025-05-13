@@ -23,7 +23,7 @@ func NewInternShipModuleMenuStateHandler(manager *cli.CLIMenuStateManager, wrapp
 	}
 	InternshipModule.InternshipApplicationMenuStateHandler = NewInternshipApplicationHandler(manager, wrapper)
 	InternshipModule.InternshipEvaluationCriteriaHandler = NewInternShipEvaluationCriteriaHandler(manager, wrapper.InternshipCriteriaController)
-	InternshipModule.InternshipResultEvaluationHandler = NewInternshipResultEvaluationHandler(manager, wrapper.InternshipResultEvaluationController)
+	InternshipModule.InternshipResultEvaluationHandler = NewInternshipResultEvaluationHandler(manager, wrapper.InternshipResultEvaluationController, wrapper.InformationController, wrapper.InternshipCriteriaController)
 	InternshipModule.InternshipInformationHandler = NewInternshipInformationHandler(manager, wrapper.InformationController)
 	return InternshipModule
 }

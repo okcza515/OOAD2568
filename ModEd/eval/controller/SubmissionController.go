@@ -11,74 +11,36 @@ import (
 type SubmissionController struct {
 	db *gorm.DB
 	*core.BaseController[*model.AnswerSubmission]
-	McAnsSubController    *MultipleChoiceAnswerSubmissionController
-	TfAnsSubController    *TrueFalseAnswerSubmissionController
-	ShortAnsSubController *ShortAnswerSubmissionController
-	TfAnswerController    *TrueFalseAnswerController
-	ShortAnswerController *ShortAnswerController
+	GradingContext *GradingContext
 }
 
 func NewSubmissionController(db *gorm.DB) *SubmissionController {
+	context := NewGradingContext()
+	context.AddGradingStrategy(model.MultipleChoiceQuestion, NewMultipleChoiceAnswerSubmissionController(db))
+	context.AddGradingStrategy(model.TrueFalseQuestion, NewTrueFalseAnswerSubmissionController(db))
+	context.AddGradingStrategy(model.ShortAnswerQuestion, NewShortAnswerSubmissionController(db))
 	return &SubmissionController{
-		db:                    db,
-		BaseController:        core.NewBaseController[*model.AnswerSubmission](db),
-		McAnsSubController:    NewMultipleChoiceAnswerSubmissionController(db),
-		TfAnsSubController:    NewTrueFalseAnswerSubmissionController(db),
-		ShortAnsSubController: NewShortAnswerSubmissionController(db),
-		TfAnswerController:    NewTrueFalseAnswerController(db),
-		ShortAnswerController: NewShortAnswerController(db),
+		db:             db,
+		BaseController: core.NewBaseController[*model.AnswerSubmission](db),
+		GradingContext: context,
 	}
 }
+func (c *SubmissionController) GradingSubmission(submissionID uint) (*model.AnswerSubmission, error) {
 
-func (c *SubmissionController) GradingSubmission(submissionId uint) (submission *model.AnswerSubmission, err error) {
-	var score = 0.0
+	submission, err := c.BaseController.RetrieveByCondition(map[string]interface{}{"id": submissionID})
 
-	mcAnsSubs, err := c.McAnsSubController.GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionId)
 	if err != nil {
 		return nil, err
 	}
-	for _, mcAnsSub := range mcAnsSubs {
-		if mcAnsSub.Choice.IsExpected {
-			score += mcAnsSub.Question.Score
-		}
-	}
 
-	tfAnsSubs, err := c.TfAnsSubController.GetTrueFalseAnswerSubmissionsBySubmissionID(submissionId)
+	totalScore, err := c.GradingContext.GradeAll(submissionID)
+
 	if err != nil {
 		return nil, err
 	}
-	for _, tfAnsSub := range tfAnsSubs {
-		tfAnswer, err := c.TfAnswerController.GetTrueFalseAnswerByQuestionID(tfAnsSub.QuestionID)
-		if err != nil {
-			return nil, err
-		}
 
-		if tfAnsSub.StudentAnswer == tfAnswer.IsExpected {
-			score += tfAnsSub.Question.Score
-		}
-	}
-
-	shortAnsSubs, err := c.ShortAnsSubController.GetShortAnswerSubmissionsBySubmissionID(submissionId)
-	if err != nil {
-		return nil, err
-	}
-	for _, shortAnsSub := range shortAnsSubs {
-		shortAnswer, err := c.ShortAnswerController.GetShortAnswerByQuestionID(shortAnsSub.QuestionID)
-		if err != nil {
-			return nil, err
-		}
-
-		if shortAnsSub.StudentAnswer == shortAnswer.ExpectedAnswer {
-			score += shortAnsSub.Question.Score
-		}
-	}
-
-	submission, err = c.BaseController.RetrieveByCondition(map[string]interface{}{"id": submissionId})
-	if err != nil {
-		return nil, err
-	}
-	submission.Score = score
-	if err := c.BaseController.UpdateByCondition(map[string]interface{}{"id": submissionId}, submission); err != nil {
+	submission.Score = totalScore
+	if err := c.BaseController.UpdateByCondition(map[string]interface{}{"id": submissionID}, submission); err != nil {
 		return nil, err
 	}
 	return submission, nil

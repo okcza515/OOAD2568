@@ -11,6 +11,8 @@ import (
 type InternshipInformationHandler struct {
 	manager    *cli.CLIMenuStateManager
 	controller *controller.InternshipInformationController
+
+	InternshipModule *InternShipModuleMenuStateHandler
 }
 
 func NewInternshipInformationHandler(manager *cli.CLIMenuStateManager, controller *controller.InternshipInformationController) *InternshipInformationHandler {
@@ -44,6 +46,7 @@ func (handler *InternshipInformationHandler) HandleUserInput(input string) error
 		return handler.listAllInternshipInformation()
 	case "back":
 		fmt.Println("Returning to the previous menu...")
+		handler.manager.SetState(handler.InternshipModule)
 		return nil
 	default:
 		fmt.Println("Invalid input. Please try again.")
@@ -57,9 +60,9 @@ func (handler *InternshipInformationHandler) createInternshipInformation() error
 	mentorId := utils.GetUserInputUint("Enter Mentor ID: ")
 
 	info := &model.InternshipInformation{
-		StudentCode:      studentCode,
-		CompanyId:        companyId,
-		InternshipMentor: mentorId,
+		StudentCode:        studentCode,
+		CompanyId:          companyId,
+		InternshipMentorID: mentorId,
 	}
 
 	if err := handler.controller.Create(info); err != nil {
@@ -91,7 +94,7 @@ func (handler *InternshipInformationHandler) updateInternshipInformation() error
 	}
 
 	info.CompanyId = utils.GetUserInputUint("Enter new Company ID: ")
-	info.InternshipMentor = utils.GetUserInputUint("Enter new Mentor ID: ")
+	info.InternshipMentorID = utils.GetUserInputUint("Enter new Mentor ID: ")
 
 	if err := handler.controller.Update(info); err != nil {
 		return fmt.Errorf("failed to update internship information: %w", err)
@@ -121,7 +124,7 @@ func (handler *InternshipInformationHandler) listAllInternshipInformation() erro
 	fmt.Println("All Internship Information:")
 	for _, info := range infos {
 		fmt.Printf("ID: %d, StudentCode: %s, CompanyID: %d, MentorID: %d\n",
-			info.ID, info.StudentCode, info.CompanyId, info.InternshipMentor)
+			info.ID, info.StudentCode, info.CompanyId, info.InternshipMentorID)
 	}
 	return nil
 }

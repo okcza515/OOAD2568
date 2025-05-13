@@ -63,11 +63,18 @@ func ImportCsv(filePath string) [][]string {
 	return records
 }
 
-func PrintTitle(title string) {
+func MenuTitle(title string) {
 	fmt.Println("==========================================================")
 	fmt.Printf("                   🎓 %s                  \n", title)
 	fmt.Println("==========================================================")
 	fmt.Println("Welcome to the Senior Project Management (MEP-1005) System!")
 	fmt.Println("Use the menu below to navigate through the system.")
 	fmt.Println()
+}
+
+func PressEnterToContinue() {
+	fmt.Println()
+	fmt.Print("[Press Enter to Continue]")
+	var buffer string
+	_, _ = fmt.Scanln(&buffer)
 }

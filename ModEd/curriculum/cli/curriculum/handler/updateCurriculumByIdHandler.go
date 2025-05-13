@@ -35,7 +35,7 @@ func (h *updateCurriculumByIdHandler) Execute() error {
 		curriculum.Name = newName
 	}
 
-	newStartYear := utils.GetUserInput(fmt.Sprintf("Start Year [%d]: ", curriculum.StartYear))
+	newStartYear := utils.GetUserInput(fmt.Sprintf("Start Year [%d] format (YYYY): ", curriculum.StartYear))
 	if newStartYear != "" {
 		startYear, err := strconv.Atoi(newStartYear)
 		if err == nil {
@@ -45,7 +45,7 @@ func (h *updateCurriculumByIdHandler) Execute() error {
 		}
 	}
 
-	newEndYear := utils.GetUserInput(fmt.Sprintf("End Year [%d]: ", curriculum.EndYear))
+	newEndYear := utils.GetUserInput(fmt.Sprintf("End Year [%d] format (YYYY): ", curriculum.EndYear))
 	if newEndYear != "" {
 		endYear, err := strconv.Atoi(newEndYear)
 		if err == nil {
@@ -69,14 +69,13 @@ func (h *updateCurriculumByIdHandler) Execute() error {
 		}
 	}
 
-	// Validate updated curriculum
 	if err := curriculum.Validate(); err != nil {
 		fmt.Println("Validation error:", err)
 		return err
 	}
 
 	confirm := utils.GetUserInput("Are you sure you want to update this curriculum? (y/n): ")
-	if confirm != "y" {
+	if confirmed, exists := confirmOptions[confirm]; !exists || !confirmed {
 		fmt.Println("Update cancelled.")
 		return nil
 	}

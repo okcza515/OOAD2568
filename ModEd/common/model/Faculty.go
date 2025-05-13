@@ -1,17 +1,30 @@
 package model
 
 import (
+	"ModEd/core"
+	"errors"
+
 	"gorm.io/gorm"
 )
 
 type Faculty struct {
-	gorm.Model
+	core.BaseModel
 	Name   string `gorm:"not null;unique" csv:"name" json:"name"`
 	Budget int    `gorm:"default:0" csv:"budget" json:"budget"`
 }
 
 func (Faculty) TableName() string {
 	return "faculties"
+}
+
+func (f Faculty) Validate() error {
+	if f.Name == "" {
+		return errors.New("faculty name is required")
+	}
+	if f.Budget < 0 {
+		return errors.New("budget cannot be negative")
+	}
+	return nil
 }
 
 func SetFacultyBudget(db *gorm.DB, name string, newBudget int) error {

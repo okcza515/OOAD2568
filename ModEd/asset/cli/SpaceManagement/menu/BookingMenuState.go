@@ -74,13 +74,11 @@ func NewBookingMenuState(db *gorm.DB, manager *cli.CLIMenuStateManager, spaceMan
 
 	handlerContext := handler.NewHandlerContext()
 
-	//Standard Handlers
 	listHandler := handler.NewListHandlerStrategy[model.Booking](bookingController)
 	getHandler := handler.NewRetrieveByIDHandlerStrategy[model.Booking](bookingController)
 	deleteHandler := handler.NewDeleteHandlerStrategy[model.Booking](bookingController)
 	backHandler := handler.NewChangeMenuHandlerStrategy(manager, spaceManagementMenu)
 
-	//Custom Handlers
 	insertHandler := spaceManagementHandler.NewAddBookingHandlerStrategy(bookingController)
 	updateHandler := spaceManagementHandler.NewUpdateBookingHandlerStrategy(bookingController)
 	checkAvailabilityHandler := spaceManagementHandler.NewCheckRoomAvailabilityHandlerStrategy(bookingController)

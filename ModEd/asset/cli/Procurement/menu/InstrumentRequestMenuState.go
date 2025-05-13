@@ -1,3 +1,4 @@
+// MEP-1014
 package menu
 
 import (
@@ -90,15 +91,15 @@ func NewInstrumentRequestMenuState(manager *cli.CLIMenuStateManager) *Instrument
 			}
 
 			fmt.Printf("\n--- Instrument Request Details ---\n")
-			fmt.Printf("Request ID: %d\nDepartment ID: %d\nStatus: %s\n",
+			fmt.Printf("- Request ID: %d\n- Department ID: %d\n- Status: %s\n",
 				request.InstrumentRequestID, request.DepartmentID, request.Status)
 
 			if len(request.Instruments) == 0 {
 				fmt.Println("No instruments found for this request.")
 			} else {
 				for _, instrument := range request.Instruments {
-					fmt.Printf("  - ID: %d | Label: %s | Qty: %d | Price: %.2f\n",
-						instrument.InstrumentDetailID, instrument.InstrumentLabel, instrument.Quantity, instrument.EstimatedPrice)
+					fmt.Printf("----- ID: %d-----\n\t- Label: %s\n\t- Description: %s\n\t- Qty: %d\n\t- Price: %.2f\n",
+						instrument.InstrumentDetailID, instrument.InstrumentLabel, *instrument.Description, instrument.Quantity, instrument.EstimatedPrice)
 				}
 			}
 			util.PressEnterToContinue()

@@ -20,16 +20,17 @@ func NewMultipleChoiceAnswerSubmissionController(db *gorm.DB) *MultipleChoiceAns
 	}
 }
 
-func (c *MultipleChoiceAnswerSubmissionController) GetMultipleChoiceAnswerSubmissionsBySubmissionID(submissionID uint) (mcAnsSubs []*model.MultipleChoiceAnswerSubmission, err error) {
-	err = c.db.
-		Where("submission_id = ?", submissionID).
-		Preload("Question").
-		Preload("Choice").
-		Find(&mcAnsSubs).Error
+func (c *MultipleChoiceAnswerSubmissionController) Grade(submissionID uint) (float64, error) {
+	var score float64
 
+	mcAnsSubs, err := c.List(map[string]interface{}{"submission_id": submissionID}, "Question")
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-
-	return mcAnsSubs, err
+	for _, mcAnsSub := range mcAnsSubs {
+		if mcAnsSub.Choice.IsExpected {
+			score += mcAnsSub.Question.Score
+		}
+	}
+	return score, nil
 }

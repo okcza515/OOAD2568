@@ -136,6 +136,12 @@ func (h *AddBookingHandlerStrategy) Execute() error {
         fmt.Println("Booking cancelled")
         return nil
     }
+
+    if err := booking.Validate(); err != nil {
+        fmt.Println("Validation error:", err)
+        util.PressEnterToContinue()
+        return err
+    }
     
     err = h.controller.Insert(booking)
     if err != nil {

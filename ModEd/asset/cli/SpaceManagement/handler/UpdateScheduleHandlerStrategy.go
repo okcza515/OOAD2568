@@ -17,7 +17,7 @@ type UpdateScheduleHandler struct {
 	}
 }
 
-func NewUpdateScheduleHandler(controller interface {
+func NewUpdatePermanentScheduleHandler(controller interface {
 	RetrieveByID(id uint, preload ...string) (model.PermanentSchedule, error)
 	UpdateByID(schedule model.PermanentSchedule) error
 }) *UpdateScheduleHandler {
@@ -26,81 +26,66 @@ func NewUpdateScheduleHandler(controller interface {
 	}
 }
 
-func (h *UpdateScheduleHandler) Execute() error {
-	fmt.Println("===== Update Schedule =====")
+func (handler *UpdateScheduleHandler) Execute() error {
+	fmt.Println("------- Update Permanent Schedule -------")
 
-	fmt.Print("Enter Schedule ID to update: ")
-	idStr := util.GetCommandInput()
-	id, err := strconv.ParseUint(idStr, 10, 32)
+	fmt.Println("Please enter the ID of the Permanent Schedule:")
+	scheduleIdStr := util.GetCommandInput()
+	scheduleId, err := strconv.Atoi(scheduleIdStr)
 	if err != nil {
-		fmt.Println("Invalid ID format")
+		fmt.Println("Invalid ID")
 		util.PressEnterToContinue()
 		return err
 	}
 
-	schedule, err := h.controller.RetrieveByID(uint(id))
+	schedule, err := handler.controller.RetrieveByID(uint(scheduleId))
 	if err != nil {
 		fmt.Println("Failed to retrieve schedule:", err)
 		util.PressEnterToContinue()
 		return err
 	}
 
-	fmt.Println("Current details:")
-	fmt.Printf("Course ID: %d, Class ID: %d\n", schedule.CourseId, schedule.ClassId)
-	fmt.Printf("Faculty ID: %d, Department ID: %d, Program Type ID: %d\n",
-		schedule.FacultyID, schedule.DepartmentID, schedule.ProgramtypeID)
-	fmt.Printf("Room ID: %d, Start Date: %v, End Date: %v\n",
-		schedule.TimeTable.RoomID,
-		schedule.TimeTable.StartDate.Format("2006-01-02 15:04"),
-		schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
-
-	fmt.Println("\nEnter new values (or press Enter to keep current values):")
-
 	fmt.Printf("Current Room ID: %d\n", schedule.TimeTable.RoomID)
-	fmt.Print("New Room ID: ")
-	input := util.GetCommandInput()
-	if input != "" {
-		roomID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Room ID (or press Enter to keep current):")
+	roomIDStr := util.GetCommandInput()
+	if roomIDStr != "" {
+		roomID, err := strconv.Atoi(roomIDStr)
 		if err != nil {
-			fmt.Println("Invalid Room ID format")
+			fmt.Println("Invalid Room ID")
 			util.PressEnterToContinue()
 			return err
 		}
 		schedule.TimeTable.RoomID = uint(roomID)
 	}
 
-	fmt.Printf("Current start date and time: %s\n", schedule.TimeTable.StartDate.Format("2006-01-02 15:04"))
-
-	fmt.Print("New start date (YYYY-MM-DD): ")
+	fmt.Printf("Current Start Date: %s\n", schedule.TimeTable.StartDate.Format("2006-01-02 15:04"))
+	fmt.Println("Please enter the new start date (YYYY-MM-DD, or press Enter to keep current):")
 	startDateStr := util.GetCommandInput()
-
 	if startDateStr != "" {
-		fmt.Print("New start time (HH:MM): ")
+		fmt.Println("Please enter the new start time (HH:MM):")
 		startTimeStr := util.GetCommandInput()
 
-		startDateTime := startDateStr + " " + startTimeStr
-		startDate, err := time.Parse("2006-01-02 15:04", startDateTime)
+		fullStartDateTime := startDateStr + " " + startTimeStr
+		startDate, err := time.Parse("2006-01-02 15:04", fullStartDateTime)
 		if err != nil {
-			fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
+			fmt.Println("Invalid date/time format")
 			util.PressEnterToContinue()
 			return err
 		}
 		schedule.TimeTable.StartDate = startDate
 	}
 
-	fmt.Printf("Current end date and time: %s\n", schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
-
-	fmt.Print("New end date (YYYY-MM-DD): ")
+	fmt.Printf("Current End Date: %s\n", schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
+	fmt.Println("Please enter the new end date (YYYY-MM-DD, or press Enter to keep current):")
 	endDateStr := util.GetCommandInput()
-
 	if endDateStr != "" {
-		fmt.Print("New end time (HH:MM): ")
+		fmt.Println("Please enter the new end time (HH:MM):")
 		endTimeStr := util.GetCommandInput()
 
-		endDateTime := endDateStr + " " + endTimeStr
-		endDate, err := time.Parse("2006-01-02 15:04", endDateTime)
+		fullEndDateTime := endDateStr + " " + endTimeStr
+		endDate, err := time.Parse("2006-01-02 15:04", fullEndDateTime)
 		if err != nil {
-			fmt.Println("Invalid date/time format. Please use YYYY-MM-DD for date and HH:MM for time")
+			fmt.Println("Invalid date/time format")
 			util.PressEnterToContinue()
 			return err
 		}
@@ -108,12 +93,12 @@ func (h *UpdateScheduleHandler) Execute() error {
 	}
 
 	fmt.Printf("Current Course ID: %d\n", schedule.CourseId)
-	fmt.Print("New Course ID: ")
-	input = util.GetCommandInput()
-	if input != "" {
-		courseID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Course ID (or press Enter to keep current):")
+	courseIDStr := util.GetCommandInput()
+	if courseIDStr != "" {
+		courseID, err := strconv.Atoi(courseIDStr)
 		if err != nil {
-			fmt.Println("Invalid Course ID format")
+			fmt.Println("Invalid Course ID")
 			util.PressEnterToContinue()
 			return err
 		}
@@ -121,12 +106,12 @@ func (h *UpdateScheduleHandler) Execute() error {
 	}
 
 	fmt.Printf("Current Class ID: %d\n", schedule.ClassId)
-	fmt.Print("New Class ID: ")
-	input = util.GetCommandInput()
-	if input != "" {
-		classID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Class ID (or press Enter to keep current):")
+	classIDStr := util.GetCommandInput()
+	if classIDStr != "" {
+		classID, err := strconv.Atoi(classIDStr)
 		if err != nil {
-			fmt.Println("Invalid Class ID format")
+			fmt.Println("Invalid Class ID")
 			util.PressEnterToContinue()
 			return err
 		}
@@ -134,12 +119,12 @@ func (h *UpdateScheduleHandler) Execute() error {
 	}
 
 	fmt.Printf("Current Faculty ID: %d\n", schedule.FacultyID)
-	fmt.Print("New Faculty ID: ")
-	input = util.GetCommandInput()
-	if input != "" {
-		facultyID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Faculty ID (or press Enter to keep current):")
+	facultyIDStr := util.GetCommandInput()
+	if facultyIDStr != "" {
+		facultyID, err := strconv.Atoi(facultyIDStr)
 		if err != nil {
-			fmt.Println("Invalid Faculty ID format")
+			fmt.Println("Invalid Faculty ID")
 			util.PressEnterToContinue()
 			return err
 		}
@@ -147,38 +132,63 @@ func (h *UpdateScheduleHandler) Execute() error {
 	}
 
 	fmt.Printf("Current Department ID: %d\n", schedule.DepartmentID)
-	fmt.Print("New Department ID: ")
-	input = util.GetCommandInput()
-	if input != "" {
-		deptID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Department ID (or press Enter to keep current):")
+	deptIDStr := util.GetCommandInput()
+	if deptIDStr != "" {
+		deptID, err := strconv.Atoi(deptIDStr)
 		if err != nil {
-			fmt.Println("Invalid Department ID format")
+			fmt.Println("Invalid Department ID")
 			util.PressEnterToContinue()
 			return err
 		}
 		schedule.DepartmentID = uint(deptID)
 	}
+
 	fmt.Printf("Current Program Type ID: %d\n", schedule.ProgramtypeID)
-	fmt.Print("New Program Type ID: ")
-	input = util.GetCommandInput()
-	if input != "" {
-		progTypeID, err := strconv.ParseUint(input, 10, 32)
+	fmt.Println("Please enter the new Program Type ID (0 for Regular, 1 for International, or press Enter to keep current):")
+	progTypeIDStr := util.GetCommandInput()
+	if progTypeIDStr != "" {
+		progTypeID, err := strconv.Atoi(progTypeIDStr)
 		if err != nil {
-			fmt.Println("Invalid Program Type ID format")
+			fmt.Println("Invalid Program Type ID")
 			util.PressEnterToContinue()
 			return err
 		}
 		schedule.ProgramtypeID = uint(progTypeID)
 	}
 
-	err = h.controller.UpdateByID(schedule)
-	if err != nil {
-		fmt.Println("Failed to update schedule:", err)
+	if err := schedule.Validate(); err != nil {
+		fmt.Println("Validation error:", err)
 		util.PressEnterToContinue()
 		return err
 	}
 
-	fmt.Println("Schedule updated successfully!")
+	fmt.Println("-------- Updated Permanent Schedule Details --------")
+	fmt.Println("Room ID:", schedule.TimeTable.RoomID)
+	fmt.Println("Start Date:", schedule.TimeTable.StartDate.Format("2006-01-02 15:04"))
+	fmt.Println("End Date:", schedule.TimeTable.EndDate.Format("2006-01-02 15:04"))
+	fmt.Println("Course ID:", schedule.CourseId)
+	fmt.Println("Class ID:", schedule.ClassId)
+	fmt.Println("Faculty ID:", schedule.FacultyID)
+	fmt.Println("Department ID:", schedule.DepartmentID)
+	fmt.Println("Program Type ID:", schedule.ProgramtypeID)
+
+	fmt.Println("\nDo you want to update this Permanent Schedule? (y/n)")
+	confirmStr := util.GetCommandInput()
+	if confirmStr != "y" {
+		fmt.Println("Permanent Schedule update cancelled.")
+		util.PressEnterToContinue()
+		return nil
+	}
+
+	err = handler.controller.UpdateByID(schedule)
+	if err != nil {
+		fmt.Println("Failed to update Permanent Schedule:", err)
+		util.PressEnterToContinue()
+		return err
+	}
+
+	fmt.Println("Permanent Schedule updated successfully!")
 	util.PressEnterToContinue()
 	return nil
 }

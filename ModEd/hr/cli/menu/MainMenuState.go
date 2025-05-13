@@ -12,7 +12,6 @@ type HRMainMenuState struct {
 	handlerContext *handler.HandlerContext
 }
 
-// HandleUserInput implements cli.MenuState.
 func (state *HRMainMenuState) HandleUserInput(input string) error {
 	err := state.handlerContext.HandleInput(input)
 	if err != nil {
@@ -31,32 +30,33 @@ func (state *HRMainMenuState) Render() {
 }
 
 func NewHRMainMenuState(
-	manager *cli.CLIMenuStateManager,
-	studentCtrl *controller.StudentHRController,
-	instructorCtrl *controller.InstructorHRController,
-	leaveStudentCtrl *controller.LeaveStudentHRController,
-	leaveInstructorCtrl *controller.LeaveInstructorHRController,
-	resignStudentCtrl *controller.ResignationStudentHRController,
-	resignInstructorCtrl *controller.ResignationInstructorHRController,
-	raiseInstructorCtrl *controller.RaiseHRController,
+	cliManager *cli.CLIMenuStateManager,
+	hrManager *controller.HRControllerManager,
 ) *HRMainMenuState {
 	handlerContext := handler.NewHandlerContext()
 	state := &HRMainMenuState{
-		manager:        manager,
+		manager:        cliManager,
 		handlerContext: handlerContext,
 	}
 
-	manager.AddMenu(string(MENU_HR), state)
-	manager.AddMenu(string(MENU_STUDENT), NewStudentMenuState(manager, studentCtrl, leaveStudentCtrl, resignStudentCtrl))
-	manager.AddMenu(string(MENU_INSTRUCTOR), NewInstructorMenuState(manager, instructorCtrl, leaveInstructorCtrl, resignInstructorCtrl, raiseInstructorCtrl))
-	manager.AddMenu(string(MENU_DATABASE), NewDatabaseMenuState(manager, studentCtrl, instructorCtrl))
+	cliManager.AddMenu(string(MENU_HR), state)
 
-	studentHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_STUDENT)))
-	instructorHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_INSTRUCTOR)))
-	databaseHandler := handler.NewChangeMenuHandlerStrategy(manager, manager.GetState(string(MENU_DATABASE)))
+	studentMenu := NewStudentMenuState(cliManager, hrManager)
+	cliManager.AddMenu(string(MENU_STUDENT), studentMenu)
+
+	instructorMenu := NewInstructorMenuState(cliManager, hrManager)
+	cliManager.AddMenu(string(MENU_INSTRUCTOR), instructorMenu)
+
+	databaseMenu := NewDatabaseMenuState(cliManager, hrManager)
+	cliManager.AddMenu(string(MENU_DATABASE), databaseMenu)
+
+	studentHandler := handler.NewChangeMenuHandlerStrategy(cliManager, studentMenu)
+	instructorHandler := handler.NewChangeMenuHandlerStrategy(cliManager, instructorMenu)
+	databaseHandler := handler.NewChangeMenuHandlerStrategy(cliManager, databaseMenu)
 
 	handlerContext.AddHandler("1", "Student Menu", studentHandler)
 	handlerContext.AddHandler("2", "Instructor Menu", instructorHandler)
 	handlerContext.AddHandler("3", "Database Menu", databaseHandler)
+
 	return state
 }
